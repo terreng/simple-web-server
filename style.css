@@ -137,3 +137,15 @@ body {
 .option_group {
     padding-left: 20px;
 }
+
+.option_group.disabled {
+    opacity: 0.5;
+    pointer-events: none;
+}
+
+.input_error {
+    color: red;
+    display: none;
+    padding-left: 12px;
+    font-size: 17px;
+}

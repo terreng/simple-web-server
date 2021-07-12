@@ -9,5 +9,12 @@ contextBridge.exposeInMainWorld('api', {
     },
     quit: function() {
         ipcRenderer.send("quit");
+    },
+    showPicker: function() {
+        var dialog = require('electron').remote.dialog;
+
+        return dialog.showOpenDialogSync({
+            properties: ['openDirectory','createDirectory']
+        });
     }
 })

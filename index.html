@@ -23,7 +23,7 @@
                 </div>
             </div>
             <div class="button_row">
-                <div class="button">Add Server</div>
+                <div class="button" onclick="addServer()">Add Server</div>
             </div>
             <div class="settings_title">Options</div>
 
@@ -38,14 +38,14 @@
         </div>
         <div id="server_settings" style="display: none;">
             <div class="button_row">
-                <label for="file_picker" class="button secondary">Choose Folder<input id="file_picker" name="file_picker" type="file" webkitdirectory style="display: none;" onchange="" /></label>
+                <div for="file_picker" class="button secondary" onclick="var chosen_path = window.api.showPicker(); if (chosen_path) {current_path = chosen_path[0]};updateCurrentPath();">Choose Folder</div>
             </div>
             
             <div id="current_directory">Current directory: </div>
 
             <div class="settings_title">Web Server URL(s)</div>
 
-            <div class="settings_server_list">
+            <div class="settings_server_list" id="settings_server_list">
                 <ul>
                     <li>
                         <a href="http://127.0.0.1:8887" target="_blank" onclick="window.api.openExternal(this.href);event.preventDefault()">http://127.0.0.1:8887</a>
@@ -67,31 +67,37 @@
 
             <div class="input_option">
                 <div>Port</div>
-                <input type="number" id="port" name="port" style="width: 100px;">
+                <input type="number" id="port" name="port" oninput="portChange()" style="width: 100px;">
             </div>
 
+            <div class="input_error">Enter a number between 1 and 65535</div>
+
             <div class="checkbox_option">
-                <input type="checkbox" id="rewrite" name="rewrite">
+                <input type="checkbox" id="rewrite" name="rewrite" oninput="changeSPA();">
                 <label for="rewrite">Enable mod-rewrite (for SPA)</label>
             </div>
 
-            <div class="option_group">
+            <div class="option_group" id="rewrite_options">
 
                 <div class="input_option">
                     <div>Regular Expression</div>
                     <input type="text" id="regex" name="regex">
                 </div>
 
+                <div class="input_error">Invalid regular expression</div>
+
                 <div class="input_option">
                     <div>Rewrite To</div>
                     <input type="text" id="rewriteto" name="rewriteto">
                 </div>
 
+                <div class="input_error">Invalid path</div>
+
             </div>
 
             <div class="button_row">
-                <div class="button secondary">Cancel</div>
-                <div class="button">Submit</div>
+                <div class="button secondary" onclick="cancelAddServer()">Cancel</div>
+                <div class="button" onclick="submitAddServer()">Submit</div>
             </div>
         </div>
         <script src="main.js"></script>
