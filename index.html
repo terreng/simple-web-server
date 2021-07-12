@@ -25,8 +25,18 @@
             <div class="button_row">
                 <div class="button">Add Server</div>
             </div>
+            <div class="settings_title">Options</div>
+
+            <div class="checkbox_option">
+                <input type="checkbox" id="background" name="background">
+                <label for="background">Run in background</label>
+            </div>
+
+            <div class="button_row">
+                <div class="button secondary" onclick="window.api.quit()">Quit</div>
+            </div>
         </div>
-        <div id="server_settings">
+        <div id="server_settings" style="display: none;">
             <div class="button_row">
                 <label for="file_picker" class="button secondary">Choose Folder<input id="file_picker" name="file_picker" type="file" webkitdirectory style="display: none;" onchange="" /></label>
             </div>

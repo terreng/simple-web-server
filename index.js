@@ -1,4 +1,4 @@
-const {app, BrowserWindow } = require('electron');
+const {app, BrowserWindow, ipcMain } = require('electron');
 const path = require('path');
 const fs = require('fs');
 
@@ -19,6 +19,10 @@ app.on('window-all-closed', function () {
 	}
 })
 
+ipcMain.on('quit', function(message) {
+	app.quit()
+})
+
 app.on('activate', function () {
 	if (mainWindow === null) {
 		createWindow()
@@ -35,6 +39,7 @@ function createWindow() {
 		height: 700,
 		frame: true,
 		skipTaskbar: true,
+		title: "Web Server",
 		webPreferences: {
 			//webSecurity: false,
 			scrollBounce: true,
