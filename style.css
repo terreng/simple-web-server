@@ -9,6 +9,7 @@
 body {
     margin: 0px;
     font-family: 'Open Sans', sans-serif;
+    background: white;
 }
 
 .top_title {
@@ -66,4 +67,66 @@ body {
     float: right;
     border-radius: 4px;
     box-shadow: 0px 1px 3px 0px #636363;
+}
+
+.button.secondary {
+    float: left;
+    background-color: #607d8b;
+}
+
+#current_directory {
+    font-size: 19px;
+    padding: 10px;
+    word-break: break-all;
+}
+
+.settings_title {
+    font-size: 18px;
+    padding: 10px;
+    font-weight: 600;
+}
+
+.settings_server_list ul {
+    margin: 0;
+    font-size: 18px;
+}
+
+.settings_server_list li {
+    margin-bottom: 10px;
+}
+
+.settings_server_list {
+    padding-bottom: 10px;
+}
+
+.checkbox_option {
+    padding: 12px;
+    font-size: 19px;
+}
+
+.checkbox_option input {
+    margin: 0px;
+    width: 20px;
+    height: 20px;
+    vertical-align: top;
+}
+
+.input_option {
+    padding: 12px;
+    font-size: 19px;
+}
+
+.input_option > div:nth-child(1) {
+    font-size: 17px;
+    padding-bottom: 6px;
+}
+
+.input_option > input {
+    font-size: 20px;
+    padding: 4px;
+    width: 200px;
+}
+
+.option_group {
+    padding-left: 20px;
 }

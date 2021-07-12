@@ -1,13 +1,12 @@
 const {app, BrowserWindow } = require('electron');
+const path = require('path');
 const fs = require('fs');
 
 let mainWindow;
+var config = {};
 
 app.on('ready', function() {
 	createWindow();
-	if (process.platform === "darwin") {
-		app.dock.hide();
-	}
 })
 
 app.on('window-all-closed', function () {
@@ -15,11 +14,17 @@ app.on('window-all-closed', function () {
 		app.quit()
 	}*/
 	//Stay running even when all windows closed
+	if (process.platform === "darwin") {
+		app.dock.hide();
+	}
 })
 
 app.on('activate', function () {
 	if (mainWindow === null) {
 		createWindow()
+		if (process.platform === "darwin") {
+			app.dock.show();
+		}
 	}
 })
 
@@ -31,15 +36,28 @@ function createWindow() {
 		frame: true,
 		skipTaskbar: true,
 		webPreferences: {
-			webSecurity: false,
+			//webSecurity: false,
+			scrollBounce: true,
+			nodeIntegration: false,
+			contextIsolation: true,
+			enableRemoteModule: false,
+			preload: path.join(__dirname, "preload.js")
 		}
 	});
 	mainWindow.setMenuBarVisibility(false);
 
-	mainWindow.loadFile('index.html')
+	mainWindow.loadFile('index.html');
+
+	//mainWindow.webContents.openDevTools();
 	
 	mainWindow.webContents.on('did-finish-load', function() {
+		try {
+			config = JSON.parse(fs.readFileSync(path.join(app.getPath('userData'), "config.json")));
+		} catch(error) {
+			config = {};
+		}
 
+		mainWindow.webContents.send('message', config);
 	});
 
 	mainWindow.on('closed', function () {

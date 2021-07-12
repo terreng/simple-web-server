@@ -4,7 +4,7 @@
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <link rel="stylesheet" href="style.css">
     </head>
-    <body>
+    <body style="display: none;">
         <div class="top_title">Web Server</div>
         <div id="servers">
             <div id="servers_list">
@@ -26,6 +26,64 @@
                 <div class="button">Add Server</div>
             </div>
         </div>
-    <script src="main.js"></script>
+        <div id="server_settings">
+            <div class="button_row">
+                <label for="file_picker" class="button secondary">Choose Folder<input id="file_picker" name="file_picker" type="file" webkitdirectory style="display: none;" onchange="" /></label>
+            </div>
+            
+            <div id="current_directory">Current directory: </div>
+
+            <div class="settings_title">Web Server URL(s)</div>
+
+            <div class="settings_server_list">
+                <ul>
+                    <li>
+                        <a href="http://127.0.0.1:8887" target="_blank" onclick="window.api.openExternal(this.href);event.preventDefault()">http://127.0.0.1:8887</a>
+                    </li>
+                </ul>
+            </div>
+
+            <div class="settings_title">Options</div>
+
+            <div class="checkbox_option">
+                <input type="checkbox" id="localnetwork" name="localnetwork">
+                <label for="localnetwork">Accessible on local network</label>
+            </div>
+
+            <div class="checkbox_option">
+                <input type="checkbox" id="index" name="index">
+                <label for="index">Automatically show index.html</label>
+            </div>
+
+            <div class="input_option">
+                <div>Port</div>
+                <input type="number" id="port" name="port" style="width: 100px;">
+            </div>
+
+            <div class="checkbox_option">
+                <input type="checkbox" id="rewrite" name="rewrite">
+                <label for="rewrite">Enable mod-rewrite (for SPA)</label>
+            </div>
+
+            <div class="option_group">
+
+                <div class="input_option">
+                    <div>Regular Expression</div>
+                    <input type="text" id="regex" name="regex">
+                </div>
+
+                <div class="input_option">
+                    <div>Rewrite To</div>
+                    <input type="text" id="rewriteto" name="rewriteto">
+                </div>
+
+            </div>
+
+            <div class="button_row">
+                <div class="button secondary">Cancel</div>
+                <div class="button">Submit</div>
+            </div>
+        </div>
+        <script src="main.js"></script>
     </body>
 </html>
