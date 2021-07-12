@@ -81,18 +81,22 @@
 
                 <div class="input_option">
                     <div>Regular Expression</div>
-                    <input type="text" id="regex" name="regex">
+                    <input type="text" id="regex" name="regex" oninput="regexchange()">
                 </div>
 
                 <div class="input_error">Invalid regular expression</div>
 
                 <div class="input_option">
                     <div>Rewrite To</div>
-                    <input type="text" id="rewriteto" name="rewriteto">
+                    <input type="text" id="rewriteto" name="rewriteto" oninput="rewritetochange()">
                 </div>
 
                 <div class="input_error">Invalid path</div>
 
+            </div>
+
+            <div class="button_row" id="delete_server">
+                <div class="button secondary" onclick="deleteServer()" style="background-color: #f44336;">Delete Server</div>
             </div>
 
             <div class="button_row">

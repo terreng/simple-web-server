@@ -19,8 +19,12 @@ app.on('window-all-closed', function () {
 	}
 })
 
-ipcMain.on('quit', function(message) {
+ipcMain.on('quit', function(event) {
 	app.quit()
+})
+
+ipcMain.on('saveconfig', function(event, arg1) {
+	fs.writeFileSync(path.join(app.getPath('userData'), "config.json"), JSON.stringify(arg1), "utf8");
 })
 
 app.on('activate', function () {

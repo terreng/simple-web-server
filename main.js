@@ -47,6 +47,7 @@ function addServer(editindex) {
         document.querySelector("#regex").value = config.servers[editindex].regex;
         document.querySelector("#rewriteto").value = config.servers[editindex].rewriteto;
         document.querySelector("#settings_server_list").innerHTML = '<ul><li><a href="http://127.0.0.1:'+config.servers[editindex].port+'" target="_blank" onclick="window.api.openExternal(this.href);event.preventDefault()">http://127.0.0.1:'+config.servers[editindex].port+'</a></li></ul>';
+        document.querySelector("#delete_server").style.display = "block";
     } else {
         document.getElementById("current_directory").innerHTML = "<span style='color: red;'>Choose a directory</span>"
         document.querySelector("#localnetwork").checked = false;
@@ -58,6 +59,10 @@ function addServer(editindex) {
         document.querySelector("#rewriteto").value = "/index.html";
         current_path = false;
         document.querySelector("#settings_server_list").innerHTML = "";
+        document.querySelector("#port").parentElement.nextElementSibling.style.display = "none";
+        regexchange();
+        rewritetochange();
+        document.querySelector("#delete_server").style.display = "none";
     }
     changeSPA();
 }
@@ -89,7 +94,16 @@ function submitAddServer() {
         document.querySelector("#server_settings").style.display = "none";
         document.querySelector("#servers").style.display = "block";
         renderServerList();
+        window.api.saveconfig(config);
     }
+}
+
+function deleteServer() {
+    config.servers.splice(activeeditindex, 1);
+    document.querySelector("#server_settings").style.display = "none";
+    document.querySelector("#servers").style.display = "block";
+    renderServerList();
+    window.api.saveconfig(config);
 }
 
 function portChange() {
@@ -123,7 +137,27 @@ function validatePath() {
 function changeSPA() {
     if (document.querySelector("#rewrite").checked) {
         document.querySelector("#rewrite_options").classList.remove("disabled");
+        regexchange();
+        rewritetochange();
     } else {
         document.querySelector("#rewrite_options").classList.add("disabled");
+        document.querySelector("#regex").parentElement.nextElementSibling.style.display = "none";
+        document.querySelector("#rewriteto").parentElement.nextElementSibling.style.display = "none";
     }
+}
+
+function regexchange() {
+if (validateRegex(document.querySelector("#regex").value)) {
+    document.querySelector("#regex").parentElement.nextElementSibling.style.display = "none";
+} else {
+    document.querySelector("#regex").parentElement.nextElementSibling.style.display = "block";
+}
+}
+
+function rewritetochange() {
+if (validatePath(document.querySelector("#rewriteto").value)) {
+    document.querySelector("#rewriteto").parentElement.nextElementSibling.style.display = "none";
+} else {
+    document.querySelector("#rewriteto").parentElement.nextElementSibling.style.display = "block";
+}
 }

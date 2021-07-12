@@ -11,10 +11,11 @@ contextBridge.exposeInMainWorld('api', {
         ipcRenderer.send("quit");
     },
     showPicker: function() {
-        var dialog = require('electron').remote.dialog;
-
-        return dialog.showOpenDialogSync({
+        return require('electron').remote.dialog.showOpenDialogSync({
             properties: ['openDirectory','createDirectory']
         });
-    }
+    },
+    saveconfig: function(saveconfig) {
+        ipcRenderer.send("saveconfig", saveconfig);
+    },
 })

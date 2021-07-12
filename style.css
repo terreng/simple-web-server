@@ -10,6 +10,7 @@ body {
     margin: 0px;
     font-family: 'Open Sans', sans-serif;
     background: white;
+    user-select: none;
 }
 
 .top_title {
