@@ -4,13 +4,14 @@ window.api.initipc(function (event, message) {
     config = message;
     document.body.style.display = "block";
     renderServerList();
+    document.querySelector("#background").checked = config.background;
 });
 
 function renderServerList() {
 var pendhtml = "";
 if (config.servers) {
 for (var i = 0; i < config.servers.length; i++) {
-    pendhtml += '<div class="server"><div><input type="checkbox"></div><div onclick="addServer('+i+')"><div>'+htmlescape(config.servers[i].path.split("/")[config.servers[i].path.split("/").length-1])+'</div><div>:'+String(config.servers[i].port)+'</div></div></div>'
+    pendhtml += '<div class="server '+(config.servers[i].enabled ? "enabled" : "")+'"><div><input type="checkbox" '+(config.servers[i].enabled ? "checked" : "")+' oninput="checkboxChanged()"></div><div onclick="addServer('+i+')"><div>'+htmlescape(config.servers[i].path.split("/")[config.servers[i].path.split("/").length-1])+'</div><div>:'+String(config.servers[i].port)+'</div></div></div>'
 }
 }
 document.getElementById("servers_list").innerHTML = pendhtml;
@@ -79,6 +80,7 @@ function submitAddServer() {
             config.servers = [];
         }
         var server_object = {
+            "enabled": activeeditindex !== false ? config.servers[activeeditindex].enabled : true,
             "path": current_path,
             "localnetwork": document.querySelector("#localnetwork").checked,
             "index": document.querySelector("#index").checked,
@@ -105,6 +107,20 @@ function deleteServer() {
     document.querySelector("#servers").style.display = "block";
     renderServerList();
     window.api.saveconfig(config);
+}
+
+function checkboxChanged() {
+var server_checkboxes = document.querySelector("#servers_list").querySelectorAll("input");
+for (var i = 0; i < server_checkboxes.length; i++) {
+    config.servers[i].enabled = server_checkboxes[i].checked;
+}
+renderServerList();
+window.api.saveconfig(config);
+}
+
+function runinbkchanged() {
+config.background = document.querySelector("#background").checked;
+window.api.saveconfig(config);
 }
 
 function portChange() {

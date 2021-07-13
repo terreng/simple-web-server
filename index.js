@@ -10,12 +10,13 @@ app.on('ready', function() {
 })
 
 app.on('window-all-closed', function () {
-	/*if (process.platform !== 'darwin') {
+	if (config.background !== true) {
 		app.quit()
-	}*/
-	//Stay running even when all windows closed
-	if (process.platform === "darwin") {
-		app.dock.hide();
+	} else {
+		//Stay running even when all windows closed
+		if (process.platform === "darwin") {
+			app.dock.hide();
+		}
 	}
 })
 
@@ -25,6 +26,7 @@ ipcMain.on('quit', function(event) {
 
 ipcMain.on('saveconfig', function(event, arg1) {
 	fs.writeFileSync(path.join(app.getPath('userData'), "config.json"), JSON.stringify(arg1), "utf8");
+	config = arg1;
 })
 
 app.on('activate', function () {

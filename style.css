@@ -28,7 +28,11 @@ body {
     padding: 15px;
     height: 50px;
     border-bottom: 1px solid #c5c5c5;
-    border-right: solid #f44336 10px;
+    border-right: solid #f44336 8px;
+}
+
+.server.enabled {
+    border-right: solid #4caf50 8px;
 }
 
 .server > div:nth-child(1) {
