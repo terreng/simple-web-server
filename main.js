@@ -51,7 +51,7 @@ function addServer(editindex) {
         portChange();
         document.querySelector("#regex").value = config.servers[editindex].regex;
         document.querySelector("#rewriteto").value = config.servers[editindex].rewriteto;
-        document.querySelector("#settings_server_list").innerHTML = config.servers[editindex].enabled ? ('<ul><li><a href="http://127.0.0.1:'+config.servers[editindex].port+'" target="_blank" onclick="window.api.openExternal(this.href);event.preventDefault()">http://127.0.0.1:'+config.servers[editindex].port+'</a></li>'+((config.servers[editindex].localnetwork && ip) ? '<li><a href="http://'+ip+':'+config.servers[editindex].port+'" target="_blank" onclick="window.api.openExternal(this.href);event.preventDefault()">http://'+ip+':'+config.servers[editindex].port+'</a></li>' : '')+'</ul>') : '';
+        document.querySelector("#settings_server_list").innerHTML = config.servers[editindex].enabled ? ('<ul><li><a href="http://127.0.0.1:'+config.servers[editindex].port+'" target="_blank" onclick="window.api.openExternal(this.href);event.preventDefault()">http://127.0.0.1:'+config.servers[editindex].port+'</a></li>'+((config.servers[editindex].localnetwork && ip) ? '<li><a href="http://'+ip+':'+config.servers[editindex].port+'" target="_blank" onclick="window.api.openExternal(this.href);event.preventDefault()">http://'+ip+':'+config.servers[editindex].port+'</a></li>' : '')+'</ul>') : '<div style="padding-left: 10px;">Not running</div>';
         document.querySelector("#delete_server").style.display = "block";
     } else {
         document.getElementById("current_directory").innerHTML = "<span style='color: red;'>Choose a directory</span>"
@@ -64,7 +64,7 @@ function addServer(editindex) {
         document.querySelector("#regex").value = ".*\\.[\\d\\w]+$";
         document.querySelector("#rewriteto").value = "/index.html";
         current_path = false;
-        document.querySelector("#settings_server_list").innerHTML = "";
+        document.querySelector("#settings_server_list").innerHTML = '<div style="padding-left: 10px;">Not running</div>';
         portChange();
         regexchange();
         rewritetochange();

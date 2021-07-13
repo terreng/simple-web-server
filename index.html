@@ -5,7 +5,7 @@
         <link rel="stylesheet" href="style.css">
     </head>
     <body style="display: none;">
-        <div class="top_title">Web Server</div>
+        <div class="top_title">Simple Web Server</div>
         <div id="servers">
             <div id="servers_list">
                 <div class="server">
@@ -80,10 +80,10 @@
 
             <div class="checkbox_option">
                 <input type="checkbox" id="rewrite" name="rewrite" oninput="changeSPA();">
-                <label for="rewrite">Enable mod-rewrite (for SPA)</label>
+                <label for="rewrite">Use index.html instead of 404 (for SPA)</label>
             </div>
 
-            <div class="option_group" id="rewrite_options">
+            <div class="option_group" id="rewrite_options" style="display: none;">
 
                 <div class="input_option">
                     <div>Regular Expression</div>

@@ -56,11 +56,11 @@ app.on('activate', function () {
 function createWindow() {
 
 	mainWindow = new BrowserWindow({
-		width: 380,
+		width: 420,
 		height: 700,
 		frame: true,
 		skipTaskbar: true,
-		title: "Web Server",
+		title: "Simple Web Server",
 		webPreferences: {
 			//webSecurity: false,
 			scrollBounce: true,
@@ -140,12 +140,23 @@ function createServerInstance(hostname) {
 
 			send(req, parseUrl(req).pathname, options)
 				.on('error', function(error) {
-					res.writeHead(error.status || 500, { 'Content-Length': '0' });
-					res.end()
+					if (error.status == 404 && serverconfig.rewrite) {
+						send(req, "/index.html", options)
+							.on('error', function(error) {
+								res.writeHead(error.status || 500, { 'Content-Length': '0' });
+								res.end()
+							})
+							.on('headers', function(res, path, stat) {
+								if (serverconfig.cors) {
+									res.setHeader('Access-Control-Allow-Origin', '*')
+								}
+							})
+							.pipe(res)
+					} else {
+						res.writeHead(error.status || 500, { 'Content-Length': '0' });
+						res.end()
+					}
 				})
-				/*.on('directory', function() {
-					
-				})*/
 				.on('headers', function(res, path, stat) {
 					if (serverconfig.cors) {
 						res.setHeader('Access-Control-Allow-Origin', '*')
