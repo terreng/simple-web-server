@@ -2,6 +2,8 @@ const {app, BrowserWindow, ipcMain } = require('electron');
 const path = require('path');
 const fs = require('fs');
 const http = require('http');
+const parseUrl = require('parseurl');
+const send = require('send');
 
 let mainWindow;
 var config = {};
@@ -113,10 +115,31 @@ createServer(config.servers[i]);
 function createServer(serverconfig) {
 
 	const server = http.createServer(function (req, res) {
-		//console.log(req);
-		res.writeHead(200, { 'Content-Type': "text/plain; charset=utf-8", 'Content-Length': Buffer.byteLength("hello", "utf-8") });
-		res.write("hello", "utf-8");
-		res.end();
+		if (req.method == "GET" || req.method == "HEAD") {
+
+			var options = {
+				root: serverconfig.path,
+				lastModified: false
+			};
+
+			if (serverconfig.index == false) {
+				options.index = false;
+			}
+
+			send(req, parseUrl(req).pathname, options)
+				.on('error', function(error) {
+					res.writeHead(error.status || 500, { 'Content-Length': '0' });
+					res.end()
+				})
+				/*.on('directory', function() {
+					
+				})*/
+				.pipe(res)
+
+		} else {
+			res.writeHead(405, { 'Allow': 'GET, HEAD', 'Content-Length': '0' });
+			res.end()
+		}
 	});
 	server.on('error', function(err) {
 		console.error(err);
@@ -138,8 +161,6 @@ function createServer(serverconfig) {
 	  for (var key in connections)
 		connections[key].destroy();
 	};
-
-	console.log("started")
 
 	servers.push(server);
 
