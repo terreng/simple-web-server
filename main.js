@@ -44,6 +44,7 @@ function addServer(editindex) {
             document.querySelector("#rewrite_options").classList.add("disabled");
         }
         document.querySelector("#port").value = config.servers[editindex].port;
+        portChange();
         document.querySelector("#regex").value = config.servers[editindex].regex;
         document.querySelector("#rewriteto").value = config.servers[editindex].rewriteto;
         document.querySelector("#settings_server_list").innerHTML = '<ul><li><a href="http://127.0.0.1:'+config.servers[editindex].port+'" target="_blank" onclick="window.api.openExternal(this.href);event.preventDefault()">http://127.0.0.1:'+config.servers[editindex].port+'</a></li></ul>';
@@ -59,7 +60,7 @@ function addServer(editindex) {
         document.querySelector("#rewriteto").value = "/index.html";
         current_path = false;
         document.querySelector("#settings_server_list").innerHTML = "";
-        document.querySelector("#port").parentElement.nextElementSibling.style.display = "none";
+        portChange();
         regexchange();
         rewritetochange();
         document.querySelector("#delete_server").style.display = "none";
@@ -73,7 +74,7 @@ function cancelAddServer() {
 }
 
 function submitAddServer() {
-    if (document.querySelector("#port").value >= 1 && document.querySelector("#port").value <= 65535 && current_path && (!document.querySelector("#rewrite").checked || (validateRegex(document.querySelector("#regex").value) && validatePath(document.querySelector("#rewriteto").value)))) {
+    if (Number(document.querySelector("#port").value) >= 1 && Number(document.querySelector("#port").value) <= 65535 && current_path && (!document.querySelector("#rewrite").checked || (validateRegex(document.querySelector("#regex").value) && validatePath(document.querySelector("#rewriteto").value))) && (config.servers || []).map(function(a) {return a.port}).indexOf(Number(document.querySelector("#port").value)) == -1 || (activeeditindex !== false && (config.servers || []).map(function(a) {return a.port}).indexOf(Number(document.querySelector("#port").value)) == activeeditindex)) {
         if (!config.servers) {
             config.servers = [];
         }
@@ -81,7 +82,7 @@ function submitAddServer() {
             "path": current_path,
             "localnetwork": document.querySelector("#localnetwork").checked,
             "index": document.querySelector("#index").checked,
-            "port": document.querySelector("#port").value,
+            "port": Number(document.querySelector("#port").value),
             "rewrite": document.querySelector("#rewrite").checked,
             "regex": document.querySelector("#regex").value,
             "rewriteto": document.querySelector("#rewriteto").value
@@ -107,10 +108,15 @@ function deleteServer() {
 }
 
 function portChange() {
-    if (document.querySelector("#port").value >= 1 && document.querySelector("#port").value <= 65535) {
+    if (Number(document.querySelector("#port").value) >= 1 && Number(document.querySelector("#port").value) <= 65535) {
         document.querySelector("#port").parentElement.nextElementSibling.style.display = "none";
     } else {
         document.querySelector("#port").parentElement.nextElementSibling.style.display = "block";
+    }
+    if ((config.servers || []).map(function(a) {return a.port}).indexOf(Number(document.querySelector("#port").value)) == -1 || (activeeditindex !== false && (config.servers || []).map(function(a) {return a.port}).indexOf(Number(document.querySelector("#port").value)) == activeeditindex)) {
+        document.querySelector("#port").parentElement.nextElementSibling.nextElementSibling.style.display = "none";
+    } else {
+        document.querySelector("#port").parentElement.nextElementSibling.nextElementSibling.style.display = "block";
     }
 }
 

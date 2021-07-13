@@ -39,7 +39,7 @@ app.on('activate', function () {
 function createWindow() {
 
 	mainWindow = new BrowserWindow({
-		width: 400,
+		width: 380,
 		height: 700,
 		frame: true,
 		skipTaskbar: true,
