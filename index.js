@@ -4,9 +4,14 @@ const fs = require('fs');
 const http = require('http');
 const parseUrl = require('parseurl');
 const send = require('send');
+const ip = require('ip');
 
 let mainWindow;
 var config = {};
+var session_ip = ip.address();
+if (session_ip == "127.0.0.1") {
+	session_ip = false;
+}
 
 app.on('ready', function() {
 	try {
@@ -72,7 +77,7 @@ function createWindow() {
 	//mainWindow.webContents.openDevTools();
 	
 	mainWindow.webContents.on('did-finish-load', function() {
-		mainWindow.webContents.send('message', config);
+		mainWindow.webContents.send('message', {"config": config, ip: session_ip});
 	});
 
 	mainWindow.on('closed', function () {
@@ -114,6 +119,13 @@ createServer(config.servers[i]);
 
 function createServer(serverconfig) {
 
+createServerInstance('localhost');
+if (session_ip && serverconfig.localnetwork) {
+	createServerInstance(session_ip);
+}
+
+function createServerInstance(hostname) {
+
 	const server = http.createServer(function (req, res) {
 		if (req.method == "GET" || req.method == "HEAD") {
 
@@ -149,7 +161,7 @@ function createServer(serverconfig) {
 	server.on('error', function(err) {
 		console.error(err);
 	});
-	server.listen(serverconfig.port, 'localhost');
+	server.listen(serverconfig.port, hostname);
 
 	var connections = {}
 
@@ -168,6 +180,8 @@ function createServer(serverconfig) {
 	};
 
 	servers.push(server);
+
+}
 
 }
 
