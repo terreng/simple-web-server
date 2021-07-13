@@ -35,6 +35,8 @@
             <div class="button_row">
                 <div class="button secondary" onclick="window.api.quit()">Quit</div>
             </div>
+
+            <div style="padding: 10px;padding-top:20px;">Version 1.0.0<br>Open source, MIT License<br><a href="https://github.com/terreng/web-server" target="_blank" onclick="window.api.openExternal(this.href);event.preventDefault()">https://github.com/terreng/web-server</a></div>
         </div>
         <div id="server_settings" style="display: none;">
             <div class="button_row">
@@ -107,7 +109,7 @@
 
             <div class="button_row">
                 <div class="button secondary" onclick="cancelAddServer()">Cancel</div>
-                <div class="button" onclick="submitAddServer()">Submit</div>
+                <div class="button" onclick="submitAddServer()" id="submit_button">Submit</div>
             </div>
         </div>
         <script src="main.js"></script>

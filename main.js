@@ -53,6 +53,7 @@ function addServer(editindex) {
         document.querySelector("#rewriteto").value = config.servers[editindex].rewriteto;
         document.querySelector("#settings_server_list").innerHTML = config.servers[editindex].enabled ? ('<ul><li><a href="http://127.0.0.1:'+config.servers[editindex].port+'" target="_blank" onclick="window.api.openExternal(this.href);event.preventDefault()">http://127.0.0.1:'+config.servers[editindex].port+'</a></li>'+((config.servers[editindex].localnetwork && ip) ? '<li><a href="http://'+ip+':'+config.servers[editindex].port+'" target="_blank" onclick="window.api.openExternal(this.href);event.preventDefault()">http://'+ip+':'+config.servers[editindex].port+'</a></li>' : '')+'</ul>') : '<div style="padding-left: 10px;">Not running</div>';
         document.querySelector("#delete_server").style.display = "block";
+        document.querySelector("#submit_button").innerText = "Save Changes";
     } else {
         document.getElementById("current_directory").innerHTML = "<span style='color: red;'>Choose a directory</span>"
         document.querySelector("#localnetwork").checked = false;
@@ -69,6 +70,7 @@ function addServer(editindex) {
         regexchange();
         rewritetochange();
         document.querySelector("#delete_server").style.display = "none";
+        document.querySelector("#submit_button").innerText = "Create Server";
     }
     changeSPA();
 }
