@@ -37,6 +37,7 @@ function addServer(editindex) {
         current_path = config.servers[editindex].path;
         updateCurrentPath();
         document.querySelector("#localnetwork").checked = config.servers[editindex].localnetwork;
+        document.querySelector("#cors").checked = config.servers[editindex].cors;
         document.querySelector("#index").checked = config.servers[editindex].index;
         document.querySelector("#rewrite").checked = config.servers[editindex].rewrite;
         if (config.servers[editindex].rewrite) {
@@ -53,6 +54,7 @@ function addServer(editindex) {
     } else {
         document.getElementById("current_directory").innerHTML = "<span style='color: red;'>Choose a directory</span>"
         document.querySelector("#localnetwork").checked = false;
+        document.querySelector("#cors").checked = false;
         document.querySelector("#index").checked = true;
         document.querySelector("#rewrite").checked = false;
         document.querySelector("#rewrite_options").classList.add("disabled");
@@ -85,6 +87,7 @@ function submitAddServer() {
             "localnetwork": document.querySelector("#localnetwork").checked,
             "index": document.querySelector("#index").checked,
             "port": Number(document.querySelector("#port").value),
+            "cors": document.querySelector("#cors").checked,
             "rewrite": document.querySelector("#rewrite").checked,
             "regex": document.querySelector("#regex").value,
             "rewriteto": document.querySelector("#rewriteto").value

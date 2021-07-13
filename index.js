@@ -134,6 +134,11 @@ function createServer(serverconfig) {
 				/*.on('directory', function() {
 					
 				})*/
+				.on('headers', function(res, path, stat) {
+					if (serverconfig.cors) {
+						res.setHeader('Access-Control-Allow-Origin', '*')
+					}
+				})
 				.pipe(res)
 
 		} else {
