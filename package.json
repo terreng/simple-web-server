@@ -7,5 +7,8 @@
   },
   "devDependencies": {
     "electron": "^13.1.6"
+  },
+  "dependencies": {
+    "http": "^0.0.1-security"
   }
 }
