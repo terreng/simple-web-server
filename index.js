@@ -13,6 +13,16 @@ if (session_ip == "127.0.0.1") {
 	session_ip = false;
 }
 
+if (!app.requestSingleInstanceLock()) {
+	app.quit()
+}
+
+app.on('second-instance', function (event, commandLine, workingDirectory) {
+    if (mainWindow) {
+		mainWindow.show();
+    }
+})
+
 app.on('ready', function() {
 	try {
 		config = JSON.parse(fs.readFileSync(path.join(app.getPath('userData'), "config.json")));
