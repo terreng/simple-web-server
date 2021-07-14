@@ -9,6 +9,8 @@ Features:
 - Supports Single Page Applications
 - You can keep it running in the background
 
+<img width="280" alt="Screen Shot 2021-07-13 at 8 21 25 PM" src="https://user-images.githubusercontent.com/11605395/125558961-d7d99d4e-8db0-44eb-832f-aba540e24c22.png">
+
 ## Intallation
 
 Download the archive for your platform here: https://github.com/terreng/web-server/releases
