@@ -58,6 +58,9 @@ body {
 
 .server > div:nth-child(2) > div:nth-child(1) {
     padding-bottom: 4px;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
 }
 .server > div:nth-child(2) > div:nth-child(2) {
     color: gray;

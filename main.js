@@ -13,7 +13,7 @@ function renderServerList() {
 var pendhtml = "";
 if (config.servers) {
 for (var i = 0; i < config.servers.length; i++) {
-    pendhtml += '<div class="server '+(config.servers[i].enabled ? "enabled" : "")+'"><div><input type="checkbox" '+(config.servers[i].enabled ? "checked" : "")+' oninput="checkboxChanged()"></div><div onclick="addServer('+i+')"><div>'+htmlescape(config.servers[i].path.split("/")[config.servers[i].path.split("/").length-1])+'</div><div>:'+String(config.servers[i].port)+'</div></div></div>'
+    pendhtml += '<div class="server '+(config.servers[i].enabled ? "enabled" : "")+'"><div><input type="checkbox" '+(config.servers[i].enabled ? "checked" : "")+' oninput="checkboxChanged()"></div><div onclick="addServer('+i+')"><div>'+htmlescape(config.servers[i].path.split(/[\/\\]/)[config.servers[i].path.split(/[\/\\]/).length-1])+'</div><div>:'+String(config.servers[i].port)+'</div></div></div>'
 }
 }
 document.getElementById("servers_list").innerHTML = pendhtml;
