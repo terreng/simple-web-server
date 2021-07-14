@@ -34,7 +34,10 @@ app.on('window-all-closed', function () {
 	}
 })
 
+var isQuitting = false;
+
 ipcMain.on('quit', function(event) {
+	isQuitting = true;
 	app.quit()
 })
 
@@ -79,6 +82,13 @@ function createWindow() {
 	
 	mainWindow.webContents.on('did-finish-load', function() {
 		mainWindow.webContents.send('message', {"config": config, ip: session_ip});
+	});
+
+	mainWindow.on('close', function (event) {
+		if (config.background && process.platform == "win32" && !isQuitting) {
+			mainWindow.hide();
+			event.preventDefault();
+		}
 	});
 
 	mainWindow.on('closed', function () {
