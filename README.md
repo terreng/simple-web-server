@@ -27,4 +27,5 @@ Make sure you have git installed.
 Run `npm install`.
 
 To run: `npm start`
+
 To package it up: `npm run make`
