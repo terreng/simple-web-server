@@ -59,7 +59,7 @@ function createWindow() {
 		width: 420,
 		height: 700,
 		frame: true,
-		skipTaskbar: true,
+		//skipTaskbar: true,
 		title: "Simple Web Server",
 		webPreferences: {
 			//webSecurity: false,
