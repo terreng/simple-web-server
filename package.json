@@ -1,5 +1,6 @@
 {
   "name": "web-server",
+  "productName": "Simple Web Server",
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
@@ -24,7 +25,9 @@
   },
   "config": {
     "forge": {
-      "packagerConfig": {},
+      "packagerConfig": {
+        "icon": "images/icon"
+      },
       "makers": [
         {
           "name": "@electron-forge/maker-squirrel",
