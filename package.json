@@ -3,6 +3,8 @@
   "productName": "Simple Web Server",
   "version": "1.0.0",
   "main": "index.js",
+  "description": "Simple Web Server",
+  "author": "terreng",
   "scripts": {
     "start": "electron-forge start",
     "package": "electron-forge package",
