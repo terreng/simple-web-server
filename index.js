@@ -119,9 +119,11 @@ createServer(config.servers[i]);
 
 function createServer(serverconfig) {
 
-createServerInstance('localhost');
-if (session_ip && serverconfig.localnetwork) {
-	createServerInstance(session_ip);
+if (serverconfig.enabled) {
+	createServerInstance('localhost');
+	if (session_ip && serverconfig.localnetwork) {
+		createServerInstance(session_ip);
+	}
 }
 
 function createServerInstance(hostname) {
