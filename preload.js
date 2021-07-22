@@ -1,5 +1,9 @@
 const { contextBridge, ipcRenderer, shell, app } = require('electron');
 
+ipcRenderer.on('console', function(event, info) {
+	console[info.method].apply(console, info.args)
+});
+
 contextBridge.exposeInMainWorld('api', {
     initipc: function(ipcMessageEvent) {
         ipcRenderer.on('message', ipcMessageEvent);

@@ -1,4 +1,4 @@
-const {app, BrowserWindow, ipcMain } = require('electron');
+const {app, BrowserWindow, ipcMain, Menu, Tray } = require('electron');
 const path = require('path');
 const fs = require('fs');
 const http = require('http');
@@ -6,11 +6,26 @@ const parseUrl = require('parseurl');
 const send = require('send');
 const ip = require('ip');
 const _ = require('underscore')
+let tray = null
 global.atob = require("atob");
 global.Blob = require('node-blob');
 WSC = { }
-
-
+/**
+// not ready yet
+app.whenReady().then(() => {
+    tray = new Tray('images/icon.ico')
+    const contextMenu = Menu.buildFromTemplate([
+      { label: 'Show', type: 'button' }
+    ])
+    tray.setToolTip('Simple Web Server')
+    tray.setContextMenu(contextMenu)
+    tray.on('click', function(e){
+        if (mainWindow) {
+            mainWindow.show();
+        }
+    })
+})
+*/
 let mainWindow;
 var config = {};
 var session_ip = ip.address();
@@ -40,6 +55,7 @@ app.on('ready', function() {
 
 app.on('window-all-closed', function () {
     if (config.background !== true) {
+        //tray.destroy()
         app.quit()
     } else {
         //Stay running even when all windows closed
@@ -112,87 +128,106 @@ function createWindow() {
 
 }
 
+console.log = function() {
+    var args = Array.prototype.slice.call(arguments);
+    if (mainWindow) {
+        mainWindow.webContents.send('console', {args: args, method: 'log'});
+    }
+}
+console.warn = function() {
+    var args = Array.prototype.slice.call(arguments);
+    if (mainWindow) {
+        mainWindow.webContents.send('console', {args: args, method: 'warn'});
+    }
+}
+console.error = function() {
+    var args = Array.prototype.slice.call(arguments);
+    if (mainWindow) {
+        mainWindow.webContents.send('console', {args: args, method: 'error'});
+    }
+}
+
 var servers = [];
 
 function startServers() {
 
-if (servers.length > 0) {
-var closed_servers = 0;
-for (var i = 0; i < servers.length; i++) {
-    servers[i].close(function(err) {
-        checkServersClosed()
-    });
-    servers[i].destroy();
-}
-function checkServersClosed() {
-    closed_servers++;
-    if (closed_servers == servers.length) {
-        servers = [];
+    if (servers.length > 0) {
+    var closed_servers = 0;
+    for (var i = 0; i < servers.length; i++) {
+        servers[i].close(function(err) {
+            checkServersClosed()
+        });
+        servers[i].destroy();
+    }
+    function checkServersClosed() {
+        closed_servers++;
+        if (closed_servers == servers.length) {
+            servers = [];
+            createServers()
+        }
+    }
+    } else {
         createServers()
     }
-}
-} else {
-    createServers()
-}
 
-function createServers() {
+    function createServers() {
 
-for (var i = 0; i < (config.servers || []).length; i++) {
+        for (var i = 0; i < (config.servers || []).length; i++) {
 
-createServer(config.servers[i]);
+        createServer(config.servers[i]);
 
-}
+        }
 
-function createServer(serverconfig) {
+        function createServer(serverconfig) {
 
-if (serverconfig.enabled) {
-    createServerInstance(serverconfig.localnetwork ? '0.0.0.0' : '127.0.0.1');
-}
-
-function createServerInstance(hostname) {
-
-    const server = http.createServer(function (req, res) {
-        WSC.transformRequest(req, res, serverconfig, function(requestApp) {
-            if (['GET','HEAD','PUT','POST','DELETE','OPTIONS'].includes(requestApp.request.method)) {
-                var FileSystem = new WSC.FileSystem(serverconfig.path)
-                var handler = new WSC.DirectoryEntryHandler(FileSystem, requestApp.request, requestApp.app, req, res)
-                handler.tryHandle()
-            } else {
-                res.statusCode = 501
-                res.statusMessage = 'Not Implemented'
-                res.end()
+            if (serverconfig.enabled) {
+                createServerInstance(serverconfig.localnetwork ? '0.0.0.0' : '127.0.0.1');
             }
-        })
-    });
-    server.on('error', function(err) {
-        console.error(err);
-    });
-    console.log(hostname)
-    server.listen(serverconfig.port, hostname);
 
-    var connections = {}
+            function createServerInstance(hostname) {
 
-    server.on('connection', function(conn) {
-      var key = conn.remoteAddress + ':' + conn.remotePort;
-      connections[key] = conn;
-      conn.on('close', function() {
-        delete connections[key];
-      });
-    });
-  
-    server.destroy = function(cb) {
-      server.close(cb);
-      for (var key in connections)
-        connections[key].destroy();
-    };
+                const server = http.createServer(function (req, res) {
+                    WSC.transformRequest(req, res, serverconfig, function(requestApp) {
+                        if (['GET','HEAD','PUT','POST','DELETE','OPTIONS'].includes(requestApp.request.method)) {
+                            var FileSystem = new WSC.FileSystem(serverconfig.path)
+                            var handler = new WSC.DirectoryEntryHandler(FileSystem, requestApp.request, requestApp.app, req, res)
+                            handler.tryHandle()
+                        } else {
+                            res.statusCode = 501
+                            res.statusMessage = 'Not Implemented'
+                            res.end()
+                        }
+                    })
+                });
+                server.on('error', function(err) {
+                    console.error(err);
+                });
+                server.listen(serverconfig.port, hostname);
+                console.log('Listening on http://' + hostname + ':' + serverconfig.port)
 
-    servers.push(server);
+                var connections = {}
 
-}
+                server.on('connection', function(conn) {
+                  var key = conn.remoteAddress + ':' + conn.remotePort;
+                  connections[key] = conn;
+                  conn.on('close', function() {
+                    delete connections[key];
+                  });
+                });
+              
+                server.destroy = function(cb) {
+                  server.close(cb);
+                  for (var key in connections)
+                    connections[key].destroy();
+                };
 
-}
+                servers.push(server);
 
-}
+            }
+
+        }
+
+    }
 
 }
 
