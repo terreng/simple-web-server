@@ -128,24 +128,31 @@ function createWindow() {
 
 }
 
-console.log = function() {
-    var args = Array.prototype.slice.call(arguments);
-    if (mainWindow) {
-        mainWindow.webContents.send('console', {args: args, method: 'log'});
-    }
-}
-console.warn = function() {
-    var args = Array.prototype.slice.call(arguments);
-    if (mainWindow) {
-        mainWindow.webContents.send('console', {args: args, method: 'warn'});
-    }
-}
-console.error = function() {
-    var args = Array.prototype.slice.call(arguments);
-    if (mainWindow) {
-        mainWindow.webContents.send('console', {args: args, method: 'error'});
-    }
-}
+console = function(old_console) {
+	return {
+		log: function() {
+			var args = Array.prototype.slice.call(arguments);
+			old_console.log.apply(old_console, args);
+			if (mainWindow) {
+				mainWindow.webContents.send('console', {args: args, method: 'log'});
+			}
+		},
+		warn: function() {
+			var args = Array.prototype.slice.call(arguments);
+			old_console.warn.apply(old_console, args);
+			if (mainWindow) {
+				mainWindow.webContents.send('console', {args: args, method: 'warn'});
+			}
+		},
+		error: function() {
+			var args = Array.prototype.slice.call(arguments);
+			old_console.error.apply(old_console, args);
+			if (mainWindow) {
+				mainWindow.webContents.send('console', {args: args, method: 'error'});
+			}
+		}
+	}
+}(console);
 
 var servers = [];
 
@@ -181,10 +188,8 @@ function startServers() {
         function createServer(serverconfig) {
 
             if (serverconfig.enabled) {
-                createServerInstance(serverconfig.localnetwork ? '0.0.0.0' : '127.0.0.1');
-            }
 
-            function createServerInstance(hostname) {
+				var hostname = serverconfig.localnetwork ? '0.0.0.0' : '127.0.0.1';
 
                 const server = http.createServer(function (req, res) {
                     WSC.transformRequest(req, res, serverconfig, function(requestApp) {
