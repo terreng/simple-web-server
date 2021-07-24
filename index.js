@@ -1,21 +1,60 @@
 const {app, BrowserWindow, ipcMain, Menu, Tray } = require('electron');
+const { networkInterfaces } = require('os');
 const path = require('path');
 const fs = require('fs');
 const http = require('http');
 const parseUrl = require('parseurl');
 const send = require('send');
 const ip = require('ip');
-const _ = require('underscore')
+const _ = require('underscore');
 let tray = null
 global.atob = require("atob");
 global.Blob = require('node-blob');
 WSC = { }
-/**
-// not ready yet
+
+console.log = function() {
+    var args = Array.prototype.slice.call(arguments);
+    if (mainWindow) {
+        mainWindow.webContents.send('console', {args: args, method: 'log'});
+    }
+}
+console.warn = function() {
+    var args = Array.prototype.slice.call(arguments);
+    if (mainWindow) {
+        mainWindow.webContents.send('console', {args: args, method: 'warn'});
+    }
+}
+console.error = function() {
+    var args = Array.prototype.slice.call(arguments);
+    if (mainWindow) {
+        mainWindow.webContents.send('console', {args: args, method: 'error'});
+    }
+}
+
+const quit = function(event) {
+	isQuitting = true;
+	tray.destroy()
+    app.quit()
+};
+// Please use new get ips function. This will return all interfaces
+function getIPs() {
+    let ifaces = networkInterfaces();
+    var ips = [ ]
+	for(var k in ifaces) {
+		for (var i=0; i<ifaces[k].length; i++) {
+			if (! (ifaces[k][i].address.startsWith('fe80:') || ifaces[k][i].address.startsWith('::'))) {
+				ips.push(ifaces[k][i].address)
+			}
+		}
+	}
+    return ips
+}
+
 app.whenReady().then(() => {
     tray = new Tray('images/icon.ico')
     const contextMenu = Menu.buildFromTemplate([
-      { label: 'Show', type: 'button' }
+      { label: 'Show', click:  function(){ if (mainWindow) {mainWindow.show()} } },
+	  { label: 'Exit', click:  function(){ quit() } }
     ])
     tray.setToolTip('Simple Web Server')
     tray.setContextMenu(contextMenu)
@@ -25,7 +64,7 @@ app.whenReady().then(() => {
         }
     })
 })
-*/
+
 let mainWindow;
 var config = {};
 var session_ip = ip.address();
@@ -55,7 +94,7 @@ app.on('ready', function() {
 
 app.on('window-all-closed', function () {
     if (config.background !== true) {
-        //tray.destroy()
+        tray.destroy()
         app.quit()
     } else {
         //Stay running even when all windows closed
@@ -67,10 +106,7 @@ app.on('window-all-closed', function () {
 
 var isQuitting = false;
 
-ipcMain.on('quit', function(event) {
-    isQuitting = true;
-    app.quit()
-})
+ipcMain.on('quit', quit)
 
 ipcMain.on('saveconfig', function(event, arg1) {
     fs.writeFileSync(path.join(app.getPath('userData'), "config.json"), JSON.stringify(arg1, null, 2), "utf8");
