@@ -69,7 +69,7 @@ function getIPs() {
     var ips = [ ]
 	for(var k in ifaces) {
 		for (var i=0; i<ifaces[k].length; i++) {
-			if (! (ifaces[k][i].address.startsWith('fe80:') || ifaces[k][i].address.startsWith('::'))) {
+			if (! (ifaces[k][i].address.startsWith('fe80:') || ifaces[k][i].address.startsWith('::') || ifaces[k][i].address.startsWith('127.0'))) {
 				ips.push(ifaces[k][i].address)
 			}
 		}
