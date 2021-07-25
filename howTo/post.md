@@ -102,7 +102,7 @@ This function will set the content type to respond with, you could also use the 
 This function will save a file
 path: the path of the file
 If the path contains a non existent folder, the folder will be created
-data: string/arrayBuffer of the file. DO NOT SEND OTHER TYPES OF DATA - THIS COULD BREAK THE APP (Just refresh it)
+data: string/Buffer of the file. DO NOT SEND OTHER TYPES OF DATA - THIS COULD BREAK THE APP (Just refresh it)
 allowReplaceFile: if file exists and you want to replace the file, set this to true
 callback: function will be excecuted to tell you if there was an error or it will callback the file
 
@@ -152,7 +152,13 @@ res.end() // VERY IMPORTANT (as always)
 
 `req.body`: Buffer
 This is an buffer of the request body, if there is no request body, the value will be null.
-Use Buffer.text() to translate to text
+Use `toString()` to translate to text
+
+Example:
+```
+console.log(req.body.toString())
+```
+
 
 `req.headers`: json string
 This contains all of the headers that the user sent when making the http request

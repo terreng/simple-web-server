@@ -32,7 +32,6 @@ _.extend(BaseHandler.prototype, {
             this.finish()
             return
         } else {
-            // We set the request.path to a .html file to override the mimetype of the requested file
             this.setHeader('content-type','text/html; charset=utf-8')
             if (this.app.opts['optCustom'+httpCode]) {
                 this.fs.getByPath(this.app.opts['optCustom'+httpCode+'location'], (file) => {
@@ -93,6 +92,7 @@ _.extend(BaseHandler.prototype, {
         return this.request.headers[k] || defaultvalue
     },
     setHeader: function(k,v) {
+		this.responseHeaders[k] = v
         this.res.setHeader(k, v)
     },
     set_status: function(code) {
@@ -157,11 +157,12 @@ _.extend(BaseHandler.prototype, {
     },
     write: function(data, code, opt_finish) {
         if (typeof data == "string") {
-            var dataEncoded = new TextEncoder('utf-8').encode(data).buffer
+            var data = Buffer.from(data)
         }
-        console.assert(dataEncoded.byteLength !== undefined)
+		var byteLength = data.byteLength
+        console.assert(byteLength !== undefined)
         if (code === undefined) { code = 200 }
-        this.responseLength += dataEncoded.byteLength
+        this.responseLength += byteLength
         if (! this.headersWritten && ! this.writingHeaders) {
             this.writeHeaders(code)
         }
