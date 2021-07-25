@@ -16,7 +16,7 @@ console = function(old_console) {
 				try { // Sending large values may not work... How can we fix this?
 					mainWindow.webContents.send('console', {args: args, method: 'log'});
 				} catch(e) {
-					console.error('failed to send log')
+					old_console.error('failed to send log')
 				}
 			}
 		},
@@ -27,7 +27,7 @@ console = function(old_console) {
 				try {
 					mainWindow.webContents.send('console', {args: args, method: 'warn'});
 				} catch(e) {
-					console.error('failed to send log')
+					old_console.error('failed to send log')
 				}
 			}
 		},
@@ -38,7 +38,7 @@ console = function(old_console) {
 				try {
 					mainWindow.webContents.send('console', {args: args, method: 'error'});
 				} catch(e) {
-					// Don't want to cause a loop
+					old_console.error('failed to send log')
 				}
 			}
 		},
@@ -49,7 +49,7 @@ console = function(old_console) {
 				try {
 					mainWindow.webContents.send('console', {args: args, method: 'assert'});
 				} catch(e) {
-					console.error('failed to send log')
+					old_console.error('failed to send log')
 				}
 			}
 		}
