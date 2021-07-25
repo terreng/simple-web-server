@@ -83,7 +83,7 @@ Example:
     if (file.error) {
         console.log('error')
     } else if (file.isFile) {
-        file.file(function(text) 
+        file.file(file.path, function(text) // you MUST specify file.path as the first argument!!
 		    var filetext = text // file.file will read the file as text. To render the file, you can use the renderFileContents() function
         })
     } else if (file.isDirectory) {
@@ -150,9 +150,9 @@ res.end() // VERY IMPORTANT (as always)
 
 <h1>req Commands</h1>
 
-`req.body`: ArrayBuffer
-This is an array buffer of the request body, if there is no request body, the value will be null.
-You must use a utf-8 text decoder to read the array (as text)
+`req.body`: Buffer
+This is an buffer of the request body, if there is no request body, the value will be null.
+Use Buffer.text() to translate to text
 
 `req.headers`: json string
 This contains all of the headers that the user sent when making the http request

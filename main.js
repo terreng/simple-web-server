@@ -51,7 +51,18 @@ function addServer(editindex) {
         portChange();
         document.querySelector("#regex").value = config.servers[editindex].regex;
         document.querySelector("#rewriteto").value = config.servers[editindex].rewriteto;
-        document.querySelector("#settings_server_list").innerHTML = config.servers[editindex].enabled ? ('<ul><li><a href="http://127.0.0.1:'+config.servers[editindex].port+'" target="_blank" onclick="window.api.openExternal(this.href);event.preventDefault()">http://127.0.0.1:'+config.servers[editindex].port+'</a></li>'+((config.servers[editindex].localnetwork && ip) ? '<li><a href="http://'+ip+':'+config.servers[editindex].port+'" target="_blank" onclick="window.api.openExternal(this.href);event.preventDefault()">http://'+ip+':'+config.servers[editindex].port+'</a></li>' : '')+'</ul>') : '<div style="padding-left: 10px;">Not running</div>';
+		var urlList = ''
+		// Will make it easier when https is enabled
+		var prot = 'http'
+		var port = config.servers[editindex].port
+		if (ip.length > 0 && config.servers[editindex].localnetwork) {
+			for (var i=0; i<ip.length; i++) {
+				if (ip[i] != '127.0.0.1') {
+					urlList += '<li><a href="'+prot+'://'+ip[i]+':'+port+'" target="_blank" onclick="window.api.openExternal(this.href);event.preventDefault()">'+prot+'://'+ip[i]+':'+port+'</a></li>'
+				}
+			}
+		}
+        document.querySelector("#settings_server_list").innerHTML = config.servers[editindex].enabled ? ('<ul><li><a href="'+prot+'://127.0.0.1:'+port+'" target="_blank" onclick="window.api.openExternal(this.href);event.preventDefault()">'+prot+'://127.0.0.1:'+port+'</a></li>'+urlList+'</ul>') : '<div style="padding-left: 10px;">Not running</div>';
         document.querySelector("#delete_server").style.display = "block";
         document.querySelector("#submit_button").innerText = "Save Changes";
     } else {

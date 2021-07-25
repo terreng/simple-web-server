@@ -3,7 +3,6 @@ const { networkInterfaces } = require('os');
 const path = require('path');
 const fs = require('fs');
 const http = require('http');
-const ip = require('ip');
 WSC = require("./WSC.js");
 
 let tray = null
@@ -14,28 +13,44 @@ console = function(old_console) {
 			var args = Array.prototype.slice.call(arguments);
 			old_console.log.apply(old_console, args);
 			if (mainWindow) {
-				mainWindow.webContents.send('console', {args: args, method: 'log'});
+				try { // Sending large values may not work... How can we fix this?
+					mainWindow.webContents.send('console', {args: args, method: 'log'});
+				} catch(e) {
+					console.error('failed to send log')
+				}
 			}
 		},
 		warn: function() {
 			var args = Array.prototype.slice.call(arguments);
 			old_console.warn.apply(old_console, args);
 			if (mainWindow) {
-				mainWindow.webContents.send('console', {args: args, method: 'warn'});
+				try {
+					mainWindow.webContents.send('console', {args: args, method: 'warn'});
+				} catch(e) {
+					console.error('failed to send log')
+				}
 			}
 		},
 		error: function() {
 			var args = Array.prototype.slice.call(arguments);
 			old_console.error.apply(old_console, args);
 			if (mainWindow) {
-				mainWindow.webContents.send('console', {args: args, method: 'error'});
+				try {
+					mainWindow.webContents.send('console', {args: args, method: 'error'});
+				} catch(e) {
+					// Don't want to cause a loop
+				}
 			}
 		},
 		assert: function() {
 			var args = Array.prototype.slice.call(arguments);
 			old_console.assert.apply(old_console, args);
 			if (mainWindow) {
-				mainWindow.webContents.send('console', {args: args, method: 'assert'});
+				try {
+					mainWindow.webContents.send('console', {args: args, method: 'assert'});
+				} catch(e) {
+					console.error('failed to send log')
+				}
 			}
 		}
 	}
@@ -46,7 +61,7 @@ const quit = function(event) {
 	tray.destroy()
     app.quit()
 };
-// Please use new get ips function. This will return all interfaces
+
 function getIPs() {
     let ifaces = networkInterfaces();
     var ips = [ ]
@@ -77,10 +92,6 @@ app.whenReady().then(() => {
 
 let mainWindow;
 var config = {};
-var session_ip = ip.address();
-if (session_ip == "127.0.0.1") {
-    session_ip = false;
-}
 
 if (!app.requestSingleInstanceLock()) {
     app.quit()
@@ -158,7 +169,7 @@ function createWindow() {
     //mainWindow.webContents.openDevTools();
     
     mainWindow.webContents.on('did-finish-load', function() {
-        mainWindow.webContents.send('message', {"config": config, ip: session_ip});
+        mainWindow.webContents.send('message', {"config": config, ip: getIPs()});
     });
 
     mainWindow.on('close', function (event) {
@@ -198,19 +209,12 @@ function startServers() {
     }
 
     function createServers() {
-
         for (var i = 0; i < (config.servers || []).length; i++) {
-
-        createServer(config.servers[i]);
-
+			createServer(config.servers[i]);
         }
-
         function createServer(serverconfig) {
-
             if (serverconfig.enabled) {
-
 				var hostname = serverconfig.localnetwork ? '0.0.0.0' : '127.0.0.1';
-
                 const server = http.createServer(function (req, res) {
                     WSC.transformRequest(req, res, serverconfig, function(requestApp) {
                         if (['GET','HEAD','PUT','POST','DELETE','OPTIONS'].includes(requestApp.request.method)) {
@@ -247,11 +251,7 @@ function startServers() {
                 };
 
                 servers.push(server);
-
             }
-
         }
-
     }
-
 }
