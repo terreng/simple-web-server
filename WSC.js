@@ -1842,7 +1842,7 @@ _.extend(DirectoryEntryHandler.prototype, {
     },
     get: function() {
         this.setHeader('accept-ranges','bytes')
-        this.setHeader('connection','keep-alive') // this causes mime problems
+        this.setHeader('connection','keep-alive')
         if (! this.fs) {
             this.write("error: need to select a directory to serve",500)
             return
