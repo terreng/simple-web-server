@@ -5,7 +5,7 @@ const fs = require('fs');
 const http = require('http');
 WSC = require("./WSC.js");
 
-let tray //There seem to be problems with the tray discarding. Could you take a look at it?
+//let tray //There seem to be problems with the tray discarding. Could you take a look at it?
 
 console = function(old_console) {
 	return {
@@ -58,9 +58,9 @@ console = function(old_console) {
 
 const quit = function(event) {
 	isQuitting = true;
-	if (tray) {
-		tray.destroy()
-	}
+	//if (tray) {
+	//	tray.destroy()
+	//}
     app.quit()
 };
 
@@ -91,6 +91,7 @@ app.on('second-instance', function (event, commandLine, workingDirectory) {
 })
 
 app.on('ready', function() {
+	/**
 	tray = new Tray('images/icon.ico')
     const contextMenu = Menu.buildFromTemplate([
       { label: 'Show', click:  function(){ if (mainWindow) {mainWindow.show()} } },
@@ -103,6 +104,7 @@ app.on('ready', function() {
             mainWindow.show();
         }
     })
+	*/
     try {
         config = JSON.parse(fs.readFileSync(path.join(app.getPath('userData'), "config.json")));
     } catch(error) {
@@ -114,9 +116,9 @@ app.on('ready', function() {
 
 app.on('window-all-closed', function () {
     if (config.background !== true) {
-		if (tray) {
-			tray.destroy()
-		}
+		//if (tray) {
+		//	tray.destroy()
+		//}
         app.quit()
     } else {
         //Stay running even when all windows closed
