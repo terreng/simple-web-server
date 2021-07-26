@@ -181,4 +181,19 @@ This contains the requested file. (Will NOT end with / if is directory)
 
 <h1>Another Useful Tool</h1>
 
-you can use the nodejs `http.get` command
+`httpRequest`: constructor
+This will open a http request as if you opened a new tab and went to the website
+
+`var request = new httpRequest`
+
+To set a header: `request.setRequestHeader(headerType, headerValue)`
+
+To open the request: `request.open("GET", url)`
+
+Set the onload function: `request.onload = function(e) { }`
+
+Send the request: `request.send()`
+
+
+To send data, you can use: `request.send(data)`
+

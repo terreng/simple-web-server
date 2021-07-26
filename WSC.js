@@ -2,6 +2,8 @@ const path = require('path');
 const fs = require('fs');
 const send = require('send');
 const _ = require('underscore');
+const http = require('http');
+const https = require('https');
 global.atob = require("atob");
 global.Blob = require('node-blob');
 
@@ -92,7 +94,7 @@ _.extend(BaseHandler.prototype, {
         return this.request.headers[k] || defaultvalue
     },
     setHeader: function(k,v) {
-		this.responseHeaders[k] = v
+        this.responseHeaders[k] = v
         this.res.setHeader(k, v)
     },
     set_status: function(code) {
@@ -159,7 +161,7 @@ _.extend(BaseHandler.prototype, {
         if (typeof data == "string") {
             var data = Buffer.from(data)
         }
-		var byteLength = data.byteLength
+        var byteLength = data.byteLength
         console.assert(byteLength !== undefined)
         if (code === undefined) { code = 200 }
         this.responseLength += byteLength
@@ -1379,15 +1381,6 @@ _.extend(FileSystem.prototype, {
         }
         var origpath = path
         var path = this.mainPath + path
-        var folder = path.split('/').splice(-1,1).join('/')
-        try {
-            if (!fs.existsSync(folder)) {
-                fs.mkdirSync(folder)
-            }
-        } catch(err) {
-            callback({error: err})
-            return
-        }
         fs.writeFile(path, data, (err) => {
             if (err) {
                 callback({error: err, success: false})
@@ -1765,12 +1758,14 @@ _.extend(DirectoryEntryHandler.prototype, {
                                         var req = this.request
                                         var res = this
                                         var tempData = { }
+                                        var httpRequest = WSC.httpRequest
                                         res.end = function() {
                                             this.finish()
                                         }
                                         try {
-                                            eval('(function() {\nvar handler = function(req, res, tempData) {\n' + dataa + '\n};\nhandler(req, res, tempData)\n})();')
+                                            eval('(function() {var handler = function(req, res, tempData, httpRequest) {' + dataa + '};handler(req, res, tempData, httpRequest)})();')
                                         } catch(e) {
+                                            console.error(e)
                                             this.write('Error with your script', 500)
                                             this.finish()
                                         }
@@ -2286,13 +2281,15 @@ _.extend(DirectoryEntryHandler.prototype, {
                                                     if (validFile) {
                                                         var req = this.request
                                                         var res = this
+                                                        var httpRequest = WSC.httpRequest
                                                         var tempData = { }
                                                         res.end = function() {
                                                             this.finish()
                                                         }
                                                         try {
-                                                            eval('(function() {\nvar handler = function(req, res, tempData) {\n' + dataa + '\n};\nhandler(req, res, tempData)\n})();')
+                                                            eval('(function() {var handler = function(req, res, tempData, httpRequest) {' + dataa + '};handler(req, res, tempData, httpRequest)})();')
                                                         } catch(e) {
+                                                            console.error(e)
                                                             this.write('Error with your script', 500)
                                                             this.finish()
                                                         }
@@ -2711,6 +2708,75 @@ WSC.utils = {
     }
 }
 
+function httpRequest() {
+    this.onload = null
+    this.res = null
+    this.headers = { }
+    this.body = Buffer.from('')
+}
+
+httpRequest.prototype = {
+    setRequestHeader: function(k, v) {
+        this.headers[k] = v
+    },
+    open: function(method, url) {
+        var q = url.split('//')
+        if (q.length > 1) {
+            var protocol = q[0]
+            var host = q[1].split('/')[0]
+        } else {
+            var protocol = 'http:'
+            var host = q[0].split('/')[0]
+        }
+        var path = url.split(host).pop()
+		if (protocol =='https:') {
+			this.req = https.request({method: method, protocol: protocol, host: host, path: path})
+		} else {
+			this.req = http.request({method: method, protocol: protocol, host: host, path: path})
+		}
+    },
+    send: function(data) {
+        if (data) {
+            if (typeof data == 'string') {
+                var data = Buffer.from(data)
+            }
+            this.req.setHeader('content-length', data.byteLength)
+        }
+        this.req.on('response', this.onResponse.bind(this))
+        this.req.end()
+    },
+    onResponse: function(res) {
+        this.res = res
+        res.on('data', (chunk) => {
+            this.body = Buffer.concat([this.body, chunk])
+        })
+        res.on('end', () => {
+            var evt = {target: {headers:this.res.headers,
+                                code:this.res.statusCode,
+                                status:this.res.statusCode,
+                                responseHeaders:this.res.rawHeaders,
+                                responseHeadersParsed:this.res.headers,
+                                response:this.body}
+                      }
+            if (this.onload && typeof this.onload == 'function') {
+                this.onload(evt)
+            }
+        })
+    }
+}
+WSC.httpRequest = httpRequest
+
+function testHttpRequest() {
+    var http = new WSC.httpRequest()
+    http.onload = function(e) {
+        console.log(e)
+    }
+    http.open('GET', 'http://www.google.com')
+    http.send()
+    
+}
+
+
 var main_fs = new WSC.FileSystem(__dirname)
 main_fs.getByPath('/directory-listing-template.html', function(file) {
 file.file(file.path, function(data) {
@@ -2719,3 +2785,5 @@ file.file(file.path, function(data) {
 })
 
 module.exports = WSC;
+
+

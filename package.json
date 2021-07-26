@@ -25,6 +25,7 @@
     "atob": "^2.1.2",
     "electron-squirrel-startup": "^1.0.0",
     "http": "^0.0.1-security",
+    "https": "^1.0.0",
     "node-blob": "0.0.2",
     "send": "^0.17.1",
     "underscore": "^1.9.1"
