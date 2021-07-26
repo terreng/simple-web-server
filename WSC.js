@@ -2729,11 +2729,11 @@ httpRequest.prototype = {
             var host = q[0].split('/')[0]
         }
         var path = url.split(host).pop()
-		if (protocol =='https:') {
-			this.req = https.request({method: method, protocol: protocol, host: host, path: path})
-		} else {
-			this.req = http.request({method: method, protocol: protocol, host: host, path: path})
-		}
+        if (protocol =='https:') {
+            this.req = https.request({method: method, protocol: protocol, host: host, path: path})
+        } else {
+            this.req = http.request({method: method, protocol: protocol, host: host, path: path})
+        }
     },
     send: function(data) {
         if (data) {
