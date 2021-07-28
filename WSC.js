@@ -187,36 +187,34 @@ _.extend(BaseHandler.prototype, {
 WSC.BaseHandler = BaseHandler
 
 WSC.transformRequest = function(req, res, settings, callback) {
-var curRequest = WSC.HTTPRequest({headers: req.headers,
-                                  method: req.method,
-                                  uri: req.url,
-                                  version: req.httpVersion})
-curRequest.ip = req.socket.remoteAddress
-var app = {
-    opts: settings
-}
-if (curRequest.headers['content-length']) {
-    this.body = Buffer.from('')
+    var curRequest = WSC.HTTPRequest({headers: req.headers,
+                                      method: req.method,
+                                      uri: req.url,
+                                      version: req.httpVersion,
+                                      ip: req.socket.remoteAddress})
+    var app = {
+        opts: settings
+    }
     req.on('data', function(chunk) {
         if (chunk && chunk != 'undefined') {
-            this.body = Buffer.concat([this.body, chunk])
+            curRequest.body = Buffer.concat([curRequest.body, chunk])
         }
-    }.bind(this))
+    })
     req.on('end', function() {
-        curRequest.body = this.body
+        if (curRequest.body.byteLength == 0) {
+            curRequest.body = null
+        }
         callback({request: curRequest, app: app})
-    }.bind(this))
-    return
-}
-callback({request: curRequest, app: app})
+    })
 }
 
 WSC.HTTPRequest = function(opts) {
 this.method = opts.method
 this.uri = opts.uri
+this.ip = opts.ip
 this.version = opts.version
 this.headers = opts.headers
-this.body = null
+this.body = Buffer.from('')
 this.bodyparams = null
 
 this.arguments = {}
@@ -1288,7 +1286,7 @@ WSC.MIMECATEGORIES = MIMECATEGORIES
 WSC.MIMETYPES = MIMETYPES
 
 function FileSystem(mainPath) {
-    var mainPath = mainPath.replaceAll('\\\\', '/').replaceAll('\\', '/').replaceAll('//', '/')
+    var mainPath = mainPath.replaceAll('\\', '/').replaceAll('\\', '/')
     if (mainPath.endsWith('/')) {
         var mainPath = mainPath.substring(0, mainPath.length - 1)
     }
@@ -1381,6 +1379,13 @@ _.extend(FileSystem.prototype, {
         }
         var origpath = path
         var path = this.mainPath + path
+		var folder = WSC.utils.stripOffFile(path)
+		if (! fs.existsSync(folder)) {
+			try {
+				console.log(folder)
+				fs.mkdirSync(folder)
+			} catch(e) { }
+		}
         fs.writeFile(path, data, (err) => {
             if (err) {
                 callback({error: err, success: false})
@@ -2713,6 +2718,10 @@ function httpRequest() {
     this.res = null
     this.headers = { }
     this.body = Buffer.from('')
+    this.streamToFile = false
+    this.savePath = null
+    this.handler = null
+    this.request = { }
 }
 
 httpRequest.prototype = {
@@ -2720,6 +2729,8 @@ httpRequest.prototype = {
         this.headers[k] = v
     },
     open: function(method, url) {
+        this.request.method = method
+        this.request.url = url
         var q = url.split('//')
         if (q.length > 1) {
             var protocol = q[0]
@@ -2736,7 +2747,11 @@ httpRequest.prototype = {
         }
     },
     send: function(data) {
+        for (var k in this.headers) {
+            this.req.setHeader(k, this.headers[k])
+        }
         if (data) {
+            this.responseData = data
             if (typeof data == 'string') {
                 var data = Buffer.from(data)
             }
@@ -2747,21 +2762,62 @@ httpRequest.prototype = {
     },
     onResponse: function(res) {
         this.res = res
-        res.on('data', (chunk) => {
-            this.body = Buffer.concat([this.body, chunk])
-        })
-        res.on('end', () => {
-            var evt = {target: {headers:this.res.headers,
-                                code:this.res.statusCode,
-                                status:this.res.statusCode,
-                                responseHeaders:this.res.rawHeaders,
-                                responseHeadersParsed:this.res.headers,
-                                response:this.body}
-                      }
-            if (this.onload && typeof this.onload == 'function') {
-                this.onload(evt)
+        if (res.statusCode == 301 || res.statusCode == 302 || res.statusCode == 307) {
+            var request = new WSC.httpRequest()
+            request.streamToFile = this.streamToFile
+            request.savePath = this.savePath
+            request.handler = this.handler
+            request.headers = this.headers
+            request.onload = this.onload
+            request.open(this.request.method, this.request.url)
+            request.send(this.responseData || undefined)
+            return
+        }
+        if (! this.streamToFile) {
+            res.on('data', (chunk) => {
+                this.body = Buffer.concat([this.body, chunk])
+            })
+            res.on('end', () => {
+                var evt = {target: {headers:this.res.headers,
+                                    code:this.res.statusCode,
+                                    status:this.res.statusCode,
+                                    responseHeaders:this.res.rawHeaders,
+                                    responseHeadersParsed:this.res.headers,
+                                    response:this.body}
+                          }
+                if (this.onload && typeof this.onload == 'function') {
+                    this.onload(evt)
+                }
+            })
+        } else {
+            if (! this.savePath.startsWith('/')) {
+                this.savePath = WSC.utils.relativePath(this.savePath, WSC.utils.stripOffFile(this.handler.request.origpath))
             }
-        })
+            var path = this.handler.fs.mainPath + this.savePath
+            var folder = WSC.utils.stripOffFile(path)
+            if (! fs.existsSync(folder)) {
+                try {
+                    console.log(folder)
+                    fs.mkdirSync(folder)
+                } catch(e) { }
+            }
+            console.log(path)
+            var writeStream = fs.createWriteStream(path)
+            this.res.pipe(writeStream)
+            this.res.on('end', function () {
+                var evt = {target: {headers:this.res.headers,
+                                    code:this.res.statusCode,
+                                    status:this.res.statusCode,
+                                    responseHeaders:this.res.rawHeaders,
+                                    responseHeadersParsed:this.res.headers,
+                                    response:'The response was written to a file.'}
+                          }
+                if (this.onload && typeof this.onload == 'function') {
+                    this.onload(evt)
+                }
+            }.bind(this))
+            
+        }
     }
 }
 WSC.httpRequest = httpRequest
@@ -2779,9 +2835,9 @@ function testHttpRequest() {
 
 var main_fs = new WSC.FileSystem(__dirname)
 main_fs.getByPath('/directory-listing-template.html', function(file) {
-file.file(file.path, function(data) {
-    WSC.template_data = data
-})
+    file.file(file.path, function(data) {
+        WSC.template_data = data
+    })
 })
 
 module.exports = WSC;
