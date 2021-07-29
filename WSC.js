@@ -2881,7 +2881,7 @@ httpRequest.prototype = {
             request.reDirected = true
             request.headers = this.headers
             request.onload = this.onload
-            request.open(this.request.method, this.request.url)
+            request.open(this.request.method, res.headers.location)
             request.send(this.responseData || undefined)
             return
         }
