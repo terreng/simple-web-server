@@ -86,11 +86,11 @@ Example:
             var filetext = text // file.file will read the file as text. To render the file, you can use the renderFileContents() function
         })
     } else if (file.isDirectory) {
-		file.getDirContents(function(results) {
-			results[2].file(function(file) {
-				console.log(file)
-			})
-		}
+        file.getDirContents(function(results) {
+            results[2].file(function(file) {
+                console.log(file)
+            })
+        }
     }
 })
 ```
@@ -116,6 +116,7 @@ Call this to respond with no message. Dont forget to finish with `res.end()`
 
 `res.renderFileContents`: function
 Once you have called the file with `res.getFile()` (DO NOT use the `file.file()` function) use `res.renderFileContents()` to render the file
+DO NOT call `res.end()` when using this function
 Example:
 ```
 `res.getFile('../somefile.html', function(file) {
@@ -124,11 +125,11 @@ Example:
     } else if (file.isFile) {
         res.renderFileContents(file)
     } else if (file.isDirectory) {
-		file.getDirContents(function(results) {
-			results[2].file(function(file2) {
-				res.renderFileContents(file2)
-			})
-		}
+        file.getDirContents(function(results) {
+            results[2].file(function(file2) {
+                res.renderFileContents(file2)
+            })
+        }
     }
 })
 ```
@@ -192,7 +193,7 @@ Commands once you get the info:
 
 `entry.file(callback)`
 This function will read the file as text.
-If you want to display the contents of the file, it is recommended to use `res.renderFileContents`
+If you want to display the contents of the file, it is recommended to use `res.renderFileContents()`
 This function will only work on files, not directories
 
 `entry.getDirContents(callback)
