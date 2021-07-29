@@ -8,6 +8,7 @@ global.atob = require("atob");
 global.Blob = require('node-blob');
 
 WSC = {};
+WSC.FileSystemUtils = { };
 
 function BaseHandler() {
     this.headersWritten = false
@@ -38,11 +39,11 @@ _.extend(BaseHandler.prototype, {
             if (this.app.opts['optCustom'+httpCode]) {
                 this.fs.getByPath(this.app.opts['optCustom'+httpCode+'location'], (file) => {
                     if (! file.error && file.isFile) {
-                        file.file(file.path, function(data) {
+                        file.file(function(data) {
                             if (httpCode == 404) {
                                 if (this.app.opts.optCustom404usevar) {
                                     if (this.app.opts.optCustom404usevarvar.replace(' ', '') != '') {
-                                        var data = '<script>var '+this.app.opts.optCustom404usevarvar+' = "'+this.request.uri+'";</script>\n' + data
+                                        var data = '<script>window.'+this.app.opts.optCustom404usevarvar+' = "'+this.request.uri+'";</script>\n' + data
                                     } else {
                                         this.write('javascript location variable is blank', 500)
                                         this.finish()
@@ -195,17 +196,22 @@ WSC.transformRequest = function(req, res, settings, callback) {
     var app = {
         opts: settings
     }
-    req.on('data', function(chunk) {
-        if (chunk && chunk != 'undefined') {
-            curRequest.body = Buffer.concat([curRequest.body, chunk])
-        }
-    })
-    req.on('end', function() {
-        if (curRequest.body.byteLength == 0) {
-            curRequest.body = null
-        }
+    if (curRequest.method.toLowerCase() != 'put') {
+        req.on('data', function(chunk) {
+            if (chunk && chunk != 'undefined') {
+                curRequest.body = Buffer.concat([curRequest.body, chunk])
+            }
+        })
+        req.on('end', function() {
+            if (curRequest.body.byteLength == 0) {
+                curRequest.body = null
+            }
+            callback({request: curRequest, app: app})
+        })
+    } else {
+        curRequest.body = null
         callback({request: curRequest, app: app})
-    })
+    }
 }
 
 WSC.HTTPRequest = function(opts) {
@@ -1285,6 +1291,80 @@ if (MIMETYPES[key].startsWith('video/')) {
 WSC.MIMECATEGORIES = MIMECATEGORIES
 WSC.MIMETYPES = MIMETYPES
 
+function getByPath(path, callback, FileSystem) {
+    this.fs = FileSystem
+    if (! (path.startsWith('/') || path.startsWith('\\'))) {
+        var path = '/' + path
+    }
+    this.origpath = path
+    var path = this.fs.mainPath + path
+    this.path = path.replaceAll('//', '/')
+    this.callback = callback
+}
+
+getByPath.prototype = {
+    getFile: function() {
+        fs.stat(this.path, function(error, stats) {
+            if (error) {
+                this.callback({error: 'Path not found'})
+                return
+            }
+            this.name = this.path.split('/').pop()
+            this.size = stats.size
+            this.modificationTime = stats.mtime
+            this.isDirectory = stats.isDirectory()
+            this.isFile = stats.isFile()
+            this.callback(this)
+        }.bind(this))
+    },
+    file: function(callback) {
+        if (! this.isFile) {
+            callback({error: 'Cannot preform on directory'})
+            return
+        }
+        fs.readFile(this.path, 'utf8', function(err, data) {
+            if (err) {
+                callback({error:err})
+                return
+            }
+            callback(data)
+        }.bind(this))
+    },
+    getDirContents: function(callback) {
+        fs.readdir(this.path, {encoding: 'utf-8'}, function(err, files) {
+            if (err) {
+                callback({error:err})
+                return
+            }
+            var results = [ ]
+            var i = 0
+            var totalLength = files.length - 1
+            function finished() {
+                callback(results)
+            }
+            function getFileInfo() {
+                var file = new WSC.FileSystemUtils.getByPath(this.origpath + '/' + files[i], function(file) {
+                    results.push(file)
+                    if (i != totalLength) {
+                        i++
+                        getFileInfo.bind(this)()
+                    } else {
+                        finished.bind(this)()
+                    }
+                }.bind(this), this.fs)
+                file.getFile()
+            }
+            if (files.length > 0 && ! err) {
+                getFileInfo.bind(this)()
+            } else {
+                finished.bind(this)()
+            }
+        }.bind(this))
+    }
+}
+
+WSC.FileSystemUtils.getByPath = getByPath
+
 function FileSystem(mainPath) {
     var mainPath = mainPath.replaceAll('\\', '/').replaceAll('\\', '/')
     if (mainPath.endsWith('/')) {
@@ -1294,84 +1374,8 @@ function FileSystem(mainPath) {
 }
 _.extend(FileSystem.prototype, {
     getByPath: function(path, callback) {
-        if (! (path.startsWith('/') || path.startsWith('\\'))) {
-            var path = '/' + path
-        }
-        var origpath = path
-        var path = this.mainPath + path
-        
-        fs.stat(path, function(error, stats) {
-            if (error) {
-                callback({error: 'Path not found'})
-                return
-            }
-            var entry = { }
-            entry.isDirectory = stats.isDirectory()
-            entry.isFile = stats.isFile()
-            entry.path = path
-            if (entry.isFile) {
-                entry.file = function(path, callback) {
-                    fs.readFile(path, 'utf8', function(err, data) {
-                        if (err) {
-                            callback({error:true})
-                            return
-                        }
-                        callback(data)
-                    })
-                }
-            } else if (entry.isDirectory) {
-                entry.getDirContents = function(path, callback) {
-                    fs.readdir(path, {encoding: 'utf-8'}, function(err, files) {
-                        if (error) {
-                            callback({error:true})
-                            return
-                        }
-                        var results = [ ]
-                        var i = 0
-                        var totalLength = files.length - 1
-                        function finished() {
-                            callback(results)
-                        }
-                        function getFileInfo() {
-                            fs.stat(path + '/' + files[i], function(error, stats) {
-                                var file = { }
-                                file.name = files[i]
-                                file.isDirectory = stats.isDirectory()
-                                file.isFile = stats.isFile()
-                                file.size = stats.size
-                                file.modificationTime = stats.mtime
-                                file.fullPath = origpath + '/' + file.name
-                                file.path = path + '/' + files[i]
-                                if (file.isFile) {
-                                    file.file = function(path, callback) {
-                                        fs.readFile(path, 'utf8', function(err, data) {
-                                            if (err) {
-                                                callback({error:true})
-                                                return
-                                            }
-                                            callback(data)
-                                        })
-                                    }
-                                }
-                                results.push(file)
-                                if (i != totalLength) {
-                                    i++
-                                    getFileInfo()
-                                } else {
-                                    finished()
-                                }
-                            })
-                        }
-                        if (files.length > 0 && ! err) {
-                            getFileInfo()
-                        } else {
-                            finished()
-                        }
-                    })
-                }
-            }
-            callback(entry)
-        })
+        var entry = new WSC.FileSystemUtils.getByPath(path, callback, this)
+        entry.getFile()
     },
     writeFile: function(path, data, callback, allowOverWrite) {
         if (! (path.startsWith('/') || path.startsWith('\\'))) {
@@ -1379,13 +1383,13 @@ _.extend(FileSystem.prototype, {
         }
         var origpath = path
         var path = this.mainPath + path
-		var folder = WSC.utils.stripOffFile(path)
-		if (! fs.existsSync(folder)) {
-			try {
-				console.log(folder)
-				fs.mkdirSync(folder)
-			} catch(e) { }
-		}
+        var folder = WSC.utils.stripOffFile(path)
+        if (! fs.existsSync(folder)) {
+            try {
+                console.log(folder)
+                fs.mkdirSync(folder)
+            } catch(e) { }
+        }
         fs.writeFile(path, data, (err) => {
             if (err) {
                 callback({error: err, success: false})
@@ -1504,7 +1508,7 @@ _.extend(DirectoryEntryHandler.prototype, {
         if (this.app.opts.optIpBlocking) {
             this.fs.getByPath(this.opts.optIpBlockList, function(file) {
                 if (file && file.isFile && ! file.error) {
-                    file.file(file.path, function(data) {
+                    file.file(function(data) {
                         try {
                             var ipBlockList = JSON.parse(data)
                         } catch(e) {
@@ -1538,7 +1542,7 @@ _.extend(DirectoryEntryHandler.prototype, {
             //console.log(htaccesspath)
             this.fs.getByPath(htaccesspath, (file) => {
                 if (! file.error) {
-                    file.file(file.path, function(dataa) {
+                    file.file(function(dataa) {
                         try {
                             var origdata = JSON.parse(dataa)
                         } catch(e) {
@@ -1660,7 +1664,7 @@ _.extend(DirectoryEntryHandler.prototype, {
         var htaccessPath = WSC.utils.stripOffFile(this.request.origpath)
         this.fs.getByPath(htaccessPath + 'wsc.htaccess', function(file) {
             if (file && ! file.error) {
-                file.file(file.path, function(data) {
+                file.file(function(data) {
                     try {
                         var origdata = JSON.parse(data)
                     } catch(e) {
@@ -1746,7 +1750,7 @@ _.extend(DirectoryEntryHandler.prototype, {
                         }
                         this.fs.getByPath(WSC.utils.stripOffFile(this.request.origpath) + data.original_request_path, function(file) {
                             if (file && ! file.error && file.isFile) {
-                                file.file(file.path, function(dataa) {
+                                file.file(function(dataa) {
                                     var contents = dataa.split('\n')
                                     var validFile = false
                                     for (var i=0; i<contents.length; i++) {
@@ -1797,6 +1801,9 @@ _.extend(DirectoryEntryHandler.prototype, {
         function putMain() {
             this.fs.getByPath(this.request.path, function(entry) {
                 if (entry.error) {
+                    
+                    // Need to re-write PUT function to optimize memory when uploading larger files
+                    
                     this.fs.writeFile(this.request.path, this.request.body, function(e) {
                         if (e.error) {
                             this.write('Error writing file', 500)
@@ -1806,6 +1813,9 @@ _.extend(DirectoryEntryHandler.prototype, {
                             this.finish()
                         }
                     }.bind(this))
+                    
+                    
+                    
                 } else if (this.app.opts.optAllowReplaceFile) {
                     this.fs.deleteFile(this.request.path, function(e) {
                         if (e.error) {
@@ -1975,7 +1985,7 @@ _.extend(DirectoryEntryHandler.prototype, {
             var htaccesspath = finalpath+'wsc.htaccess'
             this.fs.getByPath(htaccesspath, (file) => {
                 if (! file.error && file.isFile) {
-                    file.file(file.path, function(dataa) {
+                    file.file(function(dataa) {
                         try {
                             var origdata = JSON.parse(dataa)
                         } catch(e) {
@@ -2130,7 +2140,7 @@ _.extend(DirectoryEntryHandler.prototype, {
                                             //console.log(filepath)
                                             this.fs.getByPath(finalpath, (file) => {
                                                 if (! file.error && file.isFile) {
-                                                    file.file(file.path, function(dataa) {
+                                                    file.file(function(dataa) {
                                                         var html = [dataa]
                                                         for (var w=0; w<results.length; w++) {
                                                             var rawname = results[w].name
@@ -2270,7 +2280,7 @@ _.extend(DirectoryEntryHandler.prototype, {
                                         }
                                         this.fs.getByPath(WSC.utils.stripOffFile(this.request.origpath) + data.original_request_path, function(file) {
                                             if (file && ! file.error && file.isFile) {
-                                                file.file(file.path, function(dataa) {
+                                                file.file(function(dataa) {
                                                     var contents = dataa.split('\n')
                                                     var validFile = false
                                                     for (var i=0; i<contents.length; i++) {
@@ -2506,7 +2516,7 @@ _.extend(DirectoryEntryHandler.prototype, {
         this.write(html.join('\n'))
     },
     getDirContents: function(entry, callback) {
-        entry.getDirContents(entry.path, function(files) {
+        entry.getDirContents(function(files) {
             callback(files)
         })
     },
@@ -2835,7 +2845,7 @@ function testHttpRequest() {
 
 var main_fs = new WSC.FileSystem(__dirname)
 main_fs.getByPath('/directory-listing-template.html', function(file) {
-    file.file(file.path, function(data) {
+    file.file(function(data) {
         WSC.template_data = data
     })
 })

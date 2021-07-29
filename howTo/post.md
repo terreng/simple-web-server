@@ -83,8 +83,8 @@ Example:
     if (file.error) {
         console.log('error')
     } else if (file.isFile) {
-        file.file(file.path, function(text) // you MUST specify file.path as the first argument!!
-		    var filetext = text // file.file will read the file as text. To render the file, you can use the renderFileContents() function
+        file.file(function(text)
+            var filetext = text // file.file will read the file as text. To render the file, you can use the renderFileContents() function
         })
     } else if (file.isDirectory) {
         // This will return an array of all of the files in the directory. To use a file you must use file.file() as shown below
