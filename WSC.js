@@ -2,10 +2,13 @@ const path = require('path');
 const fs = require('fs');
 const send = require('send');
 const _ = require('underscore');
+const http = require('http');
+const https = require('https');
 global.atob = require("atob");
 global.Blob = require('node-blob');
 
 WSC = {};
+WSC.FileSystemUtils = { };
 
 function BaseHandler() {
     this.headersWritten = false
@@ -36,11 +39,11 @@ _.extend(BaseHandler.prototype, {
             if (this.app.opts['optCustom'+httpCode]) {
                 this.fs.getByPath(this.app.opts['optCustom'+httpCode+'location'], (file) => {
                     if (! file.error && file.isFile) {
-                        file.file(file.path, function(data) {
+                        file.file(function(data) {
                             if (httpCode == 404) {
                                 if (this.app.opts.optCustom404usevar) {
                                     if (this.app.opts.optCustom404usevarvar.replace(' ', '') != '') {
-                                        var data = '<script>var '+this.app.opts.optCustom404usevarvar+' = "'+this.request.uri+'";</script>\n' + data
+                                        var data = '<script>window.'+this.app.opts.optCustom404usevarvar+' = "'+this.request.uri+'";</script>\n' + data
                                     } else {
                                         this.write('javascript location variable is blank', 500)
                                         this.finish()
@@ -92,7 +95,7 @@ _.extend(BaseHandler.prototype, {
         return this.request.headers[k] || defaultvalue
     },
     setHeader: function(k,v) {
-		this.responseHeaders[k] = v
+        this.responseHeaders[k] = v
         this.res.setHeader(k, v)
     },
     set_status: function(code) {
@@ -159,7 +162,7 @@ _.extend(BaseHandler.prototype, {
         if (typeof data == "string") {
             var data = Buffer.from(data)
         }
-		var byteLength = data.byteLength
+        var byteLength = data.byteLength
         console.assert(byteLength !== undefined)
         if (code === undefined) { code = 200 }
         this.responseLength += byteLength
@@ -185,36 +188,39 @@ _.extend(BaseHandler.prototype, {
 WSC.BaseHandler = BaseHandler
 
 WSC.transformRequest = function(req, res, settings, callback) {
-var curRequest = WSC.HTTPRequest({headers: req.headers,
-                                  method: req.method,
-                                  uri: req.url,
-                                  version: req.httpVersion})
-curRequest.ip = req.socket.remoteAddress
-var app = {
-    opts: settings
-}
-if (curRequest.headers['content-length']) {
-    this.body = Buffer.from('')
-    req.on('data', function(chunk) {
-        if (chunk && chunk != 'undefined') {
-            this.body = Buffer.concat([this.body, chunk])
-        }
-    }.bind(this))
-    req.on('end', function() {
-        curRequest.body = this.body
+    var curRequest = WSC.HTTPRequest({headers: req.headers,
+                                      method: req.method,
+                                      uri: req.url,
+                                      version: req.httpVersion,
+                                      ip: req.socket.remoteAddress})
+    var app = {
+        opts: settings
+    }
+    if (curRequest.method.toLowerCase() != 'put') {
+        req.on('data', function(chunk) {
+            if (chunk && chunk != 'undefined') {
+                curRequest.body = Buffer.concat([curRequest.body, chunk])
+            }
+        })
+        req.on('end', function() {
+            if (curRequest.body.byteLength == 0) {
+                curRequest.body = null
+            }
+            callback({request: curRequest, app: app})
+        })
+    } else {
+        curRequest.body = null
         callback({request: curRequest, app: app})
-    }.bind(this))
-    return
-}
-callback({request: curRequest, app: app})
+    }
 }
 
 WSC.HTTPRequest = function(opts) {
 this.method = opts.method
 this.uri = opts.uri
+this.ip = opts.ip
 this.version = opts.version
 this.headers = opts.headers
-this.body = null
+this.body = Buffer.from('')
 this.bodyparams = null
 
 this.arguments = {}
@@ -1285,8 +1291,86 @@ if (MIMETYPES[key].startsWith('video/')) {
 WSC.MIMECATEGORIES = MIMECATEGORIES
 WSC.MIMETYPES = MIMETYPES
 
+function getByPath(path, callback, FileSystem) {
+    this.fs = FileSystem
+    if (! (path.startsWith('/') || path.startsWith('\\'))) {
+        var path = '/' + path
+    }
+    this.origpath = path
+    var path = this.fs.mainPath + path
+    this.path = path.replaceAll('//', '/')
+    this.callback = callback
+}
+
+getByPath.prototype = {
+    getFile: function() {
+        fs.stat(this.path, function(error, stats) {
+            if (error) {
+                this.callback({error: 'Path not found'})
+                return
+            }
+            this.size = stats.size
+            this.modificationTime = stats.mtime
+            this.isDirectory = stats.isDirectory()
+            this.isFile = stats.isFile()
+            this.callback(this)
+        }.bind(this))
+    },
+    file: function(callback) {
+        if (! this.isFile) {
+            callback({error: 'Cannot preform on directory'})
+            return
+        }
+        fs.readFile(this.path, 'utf8', function(err, data) {
+            if (err) {
+                callback({error:err})
+                return
+            }
+            callback(data)
+        }.bind(this))
+    },
+    getDirContents: function(callback) {
+        if (! this.isFile) {
+            callback({error: 'Cannot preform on file'})
+            return
+        }
+        fs.readdir(this.path, {encoding: 'utf-8'}, function(err, files) {
+            if (err) {
+                callback({error:err})
+                return
+            }
+            var results = [ ]
+            var i = 0
+            var totalLength = files.length - 1
+            function finished() {
+                callback(results)
+            }
+            function getFileInfo() {
+                var file = new WSC.FileSystemUtils.getByPath(this.origpath + '/' + files[i], function(file) {
+                    results.push(file)
+                    if (i != totalLength) {
+                        i++
+                        getFileInfo.bind(this)()
+                    } else {
+                        finished.bind(this)()
+                    }
+                }.bind(this), this.fs)
+                file.name = files[i]
+                file.getFile()
+            }
+            if (files.length > 0 && ! err) {
+                getFileInfo.bind(this)()
+            } else {
+                finished.bind(this)()
+            }
+        }.bind(this))
+    }
+}
+
+WSC.FileSystemUtils.getByPath = getByPath
+
 function FileSystem(mainPath) {
-    var mainPath = mainPath.replaceAll('\\\\', '/').replaceAll('\\', '/').replaceAll('//', '/')
+    var mainPath = mainPath.replaceAll('\\', '/').replaceAll('\\', '/')
     if (mainPath.endsWith('/')) {
         var mainPath = mainPath.substring(0, mainPath.length - 1)
     }
@@ -1294,84 +1378,8 @@ function FileSystem(mainPath) {
 }
 _.extend(FileSystem.prototype, {
     getByPath: function(path, callback) {
-        if (! (path.startsWith('/') || path.startsWith('\\'))) {
-            var path = '/' + path
-        }
-        var origpath = path
-        var path = this.mainPath + path
-        
-        fs.stat(path, function(error, stats) {
-            if (error) {
-                callback({error: 'Path not found'})
-                return
-            }
-            var entry = { }
-            entry.isDirectory = stats.isDirectory()
-            entry.isFile = stats.isFile()
-            entry.path = path
-            if (entry.isFile) {
-                entry.file = function(path, callback) {
-                    fs.readFile(path, 'utf8', function(err, data) {
-                        if (err) {
-                            callback({error:true})
-                            return
-                        }
-                        callback(data)
-                    })
-                }
-            } else if (entry.isDirectory) {
-                entry.getDirContents = function(path, callback) {
-                    fs.readdir(path, {encoding: 'utf-8'}, function(err, files) {
-                        if (error) {
-                            callback({error:true})
-                            return
-                        }
-                        var results = [ ]
-                        var i = 0
-                        var totalLength = files.length - 1
-                        function finished() {
-                            callback(results)
-                        }
-                        function getFileInfo() {
-                            fs.stat(path + '/' + files[i], function(error, stats) {
-                                var file = { }
-                                file.name = files[i]
-                                file.isDirectory = stats.isDirectory()
-                                file.isFile = stats.isFile()
-                                file.size = stats.size
-                                file.modificationTime = stats.mtime
-                                file.fullPath = origpath + '/' + file.name
-                                file.path = path + '/' + files[i]
-                                if (file.isFile) {
-                                    file.file = function(path, callback) {
-                                        fs.readFile(path, 'utf8', function(err, data) {
-                                            if (err) {
-                                                callback({error:true})
-                                                return
-                                            }
-                                            callback(data)
-                                        })
-                                    }
-                                }
-                                results.push(file)
-                                if (i != totalLength) {
-                                    i++
-                                    getFileInfo()
-                                } else {
-                                    finished()
-                                }
-                            })
-                        }
-                        if (files.length > 0 && ! err) {
-                            getFileInfo()
-                        } else {
-                            finished()
-                        }
-                    })
-                }
-            }
-            callback(entry)
-        })
+        var entry = new WSC.FileSystemUtils.getByPath(path, callback, this)
+        entry.getFile()
     },
     writeFile: function(path, data, callback, allowOverWrite) {
         if (! (path.startsWith('/') || path.startsWith('\\'))) {
@@ -1379,14 +1387,12 @@ _.extend(FileSystem.prototype, {
         }
         var origpath = path
         var path = this.mainPath + path
-        var folder = path.split('/').splice(-1,1).join('/')
-        try {
-            if (!fs.existsSync(folder)) {
+        var folder = WSC.utils.stripOffFile(path)
+        if (! fs.existsSync(folder)) {
+            try {
+                console.log(folder)
                 fs.mkdirSync(folder)
-            }
-        } catch(err) {
-            callback({error: err})
-            return
+            } catch(e) { }
         }
         fs.writeFile(path, data, (err) => {
             if (err) {
@@ -1424,6 +1430,23 @@ _.extend(FileSystem.prototype, {
                 })
             }
         })
+    },
+    createWriteStream: function(path) {
+        if (! (path.startsWith('/') || path.startsWith('\\'))) {
+            var path = '/' + path
+        }
+        this.origpath = path
+        var path = this.mainPath + path
+        var path = path.replaceAll('//', '/')
+        var folder = WSC.utils.stripOffFile(path)
+        if (! fs.existsSync(folder)) {
+            try {
+                fs.mkdirSync(folder)
+            } catch(e) {
+                return {error: 'error creating folder'}
+            }
+        }
+        return fs.createWriteStream(path)
     }
 })
 WSC.FileSystem = FileSystem
@@ -1506,7 +1529,7 @@ _.extend(DirectoryEntryHandler.prototype, {
         if (this.app.opts.optIpBlocking) {
             this.fs.getByPath(this.opts.optIpBlockList, function(file) {
                 if (file && file.isFile && ! file.error) {
-                    file.file(file.path, function(data) {
+                    file.file(function(data) {
                         try {
                             var ipBlockList = JSON.parse(data)
                         } catch(e) {
@@ -1540,7 +1563,7 @@ _.extend(DirectoryEntryHandler.prototype, {
             //console.log(htaccesspath)
             this.fs.getByPath(htaccesspath, (file) => {
                 if (! file.error) {
-                    file.file(file.path, function(dataa) {
+                    file.file(function(dataa) {
                         try {
                             var origdata = JSON.parse(dataa)
                         } catch(e) {
@@ -1662,7 +1685,7 @@ _.extend(DirectoryEntryHandler.prototype, {
         var htaccessPath = WSC.utils.stripOffFile(this.request.origpath)
         this.fs.getByPath(htaccessPath + 'wsc.htaccess', function(file) {
             if (file && ! file.error) {
-                file.file(file.path, function(data) {
+                file.file(function(data) {
                     try {
                         var origdata = JSON.parse(data)
                     } catch(e) {
@@ -1748,7 +1771,7 @@ _.extend(DirectoryEntryHandler.prototype, {
                         }
                         this.fs.getByPath(WSC.utils.stripOffFile(this.request.origpath) + data.original_request_path, function(file) {
                             if (file && ! file.error && file.isFile) {
-                                file.file(file.path, function(dataa) {
+                                file.file(function(dataa) {
                                     var contents = dataa.split('\n')
                                     var validFile = false
                                     for (var i=0; i<contents.length; i++) {
@@ -1765,12 +1788,11 @@ _.extend(DirectoryEntryHandler.prototype, {
                                         var req = this.request
                                         var res = this
                                         var tempData = { }
-                                        res.end = function() {
-                                            this.finish()
-                                        }
+                                        var httpRequest = WSC.httpRequest
                                         try {
-                                            eval('(function() {\nvar handler = function(req, res, tempData) {\n' + dataa + '\n};\nhandler(req, res, tempData)\n})();')
+                                            eval('(function() {var handler = function(req, res, tempData, httpRequest, appInfo) {' + dataa + '};handler(req, res, tempData, httpRequest, {"server": "Simple Web Server"})})();')
                                         } catch(e) {
+                                            console.error(e)
                                             this.write('Error with your script', 500)
                                             this.finish()
                                         }
@@ -1797,14 +1819,17 @@ _.extend(DirectoryEntryHandler.prototype, {
         function putMain() {
             this.fs.getByPath(this.request.path, function(entry) {
                 if (entry.error) {
-                    this.fs.writeFile(this.request.path, this.request.body, function(e) {
-                        if (e.error) {
-                            this.write('Error writing file', 500)
-                            this.finish()
-                        } else {
-                            this.writeHeaders(200)
-                            this.finish()
-                        }
+                    var file = this.fs.createWriteStream(this.request.origpath)
+                    file.on('error', function (err) {
+                        console.error('error writing file', err)
+                        this.writeHeaders(500)
+                        this.finish()
+                    }.bind(this))
+                    this.req.pipe(file)
+                    this.req.on('end', function () {
+                        // TODO - Cleanup file
+                        this.writeHeaders(200)
+                        this.finish()
                     }.bind(this))
                 } else if (this.app.opts.optAllowReplaceFile) {
                     this.fs.deleteFile(this.request.path, function(e) {
@@ -1812,14 +1837,17 @@ _.extend(DirectoryEntryHandler.prototype, {
                             this.write('Error writing file', 500)
                             this.finish()
                         } else {
-                            this.fs.writeFile(this.request.path, this.request.body, function(e) {
-                                if (e.error) {
-                                    this.write('Error writing file', 500)
-                                    this.finish()
-                                } else {
-                                    this.writeHeaders(200)
-                                    this.finish()
-                                }
+                            var file = this.fs.createWriteStream(this.request.origpath)
+                            file.on('error', function (err) {
+                                console.error('error writing file', err)
+                                this.writeHeaders(500)
+                                this.finish()
+                            }.bind(this))
+                            this.req.pipe(file)
+                            this.req.on('end', function () {
+                                // TODO - Cleanup file
+                                this.writeHeaders(200)
+                                this.finish()
                             }.bind(this))
                         }
                     }.bind(this))
@@ -1939,6 +1967,8 @@ _.extend(DirectoryEntryHandler.prototype, {
                         this.app.opts.optStatic
                        ) {
                         this.renderDirectoryListing(results)
+                    } else if (this.request.arguments.staticjs == '1' || this.request.arguments.staticjs == 'true' || this.app.opts.optStaticjs) {
+                        this.renderDirectoryListingStaticJs(results)
                     } else {
                         this.renderDirectoryListingTemplate(results)
                     }
@@ -1975,7 +2005,7 @@ _.extend(DirectoryEntryHandler.prototype, {
             var htaccesspath = finalpath+'wsc.htaccess'
             this.fs.getByPath(htaccesspath, (file) => {
                 if (! file.error && file.isFile) {
-                    file.file(file.path, function(dataa) {
+                    file.file(function(dataa) {
                         try {
                             var origdata = JSON.parse(dataa)
                         } catch(e) {
@@ -2114,6 +2144,8 @@ _.extend(DirectoryEntryHandler.prototype, {
                                                        this.request.arguments.static == 'true' ||
                                                        this.app.opts.optStatic) {
                                                 this.renderDirectoryListing(results)
+                                            } else if (this.request.arguments.staticjs == '1' || this.request.arguments.staticjs == 'true' || this.app.opts.optStaticjs) {
+                                                this.renderDirectoryListingStaticJs(results)
                                             } else {
                                                 this.renderDirectoryListingTemplate(results)
                                             }
@@ -2130,7 +2162,7 @@ _.extend(DirectoryEntryHandler.prototype, {
                                             //console.log(filepath)
                                             this.fs.getByPath(finalpath, (file) => {
                                                 if (! file.error && file.isFile) {
-                                                    file.file(file.path, function(dataa) {
+                                                    file.file(function(dataa) {
                                                         var html = [dataa]
                                                         for (var w=0; w<results.length; w++) {
                                                             var rawname = results[w].name
@@ -2270,7 +2302,7 @@ _.extend(DirectoryEntryHandler.prototype, {
                                         }
                                         this.fs.getByPath(WSC.utils.stripOffFile(this.request.origpath) + data.original_request_path, function(file) {
                                             if (file && ! file.error && file.isFile) {
-                                                file.file(file.path, function(dataa) {
+                                                file.file(function(dataa) {
                                                     var contents = dataa.split('\n')
                                                     var validFile = false
                                                     for (var i=0; i<contents.length; i++) {
@@ -2286,13 +2318,12 @@ _.extend(DirectoryEntryHandler.prototype, {
                                                     if (validFile) {
                                                         var req = this.request
                                                         var res = this
+                                                        var httpRequest = WSC.httpRequest
                                                         var tempData = { }
-                                                        res.end = function() {
-                                                            this.finish()
-                                                        }
                                                         try {
-                                                            eval('(function() {\nvar handler = function(req, res, tempData) {\n' + dataa + '\n};\nhandler(req, res, tempData)\n})();')
+                                                            eval('(function() {var handler = function(req, res, tempData, httpRequest, appInfo) {' + dataa + '};handler(req, res, tempData, httpRequest, {"server": "Simple Web Server"})})();')
                                                         } catch(e) {
+                                                            console.error(e)
                                                             this.write('Error with your script', 500)
                                                             this.finish()
                                                         }
@@ -2447,6 +2478,70 @@ _.extend(DirectoryEntryHandler.prototype, {
                                                                      isDirectory:f.isDirectory }
                                                           }), null, 2))
     },
+    renderDirectoryListingStaticJs: function(results) {
+        if (! WSC.static_template_data) {
+            return this.renderDirectoryListing(results)
+        }
+        var html = ['<!DOCTYPE html>']
+        html.push('<html lang="en">')
+        html.push('<head>')
+        html.push('<meta charset="utf-8">')
+        html.push('<meta name="google" value="notranslate">')
+        html.push('<title id="title"></title>')
+        html.push('</head>')
+        
+        html.push('<div id="staticDirectoryListing">')
+        html.push('<style>li.directory {background:#aab}</style>')
+        html.push('<a href="../?static=1">parent</a>')
+        html.push('<ul>')
+        results.sort( this.entriesSortFunc )
+        for (var i=0; i<results.length; i++) {
+            var name = _.escape(results[i].name)
+            if (results[i].isDirectory) {
+                html.push('<li class="directory"><a href="' + name + '/?static=1">' + name + '</a></li>')
+            } else {
+                if (! results[i].name.startsWith('.')) {
+                    if (name != 'wsc.htaccess' || this.app.opts.optDirListingHtaccess) {
+                        html.push('<li><a href="' + name + '?static=1">' + name + '</a></li>')
+                    }
+                } else if (this.app.opts.optDotFilesDirListing) {
+                    html.push('<li><a href="' + name + '?static=1">' + name + '</a></li>')
+                }
+            }
+        }
+        html.push('</ul></div>')
+        
+        html.push('<div style="display:none;" id="javascriptDirectoryListing">')
+        html.push(WSC.static_template_data)
+        html.push('<script>start("'+this.request.origpath+'")</script>')
+        if (this.request.origpath != '/') {
+            html.push('<script>onHasParentDirectory();</script>')
+        }
+        for (var w=0; w<results.length; w++) {
+            var rawname = results[w].name
+            var name = encodeURIComponent(results[w].name)
+            var isdirectory = results[w].isDirectory
+            var modified = WSC.utils.lastModified(results[w].modificationTime)
+            var filesize = results[w].size
+            var filesizestr = WSC.utils.humanFileSize(results[w].size)
+            var modifiedstr = WSC.utils.lastModifiedStr(results[w].modificationTime)
+            if (! results[w].name.startsWith('.')) {
+                if (rawname != 'wsc.htaccess' || this.app.opts.optDirListingHtaccess) {
+                    html.push('<script>addRow("'+rawname+'","'+name+'",'+isdirectory+',"'+filesize+'","'+filesizestr+'","'+modified+'","'+modifiedstr+'");</script>')
+                }
+            } else if (this.app.opts.optDotFilesDirListing) {
+                html.push('<script>addRow("'+rawname+'","'+name+'",'+isdirectory+',"'+filesize+'","'+filesizestr+'","'+modified+'","'+modifiedstr+'");</script>')
+            }
+        }
+        html.push('</div>')
+        html.push('<script>document.getElementById("staticDirectoryListing").style = "display:none;"</script>')
+        html.push('<script>document.getElementById("javascriptDirectoryListing").style = "display:block;"</script>')
+        html.push('</body></html>')
+        
+        this.setHeader('content-type','text/html; charset=utf-8')
+        this.write(html.join('\n'))
+        this.finish()
+    },
     renderDirectoryListingTemplate: function(results) {
         if (! WSC.template_data) {
             return this.renderDirectoryListing(results)
@@ -2504,7 +2599,7 @@ _.extend(DirectoryEntryHandler.prototype, {
         this.write(html.join('\n'))
     },
     getDirContents: function(entry, callback) {
-        entry.getDirContents(entry.path, function(files) {
+        entry.getDirContents(function(files) {
             callback(files)
         })
     },
@@ -2522,14 +2617,7 @@ _.extend(DirectoryEntryHandler.prototype, {
             return
         }
         this.fs.getByPath(path, function(entry) {
-            if (entry.isDirectory) {
-                // automatically get dir contents?
-                this.getDirContents(entry, function(results) {
-                    callback(results)
-                })
-            } else {
-                callback(entry)
-            }
+            callback(entry)
         }.bind(this))
     },
     writeFile: function(path, data, allowReplaceFile, callback) {
@@ -2582,6 +2670,9 @@ _.extend(DirectoryEntryHandler.prototype, {
     },
     contentType: function(type) {
         this.setHeader('content-type', type)
+    },
+    end: function() {
+        this.finish()
     }
 }, WSC.BaseHandler.prototype)
 
@@ -2711,11 +2802,173 @@ WSC.utils = {
     }
 }
 
+function httpRequest() {
+    this.onload = null
+    this.onerror = null
+    this.res = null
+    this.reDirected = false
+    this.reDirectCount = 0
+    this.reDirectLimit = 10
+    this.headers = { }
+    this.body = Buffer.from('')
+    this.streamToFile = false
+    this.savePath = null
+    this.handler = null
+    this.request = { }
+}
+
+httpRequest.prototype = {
+    setRequestHeader: function(k, v) {
+        this.headers[k] = v
+    },
+    setHeader: function(k, v) {
+        this.headers[k] = v
+    },
+    open: function(method, url) {
+        this.request.method = method
+        this.request.url = url
+        var q = url.split('//')
+        if (q.length > 1) {
+            var protocol = q[0]
+            var host = q[1].split('/')[0]
+        } else {
+            var protocol = 'http:'
+            var host = q[0].split('/')[0]
+        }
+        var path = url.split(host).pop()
+        if (protocol =='https:') {
+            this.req = https.request({method: method, protocol: protocol, host: host, path: path})
+        } else {
+            this.req = http.request({method: method, protocol: protocol, host: host, path: path})
+        }
+        this.req.on('error', function(error) {
+            if (this.onerror && typeof this.onerror == 'function') {
+                this.onerror(error)
+            } else if (this.onload && typeof this.onload == 'function') {
+                this.onload(error)
+            }
+        }.bind(this))
+    },
+    send: function(data) {
+        for (var k in this.headers) {
+            this.req.setHeader(k, this.headers[k])
+        }
+        if (data) {
+            this.responseData = data
+            if (typeof data == 'string') {
+                var data = Buffer.from(data)
+            }
+            this.req.setHeader('content-length', data.byteLength)
+        }
+        this.req.on('response', this.onResponse.bind(this))
+        this.req.end()
+    },
+    onResponse: function(res) {
+        res.on('error', function(error) {
+            if (this.onerror && typeof this.onerror == 'function') {
+                this.onerror(error)
+            } else if (this.onload && typeof this.onload == 'function') {
+                this.onload(error)
+            }
+        }.bind(this))
+        this.res = res
+        if ((res.statusCode == 301 || res.statusCode == 302 || res.statusCode == 307) && this.reDirectLimit > this.reDirectCount) {
+            var request = new WSC.httpRequest()
+            request.streamToFile = this.streamToFile
+            request.savePath = this.savePath
+            request.handler = this.handler
+            request.reDirectCount = this.reDirectCount + 1
+            request.reDirected = true
+            request.headers = this.headers
+            request.onload = this.onload
+            request.open(this.request.method, this.request.url)
+            request.send(this.responseData || undefined)
+            return
+        }
+        if (! this.streamToFile) {
+            res.on('data', (chunk) => {
+                this.body = Buffer.concat([this.body, chunk])
+            })
+            res.on('end', () => {
+                var evt = {target: {headers:this.res.headers,
+                                    code:this.res.statusCode,
+                                    status:this.res.statusCode,
+                                    responseHeaders:this.res.rawHeaders,
+                                    responseHeadersParsed:this.res.headers,
+                                    response:this.body,
+                                    redirected:this.reDirected}
+                          }
+                if (this.onload && typeof this.onload == 'function') {
+                    this.onload(evt)
+                }
+            })
+        } else {
+            if (! this.savePath.startsWith('/')) {
+                this.savePath = WSC.utils.relativePath(this.savePath, WSC.utils.stripOffFile(this.handler.request.origpath))
+            }
+            var path = this.handler.fs.mainPath + this.savePath
+            var folder = WSC.utils.stripOffFile(path)
+            if (! fs.existsSync(folder)) {
+                try {
+                    fs.mkdirSync(folder)
+                } catch(e) { }
+            }
+            var writeStream = fs.createWriteStream(path)
+            writeStream.on('error', function (err) {
+                var evt = {error: 'There was an error while writing the file'}
+                if (this.onerror && typeof this.onerror == 'function') {
+                    this.onerror(evt)
+                } else if (this.onload && typeof this.onload == 'function') {
+                    this.onload(evt)
+                }
+            }.bind(this))
+            this.res.pipe(writeStream)
+            this.res.on('end', function () {
+                var evt = {target: {headers:this.res.headers,
+                                    code:this.res.statusCode,
+                                    status:this.res.statusCode,
+                                    responseHeaders:this.res.rawHeaders,
+                                    responseHeadersParsed:this.res.headers,
+                                    response:'The response was written to a file.',
+                                    redirected:this.reDirected}
+                          }
+                if (this.onload && typeof this.onload == 'function') {
+                    this.onload(evt)
+                }
+            }.bind(this))
+            
+        }
+    },
+    setupStreamToFile: function(handler, savePath) {
+        this.streamToFile = true
+        this.handler = handler
+        this.savePath = savePath
+    }
+}
+WSC.httpRequest = httpRequest
+
+function testHttpRequest() {
+    var http = new WSC.httpRequest()
+    http.onload = function(e) {
+        console.log(e)
+    }
+    http.open('GET', 'http://www.google.com')
+    http.send()
+    
+}
+
+
 var main_fs = new WSC.FileSystem(__dirname)
 main_fs.getByPath('/directory-listing-template.html', function(file) {
-file.file(file.path, function(data) {
-    WSC.template_data = data
+    file.file(function(data) {
+        WSC.template_data = data
+    })
 })
+main_fs.getByPath('/directory-listing-template-static.html', function(file) {
+    file.file(function(data) {
+        WSC.static_template_data = data
+    })
 })
-
 module.exports = WSC;
+
+

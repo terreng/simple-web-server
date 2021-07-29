@@ -74,23 +74,23 @@ Instead of `Cookie: name=value`, you would put `res.setHeader('Cookie', 'name=va
 
 `res.getFile(path, callback)`: function
 This function will read a file. Relative urls are supported.
-If the requested path is a directory, the callback function will be called with a listing of all the files in a directory.
-THE `file.file()` FUNCTION IS THE ONE COMMAND THAT HAS CHANGED (Compared to https://github.com/ethanaobrien/web-server-chrome)
-To call the file use the `file.file()` function
+To get the directory contents, use the `file.getDirContents()` function
+To read the file as text, use the `file.file()` function
 Example: 
 ```
 `res.getFile('../test.txt', function(file) {
     if (file.error) {
         console.log('error')
     } else if (file.isFile) {
-        file.file(file.path, function(text) // you MUST specify file.path as the first argument!!
-		    var filetext = text // file.file will read the file as text. To render the file, you can use the renderFileContents() function
+        file.file(function(text)
+            var filetext = text // file.file will read the file as text. To render the file, you can use the renderFileContents() function
         })
     } else if (file.isDirectory) {
-        // This will return an array of all of the files in the directory. To use a file you must use file.file() as shown below
-        file[2].file(function(file) {
-            console.log(file)
-        })
+        file.getDirContents(function(results) {
+            results[2].file(function(file) {
+                console.log(file)
+            })
+        }
     }
 })
 ```
@@ -116,6 +116,7 @@ Call this to respond with no message. Dont forget to finish with `res.end()`
 
 `res.renderFileContents`: function
 Once you have called the file with `res.getFile()` (DO NOT use the `file.file()` function) use `res.renderFileContents()` to render the file
+DO NOT call `res.end()` when using this function
 Example:
 ```
 `res.getFile('../somefile.html', function(file) {
@@ -124,7 +125,11 @@ Example:
     } else if (file.isFile) {
         res.renderFileContents(file)
     } else if (file.isDirectory) {
-        res.renderFileContents(file[2])
+        file.getDirContents(function(results) {
+            results[2].file(function(file2) {
+                res.renderFileContents(file2)
+            })
+        }
     }
 })
 ```
@@ -179,6 +184,41 @@ This contains the requested file (Will end with / if is directory)
 This contains the requested file. (Will NOT end with / if is directory)
 
 
+<h1>FileSystem</h1>
+
+`res.getFile(path, callback)`
+This function will get the info on the file/directory
+
+Commands once you get the info: 
+
+`entry.file(callback)`
+This function will read the file as text.
+If you want to display the contents of the file, it is recommended to use `res.renderFileContents()`
+This function will only work on files, not directories
+
+`entry.getDirContents(callback)
+This function will get the contents of the directory in an array. Every file in the array will work with the `.file` and the `.getDirContents` functions
+This function will only work on directories, not files
+From here, you can use the contents to use in the rest of the processing.
+
+If you would like to render the directory listing with the results, you can use these commands.
+When the directory listing is sent, you still need to send res.end()
+
+`res.renderDirectoryListingJSON(results)`
+Will send a stringified json of the directory listing
+
+`res.renderDirectoryListingStaticJs(results)`
+Will send a directory listing that can transition between javascript and static
+
+`res.renderDirectoryListingTemplate(results)`
+Will send a the default javascript directory listing
+
+`res.renderDirectoryListing(results)`
+Will send a plain, static directory listing
+
+
 <h1>Another Useful Tool</h1>
 
-you can use the nodejs `http.get` command
+The `httpRequest` tool has been moved [here](httpRequest.md)
+
+
