@@ -40,15 +40,13 @@ _.extend(BaseHandler.prototype, {
                 this.fs.getByPath(this.app.opts['optCustom'+httpCode+'location'], (file) => {
                     if (! file.error && file.isFile) {
                         file.file(function(data) {
-                            if (httpCode == 404) {
-                                if (this.app.opts.optCustom404usevar) {
-                                    if (this.app.opts.optCustom404usevarvar.replace(' ', '') != '') {
-                                        var data = '<script>window.'+this.app.opts.optCustom404usevarvar+' = "'+this.request.uri+'";</script>\n' + data
-                                    } else {
-                                        this.write('javascript location variable is blank', 500)
-                                        this.finish()
-                                        return
-                                    }
+                            if (this.app.opts['optCustom' + httpCode + 'usevar']) {
+                                if (this.app.opts['optCustom' + httpCode + 'usevarvar'].replace(' ', '') != '') {
+                                    var data = data.replaceAll('{{' + this.app.opts['optCustom' + httpCode + 'usevarvar'] + '}}', this.request.origpath)
+                                } else {
+                                    this.write('javascript location variable is blank for ' + this.app.opts['optCustom' + httpCode + 'usevarvar'], 500)
+                                    this.finish()
+                                    return
                                 }
                             }
                             if (httpCode == 401) {
