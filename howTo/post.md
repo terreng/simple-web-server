@@ -164,6 +164,8 @@ Example:
 console.log(req.body.toString())
 ```
 
+If you used the html form method, all the data will be avaliable under `req.bodyparams`
+
 
 `req.headers`: json string
 This contains all of the headers that the user sent when making the http request
