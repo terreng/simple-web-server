@@ -2,6 +2,7 @@ const path = require('path');
 const fs = require('fs');
 const send = require('send');
 const _ = require('underscore');
+const { URL } = require('url');
 const http = require('http');
 const https = require('https');
 global.atob = require("atob");
@@ -40,11 +41,11 @@ _.extend(BaseHandler.prototype, {
                 this.fs.getByPath(this.app.opts['optCustom'+httpCode+'location'], (file) => {
                     if (! file.error && file.isFile) {
                         file.file(function(data) {
-                            if (this.app.opts['optCustom' + httpCode + 'usevar']) {
-                                if (this.app.opts['optCustom' + httpCode + 'usevarvar'].replace(' ', '') != '') {
-                                    var data = data.replaceAll('{{' + this.app.opts['optCustom' + httpCode + 'usevarvar'] + '}}', this.request.origpath)
+                            if (this.app.opts.optCustomusevar) {
+                                if (this.app.opts.optCustomusevarvar.replace(' ', '') != '') {
+                                    var data = data.replaceAll(this.app.opts.optCustomusevarvar, this.request.origpath.htmlEscape())
                                 } else {
-                                    this.write('javascript location variable is blank for ' + this.app.opts['optCustom' + httpCode + 'usevarvar'], 500)
+                                    this.write('Error Replace Variable is blank', 500)
                                     this.finish()
                                     return
                                 }
@@ -203,6 +204,31 @@ WSC.transformRequest = function(req, res, settings, callback) {
         req.on('end', function() {
             if (curRequest.body.byteLength == 0) {
                 curRequest.body = null
+            } else {
+                var ct = req.headers['content-type']
+                var default_charset = 'utf-8'
+                if (ct) {
+                    var ct = ct.toLowerCase()
+                    if (ct.startsWith('application/x-www-form-urlencoded')) {
+                        var charset_i = ct.indexOf('charset=')
+                        if (charset_i != -1) {
+                            var charset = ct.slice(charset_i + 'charset='.length,
+                                                   ct.length)
+                            console.log('using charset',charset)
+                        } else {
+                            var charset = default_charset
+                        }
+
+                        var bodydata = curRequest.body.toString(charset)
+                        var bodyparams = {}
+                        var items = bodydata.split('&')
+                        for (var i=0; i<items.length; i++) {
+                            var kv = items[i].replace(/\+/g, ' ').split('=')
+                            bodyparams[ decodeURIComponent(kv[0]) ] = decodeURIComponent(kv[1])
+                        }
+                        curRequest.bodyparams = bodyparams
+                    }
+                }
             }
             callback({request: curRequest, app: app})
         })
@@ -213,36 +239,36 @@ WSC.transformRequest = function(req, res, settings, callback) {
 }
 
 WSC.HTTPRequest = function(opts) {
-this.method = opts.method
-this.uri = opts.uri
-this.ip = opts.ip
-this.version = opts.version
-this.headers = opts.headers
-this.body = Buffer.from('')
-this.bodyparams = null
+    this.method = opts.method
+    this.uri = opts.uri
+    this.ip = opts.ip
+    this.version = opts.version
+    this.headers = opts.headers
+    this.body = Buffer.from('')
+    this.bodyparams = null
 
-this.arguments = {}
-var idx = this.uri.indexOf('?')
-if (idx != -1) {
-    this.path = decodeURIComponent(this.uri.slice(0,idx))
-    var s = this.uri.slice(idx+1)
-    var parts = s.split('&')
+    this.arguments = {}
+    var idx = this.uri.indexOf('?')
+    if (idx != -1) {
+        this.path = decodeURIComponent(this.uri.slice(0,idx))
+        var s = this.uri.slice(idx+1)
+        var parts = s.split('&')
 
-    for (var i=0; i<parts.length; i++) {
-        var p = parts[i]
-        var idx2 = p.indexOf('=')
-        this.arguments[decodeURIComponent(p.slice(0,idx2))] = decodeURIComponent(p.slice(idx2+1,s.length))
+        for (var i=0; i<parts.length; i++) {
+            var p = parts[i]
+            var idx2 = p.indexOf('=')
+            this.arguments[decodeURIComponent(p.slice(0,idx2))] = decodeURIComponent(p.slice(idx2+1,s.length))
+        }
+    } else {
+        this.path = decodeURIComponent(this.uri)
     }
-} else {
-    this.path = decodeURIComponent(this.uri)
-}
 
-this.origpath = this.path
+    this.origpath = this.path
 
-if (this.path[this.path.length-1] == '/') {
-    this.path = this.path.slice(0,this.path.length-1)
-}
-return this
+    if (this.path[this.path.length-1] == '/') {
+        this.path = this.path.slice(0,this.path.length-1)
+    }
+    return this
 }
 
 WSC.HTTPRESPONSES = {
@@ -2823,21 +2849,17 @@ httpRequest.prototype = {
         this.headers[k] = v
     },
     open: function(method, url) {
-        this.request.method = method
-        this.request.url = url
-        var q = url.split('//')
-        if (q.length > 1) {
-            var protocol = q[0]
-            var host = q[1].split('/')[0]
-        } else {
-            var protocol = 'http:'
-            var host = q[0].split('/')[0]
+        if (! url.startsWith('http')) {
+            console.error('url must start with http')
+            throw new Error('url must start with http or https')
         }
-        var path = url.split(host).pop()
+        this.method = method
+        const { port, pathname, search, protocol, host } = new URL(url)
+        var path = pathname + search
         if (protocol =='https:') {
-            this.req = https.request({method: method, protocol: protocol, host: host, path: path})
+            this.req = https.request({method: method, protocol: protocol, host: host, path: path, port: port || 443})
         } else {
-            this.req = http.request({method: method, protocol: protocol, host: host, path: path})
+            this.req = http.request({method: method, protocol: protocol, host: host, path: path, port: port || 80})
         }
         this.req.on('error', function(error) {
             if (this.onerror && typeof this.onerror == 'function') {
@@ -2879,7 +2901,7 @@ httpRequest.prototype = {
             request.reDirected = true
             request.headers = this.headers
             request.onload = this.onload
-            request.open(this.request.method, res.headers.location)
+            request.open(this.method, res.headers.location)
             request.send(this.responseData || undefined)
             return
         }
@@ -2953,6 +2975,11 @@ function testHttpRequest() {
     http.open('GET', 'http://www.google.com')
     http.send()
     
+}
+
+String.prototype.htmlEscape = function() {
+    var str = String(this)
+    return str.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;")
 }
 
 

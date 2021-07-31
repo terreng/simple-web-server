@@ -3,77 +3,79 @@ const { networkInterfaces } = require('os');
 const path = require('path');
 const fs = require('fs');
 const http = require('http');
+const { URL } = require('url');
+const net = require('net');
 WSC = require("./WSC.js");
 
 //let tray //There seem to be problems with the tray discarding. Could you take a look at it?
 
 console = function(old_console) {
-	return {
-		log: function() {
-			var args = Array.prototype.slice.call(arguments);
-			old_console.log.apply(old_console, args);
-			if (mainWindow) {
-				try { // Sending large values may not work... How can we fix this?
-					mainWindow.webContents.send('console', {args: args, method: 'log'});
-				} catch(e) {
-					old_console.error('failed to send log')
-				}
-			}
-		},
-		warn: function() {
-			var args = Array.prototype.slice.call(arguments);
-			old_console.warn.apply(old_console, args);
-			if (mainWindow) {
-				try {
-					mainWindow.webContents.send('console', {args: args, method: 'warn'});
-				} catch(e) {
-					old_console.error('failed to send log')
-				}
-			}
-		},
-		error: function() {
-			var args = Array.prototype.slice.call(arguments);
-			old_console.error.apply(old_console, args);
-			if (mainWindow) {
-				try {
-					mainWindow.webContents.send('console', {args: args, method: 'error'});
-				} catch(e) {
-					old_console.error('failed to send log')
-				}
-			}
-		},
-		assert: function() {
-			var args = Array.prototype.slice.call(arguments);
-			old_console.assert.apply(old_console, args);
-			if (mainWindow) {
-				try {
-					mainWindow.webContents.send('console', {args: args, method: 'assert'});
-				} catch(e) {
-					old_console.error('failed to send log')
-				}
-			}
-		}
-	}
+    return {
+        log: function() {
+            var args = Array.prototype.slice.call(arguments);
+            old_console.log.apply(old_console, args);
+            if (mainWindow) {
+                try { // Sending large values may not work... How can we fix this? UPDATE - It isnt because of large variables, it is because the log contains a function
+                    mainWindow.webContents.send('console', {args: args, method: 'log'});
+                } catch(e) {
+                    old_console.error('failed to send log')
+                }
+            }
+        },
+        warn: function() {
+            var args = Array.prototype.slice.call(arguments);
+            old_console.warn.apply(old_console, args);
+            if (mainWindow) {
+                try {
+                    mainWindow.webContents.send('console', {args: args, method: 'warn'});
+                } catch(e) {
+                    old_console.error('failed to send log')
+                }
+            }
+        },
+        error: function() {
+            var args = Array.prototype.slice.call(arguments);
+            old_console.error.apply(old_console, args);
+            if (mainWindow) {
+                try {
+                    mainWindow.webContents.send('console', {args: args, method: 'error'});
+                } catch(e) {
+                    old_console.error('failed to send log')
+                }
+            }
+        },
+        assert: function() {
+            var args = Array.prototype.slice.call(arguments);
+            old_console.assert.apply(old_console, args);
+            if (mainWindow) {
+                try {
+                    mainWindow.webContents.send('console', {args: args, method: 'assert'});
+                } catch(e) {
+                    old_console.error('failed to send log')
+                }
+            }
+        }
+    }
 } (console);
 
 const quit = function(event) {
-	isQuitting = true;
-	//if (tray) {
-	//	tray.destroy()
-	//}
+    isQuitting = true;
+    //if (tray) {
+    //    tray.destroy()
+    //}
     app.quit()
 };
 
 function getIPs() {
     let ifaces = networkInterfaces();
     var ips = [ ]
-	for(var k in ifaces) {
-		for (var i=0; i<ifaces[k].length; i++) {
-			if (! (ifaces[k][i].address.startsWith('fe80:') || ifaces[k][i].address.startsWith('::') || ifaces[k][i].address.startsWith('127.0'))) {
-				ips.push(ifaces[k][i].address)
-			}
-		}
-	}
+    for(var k in ifaces) {
+        for (var i=0; i<ifaces[k].length; i++) {
+            if (! (ifaces[k][i].address.startsWith('fe80:') || ifaces[k][i].address.startsWith('::') || ifaces[k][i].address.startsWith('127.0'))) {
+                ips.push(ifaces[k][i].address)
+            }
+        }
+    }
     return ips
 }
 
@@ -91,11 +93,11 @@ app.on('second-instance', function (event, commandLine, workingDirectory) {
 })
 
 app.on('ready', function() {
-	/**
-	tray = new Tray('images/icon.ico')
+    /**
+    tray = new Tray('images/icon.ico')
     const contextMenu = Menu.buildFromTemplate([
       { label: 'Show', click:  function(){ if (mainWindow) {mainWindow.show()} } },
-	  { label: 'Exit', click:  function(){ quit() } }
+      { label: 'Exit', click:  function(){ quit() } }
     ])
     tray.setToolTip('Simple Web Server')
     tray.setContextMenu(contextMenu)
@@ -104,7 +106,7 @@ app.on('ready', function() {
             mainWindow.show();
         }
     })
-	*/
+    */
     try {
         config = JSON.parse(fs.readFileSync(path.join(app.getPath('userData'), "config.json")));
     } catch(error) {
@@ -116,9 +118,9 @@ app.on('ready', function() {
 
 app.on('window-all-closed', function () {
     if (config.background !== true) {
-		//if (tray) {
-		//	tray.destroy()
-		//}
+        //if (tray) {
+        //    tray.destroy()
+        //}
         app.quit()
     } else {
         //Stay running even when all windows closed
@@ -213,11 +215,11 @@ function startServers() {
 
     function createServers() {
         for (var i = 0; i < (config.servers || []).length; i++) {
-			createServer(config.servers[i]);
+            createServer(config.servers[i]);
         }
         function createServer(serverconfig) {
             if (serverconfig.enabled) {
-				var hostname = serverconfig.localnetwork ? '0.0.0.0' : '127.0.0.1';
+                var hostname = serverconfig.localnetwork ? '0.0.0.0' : '127.0.0.1';
                 const server = http.createServer(function (req, res) {
                     WSC.transformRequest(req, res, serverconfig, function(requestApp) {
                         if (['GET','HEAD','PUT','POST','DELETE','OPTIONS'].includes(requestApp.request.method)) {
@@ -230,6 +232,28 @@ function startServers() {
                             res.end()
                         }
                     })
+                });
+                /**
+                if (serverconfig.proxy) {
+                    server.on('connect', (req, clientSocket, head) => {
+                        console.log(req.socket.remoteAddress + ':', 'Request',req.method, req.url)
+                        const { port, hostname } = new URL(`http://${req.url}`)
+                        const serverSocket = net.connect(port || 443, hostname, () => {
+                            clientSocket.write('HTTP/1.1 200 Connection Established\r\n' +
+                                               'Proxy-agent: Simple-Web-Server-Proxy\r\n' +
+                                               '\r\n')
+                            serverSocket.write(head)
+                            serverSocket.pipe(clientSocket)
+                            clientSocket.pipe(serverSocket)
+                        })
+                    })
+                }
+                */
+                server.on('clientError', (err, socket) => {
+                    if (err.code === 'ECONNRESET' || !socket.writable) {
+                        return;
+                    }
+                    socket.end('HTTP/1.1 400 Bad Request\r\n\r\n');
                 });
                 server.on('error', function(err) {
                     console.error(err);

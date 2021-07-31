@@ -222,3 +222,7 @@ Will send a plain, static directory listing
 The `httpRequest` tool has been moved [here](httpRequest.md)
 
 
+
+Want to create a script compatible between this server and [Web Server For Chrome](https://github.com/ethanaobrien/web-server-chrome)?
+
+The `appInfo` variable will tell you which server you are using
