@@ -53,7 +53,7 @@
         <!--Edit server-->
         <div class="top_title" id="server_title">
             <div class="title_icon" onclick="backToMain()"><i class="material-icons">arrow_back</i></div>
-            <div class="title_text">Edit Server</div>
+            <div class="title_text" id="edit_server_title">Edit Server</div>
         </div>
 
         <div class="container" id="server_container">
@@ -119,15 +119,21 @@
 
             </div>
 
-            <div class="button_row" id="delete_server">
-                <div class="button left" onclick="deleteServer()" style="background-color: #f44336;">Delete Server</div>
-            </div>
+            <div class="button left" onclick="deleteServer()" style="background-color: #f44336;">Delete Server</div>
 
         </div>
 
         <div class="button_row" id="server_actions">
             <div class="button left" onclick="cancelAddServer()">Cancel</div>
             <div class="button primary" onclick="submitAddServer()" id="submit_button">Save Changes</div>
+        </div>
+
+        <div id="prompt_bk" onclick="hidePrompt()"></div>
+
+        <div id="prompt">
+            <div id="prompt_title"></div>
+            <div id="prompt_text"></div>
+            <div id="prompt_actions"></div>
         </div>
 
         <script src="main.js"></script>

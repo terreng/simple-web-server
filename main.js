@@ -52,6 +52,13 @@ var activeeditindex = false;
 
 function addServer(editindex) {
     navigate("server");
+    if (editindex != null) {
+        document.querySelector("#edit_server_title").innerText = "Edit Server";
+        document.querySelector("#submit_button").innerText = "Save Changes";
+    } else {
+        document.querySelector("#edit_server_title").innerText = "Add Server";
+        document.querySelector("#submit_button").innerText = "Create Server";
+    }
     activeeditindex = (editindex != null ? editindex : false);
 
     if (editindex != null) {
@@ -224,4 +231,37 @@ return str;
 }
 str = String(str);
 return str.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;");
+}
+
+function showPrompt(title, content, buttons) {
+    document.getElementById("prompt_bk").style.pointerEvents = "";
+    document.getElementById("prompt").classList.add("prompt_show");
+    document.getElementById("prompt").classList.remove("prompt_hide");
+    document.getElementById("prompt_bk").classList.add("active");
+    
+    if (title) {
+        document.getElementById("prompt_title").innerHTML = title;
+        document.getElementById("prompt_title").style.display = "";
+    } else {
+        document.getElementById("prompt_title").style.display = "none";
+    }
+    document.getElementById("prompt_text").innerHTML = content;
+
+    if (buttons) {
+        document.getElementById("prompt_actions").style.display = "block";
+        document.getElementById("prompt_actions").innerHTML = buttons.map(function(a, b, c) {return '<div class="button ' + b + '" style="margin-left: 10px;" onclick="' + (typeof c == "string" ? c : "") + '"><span>' + a + '</span></div>'}).join("");;
+        for (var i = 0; i < buttons.length; i++) {
+            if (typeof buttons[i][2] == "function") {
+                document.getElementById("prompt_actions").children[i].onclick = buttons[i][2];
+            }
+        }
+    } else {
+        document.getElementById("prompt_actions").style.display = "none";
+    }
+}
+
+function hidePrompt() {
+    document.getElementById("prompt").classList.add("prompt_hide");
+    document.getElementById("prompt").classList.remove("prompt_show");
+    document.getElementById("prompt_bk").classList.remove("active");
 }

@@ -160,7 +160,7 @@ function createWindow() {
         icon: "images/icon.ico",
         webPreferences: {
             //webSecurity: false,
-            scrollBounce: true,
+            scrollBounce: false,
             nodeIntegration: false,
             contextIsolation: true,
             enableRemoteModule: true,
