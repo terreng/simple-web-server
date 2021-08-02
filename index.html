@@ -5,7 +5,10 @@
         <link rel="stylesheet" href="style.css">
     </head>
     <body style="display: none;">
-        <div class="top_title">Simple Web Server</div>
+        <div class="top_title">
+            <div>Simple Web Server</div>
+            <div><i class="material-icons">settings</i></div>
+        </div>
         <div id="servers">
             <div id="servers_list">
                 <div class="server">
@@ -23,7 +26,8 @@
                 </div>
             </div>
             <div class="button_row">
-                <div class="button" onclick="addServer()">Add Server</div>
+                <div class="button left" onclick="window.api.quit()">Quit</div>
+                <div class="button primary" onclick="addServer()">Add Server</div>
             </div>
             <div class="settings_title">Options</div>
 
@@ -32,15 +36,11 @@
                 <label for="background">Run in background</label>
             </div>
 
-            <div class="button_row">
-                <div class="button secondary" onclick="window.api.quit()">Quit</div>
-            </div>
-
             <div style="padding: 10px;padding-top:20px;">Version 1.0.0<br>Open source, MIT License<br><a href="https://github.com/terreng/web-server" target="_blank" onclick="window.api.openExternal(this.href);event.preventDefault()">https://github.com/terreng/web-server</a></div>
         </div>
         <div id="server_settings" style="display: none;">
             <div class="button_row">
-                <div for="file_picker" class="button secondary" onclick="var chosen_path = window.api.showPicker(); if (chosen_path) {current_path = chosen_path[0]};updateCurrentPath();">Choose Folder</div>
+                <div for="file_picker" class="button left" onclick="var chosen_path = window.api.showPicker(); if (chosen_path) {current_path = chosen_path[0]};updateCurrentPath();">Choose Folder</div>
             </div>
             
             <div id="current_directory">Current directory: </div>
@@ -104,12 +104,12 @@
             </div>
 
             <div class="button_row" id="delete_server">
-                <div class="button secondary" onclick="deleteServer()" style="background-color: #f44336;">Delete Server</div>
+                <div class="button left" onclick="deleteServer()" style="background-color: #f44336;">Delete Server</div>
             </div>
 
             <div class="button_row">
-                <div class="button secondary" onclick="cancelAddServer()">Cancel</div>
-                <div class="button" onclick="submitAddServer()" id="submit_button">Submit</div>
+                <div class="button left" onclick="cancelAddServer()">Cancel</div>
+                <div class="button primary" onclick="submitAddServer()" id="submit_button">Submit</div>
             </div>
         </div>
         <script src="main.js"></script>

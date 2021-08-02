@@ -59,25 +59,54 @@
 body {
     margin: 0px;
     font-family: 'Roboto', sans-serif;
-    background: white;
+    --background: white;
+    --elevated: white;
+    --hover: rgba(0, 0, 0, 0.1);
+    --active: rgba(0, 0, 0, 0.25);
+    --text-primary: black;
+    --text-secondary: gray;
+    --line: gray;
+    --button: gray;
+    --button-hover: gray;
+    --button-active: gray;
+    --button-primary: blue;
+    --button-primary-hover: blue;
+    --button-primary-active: blue;
+    --shadow: rgba(0, 0, 0, 0.5);
+    background: var(--background);
     user-select: none;
 }
 
 .top_title {
-    padding: 20px;
-    font-size: 22px;
-    font-weight: 600;
-    color: white;
-    background: #3f51b5;
-    box-shadow: 0px 0px 10px #2d2d2d;
-    z-index: 999;
+    height: 60px;
+    background: var(--elevated);
+    box-shadow: 0px 0px 10px var(--shadow);
+    z-index: 10;
     position: relative;
+    top: 0;
+    left: 0;
+    right: 0;
+    position: fixed;
+}
+
+.top_title > div:first-child {
+    font-size: 22px;
+    line-height: 22px;
+    padding-top: 19px;
+    padding-left: 12px;
+    font-weight: 500;
+    color: var(--text-primary);
+    float: left;
+}
+
+.top_title > div:nth-child(2) {
+    float: right;
 }
 
 .server {
     padding: 15px;
     height: 50px;
-    border-bottom: 1px solid #c5c5c5;
+    border-bottom: 1px solid var(--line);
     border-right: solid #f44336 8px;
 }
 
@@ -119,23 +148,54 @@ body {
 .button_row {
     padding: 10px;
     overflow: hidden;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: var(--elevated);
+    height: 40px;
+    box-shadow: 0px 0px 10px var(--shadow);
+    z-index: 10;
 }
 
 .button {
-    font-weight: 600;
+    font-weight: 500;
     font-size: 20px;
+    line-height: 20px;
     padding: 10px;
-    background-color: #2196f3;
+    background-color: var(--button);
     color: white;
     float: right;
     border-radius: 4px;
-    box-shadow: 0px 1px 3px 0px #636363;
+    box-shadow: 0px 1px 3px 0px var(--shadow);
     cursor: pointer;
+    transition: background-color 0.2s;
 }
 
-.button.secondary {
+.button:hover {
+    background-color: var(--button-hover);
+    box-shadow: 0px 1px 4px 0px var(--shadow);
+}
+
+.button:active {
+    background-color: var(--button-active);
+    box-shadow: 0px 2px 5px 0px var(--shadow);
+}
+
+.button.primary {
+    background-color: var(--button-primary);
+}
+
+.button.primary:hover {
+    background-color: var(--button-primary-hover);
+}
+
+.button.primary:active {
+    background-color: var(--button-primary-active);
+}
+
+.button.left {
     float: left;
-    background-color: #607d8b;
 }
 
 #current_directory {
@@ -147,7 +207,7 @@ body {
 .settings_title {
     font-size: 18px;
     padding: 10px;
-    font-weight: 600;
+    font-weight: 500;
 }
 
 .settings_server_list ul {
