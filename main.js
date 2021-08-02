@@ -4,35 +4,54 @@ var ip;
 window.api.initipc(function (event, message) {
     config = message.config;
     ip = message.ip;
+    openMain();
     document.body.style.display = "block";
-    renderServerList();
-    document.querySelector("#background").checked = config.background;
 });
 
-function renderServerList() {
-var pendhtml = "";
-if (config.servers) {
-for (var i = 0; i < config.servers.length; i++) {
-    pendhtml += '<div class="server '+(config.servers[i].enabled ? "enabled" : "")+'"><div><input type="checkbox" '+(config.servers[i].enabled ? "checked" : "")+' oninput="checkboxChanged()"></div><div onclick="addServer('+i+')"><div>'+htmlescape(config.servers[i].path.split(/[\/\\]/)[config.servers[i].path.split(/[\/\\]/).length-1])+'</div><div>:'+String(config.servers[i].port)+'</div></div></div>'
-}
-}
-document.getElementById("servers_list").innerHTML = pendhtml;
+var screens = ["main", "settings", "server"]
+function navigate(screen) {
+    for (var i = 0; i < screens.length; i++) {
+        if (document.getElementById(screens[i]+"_title")) {
+            document.getElementById(screens[i]+"_title").style.display = (screens[i] == screen ? "block" : "none");
+        }
+        if (document.getElementById(screens[i]+"_container")) {
+            document.getElementById(screens[i]+"_container").style.display = (screens[i] == screen ? "block" : "none");
+        }
+        if (document.getElementById(screens[i]+"_actions")) {
+            document.getElementById(screens[i]+"_actions").style.display = (screens[i] == screen ? "block" : "none");
+        }
+    }
 }
 
-function htmlescape(str) {
-if (str == undefined) {
-return str;
+function openMain() {
+    navigate("main");
+    renderServerList();
 }
-str = String(str);
-return str.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;");
+
+function backToMain() {
+    openMain();
+}
+
+function renderServerList() {
+    var pendhtml = "";
+    if (config.servers) {
+    for (var i = 0; i < config.servers.length; i++) {
+        pendhtml += '<div class="server '+(config.servers[i].enabled ? "enabled" : "")+'"><div><input type="checkbox" '+(config.servers[i].enabled ? "checked" : "")+' oninput="checkboxChanged()"></div><div onclick="addServer('+i+')"><div>'+htmlescape(config.servers[i].path.split(/[\/\\]/)[config.servers[i].path.split(/[\/\\]/).length-1])+'</div><div>:'+String(config.servers[i].port)+'</div></div></div>'
+    }
+    }
+    document.getElementById("servers_list").innerHTML = pendhtml;
+}
+
+function openSettings() {
+    navigate("settings");
+    document.querySelector("#background").checked = config.background;
 }
 
 var current_path = false;
 var activeeditindex = false;
 
 function addServer(editindex) {
-    document.querySelector("#server_settings").style.display = "block";
-    document.querySelector("#servers").style.display = "none";
+    navigate("server");
     activeeditindex = (editindex != null ? editindex : false);
 
     if (editindex != null) {
@@ -87,8 +106,7 @@ function addServer(editindex) {
 }
 
 function cancelAddServer() {
-    document.querySelector("#server_settings").style.display = "none";
-    document.querySelector("#servers").style.display = "block";
+    navigate("main");
 }
 
 function submitAddServer() {
@@ -112,8 +130,7 @@ function submitAddServer() {
         } else {
             config.servers.push(server_object)
         }
-        document.querySelector("#server_settings").style.display = "none";
-        document.querySelector("#servers").style.display = "block";
+        navigate("main");
         renderServerList();
         window.api.saveconfig(config);
     }
@@ -121,8 +138,7 @@ function submitAddServer() {
 
 function deleteServer() {
     config.servers.splice(activeeditindex, 1);
-    document.querySelector("#server_settings").style.display = "none";
-    document.querySelector("#servers").style.display = "block";
+    navigate("main");
     renderServerList();
     window.api.saveconfig(config);
 }
@@ -200,4 +216,12 @@ if (validatePath(document.querySelector("#rewriteto").value)) {
 } else {
     document.querySelector("#rewriteto").parentElement.nextElementSibling.style.display = "block";
 }
+}
+
+function htmlescape(str) {
+if (str == undefined) {
+return str;
+}
+str = String(str);
+return str.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;");
 }

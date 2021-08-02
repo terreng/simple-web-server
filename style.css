@@ -61,11 +61,14 @@ body {
     font-family: 'Roboto', sans-serif;
     --background: white;
     --elevated: white;
-    --hover: rgba(0, 0, 0, 0.1);
-    --active: rgba(0, 0, 0, 0.25);
-    --text-primary: black;
-    --text-secondary: gray;
-    --line: gray;
+    --icon-hover: #ebebeb;
+    --icon-active: #dedede;
+    --hover: #efefef;
+    --active: #e6e6e6;
+    --text-primary: #1b1b1b;
+    --text-secondary: #484848;
+    --icons: #424242;
+    --line: #c3c3c3;
     --button: gray;
     --button-hover: gray;
     --button-active: gray;
@@ -89,18 +92,52 @@ body {
     position: fixed;
 }
 
-.top_title > div:first-child {
+.top_title > .title_text {
     font-size: 22px;
     line-height: 22px;
     padding-top: 19px;
     padding-left: 12px;
     font-weight: 500;
     color: var(--text-primary);
+    width: calc(100% - 60px - 12px);
     float: left;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
 }
 
-.top_title > div:nth-child(2) {
-    float: right;
+.top_title > .title_text:nth-child(2) {
+    padding-left: 2px;
+    width: calc(100% - 60px - 2px);
+}
+
+.top_title > .title_icon {
+    width: 32px;
+    height: 32px;
+    padding: 7px;
+    margin: 7px;
+    float: left;
+    transition: 0.1s background-color;
+    border-radius: 32px;
+    cursor: pointer;
+}
+
+.top_title > .title_icon:hover {
+    background-color: var(--icon-hover);
+}
+
+.top_title > .title_icon:active {
+    background-color: var(--icon-active);
+}
+
+.top_title > .title_icon i {
+    font-size: 32px;
+    color: var(--icons);
+}
+
+.container {
+    margin-top: 60px;
+    margin-bottom: 60px;
 }
 
 .server {
@@ -162,14 +199,14 @@ body {
     font-weight: 500;
     font-size: 20px;
     line-height: 20px;
-    padding: 10px;
+    padding: 10px 12px;
     background-color: var(--button);
     color: white;
     float: right;
-    border-radius: 4px;
+    border-radius: 6px;
     box-shadow: 0px 1px 3px 0px var(--shadow);
     cursor: pointer;
-    transition: background-color 0.2s;
+    transition: background-color 0.1s, box-shadow 0.1s;
 }
 
 .button:hover {

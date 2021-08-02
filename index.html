@@ -5,11 +5,14 @@
         <link rel="stylesheet" href="style.css">
     </head>
     <body style="display: none;">
-        <div class="top_title">
-            <div>Simple Web Server</div>
-            <div><i class="material-icons">settings</i></div>
+
+        <!--Main server list-->
+        <div class="top_title" id="main_title">
+            <div class="title_text">Simple Web Server</div>
+            <div class="title_icon" onclick="openSettings()"><i class="material-icons">settings</i></div>
         </div>
-        <div id="servers">
+
+        <div class="container" id="main_container">
             <div id="servers_list">
                 <div class="server">
                     <div>
@@ -25,12 +28,20 @@
                     </div>
                 </div>
             </div>
-            <div class="button_row">
-                <div class="button left" onclick="window.api.quit()">Quit</div>
-                <div class="button primary" onclick="addServer()">Add Server</div>
-            </div>
-            <div class="settings_title">Options</div>
+        </div>
 
+        <div class="button_row" id="main_actions">
+            <div class="button left" onclick="window.api.quit()">Quit</div>
+            <div class="button primary" onclick="addServer()">New Server</div>
+        </div>
+
+        <!--Global settings-->
+        <div class="top_title" id="settings_title">
+            <div class="title_icon" onclick="backToMain()"><i class="material-icons">arrow_back</i></div>
+            <div class="title_text">Settings</div>
+        </div>
+
+        <div class="container" id="settings_container">
             <div class="checkbox_option">
                 <input type="checkbox" id="background" name="background" oninput="runinbkchanged()">
                 <label for="background">Run in background</label>
@@ -38,10 +49,15 @@
 
             <div style="padding: 10px;padding-top:20px;">Version 1.0.0<br>Open source, MIT License<br><a href="https://github.com/terreng/web-server" target="_blank" onclick="window.api.openExternal(this.href);event.preventDefault()">https://github.com/terreng/web-server</a></div>
         </div>
-        <div id="server_settings" style="display: none;">
-            <div class="button_row">
-                <div for="file_picker" class="button left" onclick="var chosen_path = window.api.showPicker(); if (chosen_path) {current_path = chosen_path[0]};updateCurrentPath();">Choose Folder</div>
-            </div>
+
+        <!--Edit server-->
+        <div class="top_title" id="server_title">
+            <div class="title_icon" onclick="backToMain()"><i class="material-icons">arrow_back</i></div>
+            <div class="title_text">Edit Server</div>
+        </div>
+
+        <div class="container" id="server_container">
+            <div for="file_picker" class="button left" onclick="var chosen_path = window.api.showPicker(); if (chosen_path) {current_path = chosen_path[0]};updateCurrentPath();">Choose Folder</div>
             
             <div id="current_directory">Current directory: </div>
 
@@ -107,11 +123,13 @@
                 <div class="button left" onclick="deleteServer()" style="background-color: #f44336;">Delete Server</div>
             </div>
 
-            <div class="button_row">
-                <div class="button left" onclick="cancelAddServer()">Cancel</div>
-                <div class="button primary" onclick="submitAddServer()" id="submit_button">Submit</div>
-            </div>
         </div>
+
+        <div class="button_row" id="server_actions">
+            <div class="button left" onclick="cancelAddServer()">Cancel</div>
+            <div class="button primary" onclick="submitAddServer()" id="submit_button">Save Changes</div>
+        </div>
+
         <script src="main.js"></script>
     </body>
 </html>
