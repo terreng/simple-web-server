@@ -1354,7 +1354,7 @@ getByPath.prototype = {
         }.bind(this))
     },
     getDirContents: function(callback) {
-        if (! this.isFile) {
+        if (this.isFile) {
             callback({error: 'Cannot preform on file'})
             return
         }
