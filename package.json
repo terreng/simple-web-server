@@ -19,7 +19,7 @@
     }
   ],
   "license": "MIT",
-  "homepage": "https://github.com/terreng/simple-web-server",
+  "homepage": "https://terreng.github.io/simple-web-server/",
   "bugs": "https://github.com/terreng/simple-web-server/issues",
   "scripts": {
     "start": "electron-forge start",
