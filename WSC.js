@@ -42,7 +42,7 @@ _.extend(BaseHandler.prototype, {
                     if (! file.error && file.isFile) {
                         file.file(function(data) {
                             if (this.app.opts.optCustomusevar) {
-                                if (this.app.opts.optCustomusevarvar.replace(' ', '') != '') {
+                                if (this.app.opts.optCustomusevarvar.trim().length > 0) {
                                     var data = data.replaceAll(this.app.opts.optCustomusevarvar, this.request.origpath.htmlEscape())
                                 } else {
                                     this.write('Error Replace Variable is blank', 500)
@@ -2978,8 +2978,7 @@ function testHttpRequest() {
 }
 
 String.prototype.htmlEscape = function() {
-    var str = String(this)
-    return str.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;")
+    return String(this).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;")
 }
 
 
