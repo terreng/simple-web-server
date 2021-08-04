@@ -74,10 +74,20 @@ body {
     --button-hover: #fff6e2;
     --button-active: #ffeabb;
     --button-primary: #d09608;
+    --button-primary-text: white;
     --button-primary-hover: #c18b06;
     --button-primary-active: #a97904;
-    --shadow: rgba(0, 0, 0, 0.5);
+    --button-destructive: #f44336;
+    --button-destructive-text: #f44336;
+    --button-destructive-hover: #fff2f1;
+    --button-destructive-active: #ffd8d5;
+    --switch-off-bk: #9E9E9E;
+    --switch-off-head: #ececec;
+    --switch-on-bk: #ffdb83;
+    --switch-on-head: #d09608;
+    --shadow: rgba(0, 0, 0, 0.3);
     background: var(--background);
+    color: var(--text-primary);
     user-select: none;
 }
 
@@ -236,7 +246,7 @@ body {
 .button.primary {
     background-color: var(--button-primary);
     border-color: var(--button-primary);
-    color: white;
+    color: var(--button-primary-text);
 }
 
 .button.primary:hover {
@@ -247,6 +257,19 @@ body {
 .button.primary:active {
     background-color: var(--button-primary-active);
     border-color: var(--button-primary-active);
+}
+
+.button.destructive {
+    border: 2px solid var(--button-destructive);
+    color: var(--button-destructive-text);
+}
+
+.button.destructive:hover {
+    background-color: var(--button-destructive-hover);
+}
+
+.button.destructive:active {
+    background-color: var(--button-destructive-active);
 }
 
 .button.left {
@@ -394,4 +417,66 @@ body {
     animation: 0.2s prompt_hide forwards;
     visibility: hidden;
     pointer-events: none !important;
+}
+
+.switch {
+    position: relative;
+    display: block;
+    width: 50px;
+    height: 25px;
+    float: left;
+}
+
+.switch:before {
+    left: 5px;
+    top: 4px;
+    width: 40px;
+    height: 18px;
+    background-color: var(--switch-off-bk);
+    border-radius: 20px;
+    content: "";
+    position: absolute;
+    margin: 0;
+    outline: 0;
+    transition: all 0.25s ease;
+}
+
+.switch:after {
+    left: 0px;
+    top: 0px;
+    width: 25px;
+    height: 25px;
+    background-color: var(--switch-off-head);
+    border-radius: 50%;
+    box-shadow: 0 3px 1px -2px rgb(0 0 0 / 14%), 0 2px 2px 0 rgb(0 0 0 / 10%), 0 1px 5px 0 rgb(0 0 0 / 8%);
+    content: "";
+    position: absolute;
+    margin: 0;
+    outline: 0;
+    transition: all 0.25s ease;
+}
+
+.checked .switch:before {
+    background-color: var(--switch-on-bk);
+}
+
+.checked .switch:after {
+    background-color: var(--switch-on-head);
+    transform: translateX(24px);
+}
+
+.switch_option {
+    padding: 12px;
+    padding-top: 16px;
+    padding-bottom: 4px;
+    overflow: hidden;
+    cursor: pointer;
+}
+
+.switch_option .label {
+    float: left;
+    font-size: 18px;
+    padding-left: 10px;
+    width: calc(100% - 60px);
+    padding-top: 1px;
 }

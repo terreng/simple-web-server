@@ -42,9 +42,9 @@
         </div>
 
         <div class="container" id="settings_container">
-            <div class="checkbox_option">
-                <input type="checkbox" id="background" name="background" oninput="runinbkchanged()">
-                <label for="background">Run in background</label>
+            <div class="switch_option" id="background" onclick="toggleRunInBk()">
+                <div class="switch"></div>
+                <div class="label">Keep running when closed</div>
             </div>
 
             <div style="padding: 10px;padding-top:20px;">Version 1.0.0<br>Open source, MIT License<br><a href="https://github.com/terreng/web-server" target="_blank" onclick="window.api.openExternal(this.href);event.preventDefault()">https://github.com/terreng/web-server</a></div>
@@ -119,7 +119,7 @@
 
             </div>
 
-            <div class="button left" onclick="deleteServer()" id="delete_server" style="background-color: #f44336;">Delete Server</div>
+            <div class="button left destructive" onclick="deleteServer()" id="delete_server">Delete Server</div>
 
         </div>
 

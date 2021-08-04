@@ -44,7 +44,11 @@ function renderServerList() {
 
 function openSettings() {
     navigate("settings");
-    document.querySelector("#background").checked = config.background;
+    if (config.background) {
+        document.querySelector("#background").classList.add("checked");
+    } else {
+        document.querySelector("#background").classList.remove("checked");
+    }
 }
 
 var current_path = false;
@@ -159,8 +163,14 @@ renderServerList();
 window.api.saveconfig(config);
 }
 
-function runinbkchanged() {
-config.background = document.querySelector("#background").checked;
+function toggleRunInBk() {
+if (config.background) {
+    document.querySelector("#background").classList.remove("checked");
+    config.background = false;
+} else {
+    document.querySelector("#background").classList.add("checked");
+    config.background = true
+}
 window.api.saveconfig(config);
 }
 
