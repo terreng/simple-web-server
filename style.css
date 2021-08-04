@@ -69,12 +69,13 @@ body {
     --text-secondary: #484848;
     --icons: #424242;
     --line: #c3c3c3;
-    --button: gray;
-    --button-hover: gray;
-    --button-active: gray;
-    --button-primary: blue;
-    --button-primary-hover: blue;
-    --button-primary-active: blue;
+    --button: #d09608;
+    --button-text: #ad7d06;
+    --button-hover: #fff6e2;
+    --button-active: #ffeabb;
+    --button-primary: #d09608;
+    --button-primary-hover: #c18b06;
+    --button-primary-active: #a97904;
     --shadow: rgba(0, 0, 0, 0.5);
     background: var(--background);
     user-select: none;
@@ -213,36 +214,39 @@ body {
     font-weight: 500;
     font-size: 20px;
     line-height: 20px;
-    padding: 10px 12px;
-    background-color: var(--button);
-    color: white;
+    padding: 8px 10px;
+    background-color: transparent;
+    border: 2px solid var(--button);
+    color: var(--button-text);
     float: right;
     border-radius: 6px;
-    box-shadow: 0px 1px 3px 0px var(--shadow);
+    /* box-shadow: 0px 1px 3px 0px var(--shadow); */
     cursor: pointer;
-    transition: background-color 0.1s, box-shadow 0.1s;
+    transition: background-color 0.1s, box-shadow 0.1s, border-color 0.1s;
 }
 
 .button:hover {
     background-color: var(--button-hover);
-    box-shadow: 0px 1px 4px 0px var(--shadow);
 }
 
 .button:active {
     background-color: var(--button-active);
-    box-shadow: 0px 2px 5px 0px var(--shadow);
 }
 
 .button.primary {
     background-color: var(--button-primary);
+    border-color: var(--button-primary);
+    color: white;
 }
 
 .button.primary:hover {
     background-color: var(--button-primary-hover);
+    border-color: var(--button-primary-hover);
 }
 
 .button.primary:active {
     background-color: var(--button-primary-active);
+    border-color: var(--button-primary-active);
 }
 
 .button.left {
