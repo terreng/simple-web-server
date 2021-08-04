@@ -1,10 +1,26 @@
 {
-  "name": "web-server",
+  "name": "simple-web-server",
   "productName": "Simple Web Server",
   "version": "1.0.0",
   "main": "index.js",
-  "description": "Simple Web Server",
-  "author": "terreng",
+  "description": "A continuation of Web Server for Chrome, built with Electron.",
+  "author": {
+    "name": "Terren Gurule",
+    "url": "https://github.com/terreng"
+  },
+  "contributors": [
+    {
+      "name": "Ethan O'Brien",
+      "url": "https://github.com/ethanaobrien"
+    },
+    {
+      "name": "Kyle Graehl",
+      "url": "https://github.com/kzahel"
+    }
+  ],
+  "license": "MIT",
+  "homepage": "https://terreng.github.io/simple-web-server/",
+  "bugs": "https://github.com/terreng/simple-web-server/issues",
   "scripts": {
     "start": "electron-forge start",
     "package": "electron-forge package",
