@@ -239,9 +239,9 @@ WSC.transformRequest = function(req, res, settings, callback) {
 }
 
 WSC.HTTPRequest = function(opts) {
-	if (opts.uri.split('..').length > 1) {
-		opts.uri = WSC.utils.relativePath(opts.uri, '')
-	}
+    if (opts.uri.split('..').length > 1) {
+        opts.uri = WSC.utils.relativePath(opts.uri, '')
+    }
     this.method = opts.method
     this.uri = opts.uri
     this.ip = opts.ip
@@ -1324,7 +1324,7 @@ function getByPath(path, callback, FileSystem) {
         var path = '/' + path
     }
     this.origpath = path.replaceAll('//', '/')
-	this.fullPath = this.origpath
+    this.fullPath = this.origpath
     var path = this.fs.mainPath + path
     this.path = path.replaceAll('//', '/')
     this.callback = callback
@@ -1334,18 +1334,18 @@ getByPath.prototype = {
     getFile: function() {
         fs.stat(this.path, function(error, stats) {
             if (error) {
-				if (error.path && typeof error.path == 'string' && error.errno == -4048) {
-					var err = { }
-					err.path = error.path.replaceAll('\\', '/').replaceAll('//', '/')
-					if (error.path.endsWith('/')) {
-						var split = err.path.split('/')
-						err.name = split[split.length-1]
-					} else {
-						err.name = err.path.split('/').pop()
-					}
-					err.error = error
-				}
-				var err = err || {error: error}
+                if (error.path && typeof error.path == 'string' && error.errno == -4048) {
+                    var err = { }
+                    err.path = error.path.replaceAll('\\', '/').replaceAll('//', '/')
+                    if (error.path.endsWith('/')) {
+                        var split = err.path.split('/')
+                        err.name = split[split.length-1]
+                    } else {
+                        err.name = err.path.split('/').pop()
+                    }
+                    err.error = error
+                }
+                var err = err || {error: error}
                 this.callback(err)
                 return
             }
@@ -1969,11 +1969,11 @@ _.extend(DirectoryEntryHandler.prototype, {
             if (! this.entry) {
                 this.error('no entry',404)
             } else if (this.entry.error) {
-				if (this.entry.error.code == 'EPERM') {
-					this.error('403 - Unauthorized', 403)
-				} else {
-					this.error('entry not found: ' + (this.rewrite_to || this.request.path), 404)
-				}
+                if (this.entry.error.code == 'EPERM') {
+                    this.error('403 - Unauthorized', 403)
+                } else {
+                    this.error('entry not found: ' + (this.rewrite_to || this.request.path), 404)
+                }
             } else if (this.entry.isFile) {
                 this.renderFileContents(this.entry)
             } else {
@@ -2735,9 +2735,9 @@ WSC.utils = {
             return bytes.toFixed(dp) + ' ' + units[u];
     },
     lastModified: function(modificationTime) {
-		if (! modificationTime) {
-			return
-		}
+        if (! modificationTime) {
+            return
+        }
         var lastModifiedMonth = modificationTime.getMonth() + 1
         var lastModifiedDay = modificationTime.getDate()
         var lastModifiedYear = modificationTime.getFullYear().toString().substring(2, 4)
@@ -2753,9 +2753,9 @@ WSC.utils = {
         return lastModified
     },
     lastModifiedStr: function(modificationTime) {
-		if (! modificationTime) {
-			return
-		}
+        if (! modificationTime) {
+            return
+        }
         var lastModifiedMonth = modificationTime.getMonth() + 1
         var lastModifiedDay = modificationTime.getDate()
         var lastModifiedYear = modificationTime.getFullYear().toString().substring(2, 4)
