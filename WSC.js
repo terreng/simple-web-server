@@ -1332,6 +1332,9 @@ function getByPath(path, callback, FileSystem) {
 
 getByPath.prototype = {
     getFile: function() {
+		if (this.path.split('..').length > 1) {
+			this.path = WSC.utils.relativePath(this.path, '')
+		}
         fs.stat(this.path, function(error, stats) {
             if (error) {
                 if (error.path && typeof error.path == 'string' && error.errno == -4048) {
@@ -2826,7 +2829,7 @@ WSC.utils = {
                 split1.push(split2[w])
             }
         }
-        var newPath = split1.join('/')
+        var newPath = split1.join('/').replaceAll('//', '/')
         if (! newPath.startsWith('/')) {
             var newPath = '/' + newPath
         }
