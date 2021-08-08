@@ -1329,18 +1329,14 @@ function getByPath(path, callback, FileSystem) {
     }
     this.origpath = path.replaceAll('//', '/')
     this.fullPath = this.origpath
-    var path = this.fs.mainPath + path
-    this.path = path.replaceAll('//', '/')
+    this.path = this.fs.mainPath + WSC.utils.relativePath(path, '').replaceAll('//', '/')
     this.callback = callback
 }
 
 getByPath.prototype = {
     getFile: function() {
-        this.path = WSC.utils.relativePath(this.path, '')
-        if (this.path.startsWith('/')) {
-            this.path = this.path.substring(1, this.path.length)
-        }
-        fs.stat(this.path, function(error, stats) {
+        var path = this.path
+        fs.stat(path, function(error, stats) {
             if (error) {
                 try {
                     if (error.path && typeof error.path == 'string' && error.errno == -4048) {
@@ -1373,15 +1369,12 @@ getByPath.prototype = {
         }.bind(this))
     },
     file: function(callback) {
-        this.path = WSC.utils.relativePath(this.path, '')
-        if (this.path.startsWith('/')) {
-            this.path = this.path.substring(1, this.path.length)
-        }
+        var path = this.path
         if (! this.isFile) {
             callback({error: 'Cannot preform on directory'})
             return
         }
-        fs.readFile(this.path, 'utf8', function(err, data) {
+        fs.readFile(path, 'utf8', function(err, data) {
             if (err) {
                 callback({error:err})
                 return
@@ -1392,10 +1385,6 @@ getByPath.prototype = {
     remove: function(callback) {
         if (! callback) {
             var callback = function() { }
-        }
-        this.path = WSC.utils.relativePath(this.path, '')
-        if (this.path.startsWith('/')) {
-            this.path = this.path.substring(1, this.path.length)
         }
         var path = this.path
         fs.stat(path, function(error, stats) {
@@ -1426,11 +1415,8 @@ getByPath.prototype = {
             callback({error: 'Cannot preform on file'})
             return
         }
-        this.path = WSC.utils.relativePath(this.path, '')
-        if (this.path.startsWith('/')) {
-            this.path = this.path.substring(1, this.path.length)
-        }
-        fs.readdir(this.path, {encoding: 'utf-8'}, function(err, files) {
+        var path = this.path
+        fs.readdir(path, {encoding: 'utf-8'}, function(err, files) {
             if (err) {
                 callback({error:err})
                 return
@@ -2096,7 +2082,7 @@ _.extend(DirectoryEntryHandler.prototype, {
                         try {
                             var origdata = JSON.parse(dataa)
                         } catch(e) {
-                            this.write('<p>wsc.htaccess file found, but it is not a valid json array. Please read the htaccess readme <a href="https://github.com/ethanaobrien/web-server-chrome/blob/master/htaccess/README.md">here</a></p>\n\n\n'+e, 500)
+                            this.write('<p>wsc.htaccess file found, but it is not a valid json array. Please read the htaccess readme <a href="https://github.com/terreng/simple-web-server/blob/main/howTo/HTACCESS.md">here</a></p>\n\n\n'+e, 500)
                             this.finish()
                             console.error('htaccess json array error')
                             return
