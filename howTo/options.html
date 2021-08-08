@@ -23,13 +23,13 @@
                 Enabled
             </td>
             <td>
-                <pre>enabled</pre>
+                <code>enabled</code>
             </td>
             <td>
                 true/false
             </td>
             <td>
-
+                -
             </td>
             <td>
                 Whether the server is turned on or not
@@ -40,13 +40,13 @@
                 Directory
             </td>
             <td>
-                <pre>path</pre>
+                <code>path</code>
             </td>
             <td>
-                file path
+                path string
             </td>
             <td>
-
+                -
             </td>
             <td>
                 Directory to serve files from
@@ -57,7 +57,7 @@
                 Port
             </td>
             <td>
-                <pre>port</pre>
+                <code>port</code>
             </td>
             <td>
                 number 1 - 65535
@@ -74,7 +74,7 @@
                 Accessible on local network
             </td>
             <td>
-                <pre>localnetwork</pre>
+                <code>localnetwork</code>
             </td>
             <td>
                 true/false
@@ -113,7 +113,7 @@
                 Automatically show index.html
             </td>
             <td>
-                <pre>showIndex</pre>
+                <code>showIndex</code>
             </td>
             <td>
                 true/false
@@ -130,7 +130,7 @@
                 Single page rewrite (for SPA)
             </td>
             <td>
-                <pre>spa</pre>
+                <code>spa</code>
             </td>
             <td>
                 true/false
@@ -147,7 +147,7 @@
                 Show directory listing
             </td>
             <td>
-                <pre>directoryListing</pre>
+                <code>directoryListing</code>
             </td>
             <td>
                 true/false
@@ -163,6 +163,200 @@
 </table>
 <h1>Advanced rules</h1>
 
-<h1>Errors</h1>
-
+<h1>Error Pages</h1>
+<table>
+    <tbody>
+        <tr>
+            <td>
+                <b>Option</b>
+            </td>
+            <td>
+                <b>Name</b>
+            </td>
+            <td>
+                <b>Value</b>
+            </td>
+            <td>
+                <b>Default</b>
+            </td>
+            <td>
+                <b>Description</b>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                Custom 404 error page
+            </td>
+            <td>
+                <code>custom404</code>
+            </td>
+            <td>
+                path string
+            </td>
+            <td>
+                -
+            </td>
+            <td>
+                File path to a custom 404 page. Will fallback to default 404 page if value is empty or file does not exist.
+            </td>
+        </tr>
+        <tr>
+            <td>
+                Custom 403 error page
+            </td>
+            <td>
+                <code>custom403</code>
+            </td>
+            <td>
+                path string
+            </td>
+            <td>
+                -
+            </td>
+            <td>
+                File path to a custom 403 page. Will fallback to default 404 page if value is empty or file does not exist.
+            </td>
+        </tr>
+        <tr>
+            <td>
+                Custom 401 error page
+            </td>
+            <td>
+                <code>custom401</code>
+            </td>
+            <td>
+                path string
+            </td>
+            <td>
+                -
+            </td>
+            <td>
+                File path to a custom 401 page. Will fallback to default 404 page if value is empty or file does not exist.
+            </td>
+        </tr>
+        <tr>
+            <td>
+                Custom 400 error page
+            </td>
+            <td>
+                <code>custom400</code>
+            </td>
+            <td>
+                path string
+            </td>
+            <td>
+                -
+            </td>
+            <td>
+                File path to a custom 400 page. Will fallback to default 400 page if value is empty or file does not exist.
+            </td>
+        </tr>
+        <tr>
+            <td>
+                Custom error path variable
+            </td>
+            <td>
+                <code>customErrorReplaceString</code>
+            </td>
+            <td>
+                string
+            </td>
+            <td>
+                -
+            </td>
+            <td>
+                Optionally specify a custom string that will be looked for in your error pages and replaced with the current path. For example, if your custom 404 page included: "The file at {{PATH}} does not exist" and you set this option to "{{PATH}}", when your file is served it would say "The file at /example.txt does not exist".
+            </td>
+        </tr>
+    </tbody>
+</table>
 <h1>Security</h1>
+<table>
+    <tbody>
+        <tr>
+            <td>
+                <b>Option</b>
+            </td>
+            <td>
+                <b>Name</b>
+            </td>
+            <td>
+                <b>Value</b>
+            </td>
+            <td>
+                <b>Default</b>
+            </td>
+            <td>
+                <b>Description</b>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                Enable HTTPS
+            </td>
+            <td>
+                <code>https</code>
+            </td>
+            <td>
+                true/false
+            </td>
+            <td>
+                false
+            </td>
+            <td>
+                Make server accessible over a secure connection (https) instead of just http.
+            </td>
+        </tr>
+        <tr>
+            <td>
+                Forward http to https
+            </td>
+            <td>
+                <code>forwardHttpToHttps</code>
+            </td>
+            <td>
+                true/false
+            </td>
+            <td>
+                true
+            </td>
+            <td>
+                <i>Only accessible in the UI if https option is enabled.</i> If the <code>https</code> option is enabled, redirect all insecure (http) requests to https.
+            </td>
+        </tr>
+        <tr>
+            <td>
+                Custom HTTPS cerificate
+            </td>
+            <td>
+                <code>httpsCert</code>
+            </td>
+            <td>
+                string
+            </td>
+            <td>
+                -
+            </td>
+            <td>
+                <i>Not accessible in the UI.</i> Optionally override this option to provide a custom HTTPS certificate.
+            </td>
+        </tr>
+        <tr>
+            <td>
+                Custom HTTPS key
+            </td>
+            <td>
+                <code>httpsKey</code>
+            </td>
+            <td>
+                string
+            </td>
+            <td>
+                -
+            </td>
+            <td>
+                <i>Not accessible in the UI.</i> Optionally override this option to provide a custom HTTPS key.
+            </td>
+        </tr>
+    </tbody>
+</table>
