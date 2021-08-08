@@ -5,6 +5,7 @@ const _ = require('underscore');
 const { URL } = require('url');
 const http = require('http');
 const https = require('https');
+const forge = require('node-forge');
 global.atob = require("atob");
 global.Blob = require('node-blob');
 
@@ -195,39 +196,44 @@ WSC.transformRequest = function(req, res, settings, callback) {
     var app = {
         opts: settings
     }
-    if (curRequest.method.toLowerCase() != 'put') {
+    if (curRequest.method.toLowerCase() != 'put' && (curRequest.method.toLowerCase() != 'post' || (req.headers['content-type'] && req.headers['content-type'].startsWith('application/x-www-form-urlencoded')))) {
         req.on('data', function(chunk) {
             if (chunk && chunk != 'undefined') {
                 curRequest.body = Buffer.concat([curRequest.body, chunk])
             }
         })
         req.on('end', function() {
+            curRequest.consumedRequest = true
             if (curRequest.body.byteLength == 0) {
                 curRequest.body = null
             } else {
-                var ct = req.headers['content-type']
-                var default_charset = 'utf-8'
-                if (ct) {
-                    var ct = ct.toLowerCase()
-                    if (ct.startsWith('application/x-www-form-urlencoded')) {
-                        var charset_i = ct.indexOf('charset=')
-                        if (charset_i != -1) {
-                            var charset = ct.slice(charset_i + 'charset='.length,
-                                                   ct.length)
-                            console.log('using charset',charset)
-                        } else {
-                            var charset = default_charset
-                        }
+                try {
+                    var ct = req.headers['content-type']
+                    if (ct) {
+                        var default_charset = 'utf-8'
+                        var ct = ct.toLowerCase()
+                        if (ct.startsWith('application/x-www-form-urlencoded')) {
+                            var charset_i = ct.indexOf('charset=')
+                            if (charset_i != -1) {
+                                var charset = ct.slice(charset_i + 'charset='.length,
+                                                       ct.length)
+                                console.log('using charset',charset)
+                            } else {
+                                var charset = default_charset
+                            }
 
-                        var bodydata = curRequest.body.toString(charset)
-                        var bodyparams = {}
-                        var items = bodydata.split('&')
-                        for (var i=0; i<items.length; i++) {
-                            var kv = items[i].replace(/\+/g, ' ').split('=')
-                            bodyparams[ decodeURIComponent(kv[0]) ] = decodeURIComponent(kv[1])
+                            var bodydata = curRequest.body.toString(charset)
+                            var bodyparams = {}
+                            var items = bodydata.split('&')
+                            for (var i=0; i<items.length; i++) {
+                                var kv = items[i].replace(/\+/g, ' ').split('=')
+                                bodyparams[ decodeURIComponent(kv[0]) ] = decodeURIComponent(kv[1])
+                            }
+                            curRequest.bodyparams = bodyparams
                         }
-                        curRequest.bodyparams = bodyparams
                     }
+                } catch(e) {
+                    curRequest.bodyparams = null
                 }
             }
             callback({request: curRequest, app: app})
@@ -239,16 +245,14 @@ WSC.transformRequest = function(req, res, settings, callback) {
 }
 
 WSC.HTTPRequest = function(opts) {
-    if (opts.uri.split('..').length > 1) {
-        opts.uri = WSC.utils.relativePath(opts.uri, '')
-    }
     this.method = opts.method
-    this.uri = opts.uri
+    this.uri = WSC.utils.relativePath(opts.uri.replaceAll('%2F', '/'), '') // Don't use decodeURIComponent
     this.ip = opts.ip
     this.version = opts.version
     this.headers = opts.headers
     this.body = Buffer.from('')
     this.bodyparams = null
+    this.consumedRequest = false
 
     this.arguments = {}
     var idx = this.uri.indexOf('?')
@@ -1332,34 +1336,47 @@ function getByPath(path, callback, FileSystem) {
 
 getByPath.prototype = {
     getFile: function() {
-		if (this.path.split('..').length > 1) {
-			this.path = WSC.utils.relativePath(this.path, '')
-		}
+        this.path = WSC.utils.relativePath(this.path, '')
+        if (this.path.startsWith('/')) {
+            this.path = this.path.substring(1, this.path.length)
+        }
         fs.stat(this.path, function(error, stats) {
             if (error) {
-                if (error.path && typeof error.path == 'string' && error.errno == -4048) {
-                    var err = { }
-                    err.path = error.path.replaceAll('\\', '/').replaceAll('//', '/')
-                    if (error.path.endsWith('/')) {
-                        var split = err.path.split('/')
-                        err.name = split[split.length-1]
-                    } else {
-                        err.name = err.path.split('/').pop()
+                try {
+                    if (error.path && typeof error.path == 'string' && error.errno == -4048) {
+                        var err = { }
+                        err.path = error.path.replaceAll('\\', '/').replaceAll('//', '/')
+                        if (error.path.endsWith('/')) {
+                            var split = err.path.split('/')
+                            err.name = split[split.length-1]
+                        } else {
+                            err.name = err.path.split('/').pop()
+                        }
+                        err.isDirectory = false
+                        err.isFile = true
+                        err.error = error
                     }
-                    err.error = error
+                    var err = err || {error: error}
+                    this.callback(err)
+                    return
+                } catch(e) {
+                    this.callback({error: error})
+                    return
                 }
-                var err = err || {error: error}
-                this.callback(err)
-                return
             }
             this.size = stats.size
             this.modificationTime = stats.mtime
             this.isDirectory = stats.isDirectory()
             this.isFile = stats.isFile()
             this.callback(this)
+            this.callback = null
         }.bind(this))
     },
     file: function(callback) {
+        this.path = WSC.utils.relativePath(this.path, '')
+        if (this.path.startsWith('/')) {
+            this.path = this.path.substring(1, this.path.length)
+        }
         if (! this.isFile) {
             callback({error: 'Cannot preform on directory'})
             return
@@ -1372,10 +1389,46 @@ getByPath.prototype = {
             callback(data)
         }.bind(this))
     },
+    remove: function(callback) {
+        if (! callback) {
+            var callback = function() { }
+        }
+        this.path = WSC.utils.relativePath(this.path, '')
+        if (this.path.startsWith('/')) {
+            this.path = this.path.substring(1, this.path.length)
+        }
+        var path = this.path
+        fs.stat(path, function(error, stats) {
+            if (error) {
+                callback({error: error})
+                return
+            } else if (stats.isDirectory()) {
+                fs.rmdir(path, { recursive: true }, (err) => {
+                    if (err) {
+                        callback({error: err, success: false})
+                    } else {
+                        callback({error: false, success: true})
+                    }
+                })
+            } else {
+                fs.unlink(path, (err) => {
+                    if (err) {
+                        callback({error: err, success: false})
+                    } else {
+                        callback({error: false, success: true})
+                    }
+                })
+            }
+        })
+    },
     getDirContents: function(callback) {
         if (this.isFile) {
             callback({error: 'Cannot preform on file'})
             return
+        }
+        this.path = WSC.utils.relativePath(this.path, '')
+        if (this.path.startsWith('/')) {
+            this.path = this.path.substring(1, this.path.length)
         }
         fs.readdir(this.path, {encoding: 'utf-8'}, function(err, files) {
             if (err) {
@@ -1425,9 +1478,7 @@ _.extend(FileSystem.prototype, {
         entry.getFile()
     },
     writeFile: function(path, data, callback, allowOverWrite) {
-        if (! (path.startsWith('/') || path.startsWith('\\'))) {
-            var path = '/' + path
-        }
+        var path = WSC.utils.relativePath(path, '')
         var origpath = path
         var path = this.mainPath + path
         var folder = WSC.utils.stripOffFile(path)
@@ -1437,47 +1488,37 @@ _.extend(FileSystem.prototype, {
                 fs.mkdirSync(folder)
             } catch(e) { }
         }
-        fs.writeFile(path, data, (err) => {
-            if (err) {
-                callback({error: err, success: false})
-            } else {
-                callback({error: false, success: true})
-            }
-        })
-    },
-    deleteFile: function(path, callback) {
-        if (! (path.startsWith('/') || path.startsWith('\\'))) {
-            var path = '/' + path
-        }
-        var origpath = path
-        var path = this.mainPath + path
         fs.stat(path, function(error, stats) {
-            if (error) {
-                callback({error: 'File Not Found'})
-                return
-            } else if (stats.isDirectory()) {
-                fs.rmdir(path, { recursive: true }, (err) => {
+            if (error && error.errno == -4058) {
+                fs.writeFile(path, data, function(err){
                     if (err) {
                         callback({error: err, success: false})
-                    } else {
-                        callback({error: false, success: true})
+                        return
                     }
+                    callback({error: false, success: true})
+                })
+            } else if (! error && allowOverWrite) {
+                fs.unlink(path, function(err){
+                    if (err) {
+                        callback({error: err, success: false})
+                        return
+                    }
+                    fs.writeFile(path, data, function(err){
+                        if (err) {
+                            callback({error: err, success: false})
+                            return
+                        }
+                        callback({error: false, success: true})
+                    })
                 })
             } else {
-                fs.unlink(path, (err) => {
-                    if (err) {
-                        callback({error: err, success: false})
-                    } else {
-                        callback({error: false, success: true})
-                    }
-                })
+                callback({error: error, success: false})
             }
         })
+        
     },
     createWriteStream: function(path) {
-        if (! (path.startsWith('/') || path.startsWith('\\'))) {
-            var path = '/' + path
-        }
+        var path = WSC.utils.relativePath(path, '')
         this.origpath = path
         var path = this.mainPath + path
         var path = path.replaceAll('//', '/')
@@ -1702,14 +1743,22 @@ _.extend(DirectoryEntryHandler.prototype, {
     },
     delete: function() {
         function deleteMain() {
-            this.fs.deleteFile(this.request.path, function(e) {
-                if (e.error) {
-                    this.write('Error deleting file')
+            this.fs.getByPath(this.request.path, function(entry) {
+                if (entry.error) {
+                    this.writeHeaders(404)
                     this.finish()
-                } else {
+                    return
+                }
+                entry.remove(function(e) {
+                    if (e.error) {
+                        this.writeHeaders(500)
+                        this.finish()
+                        return
+                    }
                     this.writeHeaders(200)
                     this.finish()
-                }
+                }.bind(this))
+                
             }.bind(this))
         }
         function deleteCheck() {
@@ -1830,13 +1879,11 @@ _.extend(DirectoryEntryHandler.prototype, {
                                     if (validFile) {
                                         var req = this.request
                                         var res = this
-                                        var tempData = { }
-                                        var httpRequest = WSC.httpRequest
                                         try {
-                                            eval('(function() {var handler = function(req, res, tempData, httpRequest, appInfo) {' + dataa + '};handler(req, res, tempData, httpRequest, {"server": "Simple Web Server"})})();')
+                                            eval('(function() {var handler = function(req, res, tempData, httpRequest, appInfo) {' + dataa + '};handler(req, res, { }, WSC.httpRequest, {"server": "Simple Web Server"})})();')
                                         } catch(e) {
                                             console.error(e)
-                                            this.write('Error with your script', 500)
+                                            this.write('Error with your script, check logs', 500)
                                             this.finish()
                                         }
                                     } else {
@@ -1875,27 +1922,27 @@ _.extend(DirectoryEntryHandler.prototype, {
                         this.finish()
                     }.bind(this))
                 } else if (this.app.opts.optAllowReplaceFile) {
-                    this.fs.deleteFile(this.request.path, function(e) {
+                    entry.remove(function(e) {
                         if (e.error) {
-                            this.write('Error writing file', 500)
+                            this.writeHeaders(500)
                             this.finish()
                         } else {
                             var file = this.fs.createWriteStream(this.request.origpath)
                             file.on('error', function (err) {
+                                // TODO - Cleanup file
                                 console.error('error writing file', err)
                                 this.writeHeaders(500)
                                 this.finish()
                             }.bind(this))
                             this.req.pipe(file)
                             this.req.on('end', function () {
-                                // TODO - Cleanup file
                                 this.writeHeaders(200)
                                 this.finish()
                             }.bind(this))
                         }
                     }.bind(this))
                 } else {
-                    this.write('file already exists', 400)
+                    this.writeHeaders(400)
                     this.finish()
                 }
             }.bind(this))
@@ -2364,7 +2411,7 @@ _.extend(DirectoryEntryHandler.prototype, {
                                                             eval('(function() {var handler = function(req, res, tempData, httpRequest, appInfo) {' + dataa + '};handler(req, res, tempData, httpRequest, {"server": "Simple Web Server"})})();')
                                                         } catch(e) {
                                                             console.error(e)
-                                                            this.write('Error with your script', 500)
+                                                            this.write('Error with your script, check logs', 500)
                                                             this.finish()
                                                         }
                                                     } else {
@@ -2667,24 +2714,7 @@ _.extend(DirectoryEntryHandler.prototype, {
         if (! callback) {
             var callback = function(file) { }
         }
-        var parts = path.split('/')
-        var folderPath = parts.slice(0,parts.length-1).join('/')
-        var filename = parts[parts.length-1]
-        this.fs.getByPath(path, function(entry) {
-            if (entry.error) {
-                this.fs.writeFile(path, data, callback)
-            } else if (allowReplaceFile) {
-                this.fs.deleteFile(path, function(e) {
-                    if (e.error) {
-                        callback(e)
-                    } else {
-                        this.fs.writeFile(path, data, callback)
-                    }
-                }.bind(this))
-            } else {
-                callback({error: 'File Already Exists'})
-            }
-        }.bind(this))
+        this.fs.writeFile(path, data, callback, allowReplaceFile)
     },
     deleteFile: function(path, callback) {
         if (! path.startsWith('/')) {
@@ -2697,7 +2727,7 @@ _.extend(DirectoryEntryHandler.prototype, {
             if (file && ! file.error) {
                 entry.remove(callback)
             } else {
-                callback({error: 'File not found'})
+                callback({error: file.error})
             }
         })
     },
@@ -2713,6 +2743,91 @@ _.extend(DirectoryEntryHandler.prototype, {
     },
     end: function() {
         this.finish()
+    },
+    readBody: function(callback) {
+        if (! callback) {
+            var callback = function() { }
+        }
+        if (this.request.body !== null) {
+            callback(this.request.body)
+            return
+        }
+        if (this.request.consumedRequest) {
+            this.request.body = Buffer.from('')
+            callback(this.request.body)
+            return
+        }
+        this.request.body = Buffer.from('')
+        this.req.on('data', function(chunk) {
+            if (chunk && chunk != 'undefined') {
+                this.request.body = Buffer.concat([this.request.body, chunk])
+            }
+        }.bind(this))
+        this.req.on('end', function() {
+            this.request.consumedRequest = true
+            callback(this.request.body)
+        }.bind(this))
+    },
+    readBodyPromise: function() {
+        return new Promise(function(resolve, reject) {
+            if (this.request.body !== null) {
+                resolve(this.request.body)
+                return
+            }
+            if (this.request.consumedRequest) {
+                resolve(Buffer.from(''))
+                return
+            }
+            this.request.body = Buffer.from('')
+            this.req.on('data', function(chunk) {
+                if (chunk && chunk != 'undefined') {
+                    this.request.body = Buffer.concat([this.request.body, chunk])
+                }
+            }.bind(this))
+            this.req.on('end', function() {
+                this.request.consumedRequest = true
+                resolve(this.request.body)
+            }.bind(this))
+        }.bind(this))
+    },
+    stream2File: function(writePath, allowOverWrite, callback) {
+        if (! path.startsWith('/')) {
+            var path = WSC.utils.relativePath(path, WSC.utils.stripOffFile(this.request.origpath))
+        }
+        if (! callback) {
+            var callback = function() { }
+        }
+        this.fs.getByPath(path, function(entry) {
+            if (entry.error) {
+                var file = this.fs.createWriteStream(path)
+                file.on('error', function (err) {
+                    callback({error: err})
+                })
+                this.req.pipe(file)
+                this.req.on('end', function () {
+                    this.request.consumedRequest = true
+                    callback({error: false, success: true})
+                }.bind(this))
+            } else if (allowOverWrite) {
+                entry.remove(function(e) {
+                    if (e.error) {
+                        callback({error: 'Unknown Error'})
+                        return
+                    }
+                    var file = this.fs.createWriteStream(path)
+                    file.on('error', function (err) {
+                        callback({error: err})
+                    })
+                    this.req.pipe(file)
+                    this.req.on('end', function () {
+                        this.request.consumedRequest = true
+                        callback({error: false, success: true})
+                    }.bind(this))
+                }.bind(this))
+            } else {
+                callback({error: 'File Already Exists'})
+            }
+        }.bind(this))
     }
 }, WSC.BaseHandler.prototype)
 
@@ -2721,25 +2836,28 @@ WSC.DirectoryEntryHandler = DirectoryEntryHandler
 
 WSC.utils = {
     humanFileSize: function(bytes, si=false, dp=1) {
-            //from https://stackoverflow.com/questions/10420352/converting-file-size-in-bytes-to-human-readable-string/10420404
-            const thresh = si ? 1000 : 1024;
-            if (Math.abs(bytes) < thresh) {
-              return bytes + ' B';
-            }
-            const units = si 
-              ? ['kB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB'] 
-              : ['KiB', 'MiB', 'GiB', 'TiB', 'PiB', 'EiB', 'ZiB', 'YiB'];
-            let u = -1;
-            const r = 10**dp;
-            do {
-              bytes /= thresh;
-              ++u;
-            } while (Math.round(Math.abs(bytes) * r) / r >= thresh && u < units.length - 1);
-            return bytes.toFixed(dp) + ' ' + units[u];
+        if (! bytes) {
+            return ''
+        }
+        //from https://stackoverflow.com/questions/10420352/converting-file-size-in-bytes-to-human-readable-string/10420404
+        const thresh = si ? 1000 : 1024;
+        if (Math.abs(bytes) < thresh) {
+          return bytes + ' B';
+        }
+        const units = si 
+          ? ['kB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB'] 
+          : ['KiB', 'MiB', 'GiB', 'TiB', 'PiB', 'EiB', 'ZiB', 'YiB'];
+        let u = -1;
+        const r = 10**dp;
+        do {
+          bytes /= thresh;
+          ++u;
+        } while (Math.round(Math.abs(bytes) * r) / r >= thresh && u < units.length - 1);
+        return bytes.toFixed(dp) + ' ' + units[u];
     },
     lastModified: function(modificationTime) {
         if (! modificationTime) {
-            return
+            return 0
         }
         var lastModifiedMonth = modificationTime.getMonth() + 1
         var lastModifiedDay = modificationTime.getDate()
@@ -2757,7 +2875,7 @@ WSC.utils = {
     },
     lastModifiedStr: function(modificationTime) {
         if (! modificationTime) {
-            return
+            return ''
         }
         var lastModifiedMonth = modificationTime.getMonth() + 1
         var lastModifiedDay = modificationTime.getDate()
@@ -2816,6 +2934,10 @@ WSC.utils = {
         }
     },
     relativePath: function(reqPath, curPath) {
+        var endWSlash = false
+        if (reqPath.endsWith('/')) {
+            var endWSlash = true
+        }
         var split1 = curPath.split('/')
         var split2 = reqPath.split('/')
         for (var w=0; w<split2.length; w++) {
@@ -2832,6 +2954,9 @@ WSC.utils = {
         var newPath = split1.join('/').replaceAll('//', '/')
         if (! newPath.startsWith('/')) {
             var newPath = '/' + newPath
+        }
+        if (endWSlash && ! newPath.endsWith('/')) {
+            var newPath = newPath + '/'
         }
         return newPath
     },
@@ -2873,11 +2998,19 @@ httpRequest.prototype = {
     open: function(method, url) {
         if (! url.startsWith('http')) {
             console.error('url must start with http')
-            throw new Error('url must start with http or https')
+            var error = 'url must start with http or https'
+            if (this.onerror && typeof this.onerror == 'function') {
+                this.onerror(error)
+            } else if (this.onload && typeof this.onload == 'function') {
+                this.onload(error)
+            } else {
+                throw new Error('url must start with http or https')
+            }
+            return
         }
         this.method = method
         const { port, pathname, search, protocol, host } = new URL(url)
-        var path = pathname + search
+        var path = encodeURIComponent(pathname + search)
         if (protocol =='https:') {
             this.req = https.request({method: method, protocol: protocol, host: host, path: path, port: port || 443})
         } else {
@@ -2948,16 +3081,9 @@ httpRequest.prototype = {
             if (! this.savePath.startsWith('/')) {
                 this.savePath = WSC.utils.relativePath(this.savePath, WSC.utils.stripOffFile(this.handler.request.origpath))
             }
-            var path = this.handler.fs.mainPath + this.savePath
-            var folder = WSC.utils.stripOffFile(path)
-            if (! fs.existsSync(folder)) {
-                try {
-                    fs.mkdirSync(folder)
-                } catch(e) { }
-            }
-            var writeStream = fs.createWriteStream(path)
+            var writeStream = this.handler.fs.createWriteStream(this.savePath)
             writeStream.on('error', function (err) {
-                var evt = {error: 'There was an error while writing the file'}
+                var evt = {error: err}
                 if (this.onerror && typeof this.onerror == 'function') {
                     this.onerror(evt)
                 } else if (this.onload && typeof this.onload == 'function') {
@@ -2997,6 +3123,85 @@ function testHttpRequest() {
     http.open('GET', 'http://www.google.com')
     http.send()
     
+}
+
+WSC.createCrypto = function() {
+    var data = { }
+    var cn = "WebServerForChrome" + (new Date()).toISOString();
+  console.log('Generating 1024-bit key-pair and certificate for \"' + cn + '\".');
+  var keys = forge.pki.rsa.generateKeyPair(1024);
+  console.log('key-pair created.');
+  var cert = forge.pki.createCertificate();
+  cert.serialNumber = '01';
+  cert.validity.notBefore = new Date();
+  cert.validity.notAfter = new Date();
+  cert.validity.notAfter.setFullYear(cert.validity.notBefore.getFullYear() + 10);
+  var attrs = [{
+    name: 'commonName',
+    value: cn
+  }, {
+    name: 'countryName',
+    value: 'US'
+  }, {
+    shortName: 'ST',
+    value: 'test-st'
+  }, {
+    name: 'localityName',
+    value: 'Simple Web Server'
+  }, {
+    name: 'organizationName',
+    value: 'Simple Web Server'
+  }, {
+    shortName: 'OU',
+    value: 'WSC'
+  }];
+  cert.setSubject(attrs);
+  cert.setIssuer(attrs);
+  cert.setExtensions([{
+    name: 'basicConstraints',
+    cA: true
+  }, {
+    name: 'keyUsage',
+    keyCertSign: true,
+    digitalSignature: true,
+    nonRepudiation: true,
+    keyEncipherment: true,
+    dataEncipherment: true
+  }, {
+    name: 'subjectAltName',
+    altNames: [{
+      type: 6, // URI
+      value: 'http://localhost'
+    }]
+  }]);
+  // FIXME: add subjectKeyIdentifier extension
+  // FIXME: add authorityKeyIdentifier extension
+  cert.publicKey = keys.publicKey;
+
+  // self-sign certificate
+  cert.sign(keys.privateKey, forge.md.sha256.create());
+
+  // save data
+  data = {
+    cert: forge.pki.certificateToPem(cert),
+    privateKey: forge.pki.privateKeyToPem(keys.privateKey)
+  };
+  return data;
+  console.log('certificate created for \"' + cn + '\": \n');
+};
+
+WSC.onRequest = function(serverconfig, req, res) {
+    WSC.transformRequest(req, res, serverconfig, function(requestApp) {
+        if (['GET','HEAD','PUT','POST','DELETE','OPTIONS'].includes(requestApp.request.method)) {
+            var FileSystem = new WSC.FileSystem(serverconfig.path)
+            var handler = new WSC.DirectoryEntryHandler(FileSystem, requestApp.request, requestApp.app, req, res)
+            handler.tryHandle()
+        } else {
+            res.statusCode = 501
+            res.statusMessage = 'Not Implemented'
+            res.end()
+        }
+    })
 }
 
 String.prototype.htmlEscape = function() {

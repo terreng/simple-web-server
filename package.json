@@ -43,6 +43,7 @@
     "http": "^0.0.1-security",
     "https": "^1.0.0",
     "node-blob": "0.0.2",
+    "node-forge": "^0.10.0",
     "send": "^0.17.1",
     "underscore": "^1.9.1"
   },

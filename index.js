@@ -3,6 +3,7 @@ const { networkInterfaces } = require('os');
 const path = require('path');
 const fs = require('fs');
 const http = require('http');
+const https = require('https');
 const { URL } = require('url');
 const net = require('net');
 WSC = require("./WSC.js");
@@ -135,6 +136,16 @@ var isQuitting = false;
 ipcMain.on('quit', quit)
 
 ipcMain.on('saveconfig', function(event, arg1) {
+    for (var i=0; i<arg1.servers.length; i++) {
+        arg1.servers[i].https = true
+        if (arg1.servers[i].https) {
+            if (! arg1.servers[i].cert || ! arg1.servers[i].key) {
+                var crypto = WSC.createCrypto()  // Create HTTPS crypto
+                arg1.servers[i].key = crypto.privateKey
+                arg1.servers[i].cert = crypto.cert
+            }
+        }
+    }
     fs.writeFileSync(path.join(app.getPath('userData'), "config.json"), JSON.stringify(arg1, null, 2), "utf8");
     config = arg1;
     startServers();
@@ -220,19 +231,36 @@ function startServers() {
         function createServer(serverconfig) {
             if (serverconfig.enabled) {
                 var hostname = serverconfig.localnetwork ? '0.0.0.0' : '127.0.0.1';
-                const server = http.createServer(function (req, res) {
-                    WSC.transformRequest(req, res, serverconfig, function(requestApp) {
-                        if (['GET','HEAD','PUT','POST','DELETE','OPTIONS'].includes(requestApp.request.method)) {
-                            var FileSystem = new WSC.FileSystem(serverconfig.path)
-                            var handler = new WSC.DirectoryEntryHandler(FileSystem, requestApp.request, requestApp.app, req, res)
-                            handler.tryHandle()
-                        } else {
-                            res.statusCode = 501
-                            res.statusMessage = 'Not Implemented'
-                            res.end()
+                if (serverconfig.https) {
+                    if (! serverconfig.key || ! serverconfig.cert) {
+                        try {
+                            var config = JSON.parse(fs.readFileSync(path.join(app.getPath('userData'), "config.json")))
+                            console.log(config)
+                            for (var i=0; i<config.servers.length; i++) {
+                                if (config.servers[i].https) {
+                                    if (! config.servers[i].cert || ! config.servers[i].key) {
+                                        var crypto = WSC.createCrypto()  // Create HTTPS crypto
+                                        config.servers[i].key = crypto.privateKey
+                                        config.servers[i].cert = crypto.cert
+                                    }
+                                }
+                            }
+                            fs.writeFileSync(path.join(app.getPath('userData'), "config.json"), JSON.stringify(config, null, 2), "utf8");
+                        } catch(e) { console.log(e)}
+                        if (! crypto) {
+                            var crypto = WSC.createCrypto() // Temp Crypto
                         }
-                    })
-                });
+                        serverconfig.key = crypto.privateKey
+                        serverconfig.cert = crypto.cert
+                    }
+                    var server = https.createServer({key: serverconfig.key, cert: serverconfig.cert}, function(req, res) {
+                        WSC.onRequest(serverconfig, req, res)
+                    });
+                } else {
+                    var server = http.createServer(function(req, res) {
+                        WSC.onRequest(serverconfig, req, res)
+                    });
+                }
                 /**
                 if (serverconfig.proxy) {
                     server.on('connect', (req, clientSocket, head) => {
@@ -256,10 +284,17 @@ function startServers() {
                     socket.end('HTTP/1.1 400 Bad Request\r\n\r\n');
                 });
                 server.on('error', function(err) {
-                    console.error(err);
+                    if (err.code == 'EADDRINUSE') {
+                        console.error(err)
+                        // This is where listen errors will occur
+                        // handle listen error/UI change
+                    } else {
+                        console.error(err);
+                    }
                 });
                 server.listen(serverconfig.port, hostname);
-                console.log('Listening on http://' + hostname + ':' + serverconfig.port)
+                var prot = serverconfig.https ? 'https' : 'http'
+                console.log('Listening on ' + prot + '://' + hostname + ':' + serverconfig.port)
 
                 var connections = {}
 
