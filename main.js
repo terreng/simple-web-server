@@ -275,3 +275,15 @@ function hidePrompt() {
     document.getElementById("prompt").classList.remove("prompt_show");
     document.getElementById("prompt_bk").classList.remove("active");
 }
+
+function toggleCheckbox(element_or_id, toggled) {
+element_or_id = typeof element_or_id == "string" ? document.getElementById(element_or_id) : element_or_id;
+toggled = toggled != null ? toggled : !element_or_id.classList.contains("checked");
+if (toggled) {
+    element_or_id.classList.add("checked");
+    element_or_id.querySelector(".checkbox i").innerText = "check_box";
+} else {
+    element_or_id.classList.remove("checked");
+    element_or_id.querySelector(".checkbox i").innerText = "check_box_outline_blank";
+}
+}

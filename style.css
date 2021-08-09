@@ -480,3 +480,55 @@ body {
     width: calc(100% - 60px);
     padding-top: 1px;
 }
+
+.checkbox_option {
+    overflow: hidden;
+    cursor: pointer;
+    padding-left: 5px;
+    font-size: 19px;
+    padding-right: 12px;
+    padding-bottom: 3px;
+}
+
+.checkbox_option .checkbox {
+    width: 28px;
+    height: 28px;
+    padding: 6px;
+    float: left;
+    transition: 0.1s background-color;
+    border-radius: 32px;
+    cursor: pointer;
+}
+
+.checkbox_option:hover .checkbox {
+    background-color: var(--icon-hover);
+}
+
+.checkbox_option:active .checkbox {
+    background-color: var(--icon-active);
+}
+
+.checkbox_option.checked:hover .checkbox {
+    background-color: var(--button-hover);
+}
+
+.checkbox_option.checked:active .checkbox {
+    background-color: var(--button-active);
+}
+
+.checkbox_option .checkbox i {
+    font-size: 28px;
+    color: var(--icons);
+}
+
+.checked .checkbox i {
+    color: var(--button);
+}
+
+.checkbox_option .label {
+    float: left;
+    font-size: 18px;
+    padding-left: 5px;
+    width: calc(100% - 40px - 5px);
+    padding-top: 9px;
+}

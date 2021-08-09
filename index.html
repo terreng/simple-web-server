@@ -31,7 +31,7 @@
         </div>
 
         <div class="button_row" id="main_actions">
-            <div class="button left" onclick="window.api.quit()">Quit</div>
+            <div class="button left" onclick="window.api.quit()">Stop & Quit</div>
             <div class="button primary" onclick="addServer()">New Server</div>
         </div>
 
@@ -72,6 +72,13 @@
             </div>
 
             <div class="settings_title">Options</div>
+
+            <div class="checkbox_option" id="localnetwork_temp" onclick="toggleCheckbox(this)">
+                <div class="checkbox">
+                    <i class="material-icons">check_box_outline_blank</i>
+                </div>
+                <div class="label">Accessible on local network</div>
+            </div>
 
             <div class="checkbox_option">
                 <input type="checkbox" id="localnetwork" name="localnetwork">
