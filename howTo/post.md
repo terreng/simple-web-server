@@ -60,19 +60,19 @@ To Debug the code, open the main window and press ctrl + shift + i
 
 <h1>res Commands</h1>
 
-`res.end()`: function
+### `res.end()`: function
 This function MUST be called at the end of the file. If called before finished processing, the server will cut off your script
 This function will close the http request
 You can use this function directly when finished and it will automaticaly respond with an http code of 200 (unless set otherwise)
 
-`res.write(string, httpCode)`: function
+### `res.write(string, httpCode)`: function
 This function will write data to the client. Once called, you canot push any more information.
 
-`res.setHeader(headerType, headerValue)`: function
+### `res.setHeader(headerType, headerValue)`: function
 This function will set headers of the response.
 Instead of `Cookie: name=value`, you would put `res.setHeader('Cookie', 'name=value')`
 
-`res.getFile(path, callback)`: function
+### `res.getFile(path, callback)`: function
 This function will read a file. Relative urls are supported.
 To get the directory contents, use the `file.getDirContents()` function
 To read the file as text, use the `file.file()` function
@@ -95,10 +95,10 @@ Example:
 })
 ```
 
-`res.contentType(type)`: function
+### `res.contentType(type)`: function
 This function will set the content type to respond with, you could also use the `res.setHeader()` function
 
-`res.writeFile(path, data, allowReplaceFile, callback)`: function
+### `res.writeFile(path, data, allowReplaceFile, callback)`: function
 This function will save a file
 path: the path of the file
 If the path contains a non existent folder, the folder will be created
@@ -106,15 +106,15 @@ data: string/Buffer of the file. DO NOT SEND OTHER TYPES OF DATA - THIS COULD BR
 allowReplaceFile: if file exists and you want to replace the file, set this to true
 callback: function will be excecuted to tell you if there was an error or it will callback the file
 
-`res.deleteFile(path, callback)`: function
+### `res.deleteFile(path, callback)`: function
 This function will delete
 path: the path of the file
 callback: function will be excecuted to tell you if there was an error or success
 
-`res.writeCode(httpCode)`: function
+### `res.writeCode(httpCode)`: function
 Call this to respond with no message. Dont forget to finish with `res.end()`
 
-`res.renderFileContents`: function
+### `res.renderFileContents(file)`: function
 Once you have called the file with `res.getFile()` (DO NOT use the `file.file()` function) use `res.renderFileContents()` to render the file
 DO NOT call `res.end()` when using this function
 Example:
@@ -136,7 +136,7 @@ Example:
 
 <h2>Chunked encoding</h2>
 
-`res.writeChunk`: function
+### `res.writeChunk(data)`: function
 This feature will send the data in chunks, instead of all at once.
 To enable, you must set the transfer-encoding header to chunked
 Like this: `res.setHeader('transfer-encoding','chunked')`
@@ -155,50 +155,40 @@ res.end() // VERY IMPORTANT (as always)
 
 <h1>req Commands</h1>
 
-`req.body`: Buffer
-This is an buffer of the request body, if there is no request body, the value will be null.
-Use `toString()` to translate to text
+### `req.bodyparams`: If the request is made with the html `form` element, then this will have all the values of the form
 
-Example:
-```
-console.log(req.body.toString())
-```
-
-If you used the html form method, all the data will be avaliable under `req.bodyparams`
-
-
-`req.headers`: json string
+### `req.headers`: json string
 This contains all of the headers that the user sent when making the http request
 
-`req.arguments`: json string
+### `req.arguments`: json string
 This contains all of the arguments that the user has put in the url
 
-`req.method`: string
+### `req.method`: string
 This contains the request method (should be POST)
 
-`req.uri`: string
+### `req.uri`: string
 This contains the entire requested path
 
-`req.origpath`: string
+### `req.origpath`: string
 This contains the requested file (Will end with / if is directory)
 
-`req.path`: string
+### `req.path`: string
 This contains the requested file. (Will NOT end with / if is directory)
 
 
-<h1>FileSystem</h1>
+# FileSystem
 
-`res.getFile(path, callback)`
+### `res.getFile(path, callback)`
 This function will get the info on the file/directory
 
 Commands once you get the info: 
 
-`entry.file(callback)`
+### `entry.file(callback)`
 This function will read the file as text.
 If you want to display the contents of the file, it is recommended to use `res.renderFileContents()`
 This function will only work on files, not directories
 
-`entry.getDirContents(callback)
+### `entry.getDirContents(callback)`
 This function will get the contents of the directory in an array. Every file in the array will work with the `.file` and the `.getDirContents` functions
 This function will only work on directories, not files
 From here, you can use the contents to use in the rest of the processing.
@@ -206,20 +196,59 @@ From here, you can use the contents to use in the rest of the processing.
 If you would like to render the directory listing with the results, you can use these commands.
 When the directory listing is sent, you still need to send res.end()
 
-`res.renderDirectoryListingJSON(results)`
+### `res.renderDirectoryListingJSON(results)`
 Will send a stringified json of the directory listing
 
-`res.renderDirectoryListingStaticJs(results)`
+### `res.renderDirectoryListingStaticJs(results)`
 Will send a directory listing that can transition between javascript and static
 
-`res.renderDirectoryListingTemplate(results)`
+### `res.renderDirectoryListingTemplate(results)`
 Will send a the default javascript directory listing
 
-`res.renderDirectoryListing(results)`
+### `res.renderDirectoryListing(results)`
 Will send a plain, static directory listing
 
 
-<h1>Another Useful Tool</h1>
+# Processing the request body
+
+### `res.readBody(callback)`
+callback: function
+
+Will read from the req stream. If the body has already been read, it will return the existing body
+After calling this, `req.body` will be set
+
+Example:
+
+```
+res.readBody(function(body) {
+    console.log(body)
+})
+```
+
+### `res.readBodyPromise()`
+
+Same as `res.readBody`, but uses promises
+
+Examples:
+
+```
+// When inside an async function
+var body = await res.readBodyPromise()
+console.log(body)
+// or
+res.readBodyPromise().then(function(body) {
+    console.log(body)
+})
+```
+
+### `stream2File(writePath, allowOverWrite, callback)`
+`writePath`: path to save file to
+`allowOverWrite`: allow file overwrite, `true` or `false`
+`callback`: function. Will return if there is an error, or success
+
+stream request body to file. Saves memory on larger requests
+
+# Another Useful Tool
 
 The `httpRequest` tool has been moved [here](httpRequest.md)
 

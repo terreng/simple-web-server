@@ -3,6 +3,7 @@ const { networkInterfaces } = require('os');
 const path = require('path');
 const fs = require('fs');
 const http = require('http');
+const https = require('https');
 const { URL } = require('url');
 const net = require('net');
 WSC = require("./WSC.js");
@@ -82,6 +83,20 @@ function getIPs() {
 let mainWindow;
 var config = {};
 
+function saveConfig(newConfig) {
+    for (var i=0; i<newConfig.servers.length; i++) {
+        if (newConfig.servers[i].https) {
+            if (! newConfig.servers[i].httpsCert || ! newConfig.servers[i].httpsKey) {
+                var crypto = WSC.createCrypto()  // Create HTTPS crypto
+                newConfig.servers[i].httpsKey = crypto.privateKey
+                newConfig.servers[i].httpsCert = crypto.cert
+            }
+        }
+    }
+    fs.writeFileSync(path.join(app.getPath('userData'), "config.json"), JSON.stringify(newConfig, null, 2), "utf8");
+    return crypto
+}
+
 if (!app.requestSingleInstanceLock()) {
     app.quit()
 }
@@ -135,7 +150,7 @@ var isQuitting = false;
 ipcMain.on('quit', quit)
 
 ipcMain.on('saveconfig', function(event, arg1) {
-    fs.writeFileSync(path.join(app.getPath('userData'), "config.json"), JSON.stringify(arg1, null, 2), "utf8");
+    saveConfig(argl)
     config = arg1;
     startServers();
 })
@@ -220,19 +235,21 @@ function startServers() {
         function createServer(serverconfig) {
             if (serverconfig.enabled) {
                 var hostname = serverconfig.localnetwork ? '0.0.0.0' : '127.0.0.1';
-                const server = http.createServer(function (req, res) {
-                    WSC.transformRequest(req, res, serverconfig, function(requestApp) {
-                        if (['GET','HEAD','PUT','POST','DELETE','OPTIONS'].includes(requestApp.request.method)) {
-                            var FileSystem = new WSC.FileSystem(serverconfig.path)
-                            var handler = new WSC.DirectoryEntryHandler(FileSystem, requestApp.request, requestApp.app, req, res)
-                            handler.tryHandle()
-                        } else {
-                            res.statusCode = 501
-                            res.statusMessage = 'Not Implemented'
-                            res.end()
+                if (serverconfig.https) {
+                    if (! serverconfig.httpsKey || ! serverconfig.httpsCert) {
+                        try {
+                            var crypto = saveConfig(JSON.parse(fs.readFileSync(path.join(app.getPath('userData'), "config.json"))))
+                        } catch(e) { console.log(e)}
+                        if (! crypto) {
+                            var crypto = WSC.createCrypto() // Temp Crypto
                         }
-                    })
-                });
+                        serverconfig.httpsKey = crypto.privateKey
+                        serverconfig.httpsCert = crypto.cert
+                    }
+                    var server = https.createServer({key: serverconfig.httpsKey, cert: serverconfig.httpsCert});
+                } else {
+                    var server = http.createServer();
+                }
                 /**
                 if (serverconfig.proxy) {
                     server.on('connect', (req, clientSocket, head) => {
@@ -249,6 +266,9 @@ function startServers() {
                     })
                 }
                 */
+                server.on('request', function(req, res) {
+                    WSC.onRequest(serverconfig, req, res)
+                });
                 server.on('clientError', (err, socket) => {
                     if (err.code === 'ECONNRESET' || !socket.writable) {
                         return;
@@ -256,10 +276,17 @@ function startServers() {
                     socket.end('HTTP/1.1 400 Bad Request\r\n\r\n');
                 });
                 server.on('error', function(err) {
-                    console.error(err);
+                    if (err.code == 'EADDRINUSE') {
+                        console.error(err)
+                        // This is where listen errors will occur
+                        // handle listen error/UI change
+                    } else {
+                        console.error(err);
+                    }
                 });
                 server.listen(serverconfig.port, hostname);
-                console.log('Listening on http://' + hostname + ':' + serverconfig.port)
+                var prot = serverconfig.https ? 'https' : 'http'
+                console.log('Listening on ' + prot + '://' + hostname + ':' + serverconfig.port)
 
                 var connections = {}
 
