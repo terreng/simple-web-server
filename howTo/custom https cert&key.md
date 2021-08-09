@@ -59,6 +59,7 @@ Step 3 - save the cert/key
 Go to the savedata folder: 
 Windows: `%USERPROFILE%\AppData\Roaming\Simple Web Server`
 Linux: `~/.config/Simple Web Server/`
+MacOS: `$HOME/Library/Application Support/Simple Web Server/`
 
 and open the file named `config.json` and replace the httpsCert or httpsKey value with your custom cert/key
 
