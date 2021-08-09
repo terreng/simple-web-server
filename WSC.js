@@ -35,7 +35,8 @@ _.extend(BaseHandler.prototype, {
             this.finish()
         }
     },
-    error: function(defaultMsg, httpCode) {
+    error: function(msg, httpCode) {
+        var defaultMsg = '<h1>' + httpCode + ' - ' + WSC.HTTPRESPONSES[httpCode] + '</h1>\n\n<p>' + msg + '</p>'
         if (this.request.method == "HEAD") {
             this.responseLength = 0
             this.writeHeaders(httpCode)
@@ -505,7 +506,7 @@ _.extend(DirectoryEntryHandler.prototype, {
         console.log(this.request.ip + ':', 'Request',this.request.method, this.request.uri)
         function finished() {
             if (this.request.path == this.app.opts.optIpBlockList) {
-                this.error('<h1>403 - Forbidden</h1>', 403)
+                this.error('', 403)
                 return
             }
             
@@ -516,7 +517,7 @@ _.extend(DirectoryEntryHandler.prototype, {
                     (this.request.method == 'PUT' && ! this.app.opts.optPUTPOSTHtaccess) ||
                     (this.request.method == 'POST' && ! this.app.opts.optPUTPOSTHtaccess) ||
                     (this.request.method == 'DELETE' && ! this.app.opts.optDELETEHtaccess)) {
-                    this.error('<h1>400 - Bad Request</h1>', 400)
+                    this.error('', 400)
                     return
                 }
             }
@@ -535,7 +536,7 @@ _.extend(DirectoryEntryHandler.prototype, {
                 }
 
                 if (! validAuth) {
-                    this.error("<h1>401 - Unauthorized</h1>", 401)
+                    this.error("", 401)
                     return
                 }
             }
@@ -567,7 +568,7 @@ _.extend(DirectoryEntryHandler.prototype, {
                             console.log('Failed to parse Ip block list')
                         }
                         if (ipBlockList.includes(this.request.ip)) {
-                            this.error('<h1>403 - Forbidden</h1>', 403)
+                            this.error('', 403)
                             console.log('Blocked Request From ' + this.request.ip)
                             return
                         } else {
@@ -620,12 +621,12 @@ _.extend(DirectoryEntryHandler.prototype, {
                                 return
                             }
                             if (origdata[i].type == 403 && origdata[i].request_path == filerequested) {
-                                this.error('<h1>403 - Forbidden</h1>', 403)
+                                this.error('', 403)
                                 return
                             }
                             if ((origdata[i].request_path == filerequested && origdata[i].type == 'POSTkey') ||
                                 (origdata[i].request_path == filerequested && origdata[i].type == 'serverSideJavaScript')) {
-                                this.error('<h1>400 - Bad Request</h1>', 400)
+                                this.error('', 400)
                                 return
                             }
                             if (origdata[i].type == 401 &&
@@ -663,7 +664,7 @@ _.extend(DirectoryEntryHandler.prototype, {
                                 }
                             }
                             if (! validAuth) {
-                                this.error("<h1>401 - Unauthorized</h1>", 401)
+                                this.error("", 401)
                                 return
                             }
                         }
@@ -759,7 +760,7 @@ _.extend(DirectoryEntryHandler.prototype, {
                             var auth = true
                         }
                         if (origdata[i].type == 403 && origdata[i].request_path == filerequested) {
-                            this.error('<h1>403 - Forbidden</h1>', 403)
+                            this.error('', 403)
                             return
                         }
                         if (origdata[i].type == 'POSTkey' && ! filefound) {
@@ -799,7 +800,7 @@ _.extend(DirectoryEntryHandler.prototype, {
                             }
                         }
                         if (! validAuth) {
-                            this.error("<h1>401 - Unauthorized</h1>", 401)
+                            this.error("", 401)
                             return
                         }
                     }
@@ -840,15 +841,15 @@ _.extend(DirectoryEntryHandler.prototype, {
                             } else if (file.isDirectory) {
                                 this.error('SSJS cannot be performed on a directory', 500)
                             } else {
-                                this.error('<h1>404 - File not found</h1>', 404)
+                                this.error('', 404)
                             }
                         }.bind(this))
                     } else {
-                        this.error('<h1>404 - file not found</h1>', 404)
+                        this.error('', 404)
                     }
                 }.bind(this))
             } else {
-                this.error('<h1>404 - file not found</h1>', 404)
+                this.error('', 404)
             }
         }.bind(this))
     },
@@ -967,9 +968,9 @@ _.extend(DirectoryEntryHandler.prototype, {
                 this.error('no entry',404)
             } else if (this.entry.error) {
                 if (this.entry.error.code == 'EPERM') {
-                    this.error('403 - Unauthorized', 403)
+                    this.error('', 403)
                 } else {
-                    this.error('404 - entry not found: ' + (this.rewrite_to || this.request.path), 404)
+                    this.error('entry not found: ' + (this.rewrite_to || this.request.path), 404)
                 }
             } else if (this.entry.isFile) {
                 this.renderFileContents(this.entry)
@@ -991,7 +992,7 @@ _.extend(DirectoryEntryHandler.prototype, {
                         }
                     }
                     if (this.app.opts.optDir404 && this.app.opts.index) {
-                        this.error("404 - File not found", 404)
+                        this.error("", 404)
                     } else if (this.request.arguments && this.request.arguments.json == '1' ||
                         (this.request.headers['accept'] && this.request.headers['accept'].toLowerCase() == 'application/json')
                        ) {
@@ -1145,7 +1146,7 @@ _.extend(DirectoryEntryHandler.prototype, {
                             //console.log(authdata)
                             //console.log(filefound)
                             if (hasPost && data.type != 'serverSideJavaScript') {
-                                this.error('<h1>Bad Request</h1>', 400)
+                                this.error('', 400)
                                 return
                             }
                             function htaccessCheck2() {
@@ -1163,12 +1164,12 @@ _.extend(DirectoryEntryHandler.prototype, {
                                         var method = this.request.headers['sec-fetch-dest']
                                         //console.log(method)
                                         if (method == "document") {
-                                            this.error('<h1>403 - Forbidden</h1>', 403)
+                                            this.error('', 403)
                                         } else {
                                             excludedothtmlcheck.bind(this)()
                                         }
                                     } else if (data.type == 403) {
-                                        this.error('<h1>403 - Forbidden</h1>', 403)
+                                        this.error('', 403)
                                     } else if (data.type == 'directory listing') {
                                         function finished(results) {
                                             if (this.request.arguments.json == '1' ||
@@ -1368,7 +1369,7 @@ _.extend(DirectoryEntryHandler.prototype, {
                                             } else if (file.isDirectory) {
                                                 this.error('SSJS cannot be performed on a directory', 500)
                                             } else {
-                                                this.error('<h1>404 - File not found</h1>', 404)
+                                                this.error('', 404)
                                             }
                                         }.bind(this))
                                     } else {
@@ -1404,7 +1405,7 @@ _.extend(DirectoryEntryHandler.prototype, {
                                         }
                                     }
                                     if (! validAuth) {
-                                        this.error("<h1>401 - Unauthorized</h1>", 401)
+                                        this.error("", 401)
                                     }
                                     if (validAuth) {
                                         htaccessCheck2.bind(this)()
@@ -1470,7 +1471,7 @@ _.extend(DirectoryEntryHandler.prototype, {
     },
     renderFileContents: function(entry) {
         if (! entry.path) {
-            this.error('404 - File not found', 404)
+            this.error('', 404)
             return
         }
         function readyToSend() {
