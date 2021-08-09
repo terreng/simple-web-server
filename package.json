@@ -86,7 +86,8 @@
 		{
 			"name": "@electron-forge/maker-appx",
 			"config": {
-				"publisher": "CN=SimpleWebServer"
+				"publisher": "CN=SimpleWebServer",
+				"expandedBaseImage": "images/icon.ico"
 			}
 		}
       ]
