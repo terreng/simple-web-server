@@ -83,6 +83,20 @@ function getIPs() {
 let mainWindow;
 var config = {};
 
+function saveConfig(newConfig) {
+    for (var i=0; i<newConfig.servers.length; i++) {
+        if (newConfig.servers[i].https) {
+            if (! newConfig.servers[i].httpsCert || ! newConfig.servers[i].httpsKey) {
+                var crypto = WSC.createCrypto()  // Create HTTPS crypto
+                newConfig.servers[i].httpsKey = crypto.privateKey
+                newConfig.servers[i].httpsCert = crypto.cert
+            }
+        }
+    }
+    fs.writeFileSync(path.join(app.getPath('userData'), "config.json"), JSON.stringify(newConfig, null, 2), "utf8");
+    return crypto
+}
+
 if (!app.requestSingleInstanceLock()) {
     app.quit()
 }
@@ -136,17 +150,7 @@ var isQuitting = false;
 ipcMain.on('quit', quit)
 
 ipcMain.on('saveconfig', function(event, arg1) {
-    for (var i=0; i<arg1.servers.length; i++) {
-        arg1.servers[i].https = true
-        if (arg1.servers[i].https) {
-            if (! arg1.servers[i].cert || ! arg1.servers[i].key) {
-                var crypto = WSC.createCrypto()  // Create HTTPS crypto
-                arg1.servers[i].key = crypto.privateKey
-                arg1.servers[i].cert = crypto.cert
-            }
-        }
-    }
-    fs.writeFileSync(path.join(app.getPath('userData'), "config.json"), JSON.stringify(arg1, null, 2), "utf8");
+    saveConfig(argl)
     config = arg1;
     startServers();
 })
@@ -232,34 +236,19 @@ function startServers() {
             if (serverconfig.enabled) {
                 var hostname = serverconfig.localnetwork ? '0.0.0.0' : '127.0.0.1';
                 if (serverconfig.https) {
-                    if (! serverconfig.key || ! serverconfig.cert) {
+                    if (! serverconfig.httpsKey || ! serverconfig.httpsCert) {
                         try {
-                            var config = JSON.parse(fs.readFileSync(path.join(app.getPath('userData'), "config.json")))
-                            console.log(config)
-                            for (var i=0; i<config.servers.length; i++) {
-                                if (config.servers[i].https) {
-                                    if (! config.servers[i].cert || ! config.servers[i].key) {
-                                        var crypto = WSC.createCrypto()  // Create HTTPS crypto
-                                        config.servers[i].key = crypto.privateKey
-                                        config.servers[i].cert = crypto.cert
-                                    }
-                                }
-                            }
-                            fs.writeFileSync(path.join(app.getPath('userData'), "config.json"), JSON.stringify(config, null, 2), "utf8");
+                            var crypto = saveConfig(JSON.parse(fs.readFileSync(path.join(app.getPath('userData'), "config.json"))))
                         } catch(e) { console.log(e)}
                         if (! crypto) {
                             var crypto = WSC.createCrypto() // Temp Crypto
                         }
-                        serverconfig.key = crypto.privateKey
-                        serverconfig.cert = crypto.cert
+                        serverconfig.httpsKey = crypto.privateKey
+                        serverconfig.httpsCert = crypto.cert
                     }
-                    var server = https.createServer({key: serverconfig.key, cert: serverconfig.cert}, function(req, res) {
-                        WSC.onRequest(serverconfig, req, res)
-                    });
+                    var server = https.createServer({key: serverconfig.httpsKey, cert: serverconfig.httpsCert});
                 } else {
-                    var server = http.createServer(function(req, res) {
-                        WSC.onRequest(serverconfig, req, res)
-                    });
+                    var server = http.createServer();
                 }
                 /**
                 if (serverconfig.proxy) {
@@ -277,6 +266,9 @@ function startServers() {
                     })
                 }
                 */
+                server.on('request', function(req, res) {
+                    WSC.onRequest(serverconfig, req, res)
+                });
                 server.on('clientError', (err, socket) => {
                     if (err.code === 'ECONNRESET' || !socket.writable) {
                         return;
