@@ -301,35 +301,6 @@ body {
     padding-bottom: 10px;
 }
 
-.checkbox_option {
-    padding: 12px;
-    font-size: 19px;
-}
-
-.checkbox_option input {
-    margin: 0px;
-    width: 20px;
-    height: 20px;
-    vertical-align: top;
-    cursor: pointer;
-}
-
-.input_option {
-    padding: 12px;
-    font-size: 19px;
-}
-
-.input_option > div:nth-child(1) {
-    font-size: 17px;
-    padding-bottom: 6px;
-}
-
-.input_option > input {
-    font-size: 20px;
-    padding: 4px;
-    width: 200px;
-}
-
 .option_group {
     padding-left: 20px;
 }
@@ -531,4 +502,53 @@ body {
     padding-left: 5px;
     width: calc(100% - 40px - 5px);
     padding-top: 9px;
+}
+
+.input_option {
+    display: flex;
+    flex-flow: column-reverse;
+    padding-left: 12px;
+    padding-right: 12px;
+}
+
+.input_option label {
+    transition: transform 0.2s, font-size 0.2s;
+}
+
+.input_option input {
+    font-size: 19px;
+    padding: 9px 12px;
+    width: 200px;
+    -webkit-appearance: none;
+    border-radius: 7px;
+    border: 2px solid gray;
+    outline: none;
+    transition: 0.2s border;
+}
+
+input:placeholder-shown + label {
+    cursor: text;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    transform-origin: left bottom;
+    transform: translate(0, 34px);
+    font-size: 19px;
+}
+
+input:not(:placeholder-shown) + label,
+input:focus + label {
+    transform: translate(0, 10px);
+    cursor: unset;
+    font-size: 14px;
+    background: white;
+}
+
+::-webkit-input-placeholder {
+    opacity: 0;
+    transition: opacity 0.2s;
+}
+
+input:focus::-webkit-input-placeholder {
+    opacity: 1;
 }
