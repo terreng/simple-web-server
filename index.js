@@ -70,9 +70,9 @@ const quit = function(event) {
 function getIPs() {
     let ifaces = networkInterfaces();
     var ips = [ ]
-    for(var k in ifaces) {
+    for (var k in ifaces) {
         for (var i=0; i<ifaces[k].length; i++) {
-            if (! (ifaces[k][i].address.startsWith('fe80:') || ifaces[k][i].address.startsWith('::') || ifaces[k][i].address.startsWith('127.0'))) {
+            if (ifaces[k][i].family == 'IPv4') {
                 ips.push(ifaces[k][i].address)
             }
         }

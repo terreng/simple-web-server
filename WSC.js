@@ -8,7 +8,7 @@ const https = require('https');
 const forge = require('node-forge');
 global.atob = require("atob");
 global.Blob = require('node-blob');
-
+global.cachedFiles = [ ]
 WSC = {};
 WSC.FileSystemUtils = { };
 
@@ -815,7 +815,7 @@ _.extend(DirectoryEntryHandler.prototype, {
                                     var contents = dataa.split('\n')
                                     var validFile = false
                                     for (var i=0; i<contents.length; i++) {
-                                        contents[i] = contents[i].replaceAll('\t', '').replaceAll('\n', '').replaceAll('\r', '')
+                                        contents[i] = contents[i].replaceAll('\t', '').replaceAll('\n', '').replaceAll('\r', '').replaceAll('var', '').replaceAll('const', '').replaceAll('let', '').replaceAll(' ', '')
                                         if (contents[i].startsWith('postKey')) {
                                             var postKey = contents[i].split('=').pop().replaceAll(' ', '').replaceAll('"', '').replaceAll('\'', '')
                                             if (postKey == data.key) {
@@ -827,8 +827,27 @@ _.extend(DirectoryEntryHandler.prototype, {
                                     if (validFile) {
                                         var req = this.request
                                         var res = this
+                                        var clearModuleCache = function() {
+                                            for (var i=0; i<global.cachedFiles.length; i++) {
+                                                delete require.cache[require.resolve(global.cachedFiles[i])]
+                                            }
+                                            global.cachedFiles = [ ]
+                                        }
+                                        var requireFile = function(path) {
+                                            var path = res.fs.mainPath + WSC.utils.relativePath(path, WSC.utils.stripOffFile(res.request.origpath))
+                                            var alreadyInThere = false
+                                            for (var i=0; i<global.cachedFiles.length; i++) {
+                                                if (global.cachedFiles[i] == path) {
+                                                    var alreadyInThere = true
+                                                }
+                                            }
+                                            if (! alreadyInThere) {
+                                                global.cachedFiles.push(path)
+                                            }
+                                            return require(path)
+                                        }
                                         try {
-                                            eval('(function() {var handler = function(req, res, tempData, httpRequest, appInfo) {' + dataa + '};handler(req, res, { }, WSC.httpRequest, {"server": "Simple Web Server"})})();')
+                                            eval('(function() {var handler = function(req, res, tempData, httpRequest, appInfo, clearModuleCache) {' + dataa + '};handler(req, res, { }, WSC.httpRequest, {"server": "Simple Web Server"}, clearModuleCache)})();')
                                         } catch(e) {
                                             console.error(e)
                                             this.write('Error with your script, check logs', 500)
@@ -1341,7 +1360,7 @@ _.extend(DirectoryEntryHandler.prototype, {
                                                     var contents = dataa.split('\n')
                                                     var validFile = false
                                                     for (var i=0; i<contents.length; i++) {
-                                                        contents[i] = contents[i].replaceAll('\t', '').replaceAll('\n', '').replaceAll('\r', '')
+                                                        contents[i] = contents[i].replaceAll('\t', '').replaceAll('\n', '').replaceAll('\r', '').replaceAll('var', '').replaceAll('const', '').replaceAll('let', '').replaceAll(' ', '')
                                                         if (contents[i].startsWith('SSJSKey')) {
                                                             var SSJSKey = contents[i].split('=').pop().replaceAll(' ', '').replaceAll('"', '').replaceAll('\'', '')
                                                             if (SSJSKey == data.key) {
@@ -1353,10 +1372,27 @@ _.extend(DirectoryEntryHandler.prototype, {
                                                     if (validFile) {
                                                         var req = this.request
                                                         var res = this
-                                                        var httpRequest = WSC.httpRequest
-                                                        var tempData = { }
+                                                        var clearModuleCache = function() {
+                                                            for (var i=0; i<global.cachedFiles.length; i++) {
+                                                                delete require.cache[require.resolve(global.cachedFiles[i])]
+                                                            }
+                                                            global.cachedFiles = [ ]
+                                                        }
+                                                        var requireFile = function(path) {
+                                                            var path = res.fs.mainPath + WSC.utils.relativePath(path, WSC.utils.stripOffFile(res.request.origpath))
+                                                            var alreadyInThere = false
+                                                            for (var i=0; i<global.cachedFiles.length; i++) {
+                                                                if (global.cachedFiles[i] == path) {
+                                                                    var alreadyInThere = true
+                                                                }
+                                                            }
+                                                            if (! alreadyInThere) {
+                                                                global.cachedFiles.push(path)
+                                                            }
+                                                            return require(path)
+                                                        }
                                                         try {
-                                                            eval('(function() {var handler = function(req, res, tempData, httpRequest, appInfo) {' + dataa + '};handler(req, res, tempData, httpRequest, {"server": "Simple Web Server"})})();')
+                                                            eval('(function() {var handler = function(req, res, tempData, httpRequest, appInfo, clearModuleCache) {' + dataa + '};handler(req, res, { }, WSC.httpRequest, {"server": "Simple Web Server"}, clearModuleCache)})();')
                                                         } catch(e) {
                                                             console.error(e)
                                                             this.write('Error with your script, check logs', 500)
@@ -1687,6 +1723,15 @@ _.extend(DirectoryEntryHandler.prototype, {
         this.writeHeaders(code)
     },
     contentType: function(type) {
+        var default_types = ['text/html',
+                             'text/xml',
+                             'text/plain',
+                             "text/vnd.wap.wml",
+                             "application/javascript",
+                             "application/rss+xml"]
+        if (type.split('chartset=').length != 1 && default_types.includes(type)) {
+            var type = type + '; charset=utf-8'
+        }
         this.setHeader('content-type', type)
     },
     end: function() {

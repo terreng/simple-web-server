@@ -248,6 +248,20 @@ res.readBodyPromise().then(function(body) {
 
 stream request body to file. Saves memory on larger requests
 
+
+# Requiring modules
+
+First, you MUST require a file through the `requireFile` function.
+In the folder that has the module you required, you can open a terminal/command prompt window and install the modules you want.
+Then, inside the file you required, you can require the modules you installed
+
+You CANNOT require modules inside the main file
+the `requireFile` function is only for use in the main file
+
+
+To clear module cache: call the `clearModuleCache` function
+
+
 # Another Useful Tool
 
 The `httpRequest` tool has been moved [here](httpRequest.md)

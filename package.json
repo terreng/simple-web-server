@@ -25,9 +25,9 @@
     "start": "electron-forge start",
     "package": "electron-forge package",
     "make": "electron-forge make",
-	"makeWin": "electron-forge make --platform win32",
-	"makeDarwin": "electron-forge make --platform darwin",
-	"makeLinux": "electron-forge make --platform linux"
+    "makeWin": "electron-forge make --platform win32",
+    "makeDarwin": "electron-forge make --platform darwin",
+    "makeLinux": "electron-forge make --platform linux"
   },
   "devDependencies": {
     "@electron-forge/cli": "^6.0.0-beta.57",
@@ -55,13 +55,24 @@
   "config": {
     "forge": {
       "packagerConfig": {
-        "icon": "images/icon"
+        "icon": "images/icon.ico"
       },
-	  "make_targets": {
-		"win32": ["squirrel", "appx"],
-		"darwin": ["zip", "dmg"],
-		"linux": ["deb", "rpm", "flatpak", "snap"]
-	  },
+      "make_targets": {
+        "win32": [
+          "squirrel",
+          "appx"
+        ],
+        "darwin": [
+          "zip",
+          "dmg"
+        ],
+        "linux": [
+          "deb",
+          "rpm",
+          "flatpak",
+          "snap"
+        ]
+      },
       "makers": [
         {
           "name": "@electron-forge/maker-squirrel",
@@ -83,13 +94,21 @@
           "name": "@electron-forge/maker-rpm",
           "config": {}
         },
-		{
-			"name": "@electron-forge/maker-appx",
-			"config": {
-				"publisher": "CN=SimpleWebServer",
-				"expandedBaseImage": "images/icon.ico"
-			}
-		}
+        {
+          "name": "@electron-forge/maker-wix",
+          "config": {
+            "ui": {
+              "chooseDirectory": true
+            }
+          }
+        },
+        {
+          "name": "@electron-forge/maker-appx",
+          "config": {
+            "publisher": "CN=SimpleWebServer",
+            "expandedBaseImage": "images/icon.ico"
+          }
+        }
       ]
     }
   }
