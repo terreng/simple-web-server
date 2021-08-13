@@ -42,6 +42,8 @@ Indenting this line may cause for the server to not find this line and in result
 
 the res and req variables ARE NOT WINDOW VARIABLES. DO NOT USE THEM AS SUCH
 
+On windows, it is recomended to write the files in all lowercase, no matter the case of the file
+
 <br>
 <h2>Writing the code inside the file</h2>
 
@@ -258,8 +260,8 @@ Then, inside the file you required, you can require the modules you installed
 You CANNOT require modules inside the main file
 the `requireFile` function is only for use in the main file
 
-
 To clear module cache: call the `clearModuleCache` function
+
 
 
 # Another Useful Tool

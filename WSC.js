@@ -6,6 +6,7 @@ const { URL } = require('url');
 const http = require('http');
 const https = require('https');
 const forge = require('node-forge');
+const { platform } = require('os');
 global.atob = require("atob");
 global.Blob = require('node-blob');
 global.cachedFiles = [ ]
@@ -201,6 +202,10 @@ WSC.transformRequest = function(req, res, settings, callback) {
                                       ip: req.socket.remoteAddress})
     var app = {
         opts: settings
+    }
+    if (platform() == 'win32') {
+        curRequest.path = curRequest.path.toLowerCase()
+        curRequest.origpath = curRequest.origpath.toLowerCase()
     }
     if (curRequest.method.toLowerCase() != 'put' && (curRequest.method.toLowerCase() != 'post' || (req.headers['content-type'] && req.headers['content-type'].startsWith('application/x-www-form-urlencoded')))) {
         req.on('data', function(chunk) {
@@ -1902,6 +1907,9 @@ WSC.utils = {
         return lastModifiedStr
     },
     htaccessFileRequested: function(filerequested, index) {
+        if (platform() == 'win32' && typeof filerequested == 'string') {
+            var filerequested = filerequested.toLowerCase()
+        }
         if (index) {
             if (filerequested == 'index.html' ||
                 filerequested == 'index.htm' ||
