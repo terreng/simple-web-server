@@ -39,6 +39,7 @@ Change `wa4e76yhefy54t4a` to the value of the key that you had inputed into the 
 The start of the line (`postKey = `) MUST STAY THE SAME (case sensitive). The server does not check for a set variable, but it will scan the file for the text `postKey`
 THIS LINE MUST BE ITS OWN LINE!! You CANNOT combine multiple lines of code with `;`
 Indenting this line may cause for the server to not find this line and in result, the code will not be executed
+YOU CANNOT PUT SPACES IN YOUR KEY
 
 the res and req variables ARE NOT WINDOW VARIABLES. DO NOT USE THEM AS SUCH
 
