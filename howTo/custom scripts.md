@@ -1,9 +1,9 @@
 
-<h1>How to use Server Side POST</h1>
+<h1>How to use custom scripts</h1>
 <br>
 <h2>How it works</h2>
 <br>
-<p>Perform a post request towards a js file, This js file will be checked for a key (Security) and with the correct key, the document will temporarily append the script and will execute the requested script</h2>
+<p>Perform a post/get request towards a js file, This js file will be checked for a key (Security) and with the correct key, the document will temporarily append the script and will execute the requested script</h2>
 <br>
 <p>As a security feature, you must have the request path and a key programed in a wsc.htaccess file and in the js file.</p>
 <p>The file name does not need to end with .js  The extension can be anything you want as the extension does not matter and will not be checked</p>
@@ -15,6 +15,8 @@
 <p>The file needs to be in the same path as the requested file</p>
 <p>The file name should be wsc.htaccess (case sensitive)</p>
 <p>Example:</p>
+
+For info on how to write for a get request, please read the [htaccess readme](htaccess.md)
 
 ```
 [
@@ -165,7 +167,7 @@ This contains all of the headers that the user sent when making the http request
 This contains all of the arguments that the user has put in the url
 
 ### `req.method`: string
-This contains the request method (should be POST)
+This contains the request method
 
 ### `req.uri`: string
 This contains the entire requested path

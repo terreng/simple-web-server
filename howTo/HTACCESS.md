@@ -303,7 +303,7 @@ This feature CANNOT use the `all files` value for the `request_path` field. You 
     }
 ]
 ```
-<p>Please refer to the <a href='post.md'>Post Handler</a> To learn how to respond.</p>
+<p>Please refer to the <a href='custom scripts.md'>custom scripts readme</a> To learn how to respond.</p>
 
 The only difference is - DO NOT declare the type as postKey in the htaccess file and instead of using `postKey = 'wa4e76yhefy54t4a'` use `SSJSKey = 'wa4e76yhefy54t4a'`
 
