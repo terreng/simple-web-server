@@ -1,9 +1,9 @@
 
-<h1>How to use Server Side POST</h1>
+<h1>How to use custom scripts</h1>
 <br>
 <h2>How it works</h2>
 <br>
-<p>Perform a post request towards a js file, This js file will be checked for a key (Security) and with the correct key, the document will temporarily append the script and will execute the requested script</h2>
+<p>Perform a post/get request towards a js file, This js file will be checked for a key (Security) and with the correct key, the document will temporarily append the script and will execute the requested script</h2>
 <br>
 <p>As a security feature, you must have the request path and a key programed in a wsc.htaccess file and in the js file.</p>
 <p>The file name does not need to end with .js  The extension can be anything you want as the extension does not matter and will not be checked</p>
@@ -15,6 +15,8 @@
 <p>The file needs to be in the same path as the requested file</p>
 <p>The file name should be wsc.htaccess (case sensitive)</p>
 <p>Example:</p>
+
+For info on how to write for a get request, please read the [htaccess readme](htaccess.md)
 
 ```
 [
@@ -39,6 +41,7 @@ Change `wa4e76yhefy54t4a` to the value of the key that you had inputed into the 
 The start of the line (`postKey = `) MUST STAY THE SAME (case sensitive). The server does not check for a set variable, but it will scan the file for the text `postKey`
 THIS LINE MUST BE ITS OWN LINE!! You CANNOT combine multiple lines of code with `;`
 Indenting this line may cause for the server to not find this line and in result, the code will not be executed
+YOU CANNOT PUT SPACES IN YOUR KEY
 
 the res and req variables ARE NOT WINDOW VARIABLES. DO NOT USE THEM AS SUCH
 
@@ -164,7 +167,7 @@ This contains all of the headers that the user sent when making the http request
 This contains all of the arguments that the user has put in the url
 
 ### `req.method`: string
-This contains the request method (should be POST)
+This contains the request method
 
 ### `req.uri`: string
 This contains the entire requested path
@@ -248,11 +251,25 @@ res.readBodyPromise().then(function(body) {
 
 stream request body to file. Saves memory on larger requests
 
+
+# Requiring modules
+
+First, you MUST require a file through the `requireFile` function.
+In the folder that has the module you required, you can open a terminal/command prompt window and install the modules you want.
+Then, inside the file you required, you can require the modules you installed
+
+You CANNOT require modules inside the main file
+the `requireFile` function is only for use in the main file
+
+To clear module cache: call the `clearModuleCache` function
+
+
+
 # Another Useful Tool
 
 The `httpRequest` tool has been moved [here](httpRequest.md)
 
-
+`global.tempData`: json This global variable is a place that you can store data if you need. It will NOT be cleared after the end of the response.
 
 Want to create a script compatible between this server and [Web Server For Chrome](https://github.com/ethanaobrien/web-server-chrome)?
 

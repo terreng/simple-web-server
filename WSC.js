@@ -8,7 +8,8 @@ const https = require('https');
 const forge = require('node-forge');
 global.atob = require("atob");
 global.Blob = require('node-blob');
-
+global.cachedFiles = [ ]
+global.tempData = { }
 WSC = {};
 WSC.FileSystemUtils = { };
 
@@ -326,8 +327,24 @@ getByPath.prototype = {
             this.modificationTime = stats.mtime
             this.isDirectory = stats.isDirectory()
             this.isFile = stats.isFile()
-            this.callback(this)
-            this.callback = null
+            var folder = path
+            if (folder.endsWith('/')) {
+                var folder = folder.substring(0, folder.length - 1)
+            }
+            this.name = folder.split('/').pop()
+            if (this.name == '') {
+                this.name = this.fs.mainPath.split('/').pop()
+            }
+            var folder = WSC.utils.stripOffFile(folder)
+            fs.readdir(folder, {encoding: 'utf-8'}, function(err, files) {
+                if (files.includes(this.name)) {
+                    this.callback(this)
+                    this.callback = null
+                } else {
+                    this.callback({error: 'File Not Found'})
+                    this.callback = null
+                }
+            }.bind(this))
         }.bind(this))
     },
     file: function(callback) {
@@ -432,7 +449,6 @@ _.extend(FileSystem.prototype, {
         var folder = WSC.utils.stripOffFile(path)
         if (! fs.existsSync(folder)) {
             try {
-                console.log(folder)
                 fs.mkdirSync(folder)
             } catch(e) { }
         }
@@ -815,7 +831,7 @@ _.extend(DirectoryEntryHandler.prototype, {
                                     var contents = dataa.split('\n')
                                     var validFile = false
                                     for (var i=0; i<contents.length; i++) {
-                                        contents[i] = contents[i].replaceAll('\t', '').replaceAll('\n', '').replaceAll('\r', '')
+                                        contents[i] = contents[i].replaceAll('\t', '').replaceAll('\n', '').replaceAll('\r', '').replaceAll(' ', '')
                                         if (contents[i].startsWith('postKey')) {
                                             var postKey = contents[i].split('=').pop().replaceAll(' ', '').replaceAll('"', '').replaceAll('\'', '')
                                             if (postKey == data.key) {
@@ -827,8 +843,24 @@ _.extend(DirectoryEntryHandler.prototype, {
                                     if (validFile) {
                                         var req = this.request
                                         var res = this
+                                        var clearModuleCache = function() {
+                                            for (var i=0; i<global.cachedFiles.length; i++) {
+                                                delete require.cache[require.resolve(global.cachedFiles[i])]
+                                            }
+                                            global.cachedFiles = [ ]
+                                        }
+                                        var requireFile = function(path) {
+                                            var path = res.fs.mainPath + WSC.utils.relativePath(path, WSC.utils.stripOffFile(res.request.origpath))
+                                            if (! global.cachedFiles.includes(path)) {
+                                                global.cachedFiles.push(path)
+                                            }
+                                            return require(path)
+                                        }
+                                        if (! global.tempData) {
+                                            global.tempData = { }
+                                        }
                                         try {
-                                            eval('(function() {var handler = function(req, res, tempData, httpRequest, appInfo) {' + dataa + '};handler(req, res, { }, WSC.httpRequest, {"server": "Simple Web Server"})})();')
+                                            eval('(function() {var handler = function(req, res, httpRequest, appInfo, clearModuleCache, requireFile) {' + dataa + '};handler(req, res, WSC.httpRequest, {"server": "Simple Web Server"}, clearModuleCache, requireFile)})();')
                                         } catch(e) {
                                             console.error(e)
                                             this.write('Error with your script, check logs', 500)
@@ -1341,7 +1373,7 @@ _.extend(DirectoryEntryHandler.prototype, {
                                                     var contents = dataa.split('\n')
                                                     var validFile = false
                                                     for (var i=0; i<contents.length; i++) {
-                                                        contents[i] = contents[i].replaceAll('\t', '').replaceAll('\n', '').replaceAll('\r', '')
+                                                        contents[i] = contents[i].replaceAll('\t', '').replaceAll('\n', '').replaceAll('\r', '').replaceAll(' ', '')
                                                         if (contents[i].startsWith('SSJSKey')) {
                                                             var SSJSKey = contents[i].split('=').pop().replaceAll(' ', '').replaceAll('"', '').replaceAll('\'', '')
                                                             if (SSJSKey == data.key) {
@@ -1353,10 +1385,24 @@ _.extend(DirectoryEntryHandler.prototype, {
                                                     if (validFile) {
                                                         var req = this.request
                                                         var res = this
-                                                        var httpRequest = WSC.httpRequest
-                                                        var tempData = { }
+                                                        var clearModuleCache = function() {
+                                                            for (var i=0; i<global.cachedFiles.length; i++) {
+                                                                delete require.cache[require.resolve(global.cachedFiles[i])]
+                                                            }
+                                                            global.cachedFiles = [ ]
+                                                        }
+                                                        var requireFile = function(path) {
+                                                            var path = res.fs.mainPath + WSC.utils.relativePath(path, WSC.utils.stripOffFile(res.request.origpath))
+                                                            if (! global.cachedFiles.includes(path)) {
+                                                                global.cachedFiles.push(path)
+                                                            }
+                                                            return require(path)
+                                                        }
+                                                        if (! global.tempData) {
+                                                            global.tempData = { }
+                                                        }
                                                         try {
-                                                            eval('(function() {var handler = function(req, res, tempData, httpRequest, appInfo) {' + dataa + '};handler(req, res, tempData, httpRequest, {"server": "Simple Web Server"})})();')
+                                                            eval('(function() {var handler = function(req, res, httpRequest, appInfo, clearModuleCache, requireFile) {' + dataa + '};handler(req, res, WSC.httpRequest, {"server": "Simple Web Server"}, clearModuleCache, requireFile)})();')
                                                         } catch(e) {
                                                             console.error(e)
                                                             this.write('Error with your script, check logs', 500)
@@ -1687,6 +1733,15 @@ _.extend(DirectoryEntryHandler.prototype, {
         this.writeHeaders(code)
     },
     contentType: function(type) {
+        var default_types = ['text/html',
+                             'text/xml',
+                             'text/plain',
+                             "text/vnd.wap.wml",
+                             "application/javascript",
+                             "application/rss+xml"]
+        if (type.split('chartset=').length != 1 && default_types.includes(type)) {
+            var type = type + '; charset=utf-8'
+        }
         this.setHeader('content-type', type)
     },
     end: function() {
