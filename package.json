@@ -95,14 +95,6 @@
           "config": {}
         },
         {
-          "name": "@electron-forge/maker-wix",
-          "config": {
-            "ui": {
-              "chooseDirectory": true
-            }
-          }
-        },
-        {
           "name": "@electron-forge/maker-appx",
           "config": {
             "publisher": "CN=SimpleWebServer",
