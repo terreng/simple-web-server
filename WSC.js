@@ -831,7 +831,7 @@ _.extend(DirectoryEntryHandler.prototype, {
                                     var contents = dataa.split('\n')
                                     var validFile = false
                                     for (var i=0; i<contents.length; i++) {
-                                        contents[i] = contents[i].replaceAll('\t', '').replaceAll('\n', '').replaceAll('\r', '').replaceAll('var', '').replaceAll('const', '').replaceAll('let', '').replaceAll(' ', '')
+                                        contents[i] = contents[i].replaceAll('\t', '').replaceAll('\n', '').replaceAll('\r', '').replaceAll(' ', '')
                                         if (contents[i].startsWith('postKey')) {
                                             var postKey = contents[i].split('=').pop().replaceAll(' ', '').replaceAll('"', '').replaceAll('\'', '')
                                             if (postKey == data.key) {
@@ -1373,7 +1373,7 @@ _.extend(DirectoryEntryHandler.prototype, {
                                                     var contents = dataa.split('\n')
                                                     var validFile = false
                                                     for (var i=0; i<contents.length; i++) {
-                                                        contents[i] = contents[i].replaceAll('\t', '').replaceAll('\n', '').replaceAll('\r', '').replaceAll('var', '').replaceAll('const', '').replaceAll('let', '').replaceAll(' ', '')
+                                                        contents[i] = contents[i].replaceAll('\t', '').replaceAll('\n', '').replaceAll('\r', '').replaceAll(' ', '')
                                                         if (contents[i].startsWith('SSJSKey')) {
                                                             var SSJSKey = contents[i].split('=').pop().replaceAll(' ', '').replaceAll('"', '').replaceAll('\'', '')
                                                             if (SSJSKey == data.key) {
