@@ -268,7 +268,7 @@ To clear module cache: call the `clearModuleCache` function
 
 The `httpRequest` tool has been moved [here](httpRequest.md)
 
-
+`global.tempData`: json This global variable is a place that you can store data if you need. It will NOT be cleared after the end of the response.
 
 Want to create a script compatible between this server and [Web Server For Chrome](https://github.com/ethanaobrien/web-server-chrome)?
 

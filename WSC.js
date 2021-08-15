@@ -6,10 +6,10 @@ const { URL } = require('url');
 const http = require('http');
 const https = require('https');
 const forge = require('node-forge');
-const { platform } = require('os');
 global.atob = require("atob");
 global.Blob = require('node-blob');
 global.cachedFiles = [ ]
+global.tempData = { }
 WSC = {};
 WSC.FileSystemUtils = { };
 
@@ -203,10 +203,6 @@ WSC.transformRequest = function(req, res, settings, callback) {
     var app = {
         opts: settings
     }
-    if (platform() == 'win32') {
-        curRequest.path = curRequest.path.toLowerCase()
-        curRequest.origpath = curRequest.origpath.toLowerCase()
-    }
     if (curRequest.method.toLowerCase() != 'put' && (curRequest.method.toLowerCase() != 'post' || (req.headers['content-type'] && req.headers['content-type'].startsWith('application/x-www-form-urlencoded')))) {
         req.on('data', function(chunk) {
             if (chunk && chunk != 'undefined') {
@@ -331,8 +327,24 @@ getByPath.prototype = {
             this.modificationTime = stats.mtime
             this.isDirectory = stats.isDirectory()
             this.isFile = stats.isFile()
-            this.callback(this)
-            this.callback = null
+            var folder = path
+            if (folder.endsWith('/')) {
+                var folder = folder.substring(0, folder.length - 1)
+            }
+            this.name = folder.split('/').pop()
+            if (this.name == '') {
+                this.name = this.fs.mainPath.split('/').pop()
+            }
+            var folder = WSC.utils.stripOffFile(folder)
+            fs.readdir(folder, {encoding: 'utf-8'}, function(err, files) {
+                if (files.includes(this.name)) {
+                    this.callback(this)
+                    this.callback = null
+                } else {
+                    this.callback({error: 'File Not Found'})
+                    this.callback = null
+                }
+            }.bind(this))
         }.bind(this))
     },
     file: function(callback) {
@@ -437,7 +449,6 @@ _.extend(FileSystem.prototype, {
         var folder = WSC.utils.stripOffFile(path)
         if (! fs.existsSync(folder)) {
             try {
-                console.log(folder)
                 fs.mkdirSync(folder)
             } catch(e) { }
         }
@@ -840,19 +851,16 @@ _.extend(DirectoryEntryHandler.prototype, {
                                         }
                                         var requireFile = function(path) {
                                             var path = res.fs.mainPath + WSC.utils.relativePath(path, WSC.utils.stripOffFile(res.request.origpath))
-                                            var alreadyInThere = false
-                                            for (var i=0; i<global.cachedFiles.length; i++) {
-                                                if (global.cachedFiles[i] == path) {
-                                                    var alreadyInThere = true
-                                                }
-                                            }
-                                            if (! alreadyInThere) {
+                                            if (! global.cachedFiles.includes(path)) {
                                                 global.cachedFiles.push(path)
                                             }
                                             return require(path)
                                         }
+                                        if (! global.tempData) {
+                                            global.tempData = { }
+                                        }
                                         try {
-                                            eval('(function() {var handler = function(req, res, tempData, httpRequest, appInfo, clearModuleCache) {' + dataa + '};handler(req, res, { }, WSC.httpRequest, {"server": "Simple Web Server"}, clearModuleCache)})();')
+                                            eval('(function() {var handler = function(req, res, httpRequest, appInfo, clearModuleCache, requireFile) {' + dataa + '};handler(req, res, WSC.httpRequest, {"server": "Simple Web Server"}, clearModuleCache, requireFile)})();')
                                         } catch(e) {
                                             console.error(e)
                                             this.write('Error with your script, check logs', 500)
@@ -1385,19 +1393,16 @@ _.extend(DirectoryEntryHandler.prototype, {
                                                         }
                                                         var requireFile = function(path) {
                                                             var path = res.fs.mainPath + WSC.utils.relativePath(path, WSC.utils.stripOffFile(res.request.origpath))
-                                                            var alreadyInThere = false
-                                                            for (var i=0; i<global.cachedFiles.length; i++) {
-                                                                if (global.cachedFiles[i] == path) {
-                                                                    var alreadyInThere = true
-                                                                }
-                                                            }
-                                                            if (! alreadyInThere) {
+                                                            if (! global.cachedFiles.includes(path)) {
                                                                 global.cachedFiles.push(path)
                                                             }
                                                             return require(path)
                                                         }
+                                                        if (! global.tempData) {
+                                                            global.tempData = { }
+                                                        }
                                                         try {
-                                                            eval('(function() {var handler = function(req, res, tempData, httpRequest, appInfo, clearModuleCache) {' + dataa + '};handler(req, res, { }, WSC.httpRequest, {"server": "Simple Web Server"}, clearModuleCache)})();')
+                                                            eval('(function() {var handler = function(req, res, httpRequest, appInfo, clearModuleCache, requireFile) {' + dataa + '};handler(req, res, WSC.httpRequest, {"server": "Simple Web Server"}, clearModuleCache, requireFile)})();')
                                                         } catch(e) {
                                                             console.error(e)
                                                             this.write('Error with your script, check logs', 500)
@@ -1907,9 +1912,6 @@ WSC.utils = {
         return lastModifiedStr
     },
     htaccessFileRequested: function(filerequested, index) {
-        if (platform() == 'win32' && typeof filerequested == 'string') {
-            var filerequested = filerequested.toLowerCase()
-        }
         if (index) {
             if (filerequested == 'index.html' ||
                 filerequested == 'index.htm' ||
