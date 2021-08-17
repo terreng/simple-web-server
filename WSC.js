@@ -1,7 +1,6 @@
 const path = require('path');
 const fs = require('fs');
 const send = require('send');
-const _ = require('underscore');
 const { URL } = require('url');
 const http = require('http');
 const https = require('https');
@@ -26,7 +25,7 @@ function BaseHandler() {
     this.responseHeaders = {}
     this.responseLength = 0
 }
-_.extend(BaseHandler.prototype, {
+BaseHandler.prototype = {
     options: function() {
         if (this.app.opts.cors) {
             this.set_status(200)
@@ -140,7 +139,7 @@ _.extend(BaseHandler.prototype, {
                                          "application/javascript",
                                          "application/rss+xml"]
 
-                    if (_.contains(default_types, type)) {
+                    if (default_types.includes(type)) {
                         type += '; charset=utf-8'
                     }
                     this.setHeader('content-type',type)
@@ -191,7 +190,7 @@ _.extend(BaseHandler.prototype, {
             this.res.end()
         }
     }
-})
+}
 WSC.BaseHandler = BaseHandler
 
 WSC.transformRequest = function(req, res, settings, callback) {
@@ -327,24 +326,28 @@ getByPath.prototype = {
             this.modificationTime = stats.mtime
             this.isDirectory = stats.isDirectory()
             this.isFile = stats.isFile()
-            var folder = path
-            if (folder.endsWith('/')) {
-                var folder = folder.substring(0, folder.length - 1)
-            }
-            this.name = folder.split('/').pop()
-            if (this.name == '') {
-                this.name = this.fs.mainPath.split('/').pop()
-            }
-            var folder = WSC.utils.stripOffFile(folder)
-            fs.readdir(folder, {encoding: 'utf-8'}, function(err, files) {
-                if (files.includes(this.name)) {
-                    this.callback(this)
-                    this.callback = null
-                } else {
-                    this.callback({error: 'File Not Found'})
-                    this.callback = null
-                }
-            }.bind(this))
+			if (this.isFile) {
+				var folder = path
+				if (folder.endsWith('/')) {
+					this.callback({error: 'Path Not Found'})
+					this.callback = null
+					return
+				}
+				this.name = folder.split('/').pop()
+				var folder = WSC.utils.stripOffFile(folder)
+				fs.readdir(folder, {encoding: 'utf-8'}, function(err, files) {
+					if (files.includes(this.name)) {
+						this.callback(this)
+						this.callback = null
+					} else {
+						this.callback({error: 'Path Not Found'})
+						this.callback = null
+					}
+				}.bind(this))
+			} else {
+				this.callback(this)
+				this.callback = null
+			}
         }.bind(this))
     },
     file: function(callback) {
@@ -365,29 +368,23 @@ getByPath.prototype = {
         if (! callback) {
             var callback = function() { }
         }
-        var path = this.path
-        fs.stat(path, function(error, stats) {
-            if (error) {
-                callback({error: error})
-                return
-            } else if (stats.isDirectory()) {
-                fs.rmdir(path, { recursive: true }, (err) => {
-                    if (err) {
-                        callback({error: err, success: false})
-                    } else {
-                        callback({error: false, success: true})
-                    }
-                })
-            } else {
-                fs.unlink(path, (err) => {
-                    if (err) {
-                        callback({error: err, success: false})
-                    } else {
-                        callback({error: false, success: true})
-                    }
-                })
-            }
-        })
+		if (this.isDirectory) {
+			fs.rmdir(this.path, { recursive: false }, (err) => {
+				if (err) {
+					callback({error: err, success: false})
+				} else {
+					callback({error: false, success: true})
+				}
+			})
+		} else {
+			fs.unlink(this.path, (err) => {
+				if (err) {
+					callback({error: err, success: false})
+				} else {
+					callback({error: false, success: true})
+				}
+			})
+		}
     },
     getDirContents: function(callback) {
         if (this.isFile) {
@@ -437,7 +434,7 @@ function FileSystem(mainPath) {
     }
     this.mainPath = mainPath
 }
-_.extend(FileSystem.prototype, {
+FileSystem.prototype = {
     getByPath: function(path, callback) {
         var entry = new WSC.FileSystemUtils.getByPath(path, callback, this)
         entry.getFile()
@@ -496,11 +493,17 @@ _.extend(FileSystem.prototype, {
         }
         return fs.createWriteStream(path)
     }
-})
+}
 WSC.FileSystem = FileSystem
 
 function DirectoryEntryHandler(FileSystem, request, app, req, res) {
-    WSC.BaseHandler.prototype.constructor.call(this)
+    this.headersWritten = false
+    this.writingHeaders = false
+    this.pendingEnd = false
+    this.responseCode = null
+    this.responseHeaders = {}
+    this.responseLength = 0
+	
     this.fs = FileSystem
     this.req = req
     this.res = res
@@ -514,7 +517,7 @@ function DirectoryEntryHandler(FileSystem, request, app, req, res) {
     this.bodyWritten = 0
     this.isDirectoryListing = false
 }
-_.extend(DirectoryEntryHandler.prototype, {
+DirectoryEntryHandler.prototype = {
     head: function() {
         this.get()
     },
@@ -629,11 +632,11 @@ _.extend(DirectoryEntryHandler.prototype, {
                         }
                         for (var i=0; i<origdata.length; i++) {
                             if (! origdata[i].type) {
-                                this.htaccessError.bind(this)('missing type')
+                                this.htaccessError('missing type')
                                 return
                             }
                             if (! origdata[i].request_path && origdata[i].type != 'directory listing') {
-                                this.htaccessError.bind(this)('missing request path')
+                                this.htaccessError('missing request path')
                                 return
                             }
                             if (origdata[i].type == 403 && origdata[i].request_path == filerequested) {
@@ -662,11 +665,11 @@ _.extend(DirectoryEntryHandler.prototype, {
                         //console.log(filefound)
                         if (auth) {
                             if (! authdata.username) {
-                                this.htaccessError.bind(this)('missing Auth Username')
+                                this.htaccessError('missing Auth Username')
                                 return
                             }
                             if (! authdata.password) {
-                                this.htaccessError.bind(this)('missing Auth Password')
+                                this.htaccessError('missing Auth Password')
                                 return
                             }
                             var validAuth = false
@@ -759,11 +762,11 @@ _.extend(DirectoryEntryHandler.prototype, {
                     var auth = false
                     for (var i=0; i<origdata.length; i++) {
                         if (! origdata[i].type) {
-                            this.htaccessError.bind(this)('missing type')
+                            this.htaccessError('missing type')
                             return
                         }
                         if (! origdata[i].request_path && origdata[i].type != 'directory listing') {
-                            this.htaccessError.bind(this)('missing request path')
+                            this.htaccessError('missing request path')
                             return
                         }
                         origdata[i].original_request_path = origdata[i].request_path
@@ -798,11 +801,11 @@ _.extend(DirectoryEntryHandler.prototype, {
                     // Still need to validate POST key
                     if (auth) {
                         if (! authdata.username) {
-                            this.htaccessError.bind(this)('missing Auth Username')
+                            this.htaccessError('missing Auth Username')
                             return
                         }
                         if (! authdata.password) {
-                            this.htaccessError.bind(this)('missing Auth Password')
+                            this.htaccessError('missing Auth Password')
                             return
                         }
                         var validAuth = false
@@ -822,7 +825,7 @@ _.extend(DirectoryEntryHandler.prototype, {
                     }
                     if (filefound) {
                         if (! data.key) {
-                            this.htaccessError.bind(this)('missing key')
+                            this.htaccessError('missing key')
                             return
                         }
                         this.fs.getByPath(WSC.utils.stripOffFile(this.request.origpath) + data.original_request_path, function(file) {
@@ -1007,7 +1010,6 @@ _.extend(DirectoryEntryHandler.prototype, {
             } else if (this.entry.isFile) {
                 this.renderFileContents(this.entry)
             } else {
-
                 function alldone(results) {
                     if (this.app.opts.index) {
                         for (var i=0; i<results.length; i++) {
@@ -1025,20 +1027,9 @@ _.extend(DirectoryEntryHandler.prototype, {
                     }
                     if (this.app.opts.optDir404 && this.app.opts.index) {
                         this.error("", 404)
-                    } else if (this.request.arguments && this.request.arguments.json == '1' ||
-                        (this.request.headers['accept'] && this.request.headers['accept'].toLowerCase() == 'application/json')
-                       ) {
-                        this.renderDirectoryListingJSON(results)
-                    } else if (this.request.arguments && this.request.arguments.static == '1' ||
-                        this.request.arguments.static == 'true' ||
-                        this.app.opts.optStatic
-                       ) {
-                        this.renderDirectoryListing(results)
-                    } else if (this.request.arguments.staticjs == '1' || this.request.arguments.staticjs == 'true' || this.app.opts.optStaticjs) {
-                        this.renderDirectoryListingStaticJs(results)
                     } else {
-                        this.renderDirectoryListingTemplate(results)
-                    }
+						this.renderDirListing(results)
+					}
                 }
                 this.getDirContents(this.entry, alldone.bind(this))
             }
@@ -1046,18 +1037,18 @@ _.extend(DirectoryEntryHandler.prototype, {
 
         function excludedothtmlcheck() {
             if (this.app.opts.optExcludeDotHtml && this.request.path != '' && ! this.request.origpath.endsWith("/")) {
-                    var htmHtml = this.app.opts.optExcludeDotHtm ? '.htm' : '.html'
-                    this.fs.getByPath(this.request.path+htmHtml, function(file) {
-                        if (! file.error && file.isFile) {
-                            //console.log('file found')
-                            this.setHeader('content-type','text/html; charset=utf-8')
-                            this.renderFileContents(file)
-                            return
-                        } else {
-                            onEntryMain.bind(this)()
-                        }
-                    }.bind(this))
-                } else {
+				var htmHtml = this.app.opts.optExcludeDotHtm ? '.htm' : '.html'
+				this.fs.getByPath(this.request.path+htmHtml, function(file) {
+					if (! file.error && file.isFile) {
+						//console.log('file found')
+						this.setHeader('content-type','text/html; charset=utf-8')
+						this.renderFileContents(file)
+						return
+					} else {
+						onEntryMain.bind(this)()
+					}
+				}.bind(this))
+			} else {
                 onEntryMain.bind(this)()
             }
         }
@@ -1097,11 +1088,11 @@ _.extend(DirectoryEntryHandler.prototype, {
                             }
                             for (var i=0; i<origdata.length; i++) {
                                 if (! origdata[i].type) {
-                                    this.htaccessError.bind(this)('missing type')
+                                    this.htaccessError('missing type')
                                     return
                                 }
                                 if (! origdata[i].request_path && origdata[i].type != 'directory listing') {
-                                    this.htaccessError.bind(this)('missing request path')
+                                    this.htaccessError('missing request path')
                                     return
                                 }
                                 origdata[i].original_request_path = origdata[i].request_path
@@ -1185,7 +1176,7 @@ _.extend(DirectoryEntryHandler.prototype, {
                                 if (filefound) {
                                     if (data.type == 301 || data.type == 302 || data.type == 307) {
                                         if (! data.redirto) {
-                                            this.htaccessError.bind(this)('missing redirect location')
+                                            this.htaccessError('missing redirect location')
                                             return
                                         }
                                         this.setHeader('location', data.redirto)
@@ -1204,18 +1195,7 @@ _.extend(DirectoryEntryHandler.prototype, {
                                         this.error('', 403)
                                     } else if (data.type == 'directory listing') {
                                         function finished(results) {
-                                            if (this.request.arguments.json == '1' ||
-                                                this.request.headers['accept'].toLowerCase() == 'application/json') {
-                                                this.renderDirectoryListingJSON(results)
-                                            } else if (this.request.arguments.static == '1' ||
-                                                       this.request.arguments.static == 'true' ||
-                                                       this.app.opts.optStatic) {
-                                                this.renderDirectoryListing(results)
-                                            } else if (this.request.arguments.staticjs == '1' || this.request.arguments.staticjs == 'true' || this.app.opts.optStaticjs) {
-                                                this.renderDirectoryListingStaticJs(results)
-                                            } else {
-                                                this.renderDirectoryListingTemplate(results)
-                                            }
+                                            this.renderDirListing(results)
                                         }
                                         this.getDirContents(entry, finished.bind(this))
                                     } else if (data.type == 'send directory contents') {
@@ -1291,21 +1271,21 @@ _.extend(DirectoryEntryHandler.prototype, {
                                             if (! entry.error) {
                                                 this.getDirContents(entryy, finished.bind(this))
                                             } else {
-                                                this.htaccessError.bind(this)('invalid path to send dir contents')
+                                                this.htaccessError('invalid path to send dir contents')
                                             }
                                         }.bind(this))
                                     } else if (data.type == 'versioning') {
                                         //console.log('versioning')
                                         if (! data.version_data || data.version_data.length == 0) {
-                                            this.htaccessError.bind(this)('missing version data')
+                                            this.htaccessError('missing version data')
                                             return
                                         }
                                         if (! data.variable) {
-                                            this.htaccessError.bind(this)('missing variable')
+                                            this.htaccessError('missing variable')
                                             return
                                         }
                                         if (! data.default) {
-                                            this.htaccessError.bind(this)('missing default file selection')
+                                            this.htaccessError('missing default file selection')
                                             return
                                         }
                                         var versionData = data.version_data
@@ -1364,7 +1344,7 @@ _.extend(DirectoryEntryHandler.prototype, {
                                         }.bind(this))
                                     } else if (data.type == 'serverSideJavaScript') {
                                         if (! data.key) {
-                                            this.htaccessError.bind(this)('missing key')
+                                            this.htaccessError('missing key')
                                             return
                                         }
                                         this.fs.getByPath(WSC.utils.stripOffFile(this.request.origpath) + data.original_request_path, function(file) {
@@ -1433,11 +1413,11 @@ _.extend(DirectoryEntryHandler.prototype, {
                             }
                             if (auth && authdata.type == 401) {
                                  if (! authdata.username) {
-                                     this.htaccessError.bind(this)('missing Auth Username')
+                                     this.htaccessError('missing Auth Username')
                                      return
                                  }
                                  if (! authdata.password) {
-                                     this.htaccessError.bind(this)('missing Auth Password')
+                                     this.htaccessError('missing Auth Password')
                                      return
                                  }
                                     var validAuth = false
@@ -1551,8 +1531,18 @@ _.extend(DirectoryEntryHandler.prototype, {
         }
             
     },
-    renderDirectoryListingJSON: function(results) {
+    renderDirectoryListingJSON: function(origResults) {
         this.setHeader('content-type','application/json; charset=utf-8')
+		var results = [ ]
+		for (var i=0; i<origResults.length; i++) {
+			if (! origResults[i].name.startsWith('.')) {
+				if (name != 'wsc.htaccess' || this.app.opts.optDirListingHtaccess) {
+					results.push(origResults[i])
+				}
+			} else if (this.app.opts.optDotFilesDirListing) {
+				results.push(origResults[i])
+			}
+		}
         this.write(JSON.stringify(results.map(function(f) { return { name:f.name,
                                                                      fullPath:f.fullPath,
                                                                      isFile:f.isFile,
@@ -1577,7 +1567,7 @@ _.extend(DirectoryEntryHandler.prototype, {
         html.push('<ul>')
         results.sort( this.entriesSortFunc )
         for (var i=0; i<results.length; i++) {
-            var name = _.escape(results[i].name)
+            var name = results[i].name.htmlEscape()
             if (results[i].isDirectory) {
                 html.push('<li class="directory"><a href="' + name + '/?static=1">' + name + '</a></li>')
             } else {
@@ -1662,9 +1652,11 @@ _.extend(DirectoryEntryHandler.prototype, {
         // TODO -- add sorting (by query parameter?) show file size?
 
         for (var i=0; i<results.length; i++) {
-            var name = _.escape(results[i].name)
+            var name = results[i].name.htmlEscape()
             if (results[i].isDirectory) {
-                html.push('<li class="directory"><a href="' + name + '/?static=1">' + name + '</a></li>')
+				if (! results[i].name.startsWith('.')) {
+					html.push('<li class="directory"><a href="' + name + '/?static=1">' + name + '</a></li>')
+				}
             } else {
                 if (! results[i].name.startsWith('.')) {
                     if (name != 'wsc.htaccess' || this.app.opts.optDirListingHtaccess) {
@@ -1684,6 +1676,23 @@ _.extend(DirectoryEntryHandler.prototype, {
             callback(files)
         })
     },
+	renderDirListing: function(results) {
+		if (this.request.arguments && this.request.arguments.json == '1' || this.request.arguments.json == 'true' || (this.request.headers['accept'] && this.request.headers['accept'].toLowerCase() == 'application/json')) {
+			this.renderDirectoryListingJSON(results)
+		} else if (this.request.arguments && this.request.arguments.static == '1' || this.request.arguments.static == 'true') {
+			this.renderDirectoryListing(results)
+		} else if (this.request.arguments && this.request.arguments.staticjs == '1' || this.request.arguments.staticjs == 'true') {
+			this.renderDirectoryListingStaticJs(results)
+		} else if (this.request.arguments && this.request.arguments.js == '1' || this.request.arguments.js == 'true') {
+			this.renderDirectoryListingTemplate(results)
+		} else if (this.app.opts.optStatic) {
+			this.renderDirectoryListing(results)
+		} else if (this.app.opts.optStaticjs) {
+			this.renderDirectoryListingStaticJs(results)
+		} else {
+			this.renderDirectoryListingTemplate(results)
+		}
+	},
     htaccessError: function(errormsg) {
         this.write('Htaccess Configuration error. Please check to make sure that you are not missing some values.\n\nError Message: '+errormsg, 500)
         this.finish()
@@ -1832,7 +1841,11 @@ _.extend(DirectoryEntryHandler.prototype, {
             }
         }.bind(this))
     }
-}, WSC.BaseHandler.prototype)
+}
+
+for (var k in WSC.BaseHandler.prototype) {
+	DirectoryEntryHandler.prototype[k] = WSC.BaseHandler.prototype[k]
+}
 
 WSC.DirectoryEntryHandler = DirectoryEntryHandler
 
@@ -1999,20 +2012,20 @@ httpRequest.prototype = {
     },
     open: function(method, url) {
         if (! url.startsWith('http')) {
-            console.error('url must start with http')
             var error = 'url must start with http or https'
+			console.error(error)
             if (this.onerror && typeof this.onerror == 'function') {
                 this.onerror(error)
             } else if (this.onload && typeof this.onload == 'function') {
                 this.onload(error)
             } else {
-                throw new Error('url must start with http or https')
+                throw new Error(error)
             }
             return
         }
         this.method = method
         const { port, pathname, search, protocol, host } = new URL(url)
-        var path = encodeURIComponent(pathname + search)
+        var path = pathname + search
         if (protocol =='https:') {
             this.req = https.request({method: method, protocol: protocol, host: host, path: path, port: port || 443})
         } else {
@@ -2031,10 +2044,10 @@ httpRequest.prototype = {
             this.req.setHeader(k, this.headers[k])
         }
         if (data) {
-            this.responseData = data
             if (typeof data == 'string') {
                 var data = Buffer.from(data)
             }
+            this.responseData = data
             this.req.setHeader('content-length', data.byteLength)
         }
         this.req.on('response', this.onResponse.bind(this))
@@ -2049,7 +2062,7 @@ httpRequest.prototype = {
             }
         }.bind(this))
         this.res = res
-        if ((res.statusCode == 301 || res.statusCode == 302 || res.statusCode == 307) && this.reDirectLimit > this.reDirectCount) {
+        if ((res.statusCode == 301 || res.statusCode == 302 || res.statusCode == 307) && this.reDirectLimit > this.reDirectCount && res.headers.location) {
             var request = new WSC.httpRequest()
             request.streamToFile = this.streamToFile
             request.savePath = this.savePath
@@ -2207,7 +2220,7 @@ WSC.onRequest = function(serverconfig, req, res) {
 }
 
 String.prototype.htmlEscape = function() {
-    return String(this).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;")
+    return this.replaceAll(/&/g, "&amp;").replaceAll(/</g, "&lt;").replaceAll(/>/g, "&gt;").replaceAll(/"/g, "&quot;").replaceAll(/'/g, "&#039;")
 }
 
 
