@@ -1217,7 +1217,7 @@ DirectoryEntryHandler.prototype = {
         var results = [ ]
         for (var i=0; i<origResults.length; i++) {
             if (! origResults[i].name.startsWith('.')) {
-                if (name != 'wsc.htaccess' || this.app.opts.optDirListingHtaccess) {
+                if (origResults[i].name != 'wsc.htaccess' || this.app.opts.optDirListingHtaccess) {
                     results.push(origResults[i])
                 }
             } else if (this.app.opts.optDotFilesDirListing) {
