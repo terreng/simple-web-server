@@ -324,7 +324,6 @@ function startServers() {
 
 setInterval(function(){
     if (console.logs.length > 0) {
-        console.log('saving logs')
         var a = console.logs
         var q = '\n'
         console.logs = [ ]
