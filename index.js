@@ -315,7 +315,7 @@ function startServers() {
     }
 }
 
-setTimeout(function(){
+setInterval(function(){
     if (console.logs.length > 0) {
         console.log('saving logs')
         var a = console.logs
@@ -350,5 +350,5 @@ setTimeout(function(){
             }
         }
     }
-}, 60000 * 10) // save every 10 minutes
+}, 10000)
 
