@@ -1,11 +1,18 @@
 const {app, BrowserWindow, ipcMain, Menu, Tray } = require('electron');
 const { networkInterfaces } = require('os');
-const path = require('path');
-const fs = require('fs');
-const http = require('http');
-const https = require('https');
+
 const { URL } = require('url');
-const net = require('net');
+global.URL = URL
+global.http = require('http');
+global.https = require('https');
+global.net = require('net');
+global.forge = require('node-forge');
+global.fs = require('fs');
+global.path = require('path');
+global.send = require('send');
+global.atob = require("atob");
+global.Blob = require('node-blob');
+
 WSC = require("./WSC.js");
 
 //let tray //There seem to be problems with the tray discarding. Could you take a look at it?

@@ -1,4 +1,3 @@
-const fs = require('fs');
 
 function getByPath(path, callback, FileSystem) {
     this.fs = FileSystem

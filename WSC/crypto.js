@@ -1,4 +1,3 @@
-const forge = require('node-forge');
 
 module.exports = function() {
     var data = { }

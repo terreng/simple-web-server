@@ -1,7 +1,4 @@
-const path = require('path');
-const send = require('send');
-global.atob = require("atob");
-global.Blob = require('node-blob');
+
 global.cachedFiles = [ ]
 global.tempData = { }
 
@@ -187,7 +184,7 @@ function DirectoryEntryHandler(FileSystem, request, app, req, res) {
     this.responseCode = null
     this.responseHeaders = {}
     this.responseLength = 0
-	
+    
     this.fs = FileSystem
     this.req = req
     this.res = res
@@ -712,8 +709,8 @@ DirectoryEntryHandler.prototype = {
                     if (this.app.opts.optDir404 && this.app.opts.index) {
                         this.error("", 404)
                     } else {
-						this.renderDirListing(results)
-					}
+                        this.renderDirListing(results)
+                    }
                 }
                 this.getDirContents(this.entry, alldone.bind(this))
             }
@@ -721,18 +718,18 @@ DirectoryEntryHandler.prototype = {
 
         function excludedothtmlcheck() {
             if (this.app.opts.optExcludeDotHtml && this.request.path != '' && ! this.request.origpath.endsWith("/")) {
-				var htmHtml = this.app.opts.optExcludeDotHtm ? '.htm' : '.html'
-				this.fs.getByPath(this.request.path+htmHtml, function(file) {
-					if (! file.error && file.isFile) {
-						//console.log('file found')
-						this.setHeader('content-type','text/html; charset=utf-8')
-						this.renderFileContents(file)
-						return
-					} else {
-						onEntryMain.bind(this)()
-					}
-				}.bind(this))
-			} else {
+                var htmHtml = this.app.opts.optExcludeDotHtm ? '.htm' : '.html'
+                this.fs.getByPath(this.request.path+htmHtml, function(file) {
+                    if (! file.error && file.isFile) {
+                        //console.log('file found')
+                        this.setHeader('content-type','text/html; charset=utf-8')
+                        this.renderFileContents(file)
+                        return
+                    } else {
+                        onEntryMain.bind(this)()
+                    }
+                }.bind(this))
+            } else {
                 onEntryMain.bind(this)()
             }
         }
@@ -1217,16 +1214,16 @@ DirectoryEntryHandler.prototype = {
     },
     renderDirectoryListingJSON: function(origResults) {
         this.setHeader('content-type','application/json; charset=utf-8')
-		var results = [ ]
-		for (var i=0; i<origResults.length; i++) {
-			if (! origResults[i].name.startsWith('.')) {
-				if (name != 'wsc.htaccess' || this.app.opts.optDirListingHtaccess) {
-					results.push(origResults[i])
-				}
-			} else if (this.app.opts.optDotFilesDirListing) {
-				results.push(origResults[i])
-			}
-		}
+        var results = [ ]
+        for (var i=0; i<origResults.length; i++) {
+            if (! origResults[i].name.startsWith('.')) {
+                if (name != 'wsc.htaccess' || this.app.opts.optDirListingHtaccess) {
+                    results.push(origResults[i])
+                }
+            } else if (this.app.opts.optDotFilesDirListing) {
+                results.push(origResults[i])
+            }
+        }
         this.write(JSON.stringify(results.map(function(f) { return { name:f.name,
                                                                      fullPath:f.fullPath,
                                                                      isFile:f.isFile,
@@ -1338,9 +1335,9 @@ DirectoryEntryHandler.prototype = {
         for (var i=0; i<results.length; i++) {
             var name = results[i].name.htmlEscape()
             if (results[i].isDirectory) {
-				if (! results[i].name.startsWith('.')) {
-					html.push('<li class="directory"><a href="' + name + '/?static=1">' + name + '</a></li>')
-				}
+                if (! results[i].name.startsWith('.')) {
+                    html.push('<li class="directory"><a href="' + name + '/?static=1">' + name + '</a></li>')
+                }
             } else {
                 if (! results[i].name.startsWith('.')) {
                     if (name != 'wsc.htaccess' || this.app.opts.optDirListingHtaccess) {
@@ -1360,23 +1357,23 @@ DirectoryEntryHandler.prototype = {
             callback(files)
         })
     },
-	renderDirListing: function(results) {
-		if (this.request.arguments && this.request.arguments.json == '1' || this.request.arguments.json == 'true' || (this.request.headers['accept'] && this.request.headers['accept'].toLowerCase() == 'application/json')) {
-			this.renderDirectoryListingJSON(results)
-		} else if (this.request.arguments && this.request.arguments.static == '1' || this.request.arguments.static == 'true') {
-			this.renderDirectoryListing(results)
-		} else if (this.request.arguments && this.request.arguments.staticjs == '1' || this.request.arguments.staticjs == 'true') {
-			this.renderDirectoryListingStaticJs(results)
-		} else if (this.request.arguments && this.request.arguments.js == '1' || this.request.arguments.js == 'true') {
-			this.renderDirectoryListingTemplate(results)
-		} else if (this.app.opts.optStatic) {
-			this.renderDirectoryListing(results)
-		} else if (this.app.opts.optStaticjs) {
-			this.renderDirectoryListingStaticJs(results)
-		} else {
-			this.renderDirectoryListingTemplate(results)
-		}
-	},
+    renderDirListing: function(results) {
+        if (this.request.arguments && this.request.arguments.json == '1' || this.request.arguments.json == 'true' || (this.request.headers['accept'] && this.request.headers['accept'].toLowerCase() == 'application/json')) {
+            this.renderDirectoryListingJSON(results)
+        } else if (this.request.arguments && this.request.arguments.static == '1' || this.request.arguments.static == 'true') {
+            this.renderDirectoryListing(results)
+        } else if (this.request.arguments && this.request.arguments.staticjs == '1' || this.request.arguments.staticjs == 'true') {
+            this.renderDirectoryListingStaticJs(results)
+        } else if (this.request.arguments && this.request.arguments.js == '1' || this.request.arguments.js == 'true') {
+            this.renderDirectoryListingTemplate(results)
+        } else if (this.app.opts.optStatic) {
+            this.renderDirectoryListing(results)
+        } else if (this.app.opts.optStaticjs) {
+            this.renderDirectoryListingStaticJs(results)
+        } else {
+            this.renderDirectoryListingTemplate(results)
+        }
+    },
     htaccessError: function(errormsg) {
         this.write('Htaccess Configuration error. Please check to make sure that you are not missing some values.\n\nError Message: '+errormsg, 500)
         this.finish()
@@ -1528,7 +1525,7 @@ DirectoryEntryHandler.prototype = {
 }
 
 for (var k in BaseHandler.prototype) {
-	DirectoryEntryHandler.prototype[k] = BaseHandler.prototype[k]
+    DirectoryEntryHandler.prototype[k] = BaseHandler.prototype[k]
 }
 
 

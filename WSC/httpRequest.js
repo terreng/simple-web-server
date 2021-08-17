@@ -1,6 +1,3 @@
-const { URL } = require('url');
-const http = require('http');
-const https = require('https');
 
 function httpRequest() {
     this.onload = null
@@ -27,7 +24,7 @@ httpRequest.prototype = {
     open: function(method, url) {
         if (! url.startsWith('http')) {
             var error = 'url must start with http or https'
-			console.error(error)
+            console.error(error)
             if (this.onerror && typeof this.onerror == 'function') {
                 this.onerror(error)
             } else if (this.onload && typeof this.onload == 'function') {
