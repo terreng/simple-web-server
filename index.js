@@ -1,10 +1,11 @@
 const {app, BrowserWindow, ipcMain, Menu, Tray } = require('electron');
 const { networkInterfaces } = require('os');
 
-global.savingLogs = false
+global.savingLogs = false;
+global.pendingSave = false;
 
 const { URL } = require('url');
-global.URL = URL
+global.URL = URL;
 global.http = require('http');
 global.https = require('https');
 global.net = require('net');
@@ -76,9 +77,11 @@ console = function(old_console) {
         logs: [ ],
 		saveLogs: function() {
 			if (global.savingLogs) {
+				global.pendingSave = true
 				return
 			}
 			global.savingLogs = true
+			global.pendingSave = false
 			var a = console.logs
 			console.logs = [ ]
 			var q = '\n'
@@ -103,10 +106,10 @@ console = function(old_console) {
 				if (file && ! file.error) {
 					file.file(function(data) {
 						var data = data + '\n\n' + newData
-						fileSystem.writeFile('/server.log', data, function(e) { global.savingLogs = false }, true)
+						fileSystem.writeFile('/server.log', data, function(e) { global.savingLogs = false; if (global.pendingSave) {console.saveLogs()} }, true)
 					})
 				} else {
-					fileSystem.writeFile('/server.log', newData, function(e) { global.savingLogs = false }, false)
+					fileSystem.writeFile('/server.log', newData, function(e) { global.savingLogs = false; if (global.pendingSave) {console.saveLogs()} }, false)
 				}
 			})
 		}
