@@ -204,7 +204,7 @@ var isQuitting = false;
 ipcMain.on('quit', quit)
 
 ipcMain.on('saveconfig', function(event, arg1) {
-    saveConfig(argl)
+    saveConfig(arg1)
     config = arg1;
     startServers();
 })
