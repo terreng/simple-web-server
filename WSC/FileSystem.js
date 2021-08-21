@@ -199,7 +199,6 @@ FileSystem.prototype = {
         var path = this.mainPath + path
         var path = path.replaceAll('//', '/').replaceAll('\\', '/')
         var folder = WSC.utils.stripOffFile(path)
-		console.log(fs.existsSync(folder), folder)
         if (! fs.existsSync(folder)) {
             try {
                 fs.mkdirSync(folder)
