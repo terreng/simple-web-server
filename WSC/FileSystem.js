@@ -41,28 +41,28 @@ getByPath.prototype = {
             this.modificationTime = stats.mtime
             this.isDirectory = stats.isDirectory()
             this.isFile = stats.isFile()
-			if (this.isFile) {
-				var folder = path
-				if (folder.endsWith('/')) {
-					this.callback({error: 'Path Not Found'})
-					this.callback = null
-					return
-				}
-				this.name = folder.split('/').pop()
-				var folder = WSC.utils.stripOffFile(folder)
-				fs.readdir(folder, {encoding: 'utf-8'}, function(err, files) {
-					if (files.includes(this.name)) {
-						this.callback(this)
-						this.callback = null
-					} else {
-						this.callback({error: 'Path Not Found'})
-						this.callback = null
-					}
-				}.bind(this))
-			} else {
-				this.callback(this)
-				this.callback = null
-			}
+            if (this.isFile) {
+                var folder = path
+                if (folder.endsWith('/')) {
+                    this.callback({error: 'Path Not Found'})
+                    this.callback = null
+                    return
+                }
+                this.name = folder.split('/').pop()
+                var folder = WSC.utils.stripOffFile(folder)
+                fs.readdir(folder, {encoding: 'utf-8'}, function(err, files) {
+                    if (files.includes(this.name)) {
+                        this.callback(this)
+                        this.callback = null
+                    } else {
+                        this.callback({error: 'Path Not Found'})
+                        this.callback = null
+                    }
+                }.bind(this))
+            } else {
+                this.callback(this)
+                this.callback = null
+            }
         }.bind(this))
     },
     file: function(callback) {
@@ -83,23 +83,23 @@ getByPath.prototype = {
         if (! callback) {
             var callback = function() { }
         }
-		if (this.isDirectory) {
-			fs.rmdir(this.path, { recursive: false }, (err) => {
-				if (err) {
-					callback({error: err, success: false})
-				} else {
-					callback({error: false, success: true})
-				}
-			})
-		} else {
-			fs.unlink(this.path, (err) => {
-				if (err) {
-					callback({error: err, success: false})
-				} else {
-					callback({error: false, success: true})
-				}
-			})
-		}
+        if (this.isDirectory) {
+            fs.rmdir(this.path, { recursive: false }, (err) => {
+                if (err) {
+                    callback({error: err, success: false})
+                } else {
+                    callback({error: false, success: true})
+                }
+            })
+        } else {
+            fs.unlink(this.path, (err) => {
+                if (err) {
+                    callback({error: err, success: false})
+                } else {
+                    callback({error: false, success: true})
+                }
+            })
+        }
     },
     getDirContents: function(callback) {
         if (this.isFile) {
@@ -151,6 +151,7 @@ function FileSystem(mainPath) {
 
 FileSystem.prototype = {
     getByPath: function(path, callback) {
+        var path = path.replaceAll('//', '/').replaceAll('\\', '/')
         var entry = new getByPath(path, callback, this)
         entry.getFile()
     },
@@ -158,6 +159,7 @@ FileSystem.prototype = {
         var path = WSC.utils.relativePath(path, '')
         var origpath = path
         var path = this.mainPath + path
+        var path = path.replaceAll('//', '/').replaceAll('\\', '/')
         var folder = WSC.utils.stripOffFile(path)
         if (! fs.existsSync(folder)) {
             try {
