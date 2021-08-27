@@ -1,8 +1,11 @@
 const {app, BrowserWindow, ipcMain, Menu, Tray } = require('electron');
 const { networkInterfaces } = require('os');
 
+global.savingLogs = false;
+global.pendingSave = false;
+
 const { URL } = require('url');
-global.URL = URL
+global.URL = URL;
 global.http = require('http');
 global.https = require('https');
 global.net = require('net');
@@ -23,6 +26,7 @@ console = function(old_console) {
             var args = Array.prototype.slice.call(arguments);
             old_console.log.apply(old_console, args);
             console.logs.push(args);
+            console.saveLogs();
             if (mainWindow) {
                 try { // Sending large values may not work... How can we fix this? UPDATE - It isnt because of large variables, it is because the log contains a function
                     mainWindow.webContents.send('console', {args: args, method: 'log'});
@@ -35,6 +39,7 @@ console = function(old_console) {
             var args = Array.prototype.slice.call(arguments);
             old_console.warn.apply(old_console, args);
             console.logs.push(args);
+            console.saveLogs();
             if (mainWindow) {
                 try {
                     mainWindow.webContents.send('console', {args: args, method: 'warn'});
@@ -47,6 +52,7 @@ console = function(old_console) {
             var args = Array.prototype.slice.call(arguments);
             old_console.error.apply(old_console, args);
             console.logs.push(args);
+            console.saveLogs();
             if (mainWindow) {
                 try {
                     mainWindow.webContents.send('console', {args: args, method: 'error'});
@@ -59,6 +65,7 @@ console = function(old_console) {
             var args = Array.prototype.slice.call(arguments);
             old_console.assert.apply(old_console, args);
             console.logs.push(args);
+            console.saveLogs();
             if (mainWindow) {
                 try {
                     mainWindow.webContents.send('console', {args: args, method: 'assert'});
@@ -67,7 +74,45 @@ console = function(old_console) {
                 }
             }
         },
-        logs: [ ]
+        logs: [ ],
+        saveLogs: function() {
+            if (global.savingLogs) {
+                global.pendingSave = true
+                return
+            }
+            global.savingLogs = true
+            global.pendingSave = false
+            var a = console.logs
+            console.logs = [ ]
+            var q = '\n'
+            for (var i=0; i<a.length; i++) {
+                if (a[i].length == 1) {
+                    var q = q + a[i][0] + '\n\n'
+                } else {
+                    var b = ''
+                    for (var t=0; t<a[i].length; t++) {
+                        if (typeof a[i][t] !== 'object') {
+                            var b = b+ a[i][t] + ' '
+                        } else {
+                            var b = b + JSON.stringify(a[i][t], null, 2)
+                        }
+                    }
+                    var q = q + b
+                }
+            }
+            var newData = q
+            var fileSystem = new WSC.FileSystem(app.getPath('userData'))
+            fileSystem.getByPath('/server.log', function(file) {
+                if (file && ! file.error) {
+                    file.file(function(data) {
+                        var data = data + '\n\n' + newData
+                        fileSystem.writeFile('/server.log', data, function(e) { global.savingLogs = false; if (global.pendingSave) {console.saveLogs()} }, true)
+                    })
+                } else {
+                    fileSystem.writeFile('/server.log', newData, function(e) { global.savingLogs = false; if (global.pendingSave) {console.saveLogs()} }, false)
+                }
+            })
+        }
     }
 } (console);
 
@@ -162,7 +207,7 @@ var isQuitting = false;
 ipcMain.on('quit', quit)
 
 ipcMain.on('saveconfig', function(event, arg1) {
-    saveConfig(argl)
+    saveConfig(arg1)
     config = arg1;
     startServers();
 })
@@ -322,39 +367,4 @@ function startServers() {
     }
 }
 
-setInterval(function(){
-    if (console.logs.length > 0) {
-        var a = console.logs
-        var q = '\n'
-        console.logs = [ ]
-        for (var i=0; i<a.length; i++) {
-            if (a[i].length == 1) {
-                var q = q + a[i][0] + '\n\n'
-            } else {
-                var b = ''
-                for (var t=0; t<a[i].length; t++) {
-                    if (typeof a[i][t] !== 'object') {
-                        var b = b+ a[i][t] + ' '
-                    } else {
-                        var b = b + JSON.stringify(a[i][t], null, 2)
-                    }
-                }
-                var q = q + b
-                var newData = q
-                var fileSystem = new WSC.FileSystem(app.getPath('userData'))
-                fileSystem.getByPath('/server.log', function(file) {
-                    if (file && ! file.error) {
-                        file.file(function(data) {
-                            var data = data + '\n\n\n' + newData
-                            fileSystem.writeFile('/server.log', data, function(e) { }, true)
-                        })
-                    } else {
-                        fileSystem.writeFile('/server.log', newData, function(e) { }, false)
-                    }
-                    console.logs = [ ]
-                })
-            }
-        }
-    }
-}, 10000)
 
