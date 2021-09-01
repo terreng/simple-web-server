@@ -1241,13 +1241,15 @@ DirectoryEntryHandler.prototype = {
         html.push('<meta name="google" value="notranslate">')
         html.push('<title id="title"></title>')
         html.push('</head>')
-        
         html.push('<div id="staticDirectoryListing">')
         html.push('<style>li.directory {background:#aab}</style>')
         html.push('<a href="../?static=1">parent</a>')
         html.push('<ul>')
         results.sort( this.entriesSortFunc )
         for (var i=0; i<results.length; i++) {
+            while (! results[i].name) {
+                i++
+            }
             var name = results[i].name.htmlEscape()
             if (results[i].isDirectory) {
                 html.push('<li class="directory"><a href="' + name + '/?static=1">' + name + '</a></li>')
@@ -1270,6 +1272,9 @@ DirectoryEntryHandler.prototype = {
             html.push('<script>onHasParentDirectory();</script>')
         }
         for (var w=0; w<results.length; w++) {
+            while (! results[w].name) {
+                w++
+            }
             var rawname = results[w].name
             var name = encodeURIComponent(results[w].name)
             var isdirectory = results[w].isDirectory
@@ -1304,6 +1309,9 @@ DirectoryEntryHandler.prototype = {
             html.push('<script>onHasParentDirectory();</script>')
         }
         for (var w=0; w<results.length; w++) {
+            while (! results[w].name) {
+                w++
+            }
             var rawname = results[w].name
             var name = encodeURIComponent(results[w].name)
             var isdirectory = results[w].isDirectory
@@ -1333,6 +1341,9 @@ DirectoryEntryHandler.prototype = {
         // TODO -- add sorting (by query parameter?) show file size?
 
         for (var i=0; i<results.length; i++) {
+            while (! results[i].name) {
+                i++
+            }
             var name = results[i].name.htmlEscape()
             if (results[i].isDirectory) {
                 if (! results[i].name.startsWith('.')) {
@@ -1391,6 +1402,11 @@ DirectoryEntryHandler.prototype = {
             callback(entry)
         }.bind(this))
     },
+    getFilePromise: function(path) {
+        return new Promise(function(resolve, reject) {
+            this.getFile(path, resolve)
+        }.bind(this))
+    },
     writeFile: function(path, data, allowReplaceFile, callback) {
         if (! path.startsWith('/')) {
             var path = WSC.utils.relativePath(path, WSC.utils.stripOffFile(this.request.origpath))
@@ -1399,6 +1415,11 @@ DirectoryEntryHandler.prototype = {
             var callback = function(file) { }
         }
         this.fs.writeFile(path, data, callback, allowReplaceFile)
+    },
+    writeFilePromise: function(path, data, allowReplaceFile) {
+        return new Promise(function(resolve, reject) {
+            this.writeFile(path, data, allowReplaceFile, resolve)
+        }.bind(this))
     },
     deleteFile: function(path, callback) {
         if (! path.startsWith('/')) {
@@ -1414,6 +1435,11 @@ DirectoryEntryHandler.prototype = {
                 callback({error: file.error})
             }
         })
+    },
+    deleteFilePromise: function(path) {
+        return new Promise(function(resolve, reject) {
+            this.deleteFile(path, resolve)
+        }.bind(this))
     },
     writeCode: function(code) {
         if (! code) {
@@ -1530,5 +1556,4 @@ for (var k in BaseHandler.prototype) {
 
 
 module.exports = {DirectoryEntryHandler: DirectoryEntryHandler, BaseHandler: BaseHandler}
-
 
