@@ -519,7 +519,7 @@ DirectoryEntryHandler.prototype = {
                         this.fs.getByPath(WSC.utils.stripOffFile(this.request.origpath) + data.original_request_path, function(file) {
                             if (file && ! file.error && file.isFile) {
                                 file.file(function(dataa) {
-                                    var contents = dataa.split('\n')
+                                    var contents = dataa
                                     var validFile = false
                                     var key = contents.replaceAll(' ', '').split('postKey=').pop()
                                     var key = key.substring(1, key.length).split('"')[0].split("'")[0]
