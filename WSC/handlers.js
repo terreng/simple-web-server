@@ -147,10 +147,17 @@ BaseHandler.prototype = {
         if (! this.headersWritten && ! this.writingHeaders) {
             this.writeHeaders()
         }
+        if (typeof data == "string") {
+            var data = Buffer.from(data)
+        } else if (data instanceof ArrayBuffer) {
+            var data = Buffer.from(data)
+        }
         this.res.write(data)
     },
     write: function(data, code, opt_finish) {
         if (typeof data == "string") {
+            var data = Buffer.from(data)
+        } else if (data instanceof ArrayBuffer) {
             var data = Buffer.from(data)
         }
         var byteLength = data.byteLength
@@ -514,15 +521,10 @@ DirectoryEntryHandler.prototype = {
                                 file.file(function(dataa) {
                                     var contents = dataa.split('\n')
                                     var validFile = false
-                                    for (var i=0; i<contents.length; i++) {
-                                        contents[i] = contents[i].replaceAll('\t', '').replaceAll('\n', '').replaceAll('\r', '').replaceAll(' ', '')
-                                        if (contents[i].startsWith('postKey')) {
-                                            var postKey = contents[i].split('=').pop().replaceAll(' ', '').replaceAll('"', '').replaceAll('\'', '')
-                                            if (postKey == data.key) {
-                                                var validFile = true
-                                                break
-                                            }
-                                        }
+                                    var key = contents.replaceAll(' ', '').split('postKey=').pop()
+                                    var key = key.substring(1, key.length).split('"')[0].split("'")[0]
+                                    if (key == data.key) {
+                                        var validFile = true
                                     }
                                     if (validFile) {
                                         var req = this.request
@@ -1031,17 +1033,12 @@ DirectoryEntryHandler.prototype = {
                                         this.fs.getByPath(WSC.utils.stripOffFile(this.request.origpath) + data.original_request_path, function(file) {
                                             if (file && ! file.error && file.isFile) {
                                                 file.file(function(dataa) {
-                                                    var contents = dataa.split('\n')
+                                                    var contents = dataa
                                                     var validFile = false
-                                                    for (var i=0; i<contents.length; i++) {
-                                                        contents[i] = contents[i].replaceAll('\t', '').replaceAll('\n', '').replaceAll('\r', '').replaceAll(' ', '')
-                                                        if (contents[i].startsWith('SSJSKey')) {
-                                                            var SSJSKey = contents[i].split('=').pop().replaceAll(' ', '').replaceAll('"', '').replaceAll('\'', '')
-                                                            if (SSJSKey == data.key) {
-                                                                var validFile = true
-                                                                break
-                                                            }
-                                                        }
+                                                    var key = contents.replaceAll(' ', '').split('SSJSKey=').pop()
+                                                    var key = key.substring(1, key.length).split('"')[0].split("'")[0]
+                                                    if (key == data.key) {
+                                                        var validFile = true
                                                     }
                                                     if (validFile) {
                                                         var req = this.request
