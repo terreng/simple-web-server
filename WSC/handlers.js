@@ -1250,9 +1250,6 @@ DirectoryEntryHandler.prototype = {
         html.push('<ul>')
         results.sort( this.entriesSortFunc )
         for (var i=0; i<results.length; i++) {
-            while (! results[i].name) {
-                i++
-            }
             var name = results[i].name.htmlEscape()
             if (results[i].isDirectory) {
                 html.push('<li class="directory"><a href="' + name + '/?static=1">' + name + '</a></li>')
@@ -1275,9 +1272,6 @@ DirectoryEntryHandler.prototype = {
             html.push('<script>onHasParentDirectory();</script>')
         }
         for (var w=0; w<results.length; w++) {
-            while (! results[w].name) {
-                w++
-            }
             var rawname = results[w].name
             var name = encodeURIComponent(results[w].name)
             var isdirectory = results[w].isDirectory
@@ -1312,9 +1306,6 @@ DirectoryEntryHandler.prototype = {
             html.push('<script>onHasParentDirectory();</script>')
         }
         for (var w=0; w<results.length; w++) {
-            while (! results[w].name) {
-                w++
-            }
             var rawname = results[w].name
             var name = encodeURIComponent(results[w].name)
             var isdirectory = results[w].isDirectory
@@ -1344,9 +1335,6 @@ DirectoryEntryHandler.prototype = {
         // TODO -- add sorting (by query parameter?) show file size?
 
         for (var i=0; i<results.length; i++) {
-            while (! results[i].name) {
-                i++
-            }
             var name = results[i].name.htmlEscape()
             if (results[i].isDirectory) {
                 if (! results[i].name.startsWith('.')) {
@@ -1492,24 +1480,7 @@ DirectoryEntryHandler.prototype = {
     },
     readBodyPromise: function() {
         return new Promise(function(resolve, reject) {
-            if (this.request.body !== null) {
-                resolve(this.request.body)
-                return
-            }
-            if (this.request.consumedRequest) {
-                resolve(Buffer.from(''))
-                return
-            }
-            this.request.body = Buffer.from('')
-            this.req.on('data', function(chunk) {
-                if (chunk && chunk != 'undefined') {
-                    this.request.body = Buffer.concat([this.request.body, chunk])
-                }
-            }.bind(this))
-            this.req.on('end', function() {
-                this.request.consumedRequest = true
-                resolve(this.request.body)
-            }.bind(this))
+            this.readBody(resolve)
         }.bind(this))
     },
     stream2File: function(writePath, allowOverWrite, callback) {
