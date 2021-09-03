@@ -521,10 +521,13 @@ DirectoryEntryHandler.prototype = {
                                 file.file(function(dataa) {
                                     var contents = dataa
                                     var validFile = false
-                                    var key = contents.replaceAll(' ', '').split('postKey=').pop()
-                                    var key = key.substring(1, key.length).split('"')[0].split("'")[0]
-                                    if (key == data.key) {
-                                        var validFile = true
+                                    var key = contents.replaceAll(' ', '').split('postKey=')
+                                    if (key.length > 1) {
+                                        var key = key.pop()
+                                        var key = key.substring(1, key.length).split('"')[0].split("'")[0]
+                                        if (key == data.key) {
+                                            var validFile = true
+                                        }
                                     }
                                     if (validFile) {
                                         var req = this.request
@@ -1036,9 +1039,12 @@ DirectoryEntryHandler.prototype = {
                                                     var contents = dataa
                                                     var validFile = false
                                                     var key = contents.replaceAll(' ', '').split('SSJSKey=').pop()
-                                                    var key = key.substring(1, key.length).split('"')[0].split("'")[0]
-                                                    if (key == data.key) {
-                                                        var validFile = true
+                                                    if (key.length > 1) {
+                                                        var key = key.pop()
+                                                        var key = key.substring(1, key.length).split('"')[0].split("'")[0]
+                                                        if (key == data.key) {
+                                                            var validFile = true
+                                                        }
                                                     }
                                                     if (validFile) {
                                                         var req = this.request
