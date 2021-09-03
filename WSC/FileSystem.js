@@ -84,7 +84,6 @@ getByPath.prototype = {
     },
     filePromise: function() {
         return new Promise(function(resolve, reject) {
-            console.log(resolve, typeof resolve)
             this.file(resolve)
         }.bind(this))
     },
