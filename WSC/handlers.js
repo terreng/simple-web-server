@@ -147,10 +147,17 @@ BaseHandler.prototype = {
         if (! this.headersWritten && ! this.writingHeaders) {
             this.writeHeaders()
         }
+        if (typeof data == "string") {
+            var data = Buffer.from(data)
+        } else if (data instanceof ArrayBuffer) {
+            var data = Buffer.from(data)
+        }
         this.res.write(data)
     },
     write: function(data, code, opt_finish) {
         if (typeof data == "string") {
+            var data = Buffer.from(data)
+        } else if (data instanceof ArrayBuffer) {
             var data = Buffer.from(data)
         }
         var byteLength = data.byteLength
@@ -512,16 +519,14 @@ DirectoryEntryHandler.prototype = {
                         this.fs.getByPath(WSC.utils.stripOffFile(this.request.origpath) + data.original_request_path, function(file) {
                             if (file && ! file.error && file.isFile) {
                                 file.file(function(dataa) {
-                                    var contents = dataa.split('\n')
+                                    var contents = dataa
                                     var validFile = false
-                                    for (var i=0; i<contents.length; i++) {
-                                        contents[i] = contents[i].replaceAll('\t', '').replaceAll('\n', '').replaceAll('\r', '').replaceAll(' ', '')
-                                        if (contents[i].startsWith('postKey')) {
-                                            var postKey = contents[i].split('=').pop().replaceAll(' ', '').replaceAll('"', '').replaceAll('\'', '')
-                                            if (postKey == data.key) {
-                                                var validFile = true
-                                                break
-                                            }
+                                    var key = contents.replaceAll(' ', '').split('postKey=')
+                                    if (key.length > 1) {
+                                        var key = key.pop()
+                                        var key = key.substring(1, key.length).split('"')[0].split("'")[0]
+                                        if (key == data.key) {
+                                            var validFile = true
                                         }
                                     }
                                     if (validFile) {
@@ -1031,16 +1036,14 @@ DirectoryEntryHandler.prototype = {
                                         this.fs.getByPath(WSC.utils.stripOffFile(this.request.origpath) + data.original_request_path, function(file) {
                                             if (file && ! file.error && file.isFile) {
                                                 file.file(function(dataa) {
-                                                    var contents = dataa.split('\n')
+                                                    var contents = dataa
                                                     var validFile = false
-                                                    for (var i=0; i<contents.length; i++) {
-                                                        contents[i] = contents[i].replaceAll('\t', '').replaceAll('\n', '').replaceAll('\r', '').replaceAll(' ', '')
-                                                        if (contents[i].startsWith('SSJSKey')) {
-                                                            var SSJSKey = contents[i].split('=').pop().replaceAll(' ', '').replaceAll('"', '').replaceAll('\'', '')
-                                                            if (SSJSKey == data.key) {
-                                                                var validFile = true
-                                                                break
-                                                            }
+                                                    var key = contents.replaceAll(' ', '').split('SSJSKey=').pop()
+                                                    if (key.length > 1) {
+                                                        var key = key.pop()
+                                                        var key = key.substring(1, key.length).split('"')[0].split("'")[0]
+                                                        if (key == data.key) {
+                                                            var validFile = true
                                                         }
                                                     }
                                                     if (validFile) {
@@ -1241,7 +1244,6 @@ DirectoryEntryHandler.prototype = {
         html.push('<meta name="google" value="notranslate">')
         html.push('<title id="title"></title>')
         html.push('</head>')
-        
         html.push('<div id="staticDirectoryListing">')
         html.push('<style>li.directory {background:#aab}</style>')
         html.push('<a href="../?static=1">parent</a>')
@@ -1391,6 +1393,11 @@ DirectoryEntryHandler.prototype = {
             callback(entry)
         }.bind(this))
     },
+    getFilePromise: function(path) {
+        return new Promise(function(resolve, reject) {
+            this.getFile(path, resolve)
+        }.bind(this))
+    },
     writeFile: function(path, data, allowReplaceFile, callback) {
         if (! path.startsWith('/')) {
             var path = WSC.utils.relativePath(path, WSC.utils.stripOffFile(this.request.origpath))
@@ -1399,6 +1406,11 @@ DirectoryEntryHandler.prototype = {
             var callback = function(file) { }
         }
         this.fs.writeFile(path, data, callback, allowReplaceFile)
+    },
+    writeFilePromise: function(path, data, allowReplaceFile) {
+        return new Promise(function(resolve, reject) {
+            this.writeFile(path, data, allowReplaceFile, resolve)
+        }.bind(this))
     },
     deleteFile: function(path, callback) {
         if (! path.startsWith('/')) {
@@ -1414,6 +1426,11 @@ DirectoryEntryHandler.prototype = {
                 callback({error: file.error})
             }
         })
+    },
+    deleteFilePromise: function(path) {
+        return new Promise(function(resolve, reject) {
+            this.deleteFile(path, resolve)
+        }.bind(this))
     },
     writeCode: function(code) {
         if (! code) {
@@ -1463,24 +1480,7 @@ DirectoryEntryHandler.prototype = {
     },
     readBodyPromise: function() {
         return new Promise(function(resolve, reject) {
-            if (this.request.body !== null) {
-                resolve(this.request.body)
-                return
-            }
-            if (this.request.consumedRequest) {
-                resolve(Buffer.from(''))
-                return
-            }
-            this.request.body = Buffer.from('')
-            this.req.on('data', function(chunk) {
-                if (chunk && chunk != 'undefined') {
-                    this.request.body = Buffer.concat([this.request.body, chunk])
-                }
-            }.bind(this))
-            this.req.on('end', function() {
-                this.request.consumedRequest = true
-                resolve(this.request.body)
-            }.bind(this))
+            this.readBody(resolve)
         }.bind(this))
     },
     stream2File: function(writePath, allowOverWrite, callback) {
@@ -1530,5 +1530,4 @@ for (var k in BaseHandler.prototype) {
 
 
 module.exports = {DirectoryEntryHandler: DirectoryEntryHandler, BaseHandler: BaseHandler}
-
 

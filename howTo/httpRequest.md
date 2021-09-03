@@ -25,13 +25,13 @@ or
 Setting the load and error functions:
 ```
 request.onload = function(e) {
-	console.log(e.target.body.toString()) //This will log the response body
+    console.log(e.target.body.toString()) //This will log the response body
 }
 ```
 and
 ```
 request.onerror = function(e) {
-	console.error(e)
+    console.error(e)
 }
 ```
 
@@ -54,7 +54,7 @@ request.send(data)
 
 If data is not defined, then nothing will be sent.
 The content length is automatically set
-data MUST be a string, or a buffer
+data MUST be a string, buffer, or an ArrayBuffer
 
 
 

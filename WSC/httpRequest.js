@@ -57,6 +57,8 @@ httpRequest.prototype = {
         if (data) {
             if (typeof data == 'string') {
                 var data = Buffer.from(data)
+            } else if (data instanceof ArrayBuffer) {
+                var data = Buffer.from(data)
             }
             this.responseData = data
             this.req.setHeader('content-length', data.byteLength)

@@ -29,7 +29,7 @@ getByPath.prototype = {
                         err.isFile = true
                         err.error = error
                     }
-                    var err = err || {error: error}
+                    var err = {error: error, isFile: false, isDirectory: false, name: 'error'}
                     this.callback(err)
                     return
                 } catch(e) {
@@ -66,6 +66,9 @@ getByPath.prototype = {
         }.bind(this))
     },
     file: function(callback) {
+        if (! callback) {
+            return
+        }
         var path = this.path
         if (! this.isFile) {
             callback({error: 'Cannot preform on directory'})
@@ -77,6 +80,11 @@ getByPath.prototype = {
                 return
             }
             callback(data)
+        }.bind(this))
+    },
+    filePromise: function() {
+        return new Promise(function(resolve, reject) {
+            this.file(resolve)
         }.bind(this))
     },
     remove: function(callback) {
@@ -101,7 +109,15 @@ getByPath.prototype = {
             })
         }
     },
+    removePromise: function() {
+        return new Promise(function(resolve, reject) {
+            this.remove(resolve)
+        }.bind(this))
+    },
     getDirContents: function(callback) {
+        if (! callback) {
+            return
+        }
         if (this.isFile) {
             callback({error: 'Cannot preform on file'})
             return
@@ -137,6 +153,11 @@ getByPath.prototype = {
                 finished.bind(this)()
             }
         }.bind(this))
+    },
+    getDirContentsPromise: function() {
+        return new Promise(function(resolve, reject) {
+            this.getDirContents(resolve)
+        }.bind(this))
     }
 }
 
@@ -156,6 +177,11 @@ FileSystem.prototype = {
         entry.getFile()
     },
     writeFile: function(path, data, callback, allowOverWrite) {
+        if (typeof data == 'string') {
+            var data = Buffer.from(data)
+        } else if (data instanceof ArrayBuffer) {
+            var data = Buffer.from(data)
+        }
         var path = WSC.utils.relativePath(path, '')
         var origpath = path
         var path = this.mainPath + path

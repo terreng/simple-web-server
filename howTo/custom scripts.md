@@ -41,7 +41,7 @@ Change `wa4e76yhefy54t4a` to the value of the key that you had inputed into the 
 The start of the line (`postKey = `) MUST STAY THE SAME (case sensitive). The server does not check for a set variable, but it will scan the file for the text `postKey`
 THIS LINE MUST BE ITS OWN LINE!! You CANNOT combine multiple lines of code with `;`
 Indenting this line may cause for the server to not find this line and in result, the code will not be executed
-YOU CANNOT PUT SPACES IN YOUR KEY
+YOU CANNOT PUT SPACES, `"`, or `'` IN YOUR KEY
 
 the res and req variables ARE NOT WINDOW VARIABLES. DO NOT USE THEM AS SUCH
 
@@ -68,51 +68,16 @@ This function MUST be called at the end of the file. If called before finished p
 This function will close the http request
 You can use this function directly when finished and it will automaticaly respond with an http code of 200 (unless set otherwise)
 
-### `res.write(string, httpCode)`: function
+### `res.write(data, httpCode)`: function
+`data: String ||  Buffer  || ArrayBuffer`
 This function will write data to the client. Once called, you canot push any more information.
 
 ### `res.setHeader(headerType, headerValue)`: function
 This function will set headers of the response.
 Instead of `Cookie: name=value`, you would put `res.setHeader('Cookie', 'name=value')`
 
-### `res.getFile(path, callback)`: function
-This function will read a file. Relative urls are supported.
-To get the directory contents, use the `file.getDirContents()` function
-To read the file as text, use the `file.file()` function
-Example: 
-```
-`res.getFile('../test.txt', function(file) {
-    if (file.error) {
-        console.log('error')
-    } else if (file.isFile) {
-        file.file(function(text)
-            var filetext = text // file.file will read the file as text. To render the file, you can use the renderFileContents() function
-        })
-    } else if (file.isDirectory) {
-        file.getDirContents(function(results) {
-            results[2].file(function(file) {
-                console.log(file)
-            })
-        }
-    }
-})
-```
-
 ### `res.contentType(type)`: function
 This function will set the content type to respond with, you could also use the `res.setHeader()` function
-
-### `res.writeFile(path, data, allowReplaceFile, callback)`: function
-This function will save a file
-path: the path of the file
-If the path contains a non existent folder, the folder will be created
-data: string/Buffer of the file. DO NOT SEND OTHER TYPES OF DATA - THIS COULD BREAK THE APP (Just refresh it)
-allowReplaceFile: if file exists and you want to replace the file, set this to true
-callback: function will be excecuted to tell you if there was an error or it will callback the file
-
-### `res.deleteFile(path, callback)`: function
-This function will delete
-path: the path of the file
-callback: function will be excecuted to tell you if there was an error or success
 
 ### `res.writeCode(httpCode)`: function
 Call this to respond with no message. Dont forget to finish with `res.end()`
@@ -140,6 +105,7 @@ Example:
 <h2>Chunked encoding</h2>
 
 ### `res.writeChunk(data)`: function
+`data: String ||  Buffer  || ArrayBuffer`
 This feature will send the data in chunks, instead of all at once.
 To enable, you must set the transfer-encoding header to chunked
 Like this: `res.setHeader('transfer-encoding','chunked')`
@@ -181,23 +147,64 @@ This contains the requested file. (Will NOT end with / if is directory)
 
 # FileSystem
 
-### `res.getFile(path, callback)`
-This function will get the info on the file/directory
+### `res.getFile(path, callback)`: function
+This function will read a file. Relative urls are supported.
+To get the directory contents, use the `file.getDirContents()` function
+To read the file as text, use the `file.file()` function
+Example: 
+```
+`res.getFile('../test.txt', function(file) {
+    if (file.error) {
+        console.log('error')
+    } else if (file.isFile) {
+        file.file(function(text)
+            var filetext = text // file.file will read the file as text. To render the file, you can use the renderFileContents() function
+        })
+    } else if (file.isDirectory) {
+        file.getDirContents(function(results) {
+            results[2].file(function(file) {
+                console.log(file)
+            })
+        }
+    }
+})
+```
 
-Commands once you get the info: 
+### `res.writeFile(path, data, allowReplaceFile, callback)`: function
+This function will save a file
+path: the path of the file
+If the path contains a non existent folder, the folder will be created
+data: string/Buffer/ArrayBuffer of the file. DO NOT SEND OTHER TYPES OF DATA - THIS COULD BREAK THE APP (Just refresh it)
+allowReplaceFile: if file exists and you want to replace the file, set this to true
+callback: function will be excecuted to tell you if there was an error or it will callback the file
+
+### `res.deleteFile(path, callback)`: function
+This function will delete
+path: the path of the file
+callback: function will be excecuted to tell you if there was an error or success
+
+
+Commands once you get the info using the `res.getFile()` function
 
 ### `entry.file(callback)`
+promise: `entry.filePromise()`
 This function will read the file as text.
 If you want to display the contents of the file, it is recommended to use `res.renderFileContents()`
 This function will only work on files, not directories
 
+
+### `entry.remove(callback)`
+promise: `entry.removePromise()`
+Use this to delete the file
+
 ### `entry.getDirContents(callback)`
+promise: `entry.getDirContentsPromise()`
 This function will get the contents of the directory in an array. Every file in the array will work with the `.file` and the `.getDirContents` functions
 This function will only work on directories, not files
 From here, you can use the contents to use in the rest of the processing.
 
 If you would like to render the directory listing with the results, you can use these commands.
-When the directory listing is sent, you still need to send res.end()
+When the directory listing is sent, you still need to send `res.end()`
 
 ### `res.renderDirectoryListingJSON(results)`
 Will send a stringified json of the directory listing
@@ -210,6 +217,16 @@ Will send a the default javascript directory listing
 
 ### `res.renderDirectoryListing(results)`
 Will send a plain, static directory listing
+
+# Promise based fs functions
+
+Same use as functions above, just uses promises to use await or .then when reading the file.
+
+`res.getFilePromise(path)`
+
+`res.writeFilePromise(path, data, allowReplaceFile)`
+
+`res.deleteFilePromise(path)`
 
 
 # Processing the request body
