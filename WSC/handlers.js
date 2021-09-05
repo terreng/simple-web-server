@@ -32,7 +32,7 @@ BaseHandler.prototype = {
             if (this.app.opts['optCustom'+httpCode]) {
                 this.fs.getByPath(this.app.opts['optCustom'+httpCode+'location'], (file) => {
                     if (! file.error && file.isFile) {
-                        file.file(function(data) {
+                        file.text(function(data) {
                             if (this.app.opts.optCustomusevar) {
                                 if (this.app.opts.optCustomusevarvar.trim().length > 0) {
                                     var data = data.replaceAll(this.app.opts.optCustomusevarvar, this.request.origpath.htmlEscape())
@@ -268,7 +268,7 @@ DirectoryEntryHandler.prototype = {
         if (this.app.opts.optIpBlocking) {
             this.fs.getByPath(this.opts.optIpBlockList, function(file) {
                 if (file && file.isFile && ! file.error) {
-                    file.file(function(data) {
+                    file.text(function(data) {
                         try {
                             var ipBlockList = JSON.parse(data)
                         } catch(e) {
@@ -302,7 +302,7 @@ DirectoryEntryHandler.prototype = {
             //console.log(htaccesspath)
             this.fs.getByPath(htaccesspath, (file) => {
                 if (! file.error) {
-                    file.file(function(dataa) {
+                    file.text(function(dataa) {
                         try {
                             var origdata = JSON.parse(dataa)
                         } catch(e) {
@@ -432,7 +432,7 @@ DirectoryEntryHandler.prototype = {
         var htaccessPath = WSC.utils.stripOffFile(this.request.origpath)
         this.fs.getByPath(htaccessPath + 'wsc.htaccess', function(file) {
             if (file && ! file.error) {
-                file.file(function(data) {
+                file.text(function(data) {
                     try {
                         var origdata = JSON.parse(data)
                     } catch(e) {
@@ -518,7 +518,7 @@ DirectoryEntryHandler.prototype = {
                         }
                         this.fs.getByPath(WSC.utils.stripOffFile(this.request.origpath) + data.original_request_path, function(file) {
                             if (file && ! file.error && file.isFile) {
-                                file.file(function(dataa) {
+                                file.text(function(dataa) {
                                     var contents = dataa
                                     var validFile = false
                                     var key = contents.replaceAll(' ', '').split('postKey=')
@@ -749,7 +749,7 @@ DirectoryEntryHandler.prototype = {
             var htaccesspath = finalpath+'wsc.htaccess'
             this.fs.getByPath(htaccesspath, (file) => {
                 if (! file.error && file.isFile) {
-                    file.file(function(dataa) {
+                    file.text(function(dataa) {
                         try {
                             var origdata = JSON.parse(dataa)
                         } catch(e) {
@@ -895,7 +895,7 @@ DirectoryEntryHandler.prototype = {
                                             //console.log(filepath)
                                             this.fs.getByPath(finalpath, (file) => {
                                                 if (! file.error && file.isFile) {
-                                                    file.file(function(dataa) {
+                                                    file.text(function(dataa) {
                                                         var html = [dataa]
                                                         for (var w=0; w<results.length; w++) {
                                                             var rawname = results[w].name
@@ -1035,10 +1035,10 @@ DirectoryEntryHandler.prototype = {
                                         }
                                         this.fs.getByPath(WSC.utils.stripOffFile(this.request.origpath) + data.original_request_path, function(file) {
                                             if (file && ! file.error && file.isFile) {
-                                                file.file(function(dataa) {
+                                                file.text(function(dataa) {
                                                     var contents = dataa
                                                     var validFile = false
-                                                    var key = contents.replaceAll(' ', '').split('SSJSKey=').pop()
+                                                    var key = contents.replaceAll(' ', '').split('SSJSKey=')
                                                     if (key.length > 1) {
                                                         var key = key.pop()
                                                         var key = key.substring(1, key.length).split('"')[0].split("'")[0]

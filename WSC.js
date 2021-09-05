@@ -21,12 +21,12 @@ WSC.BaseHandler = handlers.BaseHandler
 
 var main_fs = new WSC.FileSystem(__dirname)
 main_fs.getByPath('/directory-listing-template.html', function(file) {
-    file.file(function(data) {
+    file.text(function(data) {
         WSC.template_data = data
     })
 })
 main_fs.getByPath('/directory-listing-template-static.html', function(file) {
-    file.file(function(data) {
+    file.text(function(data) {
         WSC.static_template_data = data
     })
 })
