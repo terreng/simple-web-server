@@ -188,10 +188,13 @@ Commands once you get the info using the `res.getFile()` function
 
 ### `entry.file(callback)`
 promise: `entry.filePromise()`
-This function will read the file as text.
+This function will read the file and return the contents as a Buffer.
 If you want to display the contents of the file, it is recommended to use `res.renderFileContents()`
 This function will only work on files, not directories
 
+### `entry.text(callback)`
+promise: `entry.textPromise()`
+Will read the file as text
 
 ### `entry.remove(callback)`
 promise: `entry.removePromise()`
