@@ -1490,6 +1490,13 @@ DirectoryEntryHandler.prototype = {
         if (! callback) {
             var callback = function() { }
         }
+        if (this.request.consumedRequest && this.request.body !== null) {
+            this.fs.writeFile(path, this.request.body, callback, allowOverWrite)
+            return
+        } else if (this.request.consumedRequest) {
+            callback({error: 'request body already consumed'})
+            return
+        }
         this.fs.getByPath(path, function(entry) {
             if (entry.error) {
                 var file = this.fs.createWriteStream(path)
