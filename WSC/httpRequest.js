@@ -21,7 +21,7 @@ httpRequest.prototype = {
     setHeader: function(k, v) {
         this.headers[k] = v
     },
-    open: function(method, url) {
+    open: function(method, url, allowInsecure) {
         if (! url.startsWith('http')) {
             var error = 'url must start with http or https'
             console.error(error)
@@ -38,7 +38,11 @@ httpRequest.prototype = {
         const { port, pathname, search, protocol, host } = new URL(url)
         var path = pathname + search
         if (protocol =='https:') {
-            this.req = https.request({method: method, protocol: protocol, host: host, path: path, port: port || 443})
+            if (allowInsecure !== true) {
+                this.req = https.request({method: method, protocol: protocol, host: host, path: path, port: port || 443})
+            } else {
+                this.req = https.request({method: method, protocol: protocol, host: host, path: path, port: port || 443, rejectUnauthorized: false, requestCert: true })
+            }
         } else {
             this.req = http.request({method: method, protocol: protocol, host: host, path: path, port: port || 80})
         }
