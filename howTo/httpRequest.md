@@ -41,8 +41,9 @@ request.onerror = function(e) {
 In this step, the module will process the url and all information needed and then it will create the request. Headers can still be set after this step.
 
 ```
-request.open("GET", url)
+request.open("GET", url, allowInsecureResponse)
 ```
+allowInsecureResponse: `true` or `false`. By default, self signed certificates are blocked. Enable by setting this to true.
 
 
 ## Step 4: send the request
