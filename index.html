@@ -80,11 +80,6 @@
                 <div class="label">Accessible on local network</div>
             </div>
 
-            <div class="input_option">
-                <input type="text" name="port" id="port" placeholder="8080">
-                <label for="port">Port</label>
-            </div>
-
             <div class="checkbox_option">
                 <input type="checkbox" id="localnetwork" name="localnetwork">
                 <label for="localnetwork">Accessible on local network</label>
@@ -95,7 +90,7 @@
                 <label for="index">Automatically show index.html</label>
             </div>
 
-            <div class="input_option_old">
+            <div class="input_option">
                 <div>Port</div>
                 <input type="number" id="port" name="port" oninput="portChange()" style="width: 100px;">
             </div>
@@ -115,14 +110,14 @@
 
             <div class="option_group" id="rewrite_options" style="display: none;">
 
-                <div class="input_option_old">
+                <div class="input_option">
                     <div>Regular Expression</div>
                     <input type="text" id="regex" name="regex" oninput="regexchange()">
                 </div>
 
                 <div class="input_error">Invalid regular expression</div>
 
-                <div class="input_option_old">
+                <div class="input_option">
                     <div>Rewrite To</div>
                     <input type="text" id="rewriteto" name="rewriteto" oninput="rewritetochange()">
                 </div>
