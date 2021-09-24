@@ -88,6 +88,7 @@
         </tr>
     </tbody>
 </table>
+
 <h1>Basic rules</h1>
 <table>
     <tbody>
@@ -161,7 +162,46 @@
         </tr>
     </tbody>
 </table>
+
 <h1>Advanced rules</h1>
+<table>
+    <tbody>
+        <tr>
+            <td>
+                <b>Option</b>
+            </td>
+            <td>
+                <b>Name</b>
+            </td>
+            <td>
+                <b>Value</b>
+            </td>
+            <td>
+                <b>Default</b>
+            </td>
+            <td>
+                <b>Description</b>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                Cache control header value
+            </td>
+            <td>
+                <code>cacheControl</code>
+            </td>
+            <td>
+                string
+            </td>
+            <td>
+                -
+            </td>
+            <td>
+                Optionally specify a custom Cache-Control HTTP header value.
+            </td>
+        </tr>
+    </tbody>
+</table>
 
 <h1>Error Pages</h1>
 <table>
@@ -270,6 +310,7 @@
         </tr>
     </tbody>
 </table>
+
 <h1>Security</h1>
 <table>
     <tbody>
@@ -309,23 +350,6 @@
         </tr>
         <tr>
             <td>
-                Forward http to https
-            </td>
-            <td>
-                <code>forwardHttpToHttps</code>
-            </td>
-            <td>
-                true/false
-            </td>
-            <td>
-                true
-            </td>
-            <td>
-                <i>Only accessible in the UI if https option is enabled.</i> If the <code>https</code> option is enabled, redirect all insecure (http) requests to https.
-            </td>
-        </tr>
-        <tr>
-            <td>
                 Custom HTTPS cerificate
             </td>
             <td>
@@ -356,6 +380,57 @@
             </td>
             <td>
                 <i>Not accessible in the UI.</i> Optionally override this option to provide a custom HTTPS key.
+            </td>
+        </tr>
+        <tr>
+            <td>
+                Enable HTTP Basic authentication
+            </td>
+            <td>
+                <code>httpAuth</code>
+            </td>
+            <td>
+                true/false
+            </td>
+            <td>
+                false
+            </td>
+            <td>
+                Require authentication using the basic HTTP protocol. Specify a username and password in the httpAuthUsername and httpAuthPassword options. If either option is missing or invalid, the web server will become inaccessible.
+            </td>
+        </tr>
+        <tr>
+            <td>
+                HTTP auth username
+            </td>
+            <td>
+                <code>httpAuthUsername</code>
+            </td>
+            <td>
+                string
+            </td>
+            <td>
+                -
+            </td>
+            <td>
+                Username for HTTP Basic authentication.
+            </td>
+        </tr>
+        <tr>
+            <td>
+                HTTP auth password
+            </td>
+            <td>
+                <code>httpAuthPassword</code>
+            </td>
+            <td>
+                string
+            </td>
+            <td>
+                -
+            </td>
+            <td>
+                Password for HTTP Basic authentication. Stored in plain text.
             </td>
         </tr>
     </tbody>

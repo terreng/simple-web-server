@@ -334,7 +334,7 @@ body {
     border-radius: 7px;
     border: 2px solid var(--input-outline-blur);
     outline: none;
-    transition: 0.2s border;
+    transition: 0.1s border;
 }
 
 .input_option > input:focus {
