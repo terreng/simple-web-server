@@ -85,6 +85,8 @@ body {
     --switch-off-head: #ececec;
     --switch-on-bk: #ffdb83;
     --switch-on-head: #d09608;
+    --input-outline-focus: #d09608;
+    --input-outline-blur: gray;
     --shadow: rgba(0, 0, 0, 0.3);
     background: var(--background);
     color: var(--text-primary);
@@ -319,15 +321,24 @@ body {
     font-size: 19px;
 }
 
-.input_option > div:nth-child(1) {
-    font-size: 17px;
-    padding-bottom: 6px;
+.input_option > div.label {
+    font-size: 18px;
+    padding-bottom: 8px;
 }
 
 .input_option > input {
     font-size: 20px;
-    padding: 4px;
+    padding: 6px 8px;
     width: 200px;
+    -webkit-appearance: none;
+    border-radius: 7px;
+    border: 2px solid var(--input-outline-blur);
+    outline: none;
+    transition: 0.2s border;
+}
+
+.input_option > input:focus {
+    border: 2px solid var(--input-outline-focus);
 }
 
 .option_group {
