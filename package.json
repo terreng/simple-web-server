@@ -41,7 +41,7 @@
     "@electron-forge/maker-appx": "^6.0.0-beta.59",
     "electron-squirrel-startup": "^1.0.0",
     "electron-windows-store": "^2.1.0",
-    "electron": "^13.1.6"
+    "electron": "^13.3.0"
   },
   "dependencies": {
     "atob": "^2.1.2",
