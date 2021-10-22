@@ -84,20 +84,20 @@ console = function(old_console) {
             global.pendingSave = false
             var a = console.logs
             console.logs = [ ]
-            var q = '\n'
+            var q = ''
             for (var i=0; i<a.length; i++) {
                 if (a[i].length == 1) {
-                    var q = q + a[i][0] + '\n\n'
+                    var q = q + a[i][0]
                 } else {
                     var b = ''
                     for (var t=0; t<a[i].length; t++) {
                         if (typeof a[i][t] !== 'object') {
-                            var b = b+ a[i][t] + ' '
+                            b += a[i][t] + ' '
                         } else {
-                            var b = b + JSON.stringify(a[i][t], null, 2)
+                            b += JSON.stringify(a[i][t], null, 2)
                         }
                     }
-                    var q = q + b
+                    q += b + '\n\n'
                 }
             }
             var newData = q
@@ -105,7 +105,7 @@ console = function(old_console) {
             fileSystem.getByPath('/server.log', function(file) {
                 if (file && ! file.error) {
                     file.file(function(data) {
-                        var data = data + '\n\n' + newData
+                        var data = data + newData
                         fileSystem.writeFile('/server.log', data, function(e) { global.savingLogs = false; if (global.pendingSave) {console.saveLogs()} }, true)
                     })
                 } else {
@@ -116,7 +116,7 @@ console = function(old_console) {
     }
 } (console);
 
-const quit = function(event) {
+const quit = function(e) {
     isQuitting = true;
     //if (tray) {
     //    tray.destroy()
@@ -144,7 +144,7 @@ function saveConfig(newConfig) {
     for (var i=0; i<newConfig.servers.length; i++) {
         if (newConfig.servers[i].https) {
             if (! newConfig.servers[i].httpsCert || ! newConfig.servers[i].httpsKey) {
-                var crypto = WSC.createCrypto()  // Create HTTPS crypto
+                var crypto = WSC.createCrypto() // Create HTTPS crypto
                 newConfig.servers[i].httpsKey = crypto.privateKey
                 newConfig.servers[i].httpsCert = crypto.cert
             }
@@ -249,10 +249,10 @@ function createWindow() {
         mainWindow.webContents.send('message', {"config": config, ip: getIPs()});
     });
 
-    mainWindow.on('close', function (event) {
+    mainWindow.on('close', function (e) {
         if (config.background && process.platform == "win32" && !isQuitting) {
             mainWindow.hide();
-            event.preventDefault();
+            e.preventDefault();
         }
     });
 
@@ -265,26 +265,24 @@ function createWindow() {
 var servers = [];
 
 function startServers() {
-
     if (servers.length > 0) {
-    var closed_servers = 0;
-    for (var i = 0; i < servers.length; i++) {
-        servers[i].close(function(err) {
-            checkServersClosed()
-        });
-        servers[i].destroy();
-    }
-    function checkServersClosed() {
-        closed_servers++;
-        if (closed_servers == servers.length) {
-            servers = [];
-            createServers()
+        var closed_servers = 0;
+        for (var i = 0; i < servers.length; i++) {
+            servers[i].close(function(err) {
+                checkServersClosed()
+            });
+            servers[i].destroy();
         }
-    }
+        function checkServersClosed() {
+            closed_servers++;
+            if (closed_servers == servers.length) {
+                servers = [];
+                createServers()
+            }
+        }
     } else {
         createServers()
     }
-
     function createServers() {
         for (var i = 0; i < (config.servers || []).length; i++) {
             createServer(config.servers[i]);
@@ -307,7 +305,6 @@ function startServers() {
                 } else {
                     var server = http.createServer();
                 }
-                /**
                 if (serverconfig.proxy) {
                     server.on('connect', (req, clientSocket, head) => {
                         console.log(req.socket.remoteAddress + ':', 'Request',req.method, req.url)
@@ -320,10 +317,15 @@ function startServers() {
                             serverSocket.pipe(clientSocket)
                             clientSocket.pipe(serverSocket)
                         })
+                        serverSocket.on('error', function(e){console.warn(e)});
+                        clientSocket.on('error', function(e){console.warn(e)});
                     })
                 }
-                */
                 server.on('request', function(req, res) {
+                    if (serverconfig.proxy) {
+                        res.end('TODO')
+                        return
+                    }
                     WSC.onRequest(serverconfig, req, res)
                 });
                 server.on('clientError', (err, socket) => {
@@ -348,17 +350,17 @@ function startServers() {
                 var connections = {}
 
                 server.on('connection', function(conn) {
-                  var key = conn.remoteAddress + ':' + conn.remotePort;
-                  connections[key] = conn;
-                  conn.on('close', function() {
-                    delete connections[key];
-                  });
+                    var key = conn.remoteAddress + ':' + conn.remotePort;
+                    connections[key] = conn;
+                    conn.on('close', function() {
+                        delete connections[key];
+                    });
                 });
               
                 server.destroy = function(cb) {
-                  server.close(cb);
-                  for (var key in connections)
-                    connections[key].destroy();
+                    server.close(cb);
+                    for (var key in connections)
+                        connections[key].destroy();
                 };
 
                 servers.push(server);
