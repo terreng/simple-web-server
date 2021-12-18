@@ -4,6 +4,12 @@ const { networkInterfaces } = require('os');
 global.savingLogs = false;
 global.pendingSave = false;
 
+if (! String.prototype.replaceAll) {
+    String.prototype.replaceAll = function(a, b) {
+        return this.split(a).join(b)
+    }
+}
+
 const { URL } = require('url');
 global.URL = URL;
 global.http = require('http');
@@ -183,6 +189,12 @@ app.on('ready', function() {
         config = JSON.parse(fs.readFileSync(path.join(app.getPath('userData'), "config.json")));
     } catch(error) {
         config = {};
+    }
+    for (var i=0; i<config.servers.length; i++) {
+        if (config.servers[i].httpsKey && config.servers[i].httpsCert) {
+            config.servers[i].httpsKey = config.servers[i].httpsKey.replaceAll(' ', '\r\n')
+            config.servers[i].httpsCert = config.servers[i].httpsCert.replaceAll(' ', '\r\n')
+        }
     }
     createWindow();
     startServers();
