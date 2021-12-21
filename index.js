@@ -1,6 +1,12 @@
 const {app, BrowserWindow, ipcMain, Menu, Tray } = require('electron');
 const { networkInterfaces } = require('os');
 
+if (! String.prototype.replaceAll) {
+    String.prototype.replaceAll = function(a, b) {
+        return this.split(a).join(b)
+    }
+}
+
 global.savingLogs = false;
 global.pendingSave = false;
 
