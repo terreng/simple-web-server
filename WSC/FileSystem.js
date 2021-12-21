@@ -215,6 +215,11 @@ FileSystem.prototype = {
         var entry = new getByPath(path, callback, this)
         entry.getFile()
     },
+    asyncGetByPath: function(path) {
+        return new Promise(function(resolve, reject) {
+            this.getByPath(path, resolve)
+        }.bind(this))
+    },
     writeFile: function(path, data, callback, allowOverWrite) {
         if (typeof data == 'string') {
             var data = Buffer.from(data)

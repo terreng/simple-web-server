@@ -20,61 +20,11 @@ WSC = require("./WSC.js");
 
 //let tray //There seem to be problems with the tray discarding. Could you take a look at it?
 
+
 console = function(old_console) {
-    return {
-        log: function() {
-            var args = Array.prototype.slice.call(arguments);
-            old_console.log.apply(old_console, args);
-            console.logs.push(args);
-            console.saveLogs();
-            if (mainWindow) {
-                try { // Sending large values may not work... How can we fix this? UPDATE - It isnt because of large variables, it is because the log contains a function
-                    mainWindow.webContents.send('console', {args: args, method: 'log'});
-                } catch(e) {
-                    old_console.error('failed to send log')
-                }
-            }
-        },
-        warn: function() {
-            var args = Array.prototype.slice.call(arguments);
-            old_console.warn.apply(old_console, args);
-            console.logs.push(args);
-            console.saveLogs();
-            if (mainWindow) {
-                try {
-                    mainWindow.webContents.send('console', {args: args, method: 'warn'});
-                } catch(e) {
-                    old_console.error('failed to send log')
-                }
-            }
-        },
-        error: function() {
-            var args = Array.prototype.slice.call(arguments);
-            old_console.error.apply(old_console, args);
-            console.logs.push(args);
-            console.saveLogs();
-            if (mainWindow) {
-                try {
-                    mainWindow.webContents.send('console', {args: args, method: 'error'});
-                } catch(e) {
-                    old_console.error('failed to send log')
-                }
-            }
-        },
-        assert: function() {
-            var args = Array.prototype.slice.call(arguments);
-            old_console.assert.apply(old_console, args);
-            console.logs.push(args);
-            console.saveLogs();
-            if (mainWindow) {
-                try {
-                    mainWindow.webContents.send('console', {args: args, method: 'assert'});
-                } catch(e) {
-                    old_console.error('failed to send log')
-                }
-            }
-        },
-        logs: [ ],
+    var new_console = {
+        logs: [],
+        fs: new WSC.FileSystem(app.getPath('userData')),
         saveLogs: function() {
             if (global.savingLogs) {
                 global.pendingSave = true
@@ -87,38 +37,61 @@ console = function(old_console) {
             var q = '\n'
             for (var i=0; i<a.length; i++) {
                 if (a[i].length == 1) {
-                    var q = q + a[i][0] + '\n\n'
+                    var q = q + a[i][0];
                 } else {
-                    var b = ''
+                    var b = '';
                     for (var t=0; t<a[i].length; t++) {
                         if (typeof a[i][t] !== 'object') {
-                            var b = b+ a[i][t] + ' '
+                            var b = b+ a[i][t] + ' ';
                         } else {
-                            var b = b + JSON.stringify(a[i][t], null, 2)
+                            var b = b + JSON.stringify(a[i][t], null, 2);
                         }
                     }
-                    var q = q + b
+                    var q = q + b;
                 }
             }
-            var newData = q
-            var fileSystem = new WSC.FileSystem(app.getPath('userData'))
-            fileSystem.getByPath('/server.log', function(file) {
+            var newData = q;
+            console.fs.getByPath('/server.log', function(file) {
                 if (file && ! file.error) {
                     file.file(function(data) {
-                        var data = data + '\n\n' + newData
-                        fileSystem.writeFile('/server.log', data, function(e) { global.savingLogs = false; if (global.pendingSave) {console.saveLogs()} }, true)
+                        var data = data + newData;
+                        console.fs.writeFile('/server.log', data, function(e) { global.savingLogs = false; if (global.pendingSave) {console.saveLogs()} }, true);
                     })
                 } else {
-                    fileSystem.writeFile('/server.log', newData, function(e) { global.savingLogs = false; if (global.pendingSave) {console.saveLogs()} }, false)
+                    console.fs.writeFile('/server.log', newData, function(e) { global.savingLogs = false; if (global.pendingSave) {console.saveLogs()} }, false);
                 }
             })
         }
     }
-} (console);
+    for (var k in old_console) {
+        new_console[k] = function(method) {
+            return function() {
+                var args = Array.prototype.slice.call(arguments);
+                old_console[method].apply(old_console, args);
+                if (['log', 'warn', 'error'].includes(method)) {
+                    console.logs.push(args);
+                    console.saveLogs();
+                }
+                if ('undefined' != typeof mainWindow) {
+                    try {
+                        mainWindow.webContents.send('console', {args: args, method: method});
+                    } catch(e) {
+                        try {
+                            mainWindow.webContents.send('console', {args: ['failed to send log to window'], method: 'warn'});
+                        } catch(e) {}
+                        old_console.error('failed to send log')
+                    }
+                }
+            }
+        }(k)
+    }
+    return new_console;
+}(console)
+
 
 const quit = function(event) {
     isQuitting = true;
-    //if (tray) {
+    //if ('undefined' != typeof tray) {
     //    tray.destroy()
     //}
     app.quit()
@@ -307,12 +280,13 @@ function startServers() {
                 } else {
                     var server = http.createServer();
                 }
-                /**
+                /*
                 if (serverconfig.proxy) {
                     server.on('connect', (req, clientSocket, head) => {
                         console.log(req.socket.remoteAddress + ':', 'Request',req.method, req.url)
-                        const { port, hostname } = new URL(`http://${req.url}`)
+                        const { port, hostname } = new URL(`http://${url}`)
                         const serverSocket = net.connect(port || 443, hostname, () => {
+							console.log('a')
                             clientSocket.write('HTTP/1.1 200 Connection Established\r\n' +
                                                'Proxy-agent: Simple-Web-Server-Proxy\r\n' +
                                                '\r\n')

@@ -51,20 +51,28 @@ httpRequest.prototype = {
         }.bind(this))
     },
     send: function(data) {
-        for (var k in this.headers) {
-            this.req.setHeader(k, this.headers[k])
-        }
-        if (data) {
-            if (typeof data == 'string') {
-                var data = Buffer.from(data)
-            } else if (data instanceof ArrayBuffer) {
-                var data = Buffer.from(data)
+        try {
+            for (var k in this.headers) {
+                this.req.setHeader(k, this.headers[k])
             }
-            this.responseData = data
-            this.req.setHeader('content-length', data.byteLength)
+            if (data) {
+                if (typeof data == 'string') {
+                    var data = Buffer.from(data)
+                } else if (data instanceof ArrayBuffer) {
+                    var data = Buffer.from(data)
+                }
+                this.responseData = data
+                this.req.setHeader('content-length', data.byteLength)
+            }
+            this.req.on('response', this.onResponse.bind(this))
+            this.req.end()
+        } catch(error) {
+            if (this.onerror && typeof this.onerror == 'function') {
+                this.onerror(error)
+            } else if (this.onload && typeof this.onload == 'function') {
+                this.onload(error)
+            }
         }
-        this.req.on('response', this.onResponse.bind(this))
-        this.req.end()
     },
     onResponse: function(res) {
         res.on('error', function(error) {
