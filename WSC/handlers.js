@@ -1225,7 +1225,7 @@ DirectoryEntryHandler.prototype = {
         html.push('<meta name="google" value="notranslate">')
         html.push('<title id="title"></title>')
         html.push('</head>')
-        html.push('<div id="staticDirectoryListing">')
+        html.push('<noscript>')
         html.push('<style>li.directory {background:#aab}</style>')
         html.push('<a href="../?static=1">parent</a>')
         html.push('<ul>')
@@ -1244,7 +1244,7 @@ DirectoryEntryHandler.prototype = {
                 }
             }
         }
-        html.push('</ul></div>')
+        html.push('</ul></noscript>')
         
         html.push('<div style="display:none;" id="javascriptDirectoryListing">')
         html.push(WSC.static_template_data)
@@ -1269,7 +1269,6 @@ DirectoryEntryHandler.prototype = {
             }
         }
         html.push('</div>')
-        html.push('<script>document.getElementById("staticDirectoryListing").style = "display:none;"</script>')
         html.push('<script>document.getElementById("javascriptDirectoryListing").style = "display:block;"</script>')
         html.push('</body></html>')
         
@@ -1352,9 +1351,9 @@ DirectoryEntryHandler.prototype = {
         } else if (this.app.opts.optStatic) {
             this.renderDirectoryListing(results)
         } else if (this.app.opts.optStaticjs) {
-            this.renderDirectoryListingStaticJs(results)
-        } else {
             this.renderDirectoryListingTemplate(results)
+        } else {
+            this.renderDirectoryListingStaticJs(results)
         }
     },
     htaccessError: function(errormsg) {
