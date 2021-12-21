@@ -4,12 +4,6 @@ const { networkInterfaces } = require('os');
 global.savingLogs = false;
 global.pendingSave = false;
 
-if (! String.prototype.replaceAll) {
-    String.prototype.replaceAll = function(a, b) {
-        return this.split(a).join(b)
-    }
-}
-
 const { URL } = require('url');
 global.URL = URL;
 global.http = require('http');
@@ -40,7 +34,7 @@ console = function(old_console) {
             global.pendingSave = false
             var a = console.logs
             console.logs = [ ]
-            var q = ''
+            var q = '\n'
             for (var i=0; i<a.length; i++) {
                 if (a[i].length == 1) {
                     var q = q + a[i][0];
@@ -54,12 +48,6 @@ console = function(old_console) {
                         }
                     }
                     var q = q + b;
-                            b += a[i][t] + ' '
-                        } else {
-                            b += JSON.stringify(a[i][t], null, 2)
-                        }
-                    }
-                    q += b + '\n\n'
                 }
             }
             var newData = q;
@@ -68,8 +56,6 @@ console = function(old_console) {
                     file.file(function(data) {
                         var data = data + newData;
                         console.fs.writeFile('/server.log', data, function(e) { global.savingLogs = false; if (global.pendingSave) {console.saveLogs()} }, true);
-                        var data = data + newData
-                        fileSystem.writeFile('/server.log', data, function(e) { global.savingLogs = false; if (global.pendingSave) {console.saveLogs()} }, true)
                     })
                 } else {
                     console.fs.writeFile('/server.log', newData, function(e) { global.savingLogs = false; if (global.pendingSave) {console.saveLogs()} }, false);
@@ -103,7 +89,7 @@ console = function(old_console) {
 }(console)
 
 
-const quit = function(e) {
+const quit = function(event) {
     isQuitting = true;
     //if ('undefined' != typeof tray) {
     //    tray.destroy()
@@ -131,7 +117,7 @@ function saveConfig(newConfig) {
     for (var i=0; i<newConfig.servers.length; i++) {
         if (newConfig.servers[i].https) {
             if (! newConfig.servers[i].httpsCert || ! newConfig.servers[i].httpsKey) {
-                var crypto = WSC.createCrypto() // Create HTTPS crypto
+                var crypto = WSC.createCrypto()  // Create HTTPS crypto
                 newConfig.servers[i].httpsKey = crypto.privateKey
                 newConfig.servers[i].httpsCert = crypto.cert
             }
@@ -170,12 +156,6 @@ app.on('ready', function() {
         config = JSON.parse(fs.readFileSync(path.join(app.getPath('userData'), "config.json")));
     } catch(error) {
         config = {};
-    }
-    for (var i=0; i<config.servers.length; i++) {
-        if (config.servers[i].httpsKey && config.servers[i].httpsCert) {
-            config.servers[i].httpsKey = config.servers[i].httpsKey.replaceAll(' ', '\r\n')
-            config.servers[i].httpsCert = config.servers[i].httpsCert.replaceAll(' ', '\r\n')
-        }
     }
     createWindow();
     startServers();
@@ -242,10 +222,10 @@ function createWindow() {
         mainWindow.webContents.send('message', {"config": config, ip: getIPs()});
     });
 
-    mainWindow.on('close', function (e) {
+    mainWindow.on('close', function (event) {
         if (config.background && process.platform == "win32" && !isQuitting) {
             mainWindow.hide();
-            e.preventDefault();
+            event.preventDefault();
         }
     });
 
@@ -258,24 +238,26 @@ function createWindow() {
 var servers = [];
 
 function startServers() {
+
     if (servers.length > 0) {
-        var closed_servers = 0;
-        for (var i = 0; i < servers.length; i++) {
-            servers[i].close(function(err) {
-                checkServersClosed()
-            });
-            servers[i].destroy();
+    var closed_servers = 0;
+    for (var i = 0; i < servers.length; i++) {
+        servers[i].close(function(err) {
+            checkServersClosed()
+        });
+        servers[i].destroy();
+    }
+    function checkServersClosed() {
+        closed_servers++;
+        if (closed_servers == servers.length) {
+            servers = [];
+            createServers()
         }
-        function checkServersClosed() {
-            closed_servers++;
-            if (closed_servers == servers.length) {
-                servers = [];
-                createServers()
-            }
-        }
+    }
     } else {
         createServers()
     }
+
     function createServers() {
         for (var i = 0; i < (config.servers || []).length; i++) {
             createServer(config.servers[i]);
@@ -312,15 +294,10 @@ function startServers() {
                             serverSocket.pipe(clientSocket)
                             clientSocket.pipe(serverSocket)
                         })
-                        serverSocket.on('error', function(e){console.warn(e)});
-                        clientSocket.on('error', function(e){console.warn(e)});
                     })
-                }*/
+                }
+                */
                 server.on('request', function(req, res) {
-                    if (serverconfig.proxy) {
-                        res.end('TODO')
-                        return
-                    }
                     WSC.onRequest(serverconfig, req, res)
                 });
                 server.on('clientError', (err, socket) => {
@@ -345,17 +322,17 @@ function startServers() {
                 var connections = {}
 
                 server.on('connection', function(conn) {
-                    var key = conn.remoteAddress + ':' + conn.remotePort;
-                    connections[key] = conn;
-                    conn.on('close', function() {
-                        delete connections[key];
-                    });
+                  var key = conn.remoteAddress + ':' + conn.remotePort;
+                  connections[key] = conn;
+                  conn.on('close', function() {
+                    delete connections[key];
+                  });
                 });
               
                 server.destroy = function(cb) {
-                    server.close(cb);
-                    for (var key in connections)
-                        connections[key].destroy();
+                  server.close(cb);
+                  for (var key in connections)
+                    connections[key].destroy();
                 };
 
                 servers.push(server);
@@ -363,5 +340,4 @@ function startServers() {
         }
     }
 }
-
 
