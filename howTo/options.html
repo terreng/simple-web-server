@@ -160,6 +160,23 @@
                 Show a list of files in the specified directory instead of a 404 page
             </td>
         </tr>
+        <tr>
+            <td>
+                Exclude .html extension
+            </td>
+            <td>
+                <code>excludeDotHtml</code>
+            </td>
+            <td>
+                true/false
+            </td>
+            <td>
+                false
+            </td>
+            <td>
+                Exclude .htm and .html extensions from URLs
+            </td>
+        </tr>
     </tbody>
 </table>
 
@@ -198,6 +215,74 @@
             </td>
             <td>
                 Optionally specify a custom Cache-Control HTTP header value.
+            </td>
+        </tr>
+        <tr>
+            <td>
+                Allow file upload
+            </td>
+            <td>
+                <code>upload</code>
+            </td>
+            <td>
+                true/false
+            </td>
+            <td>
+                false
+            </td>
+            <td>
+                Allows PUT/POST requests.
+            </td>
+        </tr>
+        <tr>
+            <td>
+                Allow replacing files
+            </td>
+            <td>
+                <code>replace</code>
+            </td>
+            <td>
+                true/false
+            </td>
+            <td>
+                false
+            </td>
+            <td>
+                Allows PUT/POST requests to files that already exist.
+            </td>
+        </tr>
+        <tr>
+            <td>
+                Allow deleting files
+            </td>
+            <td>
+                <code>delete</code>
+            </td>
+            <td>
+                true/false
+            </td>
+            <td>
+                false
+            </td>
+            <td>
+                Allows DELETE requests.
+            </td>
+        </tr>
+        <tr>
+            <td>
+                Always use static directory listing
+            </td>
+            <td>
+                <code>staticDirectoryListing</code>
+            </td>
+            <td>
+                true/false
+            </td>
+            <td>
+                false
+            </td>
+            <td>
+                Disables JavaScript on the directory listing page, if it's enabled.
             </td>
         </tr>
     </tbody>
