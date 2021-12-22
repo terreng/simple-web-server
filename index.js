@@ -163,6 +163,12 @@ app.on('ready', function() {
     } catch(error) {
         config = {};
     }
+    for (var i=0; i<config.servers.length; i++) {
+        if (config.servers[i].httpsKey && config.servers[i].httpsCert) {
+            config.servers[i].httpsKey = config.servers[i].httpsKey.replaceAll(' ', '\r\n')
+            config.servers[i].httpsCert = config.servers[i].httpsCert.replaceAll(' ', '\r\n')
+        }
+    }
     createWindow();
     startServers();
 })
