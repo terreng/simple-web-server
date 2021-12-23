@@ -174,7 +174,7 @@
                 false
             </td>
             <td>
-                Exclude .htm and .html extensions from URLs
+                Exclude .htm and .html extensions from URLs. For example, forwards /example.html to /example. If a file exists at the path without an extension, the html file will still be rendered instead.
             </td>
         </tr>
     </tbody>
@@ -215,6 +215,23 @@
             </td>
             <td>
                 Optionally specify a custom Cache-Control HTTP header value.
+            </td>
+        </tr>
+        <tr>
+            <td>
+                Serve hidden and dot files
+            </td>
+            <td>
+                <code>hiddenDotFiles</code>
+            </td>
+            <td>
+                true/false
+            </td>
+            <td>
+                false
+            </td>
+            <td>
+                Allow requesting hidden and dot files.
             </td>
         </tr>
         <tr>
@@ -283,6 +300,91 @@
             </td>
             <td>
                 Disables JavaScript on the directory listing page, if it's enabled.
+            </td>
+        </tr>
+        <tr>
+            <td>
+                Show hidden and dot files in directory listing
+            </td>
+            <td>
+                <code>hiddenDotFilesDirectoryListing</code>
+            </td>
+            <td>
+                true/false
+            </td>
+            <td>
+                true
+            </td>
+            <td>
+                If hidden and dot files are enabled, determines if they will be shown in the directory listing. This includes .swshtaccess files.
+            </td>
+        </tr>
+        <tr>
+            <td>
+                Enable .swshtaccess configuration files
+            </td>
+            <td>
+                <code>htaccess</code>
+            </td>
+            <td>
+                true/false
+            </td>
+            <td>
+                false
+            </td>
+            <td>
+                You can use .swshtaccess files to set additional rules per directory. Learn more here.
+            </td>
+        </tr>
+        <tr>
+            <td>
+                Allow reading .swshtaccess files
+            </td>
+            <td>
+                <code>htaccessRead</code>
+            </td>
+            <td>
+                true/false
+            </td>
+            <td>
+                false
+            </td>
+            <td>
+                If serving hidden and dot files is enabled, turn on this option to also enable serving .swshtaccess files.
+            </td>
+        </tr>
+        <tr>
+            <td>
+                Allow modifying .swshtaccess files
+            </td>
+            <td>
+                <code>htaccessWrite</code>
+            </td>
+            <td>
+                true/false
+            </td>
+            <td>
+                false
+            </td>
+            <td>
+                If allow file upload is enabled, additionally allows PUT and POST requests to .swshtaccess files.
+            </td>
+        </tr>
+        <tr>
+            <td>
+                Allow deleting .swshtaccess files
+            </td>
+            <td>
+                <code>htaccessDelete</code>
+            </td>
+            <td>
+                true/false
+            </td>
+            <td>
+                false
+            </td>
+            <td>
+                If allow file deletion is enabled, additionally allows DELETE requests to .swshtaccess files.
             </td>
         </tr>
     </tbody>
@@ -447,7 +549,7 @@
                 -
             </td>
             <td>
-                <i>Not accessible in the UI.</i> Optionally override this option to provide a custom HTTPS certificate.
+                Optionally override this option to provide a custom HTTPS certificate.
             </td>
         </tr>
         <tr>
@@ -464,7 +566,7 @@
                 -
             </td>
             <td>
-                <i>Not accessible in the UI.</i> Optionally override this option to provide a custom HTTPS key.
+                Optionally override this option to provide a custom HTTPS key.
             </td>
         </tr>
         <tr>
