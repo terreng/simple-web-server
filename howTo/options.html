@@ -231,7 +231,7 @@
                 false
             </td>
             <td>
-                Allow requesting hidden and dot files.
+                Allow requesting hidden and dot files. Also enables creating, modifying, and deleting them, if enabled.
             </td>
         </tr>
         <tr>
@@ -248,7 +248,7 @@
                 false
             </td>
             <td>
-                Allows PUT/POST requests.
+                Allows PUT/POST requests. Includes hidden and dot files if they are enabled.
             </td>
         </tr>
         <tr>
@@ -265,7 +265,7 @@
                 false
             </td>
             <td>
-                Allows PUT/POST requests to files that already exist.
+                Allows PUT/POST requests to files that already exist. Includes hidden and dot files if they are enabled.
             </td>
         </tr>
         <tr>
@@ -282,7 +282,7 @@
                 false
             </td>
             <td>
-                Allows DELETE requests.
+                Allows DELETE requests. Includes hidden and dot files if they are enabled.
             </td>
         </tr>
         <tr>
@@ -334,57 +334,6 @@
             </td>
             <td>
                 You can use .swshtaccess files to set additional rules per directory. Learn more here.
-            </td>
-        </tr>
-        <tr>
-            <td>
-                Allow reading .swshtaccess files
-            </td>
-            <td>
-                <code>htaccessRead</code>
-            </td>
-            <td>
-                true/false
-            </td>
-            <td>
-                false
-            </td>
-            <td>
-                If serving hidden and dot files is enabled, turn on this option to also enable serving .swshtaccess files.
-            </td>
-        </tr>
-        <tr>
-            <td>
-                Allow modifying .swshtaccess files
-            </td>
-            <td>
-                <code>htaccessWrite</code>
-            </td>
-            <td>
-                true/false
-            </td>
-            <td>
-                false
-            </td>
-            <td>
-                If allow file upload is enabled, additionally allows PUT and POST requests to .swshtaccess files.
-            </td>
-        </tr>
-        <tr>
-            <td>
-                Allow deleting .swshtaccess files
-            </td>
-            <td>
-                <code>htaccessDelete</code>
-            </td>
-            <td>
-                true/false
-            </td>
-            <td>
-                false
-            </td>
-            <td>
-                If allow file deletion is enabled, additionally allows DELETE requests to .swshtaccess files.
             </td>
         </tr>
     </tbody>
@@ -618,6 +567,23 @@
             </td>
             <td>
                 Password for HTTP Basic authentication. Stored in plain text.
+            </td>
+        </tr>
+        <tr>
+            <td>
+                Maximum connections per IP address
+            </td>
+            <td>
+                <code>ipThrottling</code>
+            </td>
+            <td>
+                number
+            </td>
+            <td>
+                10
+            </td>
+            <td>
+                Limits the number of incoming connections per IP address. Set to 0 for unlimited connections.
             </td>
         </tr>
     </tbody>
