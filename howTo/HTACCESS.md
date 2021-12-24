@@ -1,9 +1,7 @@
 
-<h1>How to use wsc.htaccess</h1>
+<h1>How to use .swshtaccess</h1>
 <br>
-<p>Why not just .htaccess?</p>
-<p>Chrome os does not allow you to name a file starting with a dot. This allows chrome os users to use this feature!</p>
-<p>Also, Web Server for Chrome DOES NOT have support for .htaccess files. Instead, we have wsc.htaccess files, which gets the same thing done (Not all features implimented).</p>
+<p>Web Server for Chrome DOES NOT have support for .htaccess files. Instead, we have .swshtaccess files, which gets the same thing done (Not all features implimented).</p>
 <br><br>
 <h1>How to</h1>
 <p>All Htaccess features are built to have 100% compatibility with changes in settings</p>
@@ -25,14 +23,8 @@
 <p>serverSideJavaScript - Just what it sounds like</p>
 <p>If you want more features - Make an issue!</p>
 <br>
-<h1>Extra Features</h1>
-<p>You can now control the amount of access the user has.</p>
-<p>You can now allow/deny the user the option to view (GET request) wsc.htaccess files</p>
-<p>You can now allow/deny uploading (PUT request) wsc.htaccess files (Helpful for when making something like a file hosting, the only question with doing that is why are you using a web server as simple as this)</p>
-<p>You can now allow/deny deleting (DELETE request) wsc.htaccess files (Why you would enable this - I dont know)</p>
-<p>FOR MAXIMUM SECURITY - IT IS RECOMMENDED TO LEAVE THESE ALL TURNED OFF!!</p>
 <h1>Making the file</h1>
-<p>A wsc.htaccess file is actually a javascript array, which means one problem with the file will cause it not to work - So be careful. No additional info can be put into the file</p>
+<p>A .swshtaccess file is actually a javascript array, which means one problem with the file will cause it not to work - So be careful. No additional info can be put into the file</p>
 <p>Note - If you are trying to redirect to some index.html file and you have the option to automatically show index.html turned on, your path will go from '/somepath/index.html' to '/somepath/'</p>
 <p>Note - If you are trying to redirect to some .html file and you have the option to remove .html extension turned on, leave the .html extension. The web server will handle the request and forward it to have no .html extension</p>
 
@@ -43,7 +35,7 @@ Note - when selecting the file to scan, if the file is some .html and you have t
 Note - To set more than 1 ruleset per file, see instruction at bottom of the page
 
 Note - 401 (unauthorized) username and passwords are CASE SENSITIVE!!
-<p>Note - wsc.htaccess file MUST be in the same directory as the file you want to change. The file does not need to exist (Mainly for 301, 302, and 307).</p>
+<p>Note - .swshtaccess file MUST be in the same directory as the file you want to change. The file does not need to exist (Mainly for 301, 302, and 307).</p>
 <p>IMPORTANT NOTE - EVERYTHING IN THE FILE (AND THE FILE NAME) IS CASE SENSITIVE!!</p>
 <br>
 

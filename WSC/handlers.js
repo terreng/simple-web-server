@@ -1,6 +1,7 @@
 
 global.cachedFiles = [ ]
 global.tempData = { }
+global.ConnetionS = {}
 
 function BaseHandler() {
     this.headersWritten = false
@@ -9,6 +10,7 @@ function BaseHandler() {
     this.responseCode = null
     this.responseHeaders = {}
     this.responseLength = 0
+    this.htaccessName = '.swshtaccess'
 }
 BaseHandler.prototype = {
     options: function() {
@@ -29,18 +31,12 @@ BaseHandler.prototype = {
             return
         } else {
             this.setHeader('content-type','text/html; charset=utf-8')
-            if (this.app.opts['optCustom'+httpCode]) {
-                this.fs.getByPath(this.app.opts['optCustom'+httpCode+'location'], (file) => {
+            if (this.app.opts['custom'+httpCode] && typeof this.app.opts['custom'+httpCode] == 'string' && this.app.opts['custom'+httpCode].trim() !== '') {
+                this.fs.getByPath(this.app.opts['custom'+httpCode], (file) => {
                     if (! file.error && file.isFile) {
                         file.text(function(data) {
-                            if (this.app.opts.optCustomusevar) {
-                                if (this.app.opts.optCustomusevarvar.trim().length > 0) {
-                                    var data = data.replaceAll(this.app.opts.optCustomusevarvar, this.request.origpath.htmlEscape())
-                                } else {
-                                    this.write('Error Replace Variable is blank', 500)
-                                    this.finish()
-                                    return
-                                }
+                            if (this.app.opts.customErrorReplaceString.trim() !== '') {
+                                var data = data.replaceAll(this.app.opts.customErrorReplaceString, this.request.origpath.htmlEscape())
                             }
                             if (httpCode == 401) {
                                 this.setHeader("WWW-Authenticate", "Basic")
@@ -49,16 +45,11 @@ BaseHandler.prototype = {
                             this.finish()
                         }.bind(this))
                     } else {
-                        if ([400,401,403,404].includes(httpCode)) {
-                            this.write('Path of Custom '+httpCode+' html was not found. Custom '+httpCode+' is set to '+this.app.opts['optCustom'+httpCode+'location'], 500)
-                            this.finish()
-                        } else {
-                            if (httpCode == 401) {
-                                this.setHeader("WWW-Authenticate", "Basic")
-                            }
-                            this.write(defaultMsg, httpCode)
-                            this.finish()
+                        if (httpCode == 401) {
+                            this.setHeader("WWW-Authenticate", "Basic")
                         }
+                        this.write(defaultMsg, httpCode)
+                        this.finish()
                     }
                 })
             } else {
@@ -173,6 +164,7 @@ BaseHandler.prototype = {
         }
     },
     finish: function() {
+        global.ConnetionS[this.request.ip]--
         if (! this.headersWritten && ! this.writingHeaders) {
             this.writeHeaders()
         }
@@ -204,15 +196,28 @@ function DirectoryEntryHandler(FileSystem, request, app, req, res) {
     this.fileEndOffset = 0
     this.bodyWritten = 0
     this.isDirectoryListing = false
+    this.connectionNum = null
 }
 DirectoryEntryHandler.prototype = {
     head: function() {
         this.get()
     },
     tryHandle: async function() {
+        if (! this.request.ip) {
+            this.error('', 403)
+            return
+        }
+        if (! global.ConnetionS[this.request.ip] || global.ConnetionS[this.request.ip] < 0) {
+            global.ConnetionS[this.request.ip] = 0
+        }
+        if (this.app.opts.ipThrottling && this.app.opts.ipThrottling !== 0 && global.ConnetionS[this.request.ip] > this.app.opts.ipThrottling) {
+            this.error('', 429)
+            return
+        }
+        global.ConnetionS[this.request.ip]++
         console.log(this.request.ip + ':', 'Request',this.request.method, this.request.uri)
-        if (this.app.opts.optIpBlocking && this.opts.optIpBlockList) {
-            var file = await this.fs.asyncGetByPath(this.opts.optIpBlockList)
+        if (this.app.opts.optIpBlocking && this.app.opts.optIpBlockList) {
+            var file = await this.fs.asyncGetByPath(this.app.opts.optIpBlockList)
             if (file && file.isFile && ! file.error) {
                 var data = await file.textPromise()
                 try {
@@ -237,25 +242,19 @@ DirectoryEntryHandler.prototype = {
         }
         
         var filename = this.request.path.split('/').pop()
-        if (filename == 'wsc.htaccess') {
-            if ((this.request.method == 'GET' && ! this.app.opts.optGETHtaccess) ||
-                (this.request.method == 'HEAD' && ! this.app.opts.optGETHtaccess) ||
-                (this.request.method == 'PUT' && ! this.app.opts.optPUTPOSTHtaccess) ||
-                (this.request.method == 'POST' && ! this.app.opts.optPUTPOSTHtaccess) ||
-                (this.request.method == 'DELETE' && ! this.app.opts.optDELETEHtaccess)) {
-                this.error('', 400)
-                return
-            }
+        if (filename == this.htaccessName) {
+            this.error('', 400)
+            return
         }
         
-        if (this.app.opts.optUsebasicauth) {
+        if (this.app.opts.httpAuth) {
             var validAuth = false
             var auth = this.request.headers['authorization']
             if (auth) {
                 if (auth.slice(0,6).toLowerCase() == 'basic ') {
                     var userpass = atob(auth.slice(6,auth.length)).split(':')
-                    if (userpass[0] == this.app.opts.optAuthUsername &&
-                        userpass[1] == this.app.opts.optAuthPassword) {
+                    if (userpass[0] == this.app.opts.httpAuthUsername &&
+                        userpass[1] == this.app.opts.httpAuthPassword) {
                         validAuth = true
                     }
                 }
@@ -266,13 +265,16 @@ DirectoryEntryHandler.prototype = {
             }
         }
 
-        if (this.app.opts.optModRewriteEnable) {
-            var matches = this.request.uri.match(this.app.opts.optModRewriteRegexp)
-            if (matches === null && this.app.opts.optModRewriteNegate ||
-                matches !== null && ! this.app.opts.optModRewriteNegate
+        if (this.app.opts.spa) {
+            //var matches = this.request.uri.match(this.app.opts.optModRewriteRegexp)
+            var matches = this.request.uri.match('.*\\.[\\d\\w]+$')
+            if (//matches === null && this.app.opts.optModRewriteNegate ||
+                //matches !== null && ! this.app.opts.optModRewriteNegate
+                matches !== null
                ) {
-                console.log("Mod rewrite rule matched", matches, this.app.opts.optModRewriteRegexp, this.request.uri)
-                this.rewrite_to = this.app.opts.optModRewriteTo
+                //console.log("Mod rewrite rule matched", matches, this.app.opts.optModRewriteRegexp, this.request.uri)
+                console.log("Mod rewrite rule matched", matches, '.*\\.[\\d\\w]+$', this.request.uri)
+                this.rewrite_to = '/index.html'//this.app.opts.optModRewriteTo
             }
         }
         
@@ -284,14 +286,14 @@ DirectoryEntryHandler.prototype = {
         }
     },
     deletePutHtaccess: function(allow, deny, callback, callbackSkip) {
-        if (this.app.opts.optScanForHtaccess) {
+        if (this.app.opts.htaccess) {
             var fullrequestpath = this.request.origpath
             var finpath = fullrequestpath.split('/').pop();
             var finalpath = fullrequestpath.substring(0, fullrequestpath.length - finpath.length);
             if (this.request.path == '') {
                 var finalpath = '/'
             }
-            var htaccesspath = finalpath+'wsc.htaccess'
+            var htaccesspath = finalpath+this.htaccessName
             //console.log(htaccesspath)
             this.fs.getByPath(htaccesspath, (file) => {
                 if (! file.error) {
@@ -410,7 +412,7 @@ DirectoryEntryHandler.prototype = {
             }.bind(this))
         }
         function deleteCheck() {
-            if (! this.app.opts.optDelete) {
+            if (! this.app.opts.delete) {
                 this.responseLength = 0
                 this.writeHeaders(400)
                 this.finish()
@@ -423,7 +425,7 @@ DirectoryEntryHandler.prototype = {
     },
     post: function() {
         var htaccessPath = WSC.utils.stripOffFile(this.request.origpath)
-        this.fs.getByPath(htaccessPath + 'wsc.htaccess', function(file) {
+        this.fs.getByPath(htaccessPath + this.htaccessName, function(file) {
             if (file && ! file.error) {
                 file.text(function(data) {
                     try {
@@ -467,13 +469,13 @@ DirectoryEntryHandler.prototype = {
                             if (this.request.origpath.split('/').pop() == origdata[i].original_request_path || 
                                     (origdata[i].original_request_path.split('.').pop() == 'html' && 
                                     origdata[i].original_request_path.split('/').pop().split('.')[0] == this.request.origpath.split('/').pop() &&
-                                    this.app.opts.optExcludeDotHtml) ||
+                                    this.app.opts.excludeDotHtml) ||
                                     (origdata[i].original_request_path.split('/').pop() == 'index.html' && 
                                     this.request.origpath.endsWith('/') &&
                                     this.app.opts.index) ||
                                     (origdata[i].original_request_path.split('.').pop() == 'htm' && 
                                     origdata[i].original_request_path.split('/').pop().split('.')[0] == this.request.origpath.split('/').pop()) && 
-                                    this.app.opts.optExcludeDotHtml && this.app.opts.optExcludeDotHtm) {
+                                    this.app.opts.excludeDotHtml && this.app.opts.optExcludeDotHtm) {
                                 var data = origdata[i]
                                 var filefound = true
                             }
@@ -583,7 +585,7 @@ DirectoryEntryHandler.prototype = {
                         this.writeHeaders(200)
                         this.finish()
                     }.bind(this))
-                } else if (this.app.opts.optAllowReplaceFile) {
+                } else if (this.app.opts.replace) {
                     entry.remove(function(e) {
                         if (e.error) {
                             this.writeHeaders(500)
@@ -610,7 +612,7 @@ DirectoryEntryHandler.prototype = {
             }.bind(this))
         }
         function putCheck() {
-            if (! this.app.opts.optUpload) {
+            if (! this.app.opts.upload) {
                 this.responseLength = 0
                 this.writeHeaders(400)
                 this.finish()
@@ -629,10 +631,10 @@ DirectoryEntryHandler.prototype = {
             return
         }
         this.request.isVersioning = false
-        if (this.app.opts.optCacheControl) {
-            this.setHeader('Cache-Control',this.app.opts.optCacheControlValue)
+        if (this.app.opts.cacheControl && typeof this.app.opts.cacheControl == 'string' && this.app.opts.cacheControl.trim() !== '') {
+            this.setHeader('Cache-Control',this.app.opts.cacheControl)
         }
-        if (this.app.opts.optExcludeDotHtml && ! this.request.origpath.endsWith("/")) {
+        if (this.app.opts.excludeDotHtml && ! this.request.origpath.endsWith("/")) {
             var htmhtml = this.app.opts.optExcludeDotHtm ? 'htm' : 'html';
             var extension = this.request.path.split('.').pop();
             var more = this.request.uri.split('.'+htmhtml).pop()
@@ -663,7 +665,7 @@ DirectoryEntryHandler.prototype = {
         this.entry = entry
 
         async function excludedothtmlcheck() {
-            if (this.app.opts.optExcludeDotHtml && this.request.path != '' && ! this.request.origpath.endsWith("/")) {
+            if (this.app.opts.excludeDotHtml && this.request.path != '' && ! this.request.origpath.endsWith("/")) {
                 var htmHtml = this.app.opts.optExcludeDotHtm ? '.htm' : '.html'
                 var file = await this.fs.asyncGetByPath(this.request.path+htmHtml)
                 if (! file.error && file.isFile) {
@@ -715,7 +717,7 @@ DirectoryEntryHandler.prototype = {
                             }
                         }
                     }
-                    if (this.app.opts.optDir404 && this.app.opts.index) {
+                    if (!this.app.opts.directoryListing && this.app.opts.index) {
                         this.error("", 404)
                     } else {
                         this.renderDirListing(results)
@@ -726,14 +728,14 @@ DirectoryEntryHandler.prototype = {
             //End main onEntry function
         }
     
-        if (this.app.opts.optScanForHtaccess) {
+        if (this.app.opts.htaccess) {
             var fullrequestpath = this.request.origpath
             var finpath = fullrequestpath.split('/').pop();
             var finalpath = fullrequestpath.substring(0, fullrequestpath.length - finpath.length);
             if (this.request.path == '') {
                 var finalpath = '/'
             }
-            var htaccesspath = finalpath+'wsc.htaccess'
+            var htaccesspath = finalpath+this.htaccessName
             var file = await this.fs.asyncGetByPath(htaccesspath)
             if (! file.error && file.isFile) {
                 var dataa = await file.textPromise()
@@ -743,7 +745,7 @@ DirectoryEntryHandler.prototype = {
                         throw new Error('not an array')
                     }
                 } catch(e) {
-                    this.write('<p>wsc.htaccess file found, but it is not a valid json array. Please read the htaccess readme <a href="https://github.com/terreng/simple-web-server/blob/main/howTo/HTACCESS.md">here</a></p>\n\n\n'+e, 500)
+                    this.write('<p>'+this.htaccessName+' file found, but it is not a valid json array. Please read the htaccess readme <a href="https://github.com/terreng/simple-web-server/blob/main/howTo/HTACCESS.md">here</a></p>\n\n\n'+e, 500)
                     this.finish()
                     console.error('htaccess json array error')
                     return
@@ -797,13 +799,13 @@ DirectoryEntryHandler.prototype = {
                             if (this.request.origpath.split('/').pop() == origdata[i].original_request_path || 
                                     (origdata[i].original_request_path.split('.').pop() == 'html' && 
                                     origdata[i].original_request_path.split('/').pop().split('.')[0] == this.request.origpath.split('/').pop() &&
-                                    this.app.opts.optExcludeDotHtml) ||
+                                    this.app.opts.excludeDotHtml) ||
                                     (origdata[i].original_request_path.split('/').pop() == 'index.html' && 
                                     this.request.origpath.endsWith('/') &&
                                     this.app.opts.index) ||
                                     (origdata[i].original_request_path.split('.').pop() == 'htm' && 
                                     origdata[i].original_request_path.split('/').pop().split('.')[0] == this.request.origpath.split('/').pop() && 
-                                    this.app.opts.optExcludeDotHtml && this.app.opts.optExcludeDotHtm)) {
+                                    this.app.opts.excludeDotHtml && this.app.opts.optExcludeDotHtm)) {
                                 var data = origdata[i]
                                 var filefound = true
                             }
@@ -895,11 +897,7 @@ DirectoryEntryHandler.prototype = {
                                             var filesize = results[w].size
                                             var filesizestr = WSC.utils.humanFileSize(results[w].size)
                                             var modifiedstr = WSC.utils.lastModifiedStr(results[w].modificationTime)
-                                            if (! results[w].name.startsWith('.')) {
-                                                if (rawname != 'wsc.htaccess' || this.app.opts.optDirListingHtaccess) {
-                                                    html.push('<script>addRow("'+rawname+'","'+name+'",'+isdirectory+',"'+filesize+'","'+filesizestr+'","'+modified+'","'+modifiedstr+'");</script>')
-                                                }
-                                            } else if (this.app.opts.optDotFilesDirListing) {
+                                            if (! results[w].name.startsWith('.') || this.app.opts.hiddenDotFiles) {
                                                 html.push('<script>addRow("'+rawname+'","'+name+'",'+isdirectory+',"'+filesize+'","'+filesizestr+'","'+modified+'","'+modifiedstr+'");</script>')
                                             }
                                         }
@@ -907,7 +905,7 @@ DirectoryEntryHandler.prototype = {
                                         this.write(html.join('\n'))
                                         this.finish()
                                     } else {
-                                        this.write('An unexpected error occured. Please check your wsc.htaccess file for any configuration errors.\nPlease remember, the send directory listing feature CANNOT use "all files", you must specify each file separately.\nPlease check your settings. If everything seems to be in place, please report an issue on github.\n\nhttps://github.com/kzahel/web-server-chrome\n\nPlease copy and paste the following information.\n\n\nfilepath: '+filepath+'\nrequestURI: '+this.request.uri+'\nrequested file (according to htaccess): '+data.original_request_path+'\nrequested file (according to requestURI): '+data.filerequested, 500)
+                                        this.write('An unexpected error occured. Please check your '+this.htaccessName+' file for any configuration errors.\nPlease remember, the send directory listing feature CANNOT use "all files", you must specify each file separately.\nPlease check your settings. If everything seems to be in place, please report an issue on github.\n\nhttps://github.com/kzahel/web-server-chrome\n\nPlease copy and paste the following information.\n\n\nfilepath: '+filepath+'\nrequestURI: '+this.request.uri+'\nrequested file (according to htaccess): '+data.original_request_path+'\nrequested file (according to requestURI): '+data.filerequested, 500)
                                         this.finish()
                                     }
                                 }
@@ -1110,7 +1108,7 @@ DirectoryEntryHandler.prototype = {
                 }
                 var filerequest = this.request.origpath
 
-                if (this.app.opts.optExcludeDotHtml) {
+                if (this.app.opts.excludeDotHtml) {
                     var htmHtml = this.app.opts.optExcludeDotHtm ? '.htm' : '.html'
                     var file = await this.fs.asyncGetByPath(this.request.path+htmHtml)
                     if (! file.error) {
@@ -1165,7 +1163,12 @@ DirectoryEntryHandler.prototype = {
             this.error('', 404)
             return
         }
+        if (entry.path.split('/').pop().startsWith('.') && ! this.app.opts.hiddenDotFiles) {
+            this.error('', 404)
+            return
+        }
         function readyToSend() {
+            global.ConnetionS[this.request.ip]--
             send(this.req, entry.path, {index: false, lastModified: true, dotfiles: 'allow', etag: false, cacheControl: false})
                 .on('error', function(error) {
                     this.res.statusCode = error.status
@@ -1200,11 +1203,7 @@ DirectoryEntryHandler.prototype = {
         this.setHeader('content-type','application/json; charset=utf-8')
         var results = [ ]
         for (var i=0; i<origResults.length; i++) {
-            if (! origResults[i].name.startsWith('.')) {
-                if (origResults[i].name != 'wsc.htaccess' || this.app.opts.optDirListingHtaccess) {
-                    results.push(origResults[i])
-                }
-            } else if (this.app.opts.optDotFilesDirListing) {
+            if (! origResults[i].name.startsWith('.') || this.app.opts.hiddenDotFiles) {
                 results.push(origResults[i])
             }
         }
@@ -1235,11 +1234,7 @@ DirectoryEntryHandler.prototype = {
             if (results[i].isDirectory) {
                 html.push('<li class="directory"><a href="' + name + '/?static=1">' + name + '</a></li>')
             } else {
-                if (! results[i].name.startsWith('.')) {
-                    if (name != 'wsc.htaccess' || this.app.opts.optDirListingHtaccess) {
-                        html.push('<li><a href="' + name + '?static=1">' + name + '</a></li>')
-                    }
-                } else if (this.app.opts.optDotFilesDirListing) {
+                if (! results[i].name.startsWith('.') || this.app.opts.hiddenDotFiles) {
                     html.push('<li><a href="' + name + '?static=1">' + name + '</a></li>')
                 }
             }
@@ -1260,11 +1255,7 @@ DirectoryEntryHandler.prototype = {
             var filesize = results[w].size
             var filesizestr = WSC.utils.humanFileSize(results[w].size)
             var modifiedstr = WSC.utils.lastModifiedStr(results[w].modificationTime)
-            if (! results[w].name.startsWith('.')) {
-                if (rawname != 'wsc.htaccess' || this.app.opts.optDirListingHtaccess) {
-                    html.push('<script>addRow("'+rawname+'","'+name+'",'+isdirectory+',"'+filesize+'","'+filesizestr+'","'+modified+'","'+modifiedstr+'");</script>')
-                }
-            } else if (this.app.opts.optDotFilesDirListing) {
+            if (! results[w].name.startsWith('.') || this.app.opts.hiddenDotFiles) {
                 html.push('<script>addRow("'+rawname+'","'+name+'",'+isdirectory+',"'+filesize+'","'+filesizestr+'","'+modified+'","'+modifiedstr+'");</script>')
             }
         }
@@ -1293,11 +1284,7 @@ DirectoryEntryHandler.prototype = {
             var filesize = results[w].size
             var filesizestr = WSC.utils.humanFileSize(results[w].size)
             var modifiedstr = WSC.utils.lastModifiedStr(results[w].modificationTime)
-            if (! results[w].name.startsWith('.')) {
-                if (rawname != 'wsc.htaccess' || this.app.opts.optDirListingHtaccess) {
-                    html.push('<script>addRow("'+rawname+'","'+name+'",'+isdirectory+',"'+filesize+'","'+filesizestr+'","'+modified+'","'+modifiedstr+'");</script>')
-                }
-            } else if (this.app.opts.optDotFilesDirListing) {
+            if (! results[w].name.startsWith('.') || this.app.opts.hiddenDotFiles) {
                 html.push('<script>addRow("'+rawname+'","'+name+'",'+isdirectory+',"'+filesize+'","'+filesizestr+'","'+modified+'","'+modifiedstr+'");</script>')
             }
         }
@@ -1317,15 +1304,11 @@ DirectoryEntryHandler.prototype = {
         for (var i=0; i<results.length; i++) {
             var name = results[i].name.htmlEscape()
             if (results[i].isDirectory) {
-                if (! results[i].name.startsWith('.')) {
+                if (! results[i].name.startsWith('.') || this.app.opts.hiddenDotFiles) {
                     html.push('<li class="directory"><a href="' + name + '/?static=1">' + name + '</a></li>')
                 }
             } else {
-                if (! results[i].name.startsWith('.')) {
-                    if (name != 'wsc.htaccess' || this.app.opts.optDirListingHtaccess) {
-                        html.push('<li><a href="' + name + '?static=1">' + name + '</a></li>')
-                    }
-                } else if (this.app.opts.optDotFilesDirListing) {
+                if (! results[i].name.startsWith('.') || this.app.opts.hiddenDotFiles) {
                     html.push('<li><a href="' + name + '?static=1">' + name + '</a></li>')
                 }
             }
@@ -1348,10 +1331,8 @@ DirectoryEntryHandler.prototype = {
             this.renderDirectoryListingStaticJs(results)
         } else if (this.request.arguments && this.request.arguments.js == '1' || this.request.arguments.js == 'true') {
             this.renderDirectoryListingTemplate(results)
-        } else if (this.app.opts.optStatic) {
+        } else if (this.app.opts.staticDirectoryListing) {
             this.renderDirectoryListing(results)
-        } else if (this.app.opts.optStaticjs) {
-            this.renderDirectoryListingTemplate(results)
         } else {
             this.renderDirectoryListingStaticJs(results)
         }
