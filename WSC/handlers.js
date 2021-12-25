@@ -216,6 +216,7 @@ DirectoryEntryHandler.prototype = {
         }
         global.ConnetionS[this.request.ip]++
         console.log(this.request.ip + ':', 'Request',this.request.method, this.request.uri)
+        /*
         if (this.app.opts.optIpBlocking && this.app.opts.optIpBlockList) {
             var file = await this.fs.asyncGetByPath(this.app.opts.optIpBlockList)
             if (file && file.isFile && ! file.error) {
@@ -240,6 +241,7 @@ DirectoryEntryHandler.prototype = {
             this.error('', 403)
             return
         }
+        */
         
         var filename = this.request.path.split('/').pop()
         if (filename == this.htaccessName) {
@@ -467,15 +469,12 @@ DirectoryEntryHandler.prototype = {
                         }
                         if (origdata[i].type == 'POSTkey' && ! filefound) {
                             if (this.request.origpath.split('/').pop() == origdata[i].original_request_path || 
-                                    (origdata[i].original_request_path.split('.').pop() == 'html' && 
-                                    origdata[i].original_request_path.split('/').pop().split('.')[0] == this.request.origpath.split('/').pop() &&
-                                    this.app.opts.excludeDotHtml) ||
                                     (origdata[i].original_request_path.split('/').pop() == 'index.html' && 
                                     this.request.origpath.endsWith('/') &&
                                     this.app.opts.index) ||
-                                    (origdata[i].original_request_path.split('.').pop() == 'htm' && 
+                                    (['html', 'htm'].includes(origdata[i].original_request_path.split('.').pop()) && 
                                     origdata[i].original_request_path.split('/').pop().split('.')[0] == this.request.origpath.split('/').pop()) && 
-                                    this.app.opts.excludeDotHtml && this.app.opts.optExcludeDotHtm) {
+                                    this.app.opts.excludeDotHtml) {
                                 var data = origdata[i]
                                 var filefound = true
                             }
@@ -635,19 +634,16 @@ DirectoryEntryHandler.prototype = {
             this.setHeader('Cache-Control',this.app.opts.cacheControl)
         }
         if (this.app.opts.excludeDotHtml && ! this.request.origpath.endsWith("/")) {
-            var htmhtml = this.app.opts.optExcludeDotHtm ? 'htm' : 'html';
             var extension = this.request.path.split('.').pop();
-            var more = this.request.uri.split('.'+htmhtml).pop()
-            if (extension == htmhtml) {
+            var more = this.request.uri.split('.'+extension).pop()
+            if (['htm', 'html'].includes(extension)) {
                 var path = this.request.path
-                if (htmhtml == 'html') {
+                if (extension == 'html') {
                     var newpath = path.substring(0, path.length - 5);
                 } else {
                     var newpath = path.substring(0, path.length - 4);
                 }
-                if (more != this.request.uri) {
-                    var newpath = newpath+more
-                }
+                var newpath = newpath+more
                 this.responseLength = 0
                 this.setHeader('location', newpath)
                 this.writeHeaders(307)
@@ -666,10 +662,15 @@ DirectoryEntryHandler.prototype = {
 
         async function excludedothtmlcheck() {
             if (this.app.opts.excludeDotHtml && this.request.path != '' && ! this.request.origpath.endsWith("/")) {
-                var htmHtml = this.app.opts.optExcludeDotHtm ? '.htm' : '.html'
-                var file = await this.fs.asyncGetByPath(this.request.path+htmHtml)
+                var file = await this.fs.asyncGetByPath(this.request.path+'.html')
                 if (! file.error && file.isFile) {
                     //console.log('file found')
+                    this.setHeader('content-type','text/html; charset=utf-8')
+                    this.renderFileContents(file)
+                    return
+                }
+                var file = await this.fs.asyncGetByPath(this.request.path+'.htm')
+                if (! file.error && file.isFile) {
                     this.setHeader('content-type','text/html; charset=utf-8')
                     this.renderFileContents(file)
                     return
@@ -797,15 +798,12 @@ DirectoryEntryHandler.prototype = {
                         }
                         if (origdata[i].type == 'serverSideJavaScript' && ! filefound) {
                             if (this.request.origpath.split('/').pop() == origdata[i].original_request_path || 
-                                    (origdata[i].original_request_path.split('.').pop() == 'html' && 
+                                    (['html', 'htm'].includes(origdata[i].original_request_path.split('.').pop()) && 
                                     origdata[i].original_request_path.split('/').pop().split('.')[0] == this.request.origpath.split('/').pop() &&
                                     this.app.opts.excludeDotHtml) ||
                                     (origdata[i].original_request_path.split('/').pop() == 'index.html' && 
                                     this.request.origpath.endsWith('/') &&
-                                    this.app.opts.index) ||
-                                    (origdata[i].original_request_path.split('.').pop() == 'htm' && 
-                                    origdata[i].original_request_path.split('/').pop().split('.')[0] == this.request.origpath.split('/').pop() && 
-                                    this.app.opts.excludeDotHtml && this.app.opts.optExcludeDotHtm)) {
+                                    this.app.opts.index)) {
                                 var data = origdata[i]
                                 var filefound = true
                             }
@@ -897,7 +895,7 @@ DirectoryEntryHandler.prototype = {
                                             var filesize = results[w].size
                                             var filesizestr = WSC.utils.humanFileSize(results[w].size)
                                             var modifiedstr = WSC.utils.lastModifiedStr(results[w].modificationTime)
-                                            if (! results[w].name.startsWith('.') || this.app.opts.hiddenDotFiles) {
+                                            if (! results[w].hidden || this.app.opts.hiddenDotFiles) {
                                                 html.push('<script>addRow("'+rawname+'","'+name+'",'+isdirectory+',"'+filesize+'","'+filesizestr+'","'+modified+'","'+modifiedstr+'");</script>')
                                             }
                                         }
@@ -1109,32 +1107,44 @@ DirectoryEntryHandler.prototype = {
                 var filerequest = this.request.origpath
 
                 if (this.app.opts.excludeDotHtml) {
-                    var htmHtml = this.app.opts.optExcludeDotHtm ? '.htm' : '.html'
-                    var file = await this.fs.asyncGetByPath(this.request.path+htmHtml)
+                    var file = await this.fs.asyncGetByPath(this.request.path+'.html')
                     if (! file.error) {
                         if (this.request.origpath.endsWith("/")) {
                             htaccessMain.bind(this)('')
                             return
                         }
-                        var filerequested = this.request.path+htmHtml
+                        var filerequested = this.request.path+'.html'
                         var filerequested = filerequested.split('/').pop();
                         var filerequested = WSC.utils.htaccessFileRequested(filerequested, this.app.opts.index)
                         htaccessMain.bind(this)(filerequested)
                         return
                     } else {
-                        if (this.entry && this.entry.isDirectory && ! this.request.origpath.endsWith('/')) {
-                            var newloc = this.request.origpath + '/'
-                            this.setHeader('location', newloc)
-                            this.responseLength = 0
-                            this.writeHeaders(301)
-                            this.finish()
-                            return
-                        }
-                        var filerequested = filerequest.split('/').pop();
-                        //console.log(filerequested)
-                        var filerequested = WSC.utils.htaccessFileRequested(filerequested, this.app.opts.index)
+                        var file = await this.fs.asyncGetByPath(this.request.path+'.htm')
+                        if (! file.error) {
+                            if (this.request.origpath.endsWith("/")) {
+                                htaccessMain.bind(this)('')
+                                return
+                            }
+                            var filerequested = this.request.path+'.htm'
+                            var filerequested = filerequested.split('/').pop();
+                            var filerequested = WSC.utils.htaccessFileRequested(filerequested, this.app.opts.index)
                             htaccessMain.bind(this)(filerequested)
                             return
+                        } else {
+                            if (this.entry && this.entry.isDirectory && ! this.request.origpath.endsWith('/')) {
+                                var newloc = this.request.origpath + '/'
+                                this.setHeader('location', newloc)
+                                this.responseLength = 0
+                                this.writeHeaders(301)
+                                this.finish()
+                                return
+                            }
+                            var filerequested = filerequest.split('/').pop();
+                            //console.log(filerequested)
+                            var filerequested = WSC.utils.htaccessFileRequested(filerequested, this.app.opts.index)
+                            htaccessMain.bind(this)(filerequested)
+                            return
+                        }
                     }
                 } else {
                     if (this.entry && this.entry.isDirectory && ! this.request.origpath.endsWith('/')) {
@@ -1163,7 +1173,7 @@ DirectoryEntryHandler.prototype = {
             this.error('', 404)
             return
         }
-        if (entry.path.split('/').pop().startsWith('.') && ! this.app.opts.hiddenDotFiles) {
+        if (entry.hidden && ! this.app.opts.hiddenDotFiles) {
             this.error('', 404)
             return
         }
@@ -1203,7 +1213,7 @@ DirectoryEntryHandler.prototype = {
         this.setHeader('content-type','application/json; charset=utf-8')
         var results = [ ]
         for (var i=0; i<origResults.length; i++) {
-            if (! origResults[i].name.startsWith('.') || this.app.opts.hiddenDotFiles) {
+            if (! origResults[i].hidden || this.app.opts.hiddenDotFiles) {
                 results.push(origResults[i])
             }
         }
@@ -1234,7 +1244,7 @@ DirectoryEntryHandler.prototype = {
             if (results[i].isDirectory) {
                 html.push('<li class="directory"><a href="' + name + '/?static=1">' + name + '</a></li>')
             } else {
-                if (! results[i].name.startsWith('.') || this.app.opts.hiddenDotFiles) {
+                if (! results[i].hidden || this.app.opts.hiddenDotFiles) {
                     html.push('<li><a href="' + name + '?static=1">' + name + '</a></li>')
                 }
             }
@@ -1255,7 +1265,7 @@ DirectoryEntryHandler.prototype = {
             var filesize = results[w].size
             var filesizestr = WSC.utils.humanFileSize(results[w].size)
             var modifiedstr = WSC.utils.lastModifiedStr(results[w].modificationTime)
-            if (! results[w].name.startsWith('.') || this.app.opts.hiddenDotFiles) {
+            if (! results[w].hidden || this.app.opts.hiddenDotFiles) {
                 html.push('<script>addRow("'+rawname+'","'+name+'",'+isdirectory+',"'+filesize+'","'+filesizestr+'","'+modified+'","'+modifiedstr+'");</script>')
             }
         }
@@ -1284,7 +1294,7 @@ DirectoryEntryHandler.prototype = {
             var filesize = results[w].size
             var filesizestr = WSC.utils.humanFileSize(results[w].size)
             var modifiedstr = WSC.utils.lastModifiedStr(results[w].modificationTime)
-            if (! results[w].name.startsWith('.') || this.app.opts.hiddenDotFiles) {
+            if (! results[w].hidden || this.app.opts.hiddenDotFiles) {
                 html.push('<script>addRow("'+rawname+'","'+name+'",'+isdirectory+',"'+filesize+'","'+filesizestr+'","'+modified+'","'+modifiedstr+'");</script>')
             }
         }
@@ -1304,11 +1314,11 @@ DirectoryEntryHandler.prototype = {
         for (var i=0; i<results.length; i++) {
             var name = results[i].name.htmlEscape()
             if (results[i].isDirectory) {
-                if (! results[i].name.startsWith('.') || this.app.opts.hiddenDotFiles) {
+                if (! results[i].hidden || this.app.opts.hiddenDotFiles) {
                     html.push('<li class="directory"><a href="' + name + '/?static=1">' + name + '</a></li>')
                 }
             } else {
-                if (! results[i].name.startsWith('.') || this.app.opts.hiddenDotFiles) {
+                if (! results[i].hidden || this.app.opts.hiddenDotFiles) {
                     html.push('<li><a href="' + name + '?static=1">' + name + '</a></li>')
                 }
             }
