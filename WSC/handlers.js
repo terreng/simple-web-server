@@ -895,7 +895,7 @@ DirectoryEntryHandler.prototype = {
                                             var filesize = results[w].size
                                             var filesizestr = WSC.utils.humanFileSize(results[w].size)
                                             var modifiedstr = WSC.utils.lastModifiedStr(results[w].modificationTime)
-                                            if (! results[w].hidden || this.app.opts.hiddenDotFiles) {
+                                            if (! results[w].hidden || (this.app.opts.hiddenDotFiles && this.app.opts.hiddenDotFilesDirectoryListing)) {
                                                 html.push('<script>addRow("'+rawname+'","'+name+'",'+isdirectory+',"'+filesize+'","'+filesizestr+'","'+modified+'","'+modifiedstr+'");</script>')
                                             }
                                         }
@@ -1213,7 +1213,7 @@ DirectoryEntryHandler.prototype = {
         this.setHeader('content-type','application/json; charset=utf-8')
         var results = [ ]
         for (var i=0; i<origResults.length; i++) {
-            if (! origResults[i].hidden || this.app.opts.hiddenDotFiles) {
+            if (! origResults[i].hidden || (this.app.opts.hiddenDotFiles && this.app.opts.hiddenDotFilesDirectoryListing)) {
                 results.push(origResults[i])
             }
         }
@@ -1242,9 +1242,11 @@ DirectoryEntryHandler.prototype = {
         for (var i=0; i<results.length; i++) {
             var name = results[i].name.htmlEscape()
             if (results[i].isDirectory) {
-                html.push('<li class="directory"><a href="' + name + '/?static=1">' + name + '</a></li>')
+                if (! results[i].hidden || (this.app.opts.hiddenDotFiles && this.app.opts.hiddenDotFilesDirectoryListing)) {
+                    html.push('<li class="directory"><a href="' + name + '/?static=1">' + name + '</a></li>')
+                }
             } else {
-                if (! results[i].hidden || this.app.opts.hiddenDotFiles) {
+                if (! results[i].hidden || (this.app.opts.hiddenDotFiles && this.app.opts.hiddenDotFilesDirectoryListing)) {
                     html.push('<li><a href="' + name + '?static=1">' + name + '</a></li>')
                 }
             }
@@ -1265,7 +1267,7 @@ DirectoryEntryHandler.prototype = {
             var filesize = results[w].size
             var filesizestr = WSC.utils.humanFileSize(results[w].size)
             var modifiedstr = WSC.utils.lastModifiedStr(results[w].modificationTime)
-            if (! results[w].hidden || this.app.opts.hiddenDotFiles) {
+            if (! results[w].hidden || (this.app.opts.hiddenDotFiles && this.app.opts.hiddenDotFilesDirectoryListing)) {
                 html.push('<script>addRow("'+rawname+'","'+name+'",'+isdirectory+',"'+filesize+'","'+filesizestr+'","'+modified+'","'+modifiedstr+'");</script>')
             }
         }
@@ -1294,7 +1296,7 @@ DirectoryEntryHandler.prototype = {
             var filesize = results[w].size
             var filesizestr = WSC.utils.humanFileSize(results[w].size)
             var modifiedstr = WSC.utils.lastModifiedStr(results[w].modificationTime)
-            if (! results[w].hidden || this.app.opts.hiddenDotFiles) {
+            if (! results[w].hidden || (this.app.opts.hiddenDotFiles && this.app.opts.hiddenDotFilesDirectoryListing)) {
                 html.push('<script>addRow("'+rawname+'","'+name+'",'+isdirectory+',"'+filesize+'","'+filesizestr+'","'+modified+'","'+modifiedstr+'");</script>')
             }
         }
@@ -1314,11 +1316,11 @@ DirectoryEntryHandler.prototype = {
         for (var i=0; i<results.length; i++) {
             var name = results[i].name.htmlEscape()
             if (results[i].isDirectory) {
-                if (! results[i].hidden || this.app.opts.hiddenDotFiles) {
+                if (! results[i].hidden || (this.app.opts.hiddenDotFiles && this.app.opts.hiddenDotFilesDirectoryListing)) {
                     html.push('<li class="directory"><a href="' + name + '/?static=1">' + name + '</a></li>')
                 }
             } else {
-                if (! results[i].hidden || this.app.opts.hiddenDotFiles) {
+                if (! results[i].hidden || (this.app.opts.hiddenDotFiles && this.app.opts.hiddenDotFilesDirectoryListing)) {
                     html.push('<li><a href="' + name + '?static=1">' + name + '</a></li>')
                 }
             }
