@@ -83,7 +83,7 @@ function addServer(editindex) {
         document.querySelector("#rewriteto").value = config.servers[editindex].rewriteto;
 		var urlList = ''
 		// Will make it easier when https is enabled
-		var prot = 'http'
+		var prot = config.servers[editindex].https ? 'https' : 'http'
 		var port = config.servers[editindex].port
 		if (ip.length > 0 && config.servers[editindex].localnetwork) {
 			for (var i=0; i<ip.length; i++) {

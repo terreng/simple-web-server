@@ -25,13 +25,13 @@ or
 Setting the load and error functions:
 ```
 request.onload = function(e) {
-	console.log(e.target.body.toString()) //This will log the response body
+    console.log(e.target.body.toString()) //This will log the response body
 }
 ```
 and
 ```
 request.onerror = function(e) {
-	console.error(e)
+    console.error(e)
 }
 ```
 
@@ -41,8 +41,9 @@ request.onerror = function(e) {
 In this step, the module will process the url and all information needed and then it will create the request. Headers can still be set after this step.
 
 ```
-request.open("GET", url)
+request.open("GET", url, allowInsecureResponse)
 ```
+allowInsecureResponse: `true` or `false`. By default, self signed certificates are blocked. Enable by setting this to true.
 
 
 ## Step 4: send the request
@@ -54,7 +55,7 @@ request.send(data)
 
 If data is not defined, then nothing will be sent.
 The content length is automatically set
-data MUST be a string, or a buffer
+data MUST be a string, buffer, or an ArrayBuffer
 
 
 
