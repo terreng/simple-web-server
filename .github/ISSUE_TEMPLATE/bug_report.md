@@ -15,4 +15,4 @@ Windows, macOS, or Linux?
 What version of the program are you using?
 
 **Screenshots**
-If applicable, add screenshots to help explain your problem.
+If applicable, add screenshots to help explain the issue.
