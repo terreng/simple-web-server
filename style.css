@@ -548,3 +548,49 @@ body.darkmode {/*TODO*/
     width: calc(100% - 40px - 5px);
     padding-top: 9px;
 }
+
+.settings_section_header {
+    padding: 14px 12px;
+    overflow: hidden;
+    transition: 0.1s background-color;
+    cursor: pointer;
+}
+
+.settings_section_header:hover {
+    background-color: var(--hover);
+}
+
+.settings_section_header:active {
+    background-color: var(--active);
+}
+
+.settings_section_header > div:nth-child(1) {
+    float: left;
+    width: 28px;
+    height: 28px;
+}
+
+.settings_section_header > div:nth-child(1) i {
+    color: var(--icons);
+    font-size: 28px;
+}
+
+.settings_section_header > div:nth-child(2) {
+    font-size: 19px;
+    float: left;
+    padding-left: 10px;
+    line-height: 28px;
+    padding-right: 10px;
+    width: calc(100% - 20px - 28px - 28px);
+}
+
+.settings_section_header > div:nth-child(3) {
+    float: left;
+    width: 28px;
+    height: 28px;
+}
+
+.settings_section_header > div:nth-child(3) i {
+    font-size: 28px;
+    color: var(--icons);
+}

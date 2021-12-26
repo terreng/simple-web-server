@@ -308,3 +308,16 @@ if (toggled) {
     element_or_id.querySelector(".checkbox i").innerText = "check_box_outline_blank";
 }
 }
+
+function isChecked(element_or_id) {
+    element_or_id = typeof element_or_id == "string" ? document.getElementById(element_or_id) : element_or_id;
+    return element_or_id.classList.contains("checked");
+}
+
+function resetAllSections() {
+
+}
+
+function toggleSection(element) {
+
+}
