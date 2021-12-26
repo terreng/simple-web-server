@@ -5,7 +5,7 @@
 <br>
 <p>Perform a post/get request towards a js file, This js file will be checked for a key (Security) and with the correct key, the document will temporarily append the script and will execute the requested script</h2>
 <br>
-<p>As a security feature, you must have the request path and a key programed in a wsc.htaccess file and in the js file.</p>
+<p>As a security feature, you must have the request path and a key programed in a .swshtaccess file and in the js file.</p>
 <p>The file name does not need to end with .js  The extension can be anything you want as the extension does not matter and will not be checked</p>
 <p>You do not need to have htaccess enabled, this does not enable htaccess. It is just easier to keep everything in 1 place</p>
 <p>It is recommended to have the log to file function on, so it is easier to see if something goes wrong</p>
@@ -13,7 +13,7 @@
 <br><br>
 <h2>Writing the htaccess file</h2>
 <p>The file needs to be in the same path as the requested file</p>
-<p>The file name should be wsc.htaccess (case sensitive)</p>
+<p>The file name should be .swshtaccess (case sensitive)</p>
 <p>Example:</p>
 
 For info on how to write for a get request, please read the [htaccess readme](htaccess.md)

@@ -13,6 +13,15 @@ function getByPath(path, callback, FileSystem) {
 getByPath.prototype = {
     getFile: function() {
         var path = this.path
+        this.hidden = function(path) {
+            var a = path.split('/')
+            for (var i=0; i<a.length; i++) {
+                if ((/(^|\/)\.[^\/\.]/g).test(a[i])) { //RegExp from https://stackoverflow.com/questions/18973655/how-to-ignore-hidden-files-in-fs-readdir-result/37030655#37030655
+                    return true
+                }
+            }
+            return false
+        }(path)
         try {
             var stats = fs.statSync(path)
         } catch(e) {
@@ -214,6 +223,11 @@ FileSystem.prototype = {
         var path = path.replaceAll('//', '/').replaceAll('\\', '/')
         var entry = new getByPath(path, callback, this)
         entry.getFile()
+    },
+    asyncGetByPath: function(path) {
+        return new Promise(function(resolve, reject) {
+            this.getByPath(path, resolve)
+        }.bind(this))
     },
     writeFile: function(path, data, callback, allowOverWrite) {
         if (typeof data == 'string') {

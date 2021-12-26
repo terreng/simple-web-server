@@ -21,7 +21,7 @@ httpRequest.prototype = {
     setHeader: function(k, v) {
         this.headers[k] = v
     },
-    open: function(method, url) {
+    open: function(method, url, allowInsecure) {
         if (! url.startsWith('http')) {
             var error = 'url must start with http or https'
             console.error(error)
@@ -38,7 +38,11 @@ httpRequest.prototype = {
         const { port, pathname, search, protocol, host } = new URL(url)
         var path = pathname + search
         if (protocol =='https:') {
-            this.req = https.request({method: method, protocol: protocol, host: host, path: path, port: port || 443})
+            if (allowInsecure !== true) {
+                this.req = https.request({method: method, protocol: protocol, host: host, path: path, port: port || 443})
+            } else {
+                this.req = https.request({method: method, protocol: protocol, host: host, path: path, port: port || 443, rejectUnauthorized: false, requestCert: true })
+            }
         } else {
             this.req = http.request({method: method, protocol: protocol, host: host, path: path, port: port || 80})
         }
@@ -51,20 +55,28 @@ httpRequest.prototype = {
         }.bind(this))
     },
     send: function(data) {
-        for (var k in this.headers) {
-            this.req.setHeader(k, this.headers[k])
-        }
-        if (data) {
-            if (typeof data == 'string') {
-                var data = Buffer.from(data)
-            } else if (data instanceof ArrayBuffer) {
-                var data = Buffer.from(data)
+        try {
+            for (var k in this.headers) {
+                this.req.setHeader(k, this.headers[k])
             }
-            this.responseData = data
-            this.req.setHeader('content-length', data.byteLength)
+            if (data) {
+                if (typeof data == 'string') {
+                    var data = Buffer.from(data)
+                } else if (data instanceof ArrayBuffer) {
+                    var data = Buffer.from(data)
+                }
+                this.responseData = data
+                this.req.setHeader('content-length', data.byteLength)
+            }
+            this.req.on('response', this.onResponse.bind(this))
+            this.req.end()
+        } catch(error) {
+            if (this.onerror && typeof this.onerror == 'function') {
+                this.onerror(error)
+            } else if (this.onload && typeof this.onload == 'function') {
+                this.onload(error)
+            }
         }
-        this.req.on('response', this.onResponse.bind(this))
-        this.req.end()
     },
     onResponse: function(res) {
         res.on('error', function(error) {
