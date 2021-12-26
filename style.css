@@ -308,11 +308,6 @@ body.darkmode {/*TODO*/
     padding-bottom: 10px;
 }
 
-.checkbox_option {
-    padding: 12px;
-    font-size: 19px;
-}
-
 .checkbox_option input {
     margin: 0px;
     width: 20px;
@@ -322,8 +317,10 @@ body.darkmode {/*TODO*/
 }
 
 .input_option {
-    padding: 12px;
+    padding: 7px 12px;
     font-size: 19px;
+    padding-bottom: 6px;
+    padding-top: 8px;
 }
 
 .input_option > div.label {
@@ -503,7 +500,8 @@ body.darkmode {/*TODO*/
     padding-left: 5px;
     font-size: 19px;
     padding-right: 12px;
-    padding-bottom: 3px;
+    padding-bottom: 6px;
+    padding-top: 6px;
 }
 
 .checkbox_option .checkbox {
@@ -550,10 +548,11 @@ body.darkmode {/*TODO*/
 }
 
 .settings_section_header {
-    padding: 14px 12px;
+    padding: 16px 11px;
     overflow: hidden;
     transition: 0.1s background-color;
     cursor: pointer;
+    border-bottom: 1px solid var(--line);
 }
 
 .settings_section_header:hover {
@@ -578,10 +577,10 @@ body.darkmode {/*TODO*/
 .settings_section_header > div:nth-child(2) {
     font-size: 19px;
     float: left;
-    padding-left: 10px;
+    padding-left: 11px;
     line-height: 28px;
     padding-right: 10px;
-    width: calc(100% - 20px - 28px - 28px);
+    width: calc(100% - 21px - 28px - 28px);
 }
 
 .settings_section_header > div:nth-child(3) {
@@ -593,4 +592,9 @@ body.darkmode {/*TODO*/
 .settings_section_header > div:nth-child(3) i {
     font-size: 28px;
     color: var(--icons);
+}
+
+.settings_section {
+    border-bottom: 1px solid var(--line);
+    padding: 6px 0px;
 }
