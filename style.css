@@ -93,6 +93,11 @@ body {
     user-select: none;
 }
 
+body.darkmode {/*TODO*/
+    --background: black;
+    --text-primary: white;
+}
+
 .top_title {
     height: 60px;
     background: var(--elevated);

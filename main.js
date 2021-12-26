@@ -5,6 +5,9 @@ window.api.initipc(function (event, message) {
     config = message.config;
     ip = message.ip;
     openMain();
+    if (config.darkmode) {
+        document.body.classList.add("darkmode");
+    }
     document.body.style.display = "block";
 });
 
@@ -48,6 +51,11 @@ function openSettings() {
         document.querySelector("#background").classList.add("checked");
     } else {
         document.querySelector("#background").classList.remove("checked");
+    }
+    if (config.darkmode) {
+        document.querySelector("#darkmode").classList.add("checked");
+    } else {
+        document.querySelector("#darkmode").classList.remove("checked");
     }
 }
 
@@ -170,6 +178,19 @@ if (config.background) {
 } else {
     document.querySelector("#background").classList.add("checked");
     config.background = true
+}
+window.api.saveconfig(config);
+}
+
+function toggleDarkMode() {
+if (config.darkmode) {
+    document.querySelector("#darkmode").classList.remove("checked");
+    config.darkmode = false;
+    document.body.classList.remove("darkmode");
+} else {
+    document.querySelector("#darkmode").classList.add("checked");
+    config.darkmode = true
+    document.body.classList.add("darkmode");
 }
 window.api.saveconfig(config);
 }
