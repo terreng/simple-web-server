@@ -1023,6 +1023,7 @@ var HTTPRESPONSES = {
     "415": "Unsupported Media Type", 
     "416": "Requested Range Not Satisfiable", 
     "417": "Expectation Failed", 
+    "429": "Too Many Requests",
     "100": "Continue", 
     "101": "Switching Protocols", 
     "300": "Multiple Choices", 
