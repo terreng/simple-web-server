@@ -10,7 +10,6 @@ function BaseHandler() {
     this.responseCode = null
     this.responseHeaders = {}
     this.responseLength = 0
-    this.htaccessName = '.swshtaccess'
 }
 BaseHandler.prototype = {
     options: function() {
@@ -183,6 +182,7 @@ function DirectoryEntryHandler(FileSystem, request, app, req, res) {
     this.responseCode = null
     this.responseHeaders = {}
     this.responseLength = 0
+    this.htaccessName = '.swshtaccess'
     
     this.fs = FileSystem
     this.req = req
