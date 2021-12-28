@@ -65,14 +65,6 @@
 
             <div style="padding-top: 6px;"></div>
 
-            <div class="input_option filepicker_input_option">
-                <div class="label">Folder path</div>
-                <div onclick="var chosen_path = window.api.showPicker(); if (chosen_path) {current_path = chosen_path[0]};updateCurrentPath();">
-                    <input id="current_directory" type="text" id="path" placeholder="Choose folder" disabled>
-                    <div class="button right"><i class="material-icons">folder_open</i></div>
-                </div>
-            </div>
-
             <div class="settings_title">Web Server URL(s)</div>
 
             <div class="settings_server_list" id="settings_server_list">
@@ -81,6 +73,16 @@
                         <a href="http://127.0.0.1:8887" target="_blank" onclick="window.api.openExternal(this.href);event.preventDefault()">http://127.0.0.1:8887</a>
                     </li>
                 </ul>
+            </div>
+
+            <div style="padding-top: 6px;"></div>
+
+            <div class="input_option filepicker_input_option">
+                <div class="label">Folder path</div>
+                <div onclick="var chosen_path = window.api.showPicker(); if (chosen_path) {current_path = chosen_path[0]};updateCurrentPath();">
+                    <input id="path" type="text" placeholder="Choose folder" disabled>
+                    <div class="button right"><i class="material-icons">folder_open</i></div>
+                </div>
             </div>
 
             <div class="input_option">
@@ -291,7 +293,7 @@
                 </div>
             </div>
 
-            <div style="padding: 13px 10px;overflow: hidden;"><div class="button left destructive" onclick="deleteServer()" id="delete_server">Delete Server</div></div>
+            <div style="padding: 13px 10px;overflow: hidden;" id="delete_server_option"><div class="button left destructive" onclick="deleteServer()" id="delete_server">Delete Server</div></div>
 
         </div>
 

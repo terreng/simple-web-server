@@ -67,9 +67,9 @@ var current_path = false;
 var activeeditindex = false;
 
 function addServer(editindex) {
+    resetAllSections();
     navigate("server");
     document.getElementById("server_container").scrollTop = 0;
-    resetAllSections();
     if (editindex != null) {
         document.querySelector("#edit_server_title").innerText = "Edit Server";
         document.querySelector("#submit_button").innerText = "Save Changes";
@@ -80,21 +80,6 @@ function addServer(editindex) {
     activeeditindex = (editindex != null ? editindex : false);
 
     if (editindex != null) {
-        current_path = config.servers[editindex].path;
-        updateCurrentPath();
-        document.querySelector("#localnetwork").checked = config.servers[editindex].localnetwork;
-        document.querySelector("#cors").checked = config.servers[editindex].cors;
-        document.querySelector("#index").checked = config.servers[editindex].index;
-        document.querySelector("#rewrite").checked = config.servers[editindex].rewrite;
-        if (config.servers[editindex].rewrite) {
-            document.querySelector("#rewrite_options").classList.remove("disabled");
-        } else {
-            document.querySelector("#rewrite_options").classList.add("disabled");
-        }
-        document.querySelector("#port").value = config.servers[editindex].port;
-        portChange();
-        document.querySelector("#regex").value = config.servers[editindex].regex;
-        document.querySelector("#rewriteto").value = config.servers[editindex].rewriteto;
 		var urlList = ''
 		// Will make it easier when https is enabled
 		var prot = config.servers[editindex].https ? 'https' : 'http'
@@ -107,27 +92,81 @@ function addServer(editindex) {
 			}
 		}
         document.querySelector("#settings_server_list").innerHTML = config.servers[editindex].enabled ? ('<ul><li><a href="'+prot+'://127.0.0.1:'+port+'" target="_blank" onclick="window.api.openExternal(this.href);event.preventDefault()">'+prot+'://127.0.0.1:'+port+'</a></li>'+urlList+'</ul>') : '<div style="padding-left: 10px;">Not running</div>';
-        document.querySelector("#delete_server").style.display = "block";
+
+        current_path = config.servers[editindex].path;
+        updateCurrentPath();
+        document.querySelector("#port").value = config.servers[editindex].port;
+        portChange();
+        toggleCheckbox("localnetwork", config.servers[editindex].localnetwork || false);
+
+        toggleCheckbox("showIndex", config.servers[editindex].showIndex || true);
+        toggleCheckbox("spa", config.servers[editindex].spa || false);
+        toggleCheckbox("directoryListing", config.servers[editindex].directoryListing || true);
+        toggleCheckbox("excludeDotHtml", config.servers[editindex].excludeDotHtml || false);
+
+        document.querySelector("#cacheControl").value = config.servers[editindex].cacheControl || "";
+        toggleCheckbox("hiddenDotFiles", config.servers[editindex].hiddenDotFiles || false);
+        toggleCheckbox("upload", config.servers[editindex].upload || false);
+        toggleCheckbox("replace", config.servers[editindex].replace || false);
+        toggleCheckbox("delete", config.servers[editindex].delete || false);
+        toggleCheckbox("staticDirectoryListing", config.servers[editindex].staticDirectoryListing || false);
+        toggleCheckbox("hiddenDotFilesDirectoryListing", config.servers[editindex].hiddenDotFilesDirectoryListing || true);
+        toggleCheckbox("htaccess", config.servers[editindex].htaccess || false);
+
+        document.querySelector("#custom404").value = config.servers[editindex].custom404 || "";
+        document.querySelector("#custom403").value = config.servers[editindex].custom403 || "";
+        document.querySelector("#custom401").value = config.servers[editindex].custom401 || "";
+        document.querySelector("#customErrorReplaceString").value = config.servers[editindex].customErrorReplaceString || "";
+
+        toggleCheckbox("https", config.servers[editindex].https || false);
+        document.querySelector("#httpsCert").value = config.servers[editindex].httpsCert || "";
+        document.querySelector("#httpsKey").value = config.servers[editindex].httpsKey || "";
+        toggleCheckbox("httpAuth", config.servers[editindex].httpAuth || false);
+        document.querySelector("#httpAuthUsername").value = config.servers[editindex].httpAuthUsername || "";
+        document.querySelector("#httpAuthPassword").value = config.servers[editindex].httpAuthPassword || "";
+        document.querySelector("#ipThrottling").value = config.servers[editindex].ipThrottling || 10;
+
+        document.querySelector("#delete_server_option").style.display = "block";
         document.querySelector("#submit_button").innerText = "Save Changes";
     } else {
-        document.getElementById("current_directory").innerHTML = "<span style='color: red;'>Choose a directory</span>"
-        document.querySelector("#localnetwork").checked = false;
-        document.querySelector("#cors").checked = false;
-        document.querySelector("#index").checked = true;
-        document.querySelector("#rewrite").checked = false;
-        document.querySelector("#rewrite_options").classList.add("disabled");
-        document.querySelector("#port").value = 8080;
-        document.querySelector("#regex").value = ".*\\.[\\d\\w]+$";
-        document.querySelector("#rewriteto").value = "/index.html";
-        current_path = false;
         document.querySelector("#settings_server_list").innerHTML = '<div style="padding-left: 10px;">Not running</div>';
+
+        current_path = false;
+        updateCurrentPath();
+        document.querySelector("#port").value = 8080;
         portChange();
-        regexchange();
-        rewritetochange();
-        document.querySelector("#delete_server").style.display = "none";
+        toggleCheckbox("localnetwork", false);
+
+        toggleCheckbox("showIndex", true);
+        toggleCheckbox("spa", false);
+        toggleCheckbox("directoryListing", true);
+        toggleCheckbox("excludeDotHtml", false);
+
+        document.querySelector("#cacheControl").value = "";
+        toggleCheckbox("hiddenDotFiles", false);
+        toggleCheckbox("upload", false);
+        toggleCheckbox("replace", false);
+        toggleCheckbox("delete", false);
+        toggleCheckbox("staticDirectoryListing", false);
+        toggleCheckbox("hiddenDotFilesDirectoryListing", true);
+        toggleCheckbox("htaccess", false);
+
+        document.querySelector("#custom404").value = "";
+        document.querySelector("#custom403").value = "";
+        document.querySelector("#custom401").value = "";
+        document.querySelector("#customErrorReplaceString").value = "";
+
+        toggleCheckbox("https", false);
+        document.querySelector("#httpsCert").value = "";
+        document.querySelector("#httpsKey").value = "";
+        toggleCheckbox("httpAuth", false);
+        document.querySelector("#httpAuthUsername").value = "";
+        document.querySelector("#httpAuthPassword").value = "";
+        document.querySelector("#ipThrottling").value = 10;
+
+        document.querySelector("#delete_server_option").style.display = "none";
         document.querySelector("#submit_button").innerText = "Create Server";
     }
-    changeSPA();
 }
 
 function cancelAddServer() {
@@ -215,9 +254,7 @@ function portChange() {
 }
 
 function updateCurrentPath() {
-    if (current_path) {
-        document.getElementById("current_directory").innerHTML = "Current path: <br><div style='font-family: monospace;background: #e4e4e4;margin-top: 5px;font-size: 16px;'>"+htmlescape(current_path)+"</div>";
-    }
+    document.querySelector("#path").value = current_path ? current_path : "";
 }
 
 function validateRegex(regex_string) {
