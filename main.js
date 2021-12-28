@@ -257,48 +257,6 @@ function updateCurrentPath() {
     document.querySelector("#path").value = current_path ? current_path : "";
 }
 
-function validateRegex(regex_string) {
-    var valid = true;
-    try {
-        new RegExp(regex_string);
-    } catch(e) {
-        valid = false;
-    }
-    return valid;
-}
-
-function validatePath() {
-    return true;
-}
-
-function changeSPA() {
-    if (document.querySelector("#rewrite").checked) {
-        document.querySelector("#rewrite_options").classList.remove("disabled");
-        regexchange();
-        rewritetochange();
-    } else {
-        document.querySelector("#rewrite_options").classList.add("disabled");
-        document.querySelector("#regex").parentElement.nextElementSibling.style.display = "none";
-        document.querySelector("#rewriteto").parentElement.nextElementSibling.style.display = "none";
-    }
-}
-
-function regexchange() {
-if (validateRegex(document.querySelector("#regex").value)) {
-    document.querySelector("#regex").parentElement.nextElementSibling.style.display = "none";
-} else {
-    document.querySelector("#regex").parentElement.nextElementSibling.style.display = "block";
-}
-}
-
-function rewritetochange() {
-if (validatePath(document.querySelector("#rewriteto").value)) {
-    document.querySelector("#rewriteto").parentElement.nextElementSibling.style.display = "none";
-} else {
-    document.querySelector("#rewriteto").parentElement.nextElementSibling.style.display = "block";
-}
-}
-
 function htmlescape(str) {
 if (str == undefined) {
 return str;
