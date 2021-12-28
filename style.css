@@ -545,6 +545,11 @@ body.darkmode {/*TODO*/
     padding-left: 5px;
     width: calc(100% - 40px - 5px);
     padding-top: 9px;
+    padding-bottom: 2px;
+}
+
+.settings_section_header.first_section {
+    border-top: 1px solid var(--line);
 }
 
 .settings_section_header {
@@ -553,6 +558,10 @@ body.darkmode {/*TODO*/
     transition: 0.1s background-color;
     cursor: pointer;
     border-bottom: 1px solid var(--line);
+}
+
+.settings_section_header.section_visible > div:nth-child(3) i {
+    transform: rotate(180deg);
 }
 
 .settings_section_header:hover {
@@ -581,6 +590,7 @@ body.darkmode {/*TODO*/
     line-height: 28px;
     padding-right: 10px;
     width: calc(100% - 21px - 28px - 28px);
+    font-weight: 500;
 }
 
 .settings_section_header > div:nth-child(3) {
@@ -592,9 +602,19 @@ body.darkmode {/*TODO*/
 .settings_section_header > div:nth-child(3) i {
     font-size: 28px;
     color: var(--icons);
+    transition: 0.2s transform;
 }
 
 .settings_section {
-    border-bottom: 1px solid var(--line);
+    overflow: hidden;
+    transition: 0.2s height;
+    height: 0px;
+}
+
+.settings_section_inner {
     padding: 6px 0px;
+}
+
+.section_content_visible.settings_section {
+    border-bottom: 1px solid var(--line);
 }

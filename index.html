@@ -91,13 +91,16 @@
                 <div class="label">Accessible on local network</div>
             </div>
 
-            <div class="settings_section_header" onclick="toggleSection(this)">
+            <div style="padding-top: 6px;"></div>
+
+            <div class="settings_section_header first_section" onclick="toggleSection(this)">
                 <div><i class="material-icons">tune</i></div>
                 <div>Basic Rules</div>
                 <div><i class="material-icons">expand_more</i></div>
             </div>
 
             <div class="settings_section">
+                <div class="settings_section_inner">
 
                 <div class="checkbox_option" id="showIndex" onclick="toggleCheckbox(this)">
                     <div class="checkbox">
@@ -127,6 +130,7 @@
                     <div class="label">Exclude .html extension</div>
                 </div>
 
+                </div>
             </div>
 
             <div class="settings_section_header" onclick="toggleSection(this)">
@@ -136,9 +140,10 @@
             </div>
 
             <div class="settings_section">
+                <div class="settings_section_inner">
 
                 <div class="input_option">
-                    <div class="label">Cache control header value</div>
+                    <div class="label">Cache-Control header value</div>
                     <input type="text" id="cacheControl" placeholder="" style="width: 100%;">
                 </div>
 
@@ -191,6 +196,7 @@
                     <div class="label">Enable .swshtaccess configuration files</div>
                 </div>
 
+                </div>
             </div>
 
             <div class="settings_section_header" onclick="toggleSection(this)">
@@ -200,6 +206,7 @@
             </div>
 
             <div class="settings_section">
+                <div class="settings_section_inner">
 
                 <div class="input_option">
                     <div class="label">Custom 404 page file path</div>
@@ -221,6 +228,7 @@
                     <input type="text" id="customErrorReplaceString" placeholder="{{PATH}}" style="width: 100%;">
                 </div>
 
+                </div>
             </div>
 
             <div class="settings_section_header" onclick="toggleSection(this)">
@@ -230,6 +238,7 @@
             </div>
 
             <div class="settings_section">
+                <div class="settings_section_inner">
 
                 <div class="checkbox_option" id="https" onclick="toggleCheckbox(this)">
                     <div class="checkbox">
@@ -272,9 +281,10 @@
     
                 <div class="input_error">Enter a number greater than or equal to 0</div>
 
+                </div>
             </div>
 
-            <div class="button left destructive" onclick="deleteServer()" id="delete_server">Delete Server</div>
+            <div style="padding: 13px 10px;overflow: hidden;"><div class="button left destructive" onclick="deleteServer()" id="delete_server">Delete Server</div></div>
 
         </div>
 

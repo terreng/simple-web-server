@@ -11,6 +11,10 @@ window.api.initipc(function (event, message) {
     document.body.style.display = "block";
 });
 
+window.onresize = function() {
+    reevaluateSectionHeights();
+}
+
 var screens = ["main", "settings", "server"]
 function navigate(screen) {
     for (var i = 0; i < screens.length; i++) {
@@ -64,6 +68,7 @@ var activeeditindex = false;
 
 function addServer(editindex) {
     navigate("server");
+    document.getElementById("server_container").scrollTop = 0;
     if (editindex != null) {
         document.querySelector("#edit_server_title").innerText = "Edit Server";
         document.querySelector("#submit_button").innerText = "Save Changes";
@@ -315,9 +320,31 @@ function isChecked(element_or_id) {
 }
 
 function resetAllSections() {
-
+    var sections = document.querySelectorAll(".settings_section_header");
+    for (var i = 0; i < sections.length; i++) {
+        if (sections[i].classList.contains("section_visible")) {
+            toggleSection(sections[i]);
+        }
+    }
 }
 
 function toggleSection(element) {
+    if (element.classList.contains("section_visible")) {
+        element.classList.remove("section_visible");
+        element.nextElementSibling.style.height = "";
+        element.nextElementSibling.classList.remove("section_content_visible");
+    } else {
+        element.classList.add("section_visible");
+        element.nextElementSibling.style.height = element.nextElementSibling.children[0].clientHeight+"px";
+        element.nextElementSibling.classList.add("section_content_visible");
+    }
+}
 
+function reevaluateSectionHeights() {
+    var sections = document.querySelectorAll(".settings_section_header");
+    for (var i = 0; i < sections.length; i++) {
+        if (sections[i].classList.contains("section_visible")) {
+            sections[i].nextElementSibling.style.height = sections[i].nextElementSibling.children[0].clientHeight+"px";
+        }
+    }
 }
