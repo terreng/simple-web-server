@@ -69,6 +69,7 @@ var activeeditindex = false;
 function addServer(editindex) {
     navigate("server");
     document.getElementById("server_container").scrollTop = 0;
+    resetAllSections();
     if (editindex != null) {
         document.querySelector("#edit_server_title").innerText = "Edit Server";
         document.querySelector("#submit_button").innerText = "Save Changes";

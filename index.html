@@ -62,9 +62,16 @@
         </div>
 
         <div class="container" id="server_container">
-            <div for="file_picker" class="button left" onclick="var chosen_path = window.api.showPicker(); if (chosen_path) {current_path = chosen_path[0]};updateCurrentPath();">Choose Folder</div>
-            
-            <div id="current_directory">Current directory: </div>
+
+            <div style="padding-top: 6px;"></div>
+
+            <div class="input_option filepicker_input_option">
+                <div class="label">Folder path</div>
+                <div onclick="var chosen_path = window.api.showPicker(); if (chosen_path) {current_path = chosen_path[0]};updateCurrentPath();">
+                    <input id="current_directory" type="text" id="path" placeholder="Choose folder" disabled>
+                    <div class="button right"><i class="material-icons">folder_open</i></div>
+                </div>
+            </div>
 
             <div class="settings_title">Web Server URL(s)</div>
 

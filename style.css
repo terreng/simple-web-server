@@ -283,12 +283,6 @@ body.darkmode {/*TODO*/
     float: left;
 }
 
-#current_directory {
-    font-size: 19px;
-    padding: 10px;
-    word-break: break-all;
-}
-
 .settings_title {
     font-size: 18px;
     padding: 10px;
@@ -328,7 +322,7 @@ body.darkmode {/*TODO*/
     padding-bottom: 8px;
 }
 
-.input_option > input {
+.input_option input {
     font-size: 20px;
     padding: 6px 8px;
     width: 200px;
@@ -339,7 +333,7 @@ body.darkmode {/*TODO*/
     transition: 0.1s border;
 }
 
-.input_option > input:focus {
+.input_option input:focus {
     border: 2px solid var(--input-outline-focus);
 }
 
@@ -617,4 +611,48 @@ body.darkmode {/*TODO*/
 
 .section_content_visible.settings_section {
     border-bottom: 1px solid var(--line);
+}
+
+.filepicker_input_option {
+    position: relative;
+}
+
+.filepicker_input_option input {
+    width: calc(100% - 39px);
+    border-right: 0px;
+    border-top-right-radius: 0px;
+    border-bottom-right-radius: 0px;
+    cursor: pointer;
+    background-color: var(--background);
+    text-align: left;
+    direction: rtl;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    padding-right: 9px;
+}
+
+.filepicker_input_option input:active {
+    border: 2px solid var(--input-outline-focus);
+    border-right: 0px;
+}
+
+.filepicker_input_option .button {
+    width: 23px;
+    height: 23px;
+    padding: 6px;
+    position: absolute;
+    right: 12px;
+    bottom: 6px;
+    border-radius: 7px;
+    border-top-left-radius: 0px;
+    border-bottom-left-radius: 0px;
+}
+
+.filepicker_input_option input:hover + .button {
+    background-color: var(--button-hover);
+}
+
+.filepicker_input_option input:active + .button {
+    background-color: var(--button-active);
 }
