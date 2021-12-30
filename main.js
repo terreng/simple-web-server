@@ -200,11 +200,19 @@ function submitAddServer() {
     }
 }
 
-function deleteServer() {
-    config.servers.splice(activeeditindex, 1);
+var pend_delete_server_id = false;
+
+function confirmDeleteServer() {
+    config.servers.splice(pend_delete_server_id, 1);
     navigate("main");
     renderServerList();
     window.api.saveconfig(config);
+    hidePrompt();
+}
+
+function deleteServer() {
+    pend_delete_server_id = activeeditindex;
+    showPrompt("Delete server?", "This action cannot be undone.", [["Confirm","destructive",function() {confirmDeleteServer()}],["Cancel","",function() {hidePrompt()}]])
 }
 
 function checkboxChanged() {
@@ -281,7 +289,7 @@ function showPrompt(title, content, buttons) {
 
     if (buttons) {
         document.getElementById("prompt_actions").style.display = "block";
-        document.getElementById("prompt_actions").innerHTML = buttons.map(function(a, b, c) {return '<div class="button ' + b + '" style="margin-left: 10px;" onclick="' + (typeof c == "string" ? c : "") + '"><span>' + a + '</span></div>'}).join("");;
+        document.getElementById("prompt_actions").innerHTML = buttons.map(function(a) {return '<div class="button ' + a[1] + '" style="margin-left: 10px;" onclick="' + (typeof a[2] == "string" ? a[2] : "") + '"><span>' + a[0] + '</span></div>'}).join("");;
         for (var i = 0; i < buttons.length; i++) {
             if (typeof buttons[i][2] == "function") {
                 document.getElementById("prompt_actions").children[i].onclick = buttons[i][2];
