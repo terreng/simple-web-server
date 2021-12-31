@@ -374,17 +374,18 @@ body.darkmode {/*TODO*/
 #prompt {
     position: fixed;
     z-index: 20;
-    width: 90%;
+    width: 85%;
     max-width: 400px;
     background-color: var(--elevated);
     top: 50%;
     left: 50%;
     transform: translate(-50%,-50%);
-    box-shadow: 0 2px 12px 0px var(--shadow);
+    box-shadow: 0 2px 12px 0px rgb(0 0 0 / 40%);
     border-radius: 10px;
     color: var(--text-primary);
     transition: pointer-events 0.25s, visibility 0.25s;
     overflow: hidden;
+    padding: 12px;
 }
 
 @keyframes prompt_show {
@@ -424,6 +425,18 @@ body.darkmode {/*TODO*/
     animation: 0.2s prompt_hide forwards;
     visibility: hidden;
     pointer-events: none !important;
+}
+
+#prompt_title {
+    font-size: 22px;
+    font-weight: 500;
+    padding-top: 1px;
+}
+
+#prompt_text {
+    font-size: 18px;
+    padding-top: 12px;
+    padding-bottom: 18px;
 }
 
 .switch {
