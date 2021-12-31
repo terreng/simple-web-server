@@ -69,6 +69,7 @@ var activeeditindex = false;
 function addServer(editindex) {
     resetAllSections();
     navigate("server");
+    last_gen_crypto_date = false;
     document.getElementById("server_container").scrollTop = 0;
     if (editindex != null) {
         document.querySelector("#edit_server_title").innerText = "Edit Server";
@@ -351,4 +352,26 @@ function reevaluateSectionHeights() {
             sections[i].nextElementSibling.style.height = sections[i].nextElementSibling.children[0].clientHeight+"px";
         }
     }
+}
+
+var last_gen_crypto_date = false;
+
+function generateCrypto() {
+    start_gen_date = Date.now();
+    last_gen_crypto_date = start_gen_date;
+    document.getElementById("generate_crypto").classList.add("disabled");
+    window.api.generateCrypto().then(function(crypto) {
+        if (last_gen_crypto_date == start_gen_date) {
+            document.getElementById("generate_crypto").classList.remove("disabled");
+            if (document.getElementById("httpsCert").value.length > 0 || document.getElementById("httpsKey").value.length > 0) {
+                showPrompt("Overwrite certificate and private key?", "A certificate and private key already exist. This action will overwrite them.", [["Confirm","destructive",function() {
+                    document.getElementById("httpsCert").value = crypto.cert;
+                    document.getElementById("httpsKey").value = crypto.privateKey;
+                }],["Cancel","",function() {hidePrompt()}]])
+            } else {
+                document.getElementById("httpsCert").value = crypto.cert;
+                document.getElementById("httpsKey").value = crypto.privateKey;
+            }
+        }
+    });
 }

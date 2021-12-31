@@ -197,6 +197,10 @@ ipcMain.on('saveconfig', function(event, arg1) {
     startServers();
 })
 
+ipcMain.handle('generateCrypto', async (event, arg) => {
+    return WSC.createCrypto();
+});
+
 app.on('activate', function () {
     if (mainWindow === null) {
         createWindow()

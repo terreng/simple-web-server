@@ -279,6 +279,12 @@ body.darkmode {/*TODO*/
     background-color: var(--button-destructive-active);
 }
 
+.button.disabled {
+    color: #8d8d8d;
+    border-color: #a3a3a3;
+    pointer-events: none;
+}
+
 .button.left {
     float: left;
 }

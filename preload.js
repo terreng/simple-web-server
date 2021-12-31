@@ -22,4 +22,8 @@ contextBridge.exposeInMainWorld('api', {
     saveconfig: function(saveconfig) {
         ipcRenderer.send("saveconfig", saveconfig);
     },
+    generateCrypto: async function() {
+        var crypto = await ipcRenderer.invoke('generateCrypto');
+        return crypto;
+    },
 })
