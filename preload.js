@@ -14,10 +14,9 @@ contextBridge.exposeInMainWorld('api', {
     quit: function() {
         ipcRenderer.send("quit");
     },
-    showPicker: function() {
-        return require('electron').remote.dialog.showOpenDialogSync({
-            properties: ['openDirectory','createDirectory']
-        });
+    showPicker: async function(current_path) {
+        var result = await ipcRenderer.invoke('showPicker', {"current_path": current_path});
+        return result;
     },
     saveconfig: function(saveconfig) {
         ipcRenderer.send("saveconfig", saveconfig);

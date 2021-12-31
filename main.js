@@ -266,6 +266,13 @@ function updateCurrentPath() {
     document.querySelector("#path").value = current_path ? current_path : "";
 }
 
+function chooseFolder() {
+    window.api.showPicker(current_path).then(function(chosen_path) {
+        if (chosen_path && chosen_path.length > 0) {current_path = chosen_path[0]};
+        updateCurrentPath(); 
+    })
+}
+
 function htmlescape(str) {
 if (str == undefined) {
 return str;

@@ -1,4 +1,4 @@
-const {app, BrowserWindow, ipcMain, Menu, Tray } = require('electron');
+const {app, BrowserWindow, ipcMain, Menu, Tray, dialog } = require('electron');
 const { networkInterfaces } = require('os');
 
 if (! String.prototype.replaceAll) {
@@ -196,6 +196,14 @@ ipcMain.on('saveconfig', function(event, arg1) {
     config = arg1;
     startServers();
 })
+
+ipcMain.handle('showPicker', async (event, arg) => {
+    var result = await dialog.showOpenDialog(mainWindow, {
+        defaultPath: arg.current_path,
+        properties: ['openDirectory', 'createDirectory']
+    });
+    return result.filePaths;
+});
 
 ipcMain.handle('generateCrypto', async (event, arg) => {
     return WSC.createCrypto();
