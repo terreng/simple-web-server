@@ -279,8 +279,10 @@
 
                 <div class="input_option">
                     <div class="label">HTTP Basic auth username</div>
-                    <input type="text" id="httpAuthUsername" placeholder="" style="width: 100%;">
+                    <input type="text" id="httpAuthUsername" placeholder="" oninput="httpAuthUsernameChange();reevaluateSectionHeights();" style="width: 100%;">
                 </div>
+
+                <div class="input_error">Username cannot contain ":"</div>
 
                 <div class="input_option">
                     <div class="label">HTTP Basic auth password</div>
@@ -289,7 +291,7 @@
 
                 <div class="input_option">
                     <div class="label">Maximum connections per IP address</div>
-                    <input type="number" id="ipThrottling" placeholder="10" oninput="" style="width: 100px;">
+                    <input type="number" id="ipThrottling" placeholder="10" oninput="ipLimitChange();reevaluateSectionHeights()" style="width: 100px;">
                 </div>
     
                 <div class="input_error">Enter a number greater than or equal to 0</div>

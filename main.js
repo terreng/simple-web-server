@@ -124,8 +124,10 @@ function addServer(editindex) {
         document.querySelector("#httpsKey").value = config.servers[editindex].httpsKey || "";
         toggleCheckbox("httpAuth", config.servers[editindex].httpAuth || false);
         document.querySelector("#httpAuthUsername").value = config.servers[editindex].httpAuthUsername || "";
+        httpAuthUsernameChange();
         document.querySelector("#httpAuthPassword").value = config.servers[editindex].httpAuthPassword || "";
         document.querySelector("#ipThrottling").value = config.servers[editindex].ipThrottling || 10;
+        ipLimitChange();
 
         document.querySelector("#delete_server_option").style.display = "block";
         document.querySelector("#submit_button").innerText = "Save Changes";
@@ -134,7 +136,13 @@ function addServer(editindex) {
 
         current_path = false;
         updateCurrentPath();
-        document.querySelector("#port").value = 8080;
+
+        var try_port = 8080;
+        while ((config.servers || []).map(function(a) {return a.port}).indexOf(try_port) > -1 && try_port < 9000) {
+            try_port++;
+        }
+
+        document.querySelector("#port").value = try_port;
         portChange();
         toggleCheckbox("localnetwork", false);
 
@@ -162,8 +170,10 @@ function addServer(editindex) {
         document.querySelector("#httpsKey").value = "";
         toggleCheckbox("httpAuth", false);
         document.querySelector("#httpAuthUsername").value = "";
+        httpAuthUsernameChange();
         document.querySelector("#httpAuthPassword").value = "";
         document.querySelector("#ipThrottling").value = 10;
+        ipLimitChange();
 
         document.querySelector("#delete_server_option").style.display = "none";
         document.querySelector("#submit_button").innerText = "Create Server";
@@ -259,6 +269,30 @@ function portChange() {
         document.querySelector("#port").parentElement.nextElementSibling.nextElementSibling.style.display = "none";
     } else {
         document.querySelector("#port").parentElement.nextElementSibling.nextElementSibling.style.display = "block";
+    }
+}
+
+function ipLimitValid() {
+    return Number(document.querySelector("#ipThrottling").value) >= 0;
+}
+
+function ipLimitChange() {
+    if (ipLimitValid()) {
+        document.querySelector("#ipThrottling").parentElement.nextElementSibling.style.display = "none";
+    } else {
+        document.querySelector("#ipThrottling").parentElement.nextElementSibling.style.display = "block";
+    }
+}
+
+function httpAuthUsernameValid() {
+    return document.querySelector("#httpAuthUsername").value.indexOf(":") == -1;
+}
+
+function httpAuthUsernameChange() {
+    if (httpAuthUsernameValid()) {
+        document.querySelector("#httpAuthUsername").parentElement.nextElementSibling.style.display = "none";
+    } else {
+        document.querySelector("#httpAuthUsername").parentElement.nextElementSibling.style.display = "block";
     }
 }
 
