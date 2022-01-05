@@ -221,8 +221,11 @@ app.on('activate', function () {
 function createWindow() {
 
     mainWindow = new BrowserWindow({
+        backgroundColor: '#ffffff',//TODO: adjust based on dark mode
         width: 420,
+        minWidth: 280,
         height: 700,
+        minHeight: 200,
         frame: true,
         //skipTaskbar: true,
         title: "Simple Web Server",
