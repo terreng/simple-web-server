@@ -78,12 +78,14 @@
             <div style="padding-top: 6px;"></div>
 
             <div class="input_option filepicker_input_option">
-                <div class="label">Folder path</div>
+                <div class="label" id="folder_path_label">Folder path</div>
                 <div onclick="chooseFolder();">
                     <input id="path" type="text" placeholder="Choose folder" disabled>
                     <div class="button right"><i class="material-icons">folder_open</i></div>
                 </div>
             </div>
+
+            <div class="input_error" id="folder_path_error">Please choose folder path</div>
 
             <div class="input_option">
                 <div class="label">Port</div>
@@ -240,7 +242,7 @@
                 </div>
             </div>
 
-            <div class="settings_section_header" onclick="toggleSection(this)">
+            <div class="settings_section_header" id="security_section" onclick="toggleSection(this)">
                 <div><i class="material-icons">security</i></div>
                 <div>Security</div>
                 <div><i class="material-icons">expand_more</i></div>

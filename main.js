@@ -71,6 +71,7 @@ function addServer(editindex) {
     navigate("server");
     last_gen_crypto_date = false;
     document.getElementById("server_container").scrollTop = 0;
+    document.querySelector("#folder_path_error").style.display = "none";
     if (editindex != null) {
         document.querySelector("#edit_server_title").innerText = "Edit Server";
         document.querySelector("#submit_button").innerText = "Save Changes";
@@ -185,30 +186,92 @@ function cancelAddServer() {
 }
 
 function submitAddServer() {
-    if (Number(document.querySelector("#port").value) >= 1 && Number(document.querySelector("#port").value) <= 65535 && current_path && (!document.querySelector("#rewrite").checked || (validateRegex(document.querySelector("#regex").value) && validatePath(document.querySelector("#rewriteto").value))) && (config.servers || []).map(function(a) {return a.port}).indexOf(Number(document.querySelector("#port").value)) == -1 || (activeeditindex !== false && (config.servers || []).map(function(a) {return a.port}).indexOf(Number(document.querySelector("#port").value)) == activeeditindex)) {
+    if (!current_path) {
+        document.querySelector("#folder_path_label").scrollIntoView({behavior: "smooth"});
+        document.querySelector("#folder_path_error").style.display = "block";
+        return;
+    }
+
+    if (!portValid()) {
+        document.querySelector("#port").parentElement.nextElementSibling.style.display = "block";
+        document.querySelector("#port").previousElementSibling.scrollIntoView({behavior: "smooth"});
+        return;
+    }
+
+    if (!portUnique()) {
+        document.querySelector("#port").parentElement.nextElementSibling.nextElementSibling.style.display = "block";
+        document.querySelector("#port").previousElementSibling.scrollIntoView({behavior: "smooth"});
+        return;
+    }
+
+    if (!httpAuthUsernameValid()) {
+        document.querySelector("#httpAuthUsername").parentElement.nextElementSibling.style.display = "block";
+        if (!document.querySelector("#security_section").classList.contains("section_visible")) {
+            toggleSection(document.querySelector("#security_section"))
+            setTimeout(function() {document.querySelector("#httpAuthUsername").previousElementSibling.scrollIntoView({behavior: "smooth"});}, 210);
+        } else {
+            document.querySelector("#httpAuthUsername").previousElementSibling.scrollIntoView({behavior: "smooth"});
+        }
+        return;
+    }
+
+    if (!ipLimitValid()) {
+        document.querySelector("#ipThrottling").parentElement.nextElementSibling.style.display = "block";
+        if (!document.querySelector("#security_section").classList.contains("section_visible")) {
+            toggleSection(document.querySelector("#security_section"))
+            setTimeout(function() {document.querySelector("#ipThrottling").previousElementSibling.scrollIntoView({behavior: "smooth"});}, 210);
+        } else {
+            document.querySelector("#ipThrottling").previousElementSibling.scrollIntoView({behavior: "smooth"});
+        }
+        return;
+    }
+
+    var server_object = {
+        "enabled": activeeditindex !== false ? config.servers[activeeditindex].enabled : true,
+        "path": current_path,
+        "port": Number(document.querySelector("#port").value),
+        "localnetwork": isChecked("localnetwork"),
+
+        "showIndex": isChecked("showIndex"),
+        "spa": isChecked("spa"),
+        "directoryListing": isChecked("directoryListing"),
+        "excludeDotHtml": isChecked("excludeDotHtml"),
+
+        "cacheControl": document.querySelector("#cacheControl").value,
+        "hiddenDotFiles": isChecked("hiddenDotFiles"),
+        "upload": isChecked("upload"),
+        "replace": isChecked("replace"),
+        "delete": isChecked("delete"),
+        "staticDirectoryListing": isChecked("staticDirectoryListing"),
+        "hiddenDotFilesDirectoryListing": isChecked("hiddenDotFilesDirectoryListing"),
+        "htaccess": isChecked("htaccess"),
+
+        "custom404": document.querySelector("#custom404").value,
+        "custom403": document.querySelector("#custom403").value,
+        "custom401": document.querySelector("#custom401").value,
+        "customErrorReplaceString": document.querySelector("#customErrorReplaceString").value,
+
+        "https": isChecked("https"),
+        "httpsCert": document.querySelector("#httpsCert").value,
+        "httpsKey": document.querySelector("#httpsKey").value,
+        "httpAuth": isChecked("httpAuth"),
+        "httpAuthUsername": document.querySelector("#httpAuthUsername").value,
+        "httpAuthPassword": document.querySelector("#httpAuthPassword").value,
+        "ipThrottling": Number(document.querySelector("#ipThrottling").value),
+    };
+    if (activeeditindex !== false) {
+        for (var i = 0; i < Object.keys(server_object).length; i++) {
+            config.servers[activeeditindex][Object.keys(server_object)[i]] = server_object[Object.keys(server_object)[i]];
+        }
+    } else {
         if (!config.servers) {
             config.servers = [];
         }
-        var server_object = {
-            "enabled": activeeditindex !== false ? config.servers[activeeditindex].enabled : true,
-            "path": current_path,
-            "localnetwork": document.querySelector("#localnetwork").checked,
-            "index": document.querySelector("#index").checked,
-            "port": Number(document.querySelector("#port").value),
-            "cors": document.querySelector("#cors").checked,
-            "rewrite": document.querySelector("#rewrite").checked,
-            "regex": document.querySelector("#regex").value,
-            "rewriteto": document.querySelector("#rewriteto").value
-        };
-        if (activeeditindex !== false) {
-            config.servers[activeeditindex] = server_object;
-        } else {
-            config.servers.push(server_object)
-        }
-        navigate("main");
-        renderServerList();
-        window.api.saveconfig(config);
+        config.servers.push(server_object);
     }
+    navigate("main");
+    renderServerList();
+    window.api.saveconfig(config);
 }
 
 var pend_delete_server_id = false;
@@ -259,13 +322,21 @@ if (config.darkmode) {
 window.api.saveconfig(config);
 }
 
+function portValid() {
+    return Number(document.querySelector("#port").value) >= 1 && Number(document.querySelector("#port").value) <= 65535;
+}
+
+function portUnique() {
+    return (config.servers || []).map(function(a) {return a.port}).indexOf(Number(document.querySelector("#port").value)) == -1 || (activeeditindex !== false && (config.servers || []).map(function(a) {return a.port}).indexOf(Number(document.querySelector("#port").value)) == activeeditindex);
+}
+
 function portChange() {
-    if (Number(document.querySelector("#port").value) >= 1 && Number(document.querySelector("#port").value) <= 65535) {
+    if (portValid()) {
         document.querySelector("#port").parentElement.nextElementSibling.style.display = "none";
     } else {
         document.querySelector("#port").parentElement.nextElementSibling.style.display = "block";
     }
-    if ((config.servers || []).map(function(a) {return a.port}).indexOf(Number(document.querySelector("#port").value)) == -1 || (activeeditindex !== false && (config.servers || []).map(function(a) {return a.port}).indexOf(Number(document.querySelector("#port").value)) == activeeditindex)) {
+    if (portUnique()) {
         document.querySelector("#port").parentElement.nextElementSibling.nextElementSibling.style.display = "none";
     } else {
         document.querySelector("#port").parentElement.nextElementSibling.nextElementSibling.style.display = "block";
@@ -298,6 +369,7 @@ function httpAuthUsernameChange() {
 
 function updateCurrentPath() {
     document.querySelector("#path").value = current_path ? current_path : "";
+    document.querySelector("#folder_path_error").style.display = "none";
 }
 
 function chooseFolder() {
