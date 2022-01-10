@@ -108,6 +108,7 @@ function addServer(editindex) {
 
         document.querySelector("#cacheControl").value = config.servers[editindex].cacheControl || "";
         toggleCheckbox("hiddenDotFiles", config.servers[editindex].hiddenDotFiles || false);
+        toggleCheckbox("cors", config.servers[editindex].cors || false);
         toggleCheckbox("upload", config.servers[editindex].upload || false);
         toggleCheckbox("replace", config.servers[editindex].replace || false);
         toggleCheckbox("delete", config.servers[editindex].delete || false);
@@ -154,6 +155,7 @@ function addServer(editindex) {
 
         document.querySelector("#cacheControl").value = "";
         toggleCheckbox("hiddenDotFiles", false);
+        toggleCheckbox("cors", false);
         toggleCheckbox("upload", false);
         toggleCheckbox("replace", false);
         toggleCheckbox("delete", false);
@@ -239,6 +241,7 @@ function submitAddServer() {
 
         "cacheControl": document.querySelector("#cacheControl").value,
         "hiddenDotFiles": isChecked("hiddenDotFiles"),
+        "cors": isChecked("cors"),
         "upload": isChecked("upload"),
         "replace": isChecked("replace"),
         "delete": isChecked("delete"),
