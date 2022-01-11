@@ -128,7 +128,7 @@
         </tr>
         <tr>
             <td>
-                Single page rewrite (for SPA)
+                Single page rewrite (for SPAs)
             </td>
             <td>
                 <code>spa</code>
@@ -140,7 +140,24 @@
                 false
             </td>
             <td>
-                Automatically rewrite all paths that don't match files to index.html in root directory. For Single Page Applications.
+                Automatically rewrite all paths that don't exist to a single page. For Single Page Applications.
+            </td>
+        </tr>
+        <tr>
+            <td>
+                Rewrite to (for SPAs)
+            </td>
+            <td>
+                <code>rewriteTo</code>
+            </td>
+            <td>
+                string
+            </td>
+            <td>
+                /index.html
+            </td>
+            <td>
+                If the Single page rewrite option is enabled, specify where to redirect to. For Single Page Applications.
             </td>
         </tr>
         <tr>

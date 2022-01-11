@@ -103,6 +103,7 @@ function addServer(editindex) {
 
         toggleCheckbox("showIndex", config.servers[editindex].showIndex || true);
         toggleCheckbox("spa", config.servers[editindex].spa || false);
+        document.querySelector("#rewriteTo").value = config.servers[editindex].rewriteTo || "/index.html";
         toggleCheckbox("directoryListing", config.servers[editindex].directoryListing || true);
         toggleCheckbox("excludeDotHtml", config.servers[editindex].excludeDotHtml || false);
 
@@ -150,6 +151,7 @@ function addServer(editindex) {
 
         toggleCheckbox("showIndex", true);
         toggleCheckbox("spa", false);
+        document.querySelector("#rewriteTo").value = "/index.html";
         toggleCheckbox("directoryListing", true);
         toggleCheckbox("excludeDotHtml", false);
 
@@ -236,6 +238,7 @@ function submitAddServer() {
 
         "showIndex": isChecked("showIndex"),
         "spa": isChecked("spa"),
+        "rewriteTo": document.querySelector("#rewriteTo").value,
         "directoryListing": isChecked("directoryListing"),
         "excludeDotHtml": isChecked("excludeDotHtml"),
 
