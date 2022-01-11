@@ -268,15 +268,9 @@ DirectoryEntryHandler.prototype = {
         }
 
         if (this.app.opts.spa) {
-            //var matches = this.request.uri.match(this.app.opts.optModRewriteRegexp)
-            var matches = this.request.uri.match('.*\\.[\\d\\w]+$')
-            if (//matches === null && this.app.opts.optModRewriteNegate ||
-                //matches !== null && ! this.app.opts.optModRewriteNegate
-                matches !== null
-               ) {
-                //console.log("Mod rewrite rule matched", matches, this.app.opts.optModRewriteRegexp, this.request.uri)
-                console.log("Mod rewrite rule matched", matches, '.*\\.[\\d\\w]+$', this.request.uri)
-                this.rewrite_to = '/index.html'//this.app.opts.optModRewriteTo
+            if (!this.request.uri.match(/.*\.[\d\w]+$/)) {
+                console.log("Single page rewrite rule matched", this.request.uri);
+                this.rewrite_to = this.app.opts.rewriteTo || "/index.html";
             }
         }
         
