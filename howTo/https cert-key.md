@@ -57,3 +57,11 @@ It should look like this
 Tip: You can also seperate the key with a space (` `) instead of using `\r\n`
 
 Then paste your cert/key in the proper input in the UI
+
+
+
+#### When connecting to the server
+
+the page will say it is insecure (if you used a self signed certificate)
+
+you can type `thisisunsafe` and the page will load
