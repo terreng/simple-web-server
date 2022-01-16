@@ -1173,7 +1173,7 @@ DirectoryEntryHandler.prototype = {
         }
         function readyToSend() {
             global.ConnetionS[this.request.ip]--
-            send(this.req, entry.path, {index: false, lastModified: true, dotfiles: 'allow', etag: false, cacheControl: false})
+            send(this.req, entry.path, {index: false, lastModified: false, dotfiles: 'allow', etag: false, cacheControl: false})
                 .on('error', function(error) {
                     this.res.statusCode = error.status
                     this.res.statusMessage = WSC.HTTPRESPONSES[error.status] || 'Internal Server Error'
