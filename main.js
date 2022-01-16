@@ -99,33 +99,33 @@ function addServer(editindex) {
         updateCurrentPath();
         document.querySelector("#port").value = config.servers[editindex].port;
         portChange();
-        toggleCheckbox("localnetwork", config.servers[editindex].localnetwork || false);
+        toggleCheckbox("localnetwork", config.servers[editindex].localnetwork != null ? config.servers[editindex].localnetwork : false);
 
-        toggleCheckbox("showIndex", config.servers[editindex].showIndex || true);
-        toggleCheckbox("spa", config.servers[editindex].spa || false);
+        toggleCheckbox("showIndex", config.servers[editindex].showIndex != null ? config.servers[editindex].showIndex : true);
+        toggleCheckbox("spa", config.servers[editindex].spa != null ? config.servers[editindex].spa : false);
         document.querySelector("#rewriteTo").value = config.servers[editindex].rewriteTo || "/index.html";
-        toggleCheckbox("directoryListing", config.servers[editindex].directoryListing || true);
-        toggleCheckbox("excludeDotHtml", config.servers[editindex].excludeDotHtml || false);
+        toggleCheckbox("directoryListing", config.servers[editindex].directoryListing != null ? config.servers[editindex].directoryListing : true);
+        toggleCheckbox("excludeDotHtml", config.servers[editindex].excludeDotHtml != null ? config.servers[editindex].excludeDotHtml : false);
 
         document.querySelector("#cacheControl").value = config.servers[editindex].cacheControl || "";
-        toggleCheckbox("hiddenDotFiles", config.servers[editindex].hiddenDotFiles || false);
-        toggleCheckbox("cors", config.servers[editindex].cors || false);
-        toggleCheckbox("upload", config.servers[editindex].upload || false);
-        toggleCheckbox("replace", config.servers[editindex].replace || false);
-        toggleCheckbox("delete", config.servers[editindex].delete || false);
-        toggleCheckbox("staticDirectoryListing", config.servers[editindex].staticDirectoryListing || false);
-        toggleCheckbox("hiddenDotFilesDirectoryListing", config.servers[editindex].hiddenDotFilesDirectoryListing || true);
-        toggleCheckbox("htaccess", config.servers[editindex].htaccess || false);
+        toggleCheckbox("hiddenDotFiles", config.servers[editindex].hiddenDotFiles != null ? config.servers[editindex].hiddenDotFiles : false);
+        toggleCheckbox("cors", config.servers[editindex].cors != null ? config.servers[editindex].cors : false);
+        toggleCheckbox("upload", config.servers[editindex].upload != null ? config.servers[editindex].upload : false);
+        toggleCheckbox("replace", config.servers[editindex].replace != null ? config.servers[editindex].replace : false);
+        toggleCheckbox("delete", config.servers[editindex].delete != null ? config.servers[editindex].delete : false);
+        toggleCheckbox("staticDirectoryListing", config.servers[editindex].staticDirectoryListing != null ? config.servers[editindex].staticDirectoryListing : false);
+        toggleCheckbox("hiddenDotFilesDirectoryListing", config.servers[editindex].hiddenDotFilesDirectoryListing != null ? config.servers[editindex].hiddenDotFilesDirectoryListing : true);
+        toggleCheckbox("htaccess", config.servers[editindex].htaccess != null ? config.servers[editindex].htaccess : false);
 
         document.querySelector("#custom404").value = config.servers[editindex].custom404 || "";
         document.querySelector("#custom403").value = config.servers[editindex].custom403 || "";
         document.querySelector("#custom401").value = config.servers[editindex].custom401 || "";
         document.querySelector("#customErrorReplaceString").value = config.servers[editindex].customErrorReplaceString || "";
 
-        toggleCheckbox("https", config.servers[editindex].https || false);
+        toggleCheckbox("https", config.servers[editindex].https != null ? config.servers[editindex].https : false);
         document.querySelector("#httpsCert").value = config.servers[editindex].httpsCert || "";
         document.querySelector("#httpsKey").value = config.servers[editindex].httpsKey || "";
-        toggleCheckbox("httpAuth", config.servers[editindex].httpAuth || false);
+        toggleCheckbox("httpAuth", config.servers[editindex].httpAuth != null ? config.servers[editindex].httpAuth : false);
         document.querySelector("#httpAuthUsername").value = config.servers[editindex].httpAuthUsername || "";
         httpAuthUsernameChange();
         document.querySelector("#httpAuthPassword").value = config.servers[editindex].httpAuthPassword || "";
