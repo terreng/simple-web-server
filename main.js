@@ -123,8 +123,8 @@ function addServer(editindex) {
         document.querySelector("#customErrorReplaceString").value = config.servers[editindex].customErrorReplaceString || "";
 
         toggleCheckbox("https", config.servers[editindex].https != null ? config.servers[editindex].https : false);
-        document.querySelector("#httpsCert").value = config.servers[editindex].httpsCert || "";
-        document.querySelector("#httpsKey").value = config.servers[editindex].httpsKey || "";
+        document.querySelector("#httpsCert").value = config.servers[editindex].httpsCert ? config.servers[editindex].httpsCert.split("\r").join("\\r").split("\n").join("\\n") : "";
+        document.querySelector("#httpsKey").value = config.servers[editindex].httpsKey ? config.servers[editindex].httpsKey.split("\r").join("\\r").split("\n").join("\\n") : "";
         toggleCheckbox("httpAuth", config.servers[editindex].httpAuth != null ? config.servers[editindex].httpAuth : false);
         document.querySelector("#httpAuthUsername").value = config.servers[editindex].httpAuthUsername || "";
         httpAuthUsernameChange();
@@ -258,8 +258,8 @@ function submitAddServer() {
         "customErrorReplaceString": document.querySelector("#customErrorReplaceString").value,
 
         "https": isChecked("https"),
-        "httpsCert": document.querySelector("#httpsCert").value,
-        "httpsKey": document.querySelector("#httpsKey").value,
+        "httpsCert": document.querySelector("#httpsCert").value.split("\\r").join("\r").split("\\n").join("\n"),
+        "httpsKey": document.querySelector("#httpsKey").value.split("\\r").join("\r").split("\\n").join("\n"),
         "httpAuth": isChecked("httpAuth"),
         "httpAuthUsername": document.querySelector("#httpAuthUsername").value,
         "httpAuthPassword": document.querySelector("#httpAuthPassword").value,
@@ -484,12 +484,15 @@ function generateCrypto() {
             document.getElementById("generate_crypto").classList.remove("disabled");
             if (document.getElementById("httpsCert").value.length > 0 || document.getElementById("httpsKey").value.length > 0) {
                 showPrompt("Overwrite certificate and private key?", "A certificate and private key already exist. This action will overwrite them.", [["Confirm","destructive",function() {
-                    document.getElementById("httpsCert").value = crypto.cert;
-                    document.getElementById("httpsKey").value = crypto.privateKey;
+                    document.getElementById("httpsCert").value = crypto.cert.split("\r").join("\\r").split("\n").join("\\n");
+                    document.getElementById("httpsKey").value = crypto.privateKey.split("\r").join("\\r").split("\n").join("\\n");
+                    hidePrompt();
                 }],["Cancel","",function() {hidePrompt()}]])
             } else {
-                document.getElementById("httpsCert").value = crypto.cert;
-                document.getElementById("httpsKey").value = crypto.privateKey;
+                console.log(crypto.cert);
+                console.log(crypto.privateKey);
+                document.getElementById("httpsCert").value = crypto.cert.split("\r").join("\\r").split("\n").join("\\n");
+                document.getElementById("httpsKey").value = crypto.privateKey.split("\r").join("\\r").split("\n").join("\\n");
             }
         }
     });
