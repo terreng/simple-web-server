@@ -456,7 +456,7 @@ DirectoryEntryHandler.prototype = {
                         }
                         origdata[i].original_request_path = origdata[i].request_path
                         origdata[i].filerequested = filerequested
-                        origdata[i].request_path = WSC.utils.htaccessFileRequested(origdata[i].request_path, this.app.opts.index)
+                        origdata[i].request_path = WSC.utils.htaccessFileRequested(origdata[i].request_path, this.app.opts.showIndex)
                         if (origdata[i].type == 401 &&
                             ! auth &&
                             (origdata[i].request_path == filerequested || origdata[i].request_path == 'all files')) {
@@ -471,7 +471,7 @@ DirectoryEntryHandler.prototype = {
                             if (this.request.origpath.split('/').pop() == origdata[i].original_request_path || 
                                     (origdata[i].original_request_path.split('/').pop() == 'index.html' && 
                                     this.request.origpath.endsWith('/') &&
-                                    this.app.opts.index) ||
+                                    this.app.opts.showIndex) ||
                                     (['html', 'htm'].includes(origdata[i].original_request_path.split('.').pop()) && 
                                     origdata[i].original_request_path.split('/').pop().split('.')[0] == this.request.origpath.split('/').pop()) && 
                                     this.app.opts.excludeDotHtml) {
@@ -704,7 +704,7 @@ DirectoryEntryHandler.prototype = {
                 this.renderFileContents(this.entry)
             } else {
                 function alldone(results) {
-                    if (this.app.opts.index) {
+                    if (this.app.opts.showIndex) {
                         for (var i=0; i<results.length; i++) {
                             if (results[i].name.toLowerCase() == 'index.xhtml' || results[i].name.toLowerCase() == 'index.xhtm') {
                                 this.setHeader('content-type','application/xhtml+xml; charset=utf-8')
@@ -718,7 +718,7 @@ DirectoryEntryHandler.prototype = {
                             }
                         }
                     }
-                    if (!this.app.opts.directoryListing && this.app.opts.index) {
+                    if (!this.app.opts.directoryListing && this.app.opts.showIndex) {
                         this.error("", 404)
                     } else {
                         this.renderDirListing(results)
@@ -776,7 +776,7 @@ DirectoryEntryHandler.prototype = {
                         }
                         origdata[i].original_request_path = origdata[i].request_path
                         origdata[i].filerequested = filerequested
-                        origdata[i].request_path = WSC.utils.htaccessFileRequested(origdata[i].request_path, this.app.opts.index)
+                        origdata[i].request_path = WSC.utils.htaccessFileRequested(origdata[i].request_path, this.app.opts.showIndex)
                         if (origdata[i].type == 401 &&
                             ! auth &&
                             (origdata[i].request_path == filerequested || origdata[i].request_path == 'all files') && ! this.request.isVersioning) {
@@ -803,7 +803,7 @@ DirectoryEntryHandler.prototype = {
                                     this.app.opts.excludeDotHtml) ||
                                     (origdata[i].original_request_path.split('/').pop() == 'index.html' && 
                                     this.request.origpath.endsWith('/') &&
-                                    this.app.opts.index)) {
+                                    this.app.opts.showIndex)) {
                                 var data = origdata[i]
                                 var filefound = true
                             }
@@ -1115,7 +1115,7 @@ DirectoryEntryHandler.prototype = {
                         }
                         var filerequested = this.request.path+'.html'
                         var filerequested = filerequested.split('/').pop();
-                        var filerequested = WSC.utils.htaccessFileRequested(filerequested, this.app.opts.index)
+                        var filerequested = WSC.utils.htaccessFileRequested(filerequested, this.app.opts.showIndex)
                         htaccessMain.bind(this)(filerequested)
                         return
                     } else {
@@ -1127,7 +1127,7 @@ DirectoryEntryHandler.prototype = {
                             }
                             var filerequested = this.request.path+'.htm'
                             var filerequested = filerequested.split('/').pop();
-                            var filerequested = WSC.utils.htaccessFileRequested(filerequested, this.app.opts.index)
+                            var filerequested = WSC.utils.htaccessFileRequested(filerequested, this.app.opts.showIndex)
                             htaccessMain.bind(this)(filerequested)
                             return
                         } else {
@@ -1141,7 +1141,7 @@ DirectoryEntryHandler.prototype = {
                             }
                             var filerequested = filerequest.split('/').pop();
                             //console.log(filerequested)
-                            var filerequested = WSC.utils.htaccessFileRequested(filerequested, this.app.opts.index)
+                            var filerequested = WSC.utils.htaccessFileRequested(filerequested, this.app.opts.showIndex)
                             htaccessMain.bind(this)(filerequested)
                             return
                         }
@@ -1157,7 +1157,7 @@ DirectoryEntryHandler.prototype = {
                     }
                     var filerequested = filerequest.split('/').pop();
                     //console.log(filerequested)
-                    var filerequested = WSC.utils.htaccessFileRequested(filerequested, this.app.opts.index)
+                    var filerequested = WSC.utils.htaccessFileRequested(filerequested, this.app.opts.showIndex)
                     htaccessMain.bind(this)(filerequested)
                     return
                 }
