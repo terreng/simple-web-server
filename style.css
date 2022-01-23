@@ -163,10 +163,9 @@ body.darkmode {/*TODO*/
 }
 
 .server {
-    padding: 15px;
-    height: 50px;
+    padding: 0px;
+    height: 80px;
     border-bottom: 1px solid var(--line);
-    border-right: solid #f44336 8px;
     transition: 0.1s background-color;
     cursor: pointer;
 }
@@ -180,38 +179,46 @@ body.darkmode {/*TODO*/
 }
 
 .server.enabled {
-    border-right: solid #4caf50 8px;
+
 }
 
 .server > div:nth-child(1) {
     float: left;
-    height: 50px;
+    height: 80px;
+    padding-left: 10px;
+    width: 50px;
+    padding-right: 10px;
 }
 
-.server > div:nth-child(1) > input {
-    width: 30px;
-    height: 30px;
-    margin: 0;
-    margin-top: 10px;
-    cursor: pointer;
+.server > div:nth-child(1) > .switch {
+    margin-top: 27px;
 }
 
 .server > div:nth-child(2) {
     font-size: 20px;
-    padding-left: 15px;
+    padding-left: 5px;
+    padding-right: 15px;
     float: left;
-    width: calc(100% - 45px);
+    width: calc(100% - 90px);
     cursor: pointer;
+    height: 56px;
+    padding-top: 12px;
+    padding-bottom: 12px;
 }
 
 .server > div:nth-child(2) > div:nth-child(1) {
     padding-bottom: 4px;
+    text-align: left;
+    direction: rtl;
     overflow: hidden;
     white-space: nowrap;
     text-overflow: ellipsis;
+    line-height: 26px;
 }
 .server > div:nth-child(2) > div:nth-child(2) {
     color: gray;
+    line-height: 26px;
+    font-size: 18px;
 }
 
 .button_row {

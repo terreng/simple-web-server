@@ -1,6 +1,28 @@
 var config = {};
 var ip;
 var server_states = [];
+var running_states = {
+    "stopped": {
+        "text": "Not running",
+        "color": "gray"
+    },
+    "starting": {
+        "text": "Starting...",
+        "color": "lightgreen"
+    },
+    "running": {
+        "text": "Running",
+        "color": "green"
+    },
+    "error": {
+        "text": "Error",
+        "color": "red"
+    },
+    "unknown": {
+        "text": "Starting...",
+        "color": "lightgreen"
+    },
+}
 
 window.api.initipc(function (event, message) {
     if (message.type == "init") {
@@ -14,7 +36,7 @@ window.api.initipc(function (event, message) {
     }
     if (message.type == "state") {
         server_states = message.server_states;
-        renderServerList();
+        updateRunningStates();
     }
 });
 
@@ -50,10 +72,43 @@ function renderServerList() {
     var pendhtml = "";
     if (config.servers) {
     for (var i = 0; i < config.servers.length; i++) {
-        pendhtml += '<div class="server '+(config.servers[i].enabled ? "enabled" : "")+'"><div><input type="checkbox" '+(config.servers[i].enabled ? "checked" : "")+' oninput="checkboxChanged()"></div><div onclick="addServer('+i+')"><div>'+htmlescape(config.servers[i].path.split(/[\/\\]/)[config.servers[i].path.split(/[\/\\]/).length-1])+'</div><div>:'+String(config.servers[i].port)+'</div></div></div>'
+        pendhtml += '<div class="server '+(config.servers[i].enabled ? "checked" : "")+'" id="server_'+i+'"><div onclick="toggleServer('+i+')"><div class="switch"></div></div><div onclick="addServer('+i+')"><div>'+htmlescape(config.servers[i].path)+'</div><div><span class="server_status" style="color: '+running_states[getServerStatus(config.servers[i]).state].color+';">'+running_states[getServerStatus(config.servers[i]).state].text+'</span> &bull; Port '+String(config.servers[i].port)+(config.servers[i].localnetwork ? ' &bull; LAN' : '')+(config.servers[i].https ? ' &bull; HTTPS' : '')+'</div></div></div>'
     }
     }
     document.getElementById("servers_list").innerHTML = pendhtml;
+}
+
+function getServerStatus(local_config) {
+    if (local_config.enabled) {
+        for (var i = 0; i < server_states.length; i++) {
+            if (configsEqual(server_states[i].config, local_config)) {
+                return {"state": server_states[i].state, "error_message": server_states[i].error_message}
+            }
+        }
+        return {"state": "unknown"};
+    } else {
+        return {"state": "stopped"};
+    }
+}
+
+function updateRunningStates() {
+    for (var i = 0; i < config.servers.length; i++) {
+        document.getElementById("server_"+i).querySelector(".server_status").innerHTML = running_states[getServerStatus(config.servers[i]).state].text;
+        document.getElementById("server_"+i).querySelector(".server_status").style.color = running_states[getServerStatus(config.servers[i]).state].color;
+    }
+}
+
+function configsEqual(config1, config2) {
+    if (JSON.stringify(Object.keys(config1).sort()) == JSON.stringify(Object.keys(config2).sort())) {
+        for (var o = 0; o < Object.keys(config1).length; o++) {
+            if (JSON.stringify(config1[Object.keys(config1)[o]]) !== JSON.stringify(config2[Object.keys(config1)[o]])) {
+                return false;
+            }
+        }
+        return true;
+    } else {
+        return false;
+    }
 }
 
 function openSettings() {
@@ -302,12 +357,14 @@ function deleteServer() {
     showPrompt("Delete server?", "This action cannot be undone.", [["Confirm","destructive",function() {confirmDeleteServer()}],["Cancel","",function() {hidePrompt()}]])
 }
 
-function checkboxChanged() {
-var server_checkboxes = document.querySelector("#servers_list").querySelectorAll("input");
-for (var i = 0; i < server_checkboxes.length; i++) {
-    config.servers[i].enabled = server_checkboxes[i].checked;
+function toggleServer(index) {
+config.servers[index].enabled = !config.servers[index].enabled;
+if (config.servers[index].enabled) {
+    document.getElementById("server_"+index).classList.add("checked")
+} else {
+    document.getElementById("server_"+index).classList.remove("checked")
 }
-renderServerList();
+updateRunningStates();
 window.api.saveconfig(config);
 }
 
