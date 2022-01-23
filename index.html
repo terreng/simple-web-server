@@ -1,6 +1,7 @@
 <html lang="en">
     <head>
         <meta charset="utf-8">
+        <meta http-equiv="Content-Security-Policy" content="default-src 'self' 'unsafe-inline'">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <link rel="stylesheet" href="style.css">
     </head>
@@ -14,19 +15,6 @@
 
         <div class="container" id="main_container">
             <div id="servers_list">
-                <div class="server">
-                    <div>
-                        <input type="checkbox">
-                    </div>
-                    <div>
-                        <div>
-                            /admin
-                        </div>
-                        <div>
-                            :8881
-                        </div>
-                    </div>
-                </div>
             </div>
         </div>
 
@@ -47,10 +35,10 @@
                 <div class="label">Keep running when closed</div>
             </div>
 
-            <!--<div class="switch_option" id="darkmode" onclick="toggleDarkMode()">
+            <div class="switch_option" id="darkmode" style="display: none;" onclick="toggleDarkMode()">
                 <div class="switch"></div>
                 <div class="label">Dark theme</div>
-            </div>-->
+            </div>
 
             <div style="padding: 10px;padding-top:20px;">Version 1.0.0<br>Open source, MIT License<br><a href="https://github.com/terreng/web-server" target="_blank" onclick="window.api.openExternal(this.href);event.preventDefault()">https://github.com/terreng/web-server</a></div>
         </div>
@@ -68,11 +56,6 @@
             <div class="settings_title">Web Server URL(s)</div>
 
             <div class="settings_server_list" id="settings_server_list">
-                <ul>
-                    <li>
-                        <a href="http://127.0.0.1:8887" target="_blank" onclick="window.api.openExternal(this.href);event.preventDefault()">http://127.0.0.1:8887</a>
-                    </li>
-                </ul>
             </div>
 
             <div style="padding-top: 6px;"></div>

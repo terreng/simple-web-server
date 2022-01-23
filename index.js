@@ -1,4 +1,4 @@
-const {app, BrowserWindow, ipcMain, Menu, Tray, dialog } = require('electron');
+const {app, BrowserWindow, ipcMain, Menu, Tray, dialog, shell } = require('electron');
 const { networkInterfaces } = require('os');
 
 global.savingLogs = false;
@@ -215,6 +215,7 @@ function createWindow() {
             nodeIntegration: false,
             contextIsolation: true,
             enableRemoteModule: true,
+            sandbox: true,
             preload: path.join(__dirname, "preload.js")
         }
     });
@@ -226,8 +227,13 @@ function createWindow() {
     
     mainWindow.webContents.on('did-finish-load', function() {
         mainWindow.webContentsLoaded = true;
-        mainWindow.webContents.send('message', {"config": config, ip: getIPs()});
+        mainWindow.webContents.send('message', {"type": "init", "config": config, ip: getIPs()});
         updateServerStates();
+    });
+
+    mainWindow.webContents.on('new-window', function(e, url) {
+        e.preventDefault();
+        shell.openExternal(url);
     });
 
     mainWindow.on('close', function (event) {
@@ -252,7 +258,7 @@ function updateServerStates() {
                 "error_message": a.error_message
             }
         });
-        mainWindow.webContents.send('message', {"server_states": server_states});
+        mainWindow.webContents.send('message', {"type": "state", "server_states": server_states});
     }
 }
 

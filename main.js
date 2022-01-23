@@ -1,14 +1,21 @@
 var config = {};
 var ip;
+var server_states = [];
 
 window.api.initipc(function (event, message) {
-    config = message.config;
-    ip = message.ip;
-    openMain();
-    if (config.darkmode) {
-        document.body.classList.add("darkmode");
+    if (message.type == "init") {
+        config = message.config;
+        ip = message.ip;
+        openMain();
+        if (config.darkmode) {
+            document.body.classList.add("darkmode");
+        }
+        document.body.style.display = "block";
     }
-    document.body.style.display = "block";
+    if (message.type == "state") {
+        server_states = message.server_states;
+        renderServerList();
+    }
 });
 
 window.onresize = function() {
