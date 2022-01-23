@@ -89,6 +89,7 @@ body {
     --input-outline-blur: gray;
     --shadow: rgba(0, 0, 0, 0.3);
     --fullscreen_placeholder: gray;
+    --link: #0067dc;
     background: var(--background);
     color: var(--text-primary);
     user-select: none;
@@ -687,4 +688,34 @@ body.darkmode {/*TODO*/
 
 #server_container_status {
     border-bottom: 1px solid var(--line);
+    padding-bottom: 4px;
+}
+
+.status_box {
+    border-radius: 7px;
+    border: 2px solid #d4d4d4;
+    background-color: #f7f7f7;
+    padding: 7px 8px;
+    margin: 7px 12px;
+    font-size: 18px;
+    margin-bottom: 0px;
+    margin-top: 13px;
+}
+
+.error_status_box {
+    border: 2px solid #ffafaf;
+    background-color: #ffe9e9;
+}
+
+.status_box > div:nth-child(1) {
+    font-weight: 500;
+    padding-bottom: 10px;
+}
+
+.status_box > div:nth-child(2) {
+    user-select: text;
+}
+
+.status_box > div:nth-child(2) > a {
+    color: var(--link);
 }
