@@ -72,7 +72,7 @@ console = function(old_console) {
                     console.logs.push(args);
                     console.saveLogs();
                 }
-                if ('undefined' != typeof mainWindow) {
+                if (mainWindow && mainWindow.webContentsLoaded) {
                     try {
                         mainWindow.webContents.send('console', {args: args, method: method});
                     } catch(e) {
@@ -225,7 +225,9 @@ function createWindow() {
     //mainWindow.webContents.openDevTools();
     
     mainWindow.webContents.on('did-finish-load', function() {
+        mainWindow.webContentsLoaded = true;
         mainWindow.webContents.send('message', {"config": config, ip: getIPs()});
+        updateServerStates();
     });
 
     mainWindow.on('close', function (event) {
@@ -241,8 +243,20 @@ function createWindow() {
 
 }
 
+function updateServerStates() {
+    if (mainWindow && mainWindow.webContentsLoaded) {
+        var server_states = running_servers.map(function(a) {
+            return {
+                "config": a.config,
+                "state": a.state,
+                "error_message": a.error_message
+            }
+        });
+        mainWindow.webContents.send('message', {"server_states": server_states});
+    }
+}
+
 var running_servers = [];
-var server_states = [];
 
 function startServers() {
 
@@ -294,6 +308,7 @@ function startServers() {
         for (var i = 0; i < (config.servers || []).length; i++) {
             createServer(config.servers[i]);
         }
+        updateServerStates();
         function createServer(serverconfig) {
 
             var found_already_running = false;
@@ -304,6 +319,8 @@ function startServers() {
             }
 
             if (serverconfig.enabled && !found_already_running) {
+                var this_server = {"config":serverconfig,"state":"starting"};
+
                 var hostname = serverconfig.localnetwork ? '0.0.0.0' : '127.0.0.1';
                 if (serverconfig.https) {
                     if (!serverconfig.httpsKey || !serverconfig.httpsCert) {
@@ -315,6 +332,8 @@ function startServers() {
                 } else {
                     var server = http.createServer();
                 }
+
+                this_server.server = server;
                 /*
                 if (serverconfig.proxy) {
                     server.on('connect', (req, clientSocket, head) => {
@@ -342,13 +361,14 @@ function startServers() {
                     socket.end('HTTP/1.1 400 Bad Request\r\n\r\n');
                 });
                 server.on('error', function(err) {
-                    if (err.code == 'EADDRINUSE') {
-                        console.error(err)
-                        // This is where listen errors will occur
-                        // handle listen error/UI change
-                    } else {
-                        console.error(err);
-                    }
+                    console.error(err);
+                    this_server.state = "error";
+                    this_server.error_message = err.message;
+                    updateServerStates();
+                });
+                server.on('listening', function() {
+                    this_server.state = "running";
+                    updateServerStates();
                 });
                 server.listen(serverconfig.port, hostname);
 
@@ -370,7 +390,7 @@ function startServers() {
                         connections[key].destroy();
                 };
 
-                running_servers.push({"config":serverconfig,"server":server});
+                running_servers.push(this_server);
             }
         }
     }
