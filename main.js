@@ -92,6 +92,30 @@ function getServerStatus(local_config) {
     }
 }
 
+function getServerStatusBox(local_config) {
+    if (local_config.enabled) {
+        if (getServerStatus(local_config).state == "running") {
+
+            var url_list = [];
+
+            for (var i = 0; i < ip.length; i++) {
+                if (ip[i] == '127.0.0.1' || local_config.localnetwork) {
+                    url_list.push((local_config.https ? 'https' : 'http')+'://'+ip[i]+':'+local_config.port);
+                }
+            }
+        
+            return '<div class="status_box"><div>Web server URL'+(url_list.length == 1 ? '' : 's')+'</div><div>'+url_list.map(function(a) {return '<a href="'+a+'" target="_blank" onclick="window.api.openExternal(this.href);event.preventDefault()">'+a+'</a>'}).join('<div style="padding-top: 6px;"></div>')+"</div></div>";
+
+        } else if (getServerStatus(local_config).state == "error") {
+            return '<div class="status_box error_status_box"><div>Error</div><div>'+htmlescape(getServerStatus(local_config).error_message)+"</div></div>";
+        } else {
+            return "";
+        }
+    } else {
+        return "";
+    }
+}
+
 function updateRunningStates() {
     for (var i = 0; i < (config.servers || []).length; i++) {
         document.getElementById("server_"+i).querySelector(".server_status").innerHTML = running_states[getServerStatus(config.servers[i]).state].text;
@@ -100,6 +124,7 @@ function updateRunningStates() {
     if (document.getElementById("server_container").style.display == "block" && activeeditindex !== false) {
         document.getElementById("edit_server_running").querySelector(".label").innerHTML = running_states[getServerStatus(config.servers[activeeditindex]).state].text;
         document.getElementById("edit_server_running").querySelector(".label").style.color = running_states[getServerStatus(config.servers[activeeditindex]).state].color;
+        document.querySelector("#settings_server_list").innerHTML = getServerStatusBox(config.servers[activeeditindex]);
     }
 }
 
@@ -149,17 +174,6 @@ function addServer(editindex) {
     activeeditindex = (editindex != null ? editindex : false);
 
     if (editindex != null) {
-		var urlList = ''
-		// Will make it easier when https is enabled
-		var prot = config.servers[editindex].https ? 'https' : 'http'
-		var port = config.servers[editindex].port
-		if (ip.length > 0 && config.servers[editindex].localnetwork) {
-			for (var i=0; i<ip.length; i++) {
-				if (ip[i] != '127.0.0.1') {
-					urlList += '<li><a href="'+prot+'://'+ip[i]+':'+port+'" target="_blank" onclick="window.api.openExternal(this.href);event.preventDefault()">'+prot+'://'+ip[i]+':'+port+'</a></li>'
-				}
-			}
-		}
         document.getElementById("server_container_status").style.display = "block";
         if (config.servers[editindex].enabled) {
             document.getElementById("edit_server_running").classList.add("checked");
@@ -168,7 +182,7 @@ function addServer(editindex) {
         }
         document.getElementById("edit_server_running").querySelector(".label").innerHTML = running_states[getServerStatus(config.servers[editindex]).state].text;
         document.getElementById("edit_server_running").querySelector(".label").style.color = running_states[getServerStatus(config.servers[editindex]).state].color;
-        document.querySelector("#settings_server_list").innerHTML = config.servers[editindex].enabled ? ('<ul><li><a href="'+prot+'://127.0.0.1:'+port+'" target="_blank" onclick="window.api.openExternal(this.href);event.preventDefault()">'+prot+'://127.0.0.1:'+port+'</a></li>'+urlList+'</ul>') : '<div style="padding-left: 10px;">Not running</div>';
+        document.querySelector("#settings_server_list").innerHTML = getServerStatusBox(config.servers[editindex]);
 
         current_path = config.servers[editindex].path;
         updateCurrentPath();
