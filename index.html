@@ -5,8 +5,14 @@
         <link rel="stylesheet" href="style.css">
     </head>
     <body style="display: none;">
-        <div class="top_title">Simple Web Server</div>
-        <div id="servers">
+
+        <!--Main server list-->
+        <div class="top_title" id="main_title">
+            <div class="title_text">Simple Web Server</div>
+            <div class="title_icon" onclick="openSettings()"><i class="material-icons">settings</i></div>
+        </div>
+
+        <div class="container" id="main_container">
             <div id="servers_list">
                 <div class="server">
                     <div>
@@ -22,28 +28,42 @@
                     </div>
                 </div>
             </div>
-            <div class="button_row">
-                <div class="button" onclick="addServer()">Add Server</div>
-            </div>
-            <div class="settings_title">Options</div>
+        </div>
 
-            <div class="checkbox_option">
-                <input type="checkbox" id="background" name="background" oninput="runinbkchanged()">
-                <label for="background">Run in background</label>
+        <div class="button_row" id="main_actions">
+            <div class="button left" onclick="window.api.quit()">Stop & Quit</div>
+            <div class="button primary" onclick="addServer()">New Server</div>
+        </div>
+
+        <!--Global settings-->
+        <div class="top_title" id="settings_title">
+            <div class="title_icon" onclick="backToMain()"><i class="material-icons">arrow_back</i></div>
+            <div class="title_text">Settings</div>
+        </div>
+
+        <div class="container" id="settings_container">
+            <div class="switch_option" id="background" onclick="toggleRunInBk()">
+                <div class="switch"></div>
+                <div class="label">Keep running when closed</div>
             </div>
 
-            <div class="button_row">
-                <div class="button secondary" onclick="window.api.quit()">Quit</div>
-            </div>
+            <!--<div class="switch_option" id="darkmode" onclick="toggleDarkMode()">
+                <div class="switch"></div>
+                <div class="label">Dark theme</div>
+            </div>-->
 
             <div style="padding: 10px;padding-top:20px;">Version 1.0.0<br>Open source, MIT License<br><a href="https://github.com/terreng/web-server" target="_blank" onclick="window.api.openExternal(this.href);event.preventDefault()">https://github.com/terreng/web-server</a></div>
         </div>
-        <div id="server_settings" style="display: none;">
-            <div class="button_row">
-                <div for="file_picker" class="button secondary" onclick="var chosen_path = window.api.showPicker(); if (chosen_path) {current_path = chosen_path[0]};updateCurrentPath();">Choose Folder</div>
-            </div>
-            
-            <div id="current_directory">Current directory: </div>
+
+        <!--Edit server-->
+        <div class="top_title" id="server_title">
+            <div class="title_icon" onclick="backToMain()"><i class="material-icons">arrow_back</i></div>
+            <div class="title_text" id="edit_server_title">Edit Server</div>
+        </div>
+
+        <div class="container" id="server_container">
+
+            <div style="padding-top: 6px;"></div>
 
             <div class="settings_title">Web Server URL(s)</div>
 
@@ -55,63 +75,261 @@
                 </ul>
             </div>
 
-            <div class="settings_title">Options</div>
+            <div style="padding-top: 6px;"></div>
 
-            <div class="checkbox_option">
-                <input type="checkbox" id="localnetwork" name="localnetwork">
-                <label for="localnetwork">Accessible on local network</label>
+            <div class="input_option filepicker_input_option">
+                <div class="label" id="folder_path_label">Folder path</div>
+                <div onclick="chooseFolder();">
+                    <input id="path" type="text" placeholder="Choose folder" disabled>
+                    <div class="button right"><i class="material-icons">folder_open</i></div>
+                </div>
             </div>
 
-            <div class="checkbox_option">
-                <input type="checkbox" id="index" name="index">
-                <label for="index">Automatically show index.html</label>
-            </div>
+            <div class="input_error" id="folder_path_error">Please choose folder path</div>
 
             <div class="input_option">
-                <div>Port</div>
-                <input type="number" id="port" name="port" oninput="portChange()" style="width: 100px;">
+                <div class="label">Port</div>
+                <input type="number" id="port" placeholder="8080" oninput="portChange()" style="width: 100px;">
             </div>
 
             <div class="input_error">Enter a number between 1 and 65535</div>
             <div class="input_error">Port is already in use</div>
 
-            <div class="checkbox_option">
-                <input type="checkbox" id="cors" name="cors">
-                <label for="cors">Set CORS headers</label>
+            <div class="checkbox_option" id="localnetwork" onclick="toggleCheckbox(this)">
+                <div class="checkbox">
+                    <i class="material-icons">check_box_outline_blank</i>
+                </div>
+                <div class="label">Accessible on local network</div>
             </div>
 
-            <div class="checkbox_option">
-                <input type="checkbox" id="rewrite" name="rewrite" oninput="changeSPA();">
-                <label for="rewrite">Use index.html instead of 404 (for SPA)</label>
+            <div style="padding-top: 6px;"></div>
+
+            <div class="settings_section_header first_section" onclick="toggleSection(this)">
+                <div><i class="material-icons">tune</i></div>
+                <div>Basic Rules</div>
+                <div><i class="material-icons">expand_more</i></div>
             </div>
 
-            <div class="option_group" id="rewrite_options" style="display: none;">
+            <div class="settings_section">
+                <div class="settings_section_inner">
 
-                <div class="input_option">
-                    <div>Regular Expression</div>
-                    <input type="text" id="regex" name="regex" oninput="regexchange()">
+                <div class="checkbox_option" id="showIndex" onclick="toggleCheckbox(this)">
+                    <div class="checkbox">
+                        <i class="material-icons">check_box_outline_blank</i>
+                    </div>
+                    <div class="label">Automatically show index.html</div>
                 </div>
 
-                <div class="input_error">Invalid regular expression</div>
-
-                <div class="input_option">
-                    <div>Rewrite To</div>
-                    <input type="text" id="rewriteto" name="rewriteto" oninput="rewritetochange()">
+                <div class="checkbox_option" id="spa" onclick="toggleCheckbox(this)">
+                    <div class="checkbox">
+                        <i class="material-icons">check_box_outline_blank</i>
+                    </div>
+                    <div class="label">Single page rewrite (for SPAs)</div>
                 </div>
 
-                <div class="input_error">Invalid path</div>
+                <div class="input_option">
+                    <div class="label">Rewrite to (for SPAs)</div>
+                    <input type="text" id="rewriteTo" placeholder="/index.html" style="width: 100%;">
+                </div>
 
+                <div class="checkbox_option" id="directoryListing" onclick="toggleCheckbox(this)">
+                    <div class="checkbox">
+                        <i class="material-icons">check_box_outline_blank</i>
+                    </div>
+                    <div class="label">Show directory listing</div>
+                </div>
+
+                <div class="checkbox_option" id="excludeDotHtml" onclick="toggleCheckbox(this)">
+                    <div class="checkbox">
+                        <i class="material-icons">check_box_outline_blank</i>
+                    </div>
+                    <div class="label">Exclude .html extension</div>
+                </div>
+
+                </div>
             </div>
 
-            <div class="button_row" id="delete_server">
-                <div class="button secondary" onclick="deleteServer()" style="background-color: #f44336;">Delete Server</div>
+            <div class="settings_section_header" onclick="toggleSection(this)">
+                <div><i class="material-icons">rule</i></div>
+                <div>Advanced Rules</div>
+                <div><i class="material-icons">expand_more</i></div>
             </div>
 
-            <div class="button_row">
-                <div class="button secondary" onclick="cancelAddServer()">Cancel</div>
-                <div class="button" onclick="submitAddServer()" id="submit_button">Submit</div>
+            <div class="settings_section">
+                <div class="settings_section_inner">
+
+                <div class="input_option">
+                    <div class="label">Cache-Control header value</div>
+                    <input type="text" id="cacheControl" placeholder="" style="width: 100%;">
+                </div>
+
+                <div class="checkbox_option" id="hiddenDotFiles" onclick="toggleCheckbox(this)">
+                    <div class="checkbox">
+                        <i class="material-icons">check_box_outline_blank</i>
+                    </div>
+                    <div class="label">Serve hidden/dot files</div>
+                </div>
+
+                <div class="checkbox_option" id="cors" onclick="toggleCheckbox(this)">
+                    <div class="checkbox">
+                        <i class="material-icons">check_box_outline_blank</i>
+                    </div>
+                    <div class="label">Set CORS headers</div>
+                </div>
+
+                <div class="checkbox_option" id="upload" onclick="toggleCheckbox(this)">
+                    <div class="checkbox">
+                        <i class="material-icons">check_box_outline_blank</i>
+                    </div>
+                    <div class="label">Allow file upload</div>
+                </div>
+
+                <div class="checkbox_option" id="replace" onclick="toggleCheckbox(this)">
+                    <div class="checkbox">
+                        <i class="material-icons">check_box_outline_blank</i>
+                    </div>
+                    <div class="label">Allow replacing files</div>
+                </div>
+
+                <div class="checkbox_option" id="delete" onclick="toggleCheckbox(this)">
+                    <div class="checkbox">
+                        <i class="material-icons">check_box_outline_blank</i>
+                    </div>
+                    <div class="label">Allow deleting files</div>
+                </div>
+
+                <div class="checkbox_option" id="staticDirectoryListing" onclick="toggleCheckbox(this)">
+                    <div class="checkbox">
+                        <i class="material-icons">check_box_outline_blank</i>
+                    </div>
+                    <div class="label">Always use static directory listing</div>
+                </div>
+
+                <div class="checkbox_option" id="hiddenDotFilesDirectoryListing" onclick="toggleCheckbox(this)">
+                    <div class="checkbox">
+                        <i class="material-icons">check_box_outline_blank</i>
+                    </div>
+                    <div class="label">Show hidden/dot files in directory listing</div>
+                </div>
+
+                <div class="checkbox_option" id="htaccess" onclick="toggleCheckbox(this)">
+                    <div class="checkbox">
+                        <i class="material-icons">check_box_outline_blank</i>
+                    </div>
+                    <div class="label">Enable .swshtaccess configuration files</div>
+                </div>
+
+                </div>
             </div>
+
+            <div class="settings_section_header" onclick="toggleSection(this)">
+                <div><i class="material-icons">report</i></div>
+                <div>Error Pages</div>
+                <div><i class="material-icons">expand_more</i></div>
+            </div>
+
+            <div class="settings_section">
+                <div class="settings_section_inner">
+
+                <div class="input_option">
+                    <div class="label">Custom 404 page file path</div>
+                    <input type="text" id="custom404" placeholder="/404.html" style="width: 100%;">
+                </div>
+
+                <div class="input_option">
+                    <div class="label">Custom 403 page file path</div>
+                    <input type="text" id="custom403" placeholder="/403.html" style="width: 100%;">
+                </div>
+
+                <div class="input_option">
+                    <div class="label">Custom 401 page file path</div>
+                    <input type="text" id="custom401" placeholder="/401.html" style="width: 100%;">
+                </div>
+
+                <div class="input_option">
+                    <div class="label">Custom error path variable</div>
+                    <input type="text" id="customErrorReplaceString" placeholder="{{PATH}}" style="width: 100%;">
+                </div>
+
+                </div>
+            </div>
+
+            <div class="settings_section_header" id="security_section" onclick="toggleSection(this)">
+                <div><i class="material-icons">security</i></div>
+                <div>Security</div>
+                <div><i class="material-icons">expand_more</i></div>
+            </div>
+
+            <div class="settings_section">
+                <div class="settings_section_inner">
+
+                <div class="checkbox_option" id="https" onclick="toggleCheckbox(this)">
+                    <div class="checkbox">
+                        <i class="material-icons">check_box_outline_blank</i>
+                    </div>
+                    <div class="label">Use HTTPS</div>
+                </div>
+
+                <div class="input_option">
+                    <div class="label">SSL/TLS cerificate</div>
+                    <input type="text" id="httpsCert" placeholder="" style="width: 100%;">
+                </div>
+
+                <div class="input_option">
+                    <div class="label">SSL/TLS private key</div>
+                    <input type="text" id="httpsKey" placeholder="" style="width: 100%;">
+                </div>
+
+                <div style="padding: 8px 12px;overflow: hidden;">
+                    <div class="button left" onclick="generateCrypto()" id="generate_crypto">Generate Crypto</div>
+                </div>
+
+                <div class="checkbox_option" id="httpAuth" onclick="toggleCheckbox(this)">
+                    <div class="checkbox">
+                        <i class="material-icons">check_box_outline_blank</i>
+                    </div>
+                    <div class="label">Enable HTTP Basic authentication</div>
+                </div>
+
+                <div class="input_option">
+                    <div class="label">HTTP Basic auth username</div>
+                    <input type="text" id="httpAuthUsername" placeholder="" oninput="httpAuthUsernameChange();reevaluateSectionHeights();" style="width: 100%;">
+                </div>
+
+                <div class="input_error">Username cannot contain ":"</div>
+
+                <div class="input_option">
+                    <div class="label">HTTP Basic auth password</div>
+                    <input type="text" id="httpAuthPassword" placeholder="" style="width: 100%;">
+                </div>
+
+                <div class="input_option">
+                    <div class="label">Maximum connections per IP address</div>
+                    <input type="number" id="ipThrottling" placeholder="10" oninput="ipLimitChange();reevaluateSectionHeights()" style="width: 100px;">
+                </div>
+    
+                <div class="input_error">Enter a number greater than or equal to 0</div>
+
+                </div>
+            </div>
+
+            <div style="padding: 13px 10px;overflow: hidden;" id="delete_server_option"><div class="button left destructive" onclick="deleteServer()" id="delete_server">Delete Server</div></div>
+
         </div>
+
+        <div class="button_row" id="server_actions">
+            <div class="button left" onclick="cancelAddServer()">Cancel</div>
+            <div class="button primary" onclick="submitAddServer()" id="submit_button">Save Changes</div>
+        </div>
+
+        <div id="prompt_bk" onclick="hidePrompt()"></div>
+
+        <div id="prompt" class="prompt_hide">
+            <div id="prompt_title"></div>
+            <div id="prompt_text"></div>
+            <div id="prompt_actions"></div>
+        </div>
+
         <script src="main.js"></script>
     </body>
 </html>
