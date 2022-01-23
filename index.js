@@ -113,20 +113,6 @@ function getIPs() {
 let mainWindow;
 var config = {};
 
-function saveConfig(newConfig) {
-    for (var i=0; i<newConfig.servers.length; i++) {
-        if (newConfig.servers[i].https) {
-            if (! newConfig.servers[i].httpsCert || ! newConfig.servers[i].httpsKey) {
-                var crypto = WSC.createCrypto()  // Create HTTPS crypto
-                newConfig.servers[i].httpsKey = crypto.privateKey
-                newConfig.servers[i].httpsCert = crypto.cert
-            }
-        }
-    }
-    fs.writeFileSync(path.join(app.getPath('userData'), "config.json"), JSON.stringify(newConfig, null, 2), "utf8");
-    return crypto
-}
-
 if (!app.requestSingleInstanceLock()) {
     app.quit()
 }
@@ -157,7 +143,7 @@ app.on('ready', function() {
     } catch(error) {
         config = {};
     }
-    for (var i=0; i<config.servers.length; i++) {
+    for (var i = 0; i < (config.servers || []).length; i++) {
         if (config.servers[i].httpsKey && config.servers[i].httpsCert) {
             config.servers[i].httpsKey = config.servers[i].httpsKey.replace(/ /g, '\r\n');
             config.servers[i].httpsCert = config.servers[i].httpsCert.replace(/ /g, '\r\n');
@@ -186,7 +172,7 @@ var isQuitting = false;
 ipcMain.on('quit', quit)
 
 ipcMain.on('saveconfig', function(event, arg1) {
-    saveConfig(arg1)
+    fs.writeFileSync(path.join(app.getPath('userData'), "config.json"), JSON.stringify(arg1, null, 2), "utf8");
     config = arg1;
     startServers();
 })
@@ -255,25 +241,51 @@ function createWindow() {
 
 }
 
-var servers = [];
+var running_servers = [];
+var server_states = [];
 
 function startServers() {
 
-    if (servers.length > 0) {
+    if (running_servers.length > 0) {
+
     var closed_servers = 0;
-    for (var i = 0; i < servers.length; i++) {
-        servers[i].close(function(err) {
-            checkServersClosed()
-        });
-        servers[i].destroy();
+    var need_close_servers = running_servers.length;
+
+    for (var i = 0; i < running_servers.length; i++) {
+
+        var found_matching_config = false;
+        for (var e = 0; e < (config.servers || []).length; e++) {
+            if (configsEqual(config.servers[e], running_servers[i].config)) {
+                found_matching_config = true;
+            }
+        }
+
+        if (found_matching_config) {
+            need_close_servers--;
+        } else {
+            running_servers[i].deleted = true;
+            console.log('Killing server on port ' + running_servers[i].config.port);
+            running_servers[i].server.destroy(function() {
+                closed_servers++;
+                checkServersClosed();
+            });
+        }
     }
+
     function checkServersClosed() {
-        closed_servers++;
-        if (closed_servers == servers.length) {
-            servers = [];
+        for (var i = running_servers.length-1; i > -1; i--) {
+            if (running_servers[i].deleted) {
+                running_servers.splice(i, 1);
+            }
+        }
+
+        if (closed_servers == need_close_servers) {
             createServers()
         }
     }
+
+    checkServersClosed()
+
     } else {
         createServers()
     }
@@ -283,20 +295,23 @@ function startServers() {
             createServer(config.servers[i]);
         }
         function createServer(serverconfig) {
-            if (serverconfig.enabled) {
+
+            var found_already_running = false;
+            for (var e = 0; e < running_servers.length; e++) {
+                if (configsEqual(running_servers[e].config, serverconfig)) {
+                    found_already_running = true;
+                }
+            }
+
+            if (serverconfig.enabled && !found_already_running) {
                 var hostname = serverconfig.localnetwork ? '0.0.0.0' : '127.0.0.1';
                 if (serverconfig.https) {
-                    if (! serverconfig.httpsKey || ! serverconfig.httpsCert) {
-                        try {
-                            var crypto = saveConfig(JSON.parse(fs.readFileSync(path.join(app.getPath('userData'), "config.json"))))
-                        } catch(e) { console.log(e)}
-                        if (! crypto) {
-                            var crypto = WSC.createCrypto() // Temp Crypto
-                        }
-                        serverconfig.httpsKey = crypto.privateKey
-                        serverconfig.httpsCert = crypto.cert
+                    if (!serverconfig.httpsKey || !serverconfig.httpsCert) {
+                        var crypto = WSC.createCrypto();
+                        var server = https.createServer({key: crypto.privateKey, cert: crypto.cert});
+                    } else {
+                        var server = https.createServer({key: serverconfig.httpsKey, cert: serverconfig.httpsCert});
                     }
-                    var server = https.createServer({key: serverconfig.httpsKey, cert: serverconfig.httpsCert});
                 } else {
                     var server = http.createServer();
                 }
@@ -355,9 +370,21 @@ function startServers() {
                         connections[key].destroy();
                 };
 
-                servers.push(server);
+                running_servers.push({"config":serverconfig,"server":server});
             }
         }
     }
 }
 
+function configsEqual(config1, config2) {
+    if (JSON.stringify(Object.keys(config1).sort()) == JSON.stringify(Object.keys(config2).sort())) {
+        for (var o = 0; o < Object.keys(config1).length; o++) {
+            if (JSON.stringify(config1[Object.keys(config1)[o]]) !== JSON.stringify(config2[Object.keys(config1)[o]])) {
+                return false;
+            }
+        }
+        return true;
+    } else {
+        return false;
+    }
+}
