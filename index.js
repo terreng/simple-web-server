@@ -1,12 +1,6 @@
 const {app, BrowserWindow, ipcMain, Menu, Tray, dialog } = require('electron');
 const { networkInterfaces } = require('os');
 
-if (! String.prototype.replaceAll) {
-    String.prototype.replaceAll = function(a, b) {
-        return this.split(a).join(b)
-    }
-}
-
 global.savingLogs = false;
 global.pendingSave = false;
 
@@ -165,8 +159,8 @@ app.on('ready', function() {
     }
     for (var i=0; i<config.servers.length; i++) {
         if (config.servers[i].httpsKey && config.servers[i].httpsCert) {
-            config.servers[i].httpsKey = config.servers[i].httpsKey.replaceAll(' ', '\r\n')
-            config.servers[i].httpsCert = config.servers[i].httpsCert.replaceAll(' ', '\r\n')
+            config.servers[i].httpsKey = config.servers[i].httpsKey.replace(/ /g, '\r\n');
+            config.servers[i].httpsCert = config.servers[i].httpsCert.replace(/ /g, '\r\n');
         }
     }
     createWindow();
@@ -231,7 +225,6 @@ function createWindow() {
         title: "Simple Web Server",
         icon: "images/icon.ico",
         webPreferences: {
-            //webSecurity: false,
             scrollBounce: false,
             nodeIntegration: false,
             contextIsolation: true,
@@ -327,7 +320,7 @@ function startServers() {
                 server.on('request', function(req, res) {
                     WSC.onRequest(serverconfig, req, res)
                 });
-                server.on('clientError', (err, socket) => {
+                server.on('clientError', function (err, socket) {
                     if (err.code === 'ECONNRESET' || !socket.writable) {
                         return;
                     }
@@ -343,23 +336,23 @@ function startServers() {
                     }
                 });
                 server.listen(serverconfig.port, hostname);
-                var prot = serverconfig.https ? 'https' : 'http'
-                console.log('Listening on ' + prot + '://' + hostname + ':' + serverconfig.port)
+
+                console.log('Listening on ' + (serverconfig.https ? 'https' : 'http') + '://' + hostname + ':' + serverconfig.port)
 
                 var connections = {}
 
                 server.on('connection', function(conn) {
-                  var key = conn.remoteAddress + ':' + conn.remotePort;
-                  connections[key] = conn;
-                  conn.on('close', function() {
-                    delete connections[key];
-                  });
+                    var key = conn.remoteAddress + ':' + conn.remotePort;
+                    connections[key] = conn;
+                    conn.on('close', function() {
+                        delete connections[key];
+                    });
                 });
               
                 server.destroy = function(cb) {
-                  server.close(cb);
-                  for (var key in connections)
-                    connections[key].destroy();
+                    server.close(cb);
+                    for (var key in connections)
+                        connections[key].destroy();
                 };
 
                 servers.push(server);

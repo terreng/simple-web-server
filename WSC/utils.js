@@ -1,7 +1,7 @@
 
 
 String.prototype.htmlEscape = function() {
-    return this.replaceAll(/&/g, "&amp;").replaceAll(/</g, "&lt;").replaceAll(/>/g, "&gt;").replaceAll(/"/g, "&quot;").replaceAll(/'/g, "&#039;")
+    return this.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;")
 }
 
 
@@ -122,7 +122,7 @@ module.exports = {
                 split1.push(split2[w])
             }
         }
-        var newPath = split1.join('/').replaceAll('//', '/')
+        var newPath = split1.join('/').replace(/\/\//g, '/')
         if (! newPath.startsWith('/')) {
             var newPath = '/' + newPath
         }
