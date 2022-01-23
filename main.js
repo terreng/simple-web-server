@@ -3,12 +3,12 @@ var ip;
 var server_states = [];
 var running_states = {
     "stopped": {
-        "text": "Not running",
+        "text": "Stopped",
         "color": "gray"
     },
     "starting": {
         "text": "Starting...",
-        "color": "lightgreen"
+        "color": "gray"
     },
     "running": {
         "text": "Running",
@@ -20,7 +20,7 @@ var running_states = {
     },
     "unknown": {
         "text": "Starting...",
-        "color": "lightgreen"
+        "color": "gray"
     },
 }
 
@@ -70,10 +70,11 @@ function backToMain() {
 
 function renderServerList() {
     var pendhtml = "";
-    if (config.servers) {
-    for (var i = 0; i < config.servers.length; i++) {
+    for (var i = 0; i < (config.servers || []).length; i++) {
         pendhtml += '<div class="server '+(config.servers[i].enabled ? "checked" : "")+'" id="server_'+i+'"><div onclick="toggleServer('+i+')"><div class="switch"></div></div><div onclick="addServer('+i+')"><div>'+htmlescape(config.servers[i].path)+'</div><div><span class="server_status" style="color: '+running_states[getServerStatus(config.servers[i]).state].color+';">'+running_states[getServerStatus(config.servers[i]).state].text+'</span> &bull; Port '+String(config.servers[i].port)+(config.servers[i].localnetwork ? ' &bull; LAN' : '')+(config.servers[i].https ? ' &bull; HTTPS' : '')+'</div></div></div>'
     }
+    if (pendhtml == "") {
+        pendhtml = '<div style="color: var(--fullscreen_placeholder);text-align: center;position: absolute;top: 48%;width: 100%;transform: translateY(-50%);"><i class="material-icons" style="font-size: 70px;">dns</i><div style="font-size: 18px;padding-top: 20px;">You haven\'t created any servers yet</div></div>';
     }
     document.getElementById("servers_list").innerHTML = pendhtml;
 }
@@ -92,7 +93,7 @@ function getServerStatus(local_config) {
 }
 
 function updateRunningStates() {
-    for (var i = 0; i < config.servers.length; i++) {
+    for (var i = 0; i < (config.servers || []).length; i++) {
         document.getElementById("server_"+i).querySelector(".server_status").innerHTML = running_states[getServerStatus(config.servers[i]).state].text;
         document.getElementById("server_"+i).querySelector(".server_status").style.color = running_states[getServerStatus(config.servers[i]).state].color;
     }
