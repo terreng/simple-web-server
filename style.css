@@ -88,7 +88,7 @@ body {
     --input-outline-focus: #d09608;
     --input-outline-blur: gray;
     --shadow: rgba(0, 0, 0, 0.3);
-    --fullscreen_placeholder: gray,
+    --fullscreen_placeholder: gray;
     background: var(--background);
     color: var(--text-primary);
     user-select: none;
