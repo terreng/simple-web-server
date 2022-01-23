@@ -51,14 +51,19 @@
 
         <div class="container" id="server_container">
 
-            <div style="padding-top: 6px;"></div>
+            <div id="server_container_status">
+
+            <div class="switch_option" id="edit_server_running" onclick="toggleEditServerRunning()">
+                <div class="switch"></div>
+                <div class="label"></div>
+            </div>
 
             <div class="settings_title">Web Server URL(s)</div>
 
             <div class="settings_server_list" id="settings_server_list">
             </div>
 
-            <div style="padding-top: 6px;"></div>
+            </div>
 
             <div class="input_option filepicker_input_option">
                 <div class="label" id="folder_path_label">Folder path</div>

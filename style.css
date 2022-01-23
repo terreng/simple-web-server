@@ -657,6 +657,7 @@ body.darkmode {/*TODO*/
     white-space: nowrap;
     text-overflow: ellipsis;
     padding-right: 9px;
+    color: var(--atext);
 }
 
 .filepicker_input_option input:active {
@@ -682,4 +683,8 @@ body.darkmode {/*TODO*/
 
 .filepicker_input_option input:active + .button {
     background-color: var(--button-active);
+}
+
+#server_container_status {
+    border-bottom: 1px solid var(--line);
 }

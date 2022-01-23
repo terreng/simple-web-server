@@ -97,6 +97,10 @@ function updateRunningStates() {
         document.getElementById("server_"+i).querySelector(".server_status").innerHTML = running_states[getServerStatus(config.servers[i]).state].text;
         document.getElementById("server_"+i).querySelector(".server_status").style.color = running_states[getServerStatus(config.servers[i]).state].color;
     }
+    if (document.getElementById("server_container").style.display == "block" && activeeditindex !== false) {
+        document.getElementById("edit_server_running").querySelector(".label").innerHTML = running_states[getServerStatus(config.servers[activeeditindex]).state].text;
+        document.getElementById("edit_server_running").querySelector(".label").style.color = running_states[getServerStatus(config.servers[activeeditindex]).state].color;
+    }
 }
 
 function configsEqual(config1, config2) {
@@ -131,9 +135,9 @@ var activeeditindex = false;
 
 function addServer(editindex) {
     resetAllSections();
-    navigate("server");
+    
     last_gen_crypto_date = false;
-    document.getElementById("server_container").scrollTop = 0;
+
     document.querySelector("#folder_path_error").style.display = "none";
     if (editindex != null) {
         document.querySelector("#edit_server_title").innerText = "Edit Server";
@@ -156,6 +160,14 @@ function addServer(editindex) {
 				}
 			}
 		}
+        document.getElementById("server_container_status").style.display = "block";
+        if (config.servers[editindex].enabled) {
+            document.getElementById("edit_server_running").classList.add("checked");
+        } else {
+            document.getElementById("edit_server_running").classList.remove("checked");
+        }
+        document.getElementById("edit_server_running").querySelector(".label").innerHTML = running_states[getServerStatus(config.servers[editindex]).state].text;
+        document.getElementById("edit_server_running").querySelector(".label").style.color = running_states[getServerStatus(config.servers[editindex]).state].color;
         document.querySelector("#settings_server_list").innerHTML = config.servers[editindex].enabled ? ('<ul><li><a href="'+prot+'://127.0.0.1:'+port+'" target="_blank" onclick="window.api.openExternal(this.href);event.preventDefault()">'+prot+'://127.0.0.1:'+port+'</a></li>'+urlList+'</ul>') : '<div style="padding-left: 10px;">Not running</div>';
 
         current_path = config.servers[editindex].path;
@@ -198,7 +210,7 @@ function addServer(editindex) {
         document.querySelector("#delete_server_option").style.display = "block";
         document.querySelector("#submit_button").innerText = "Save Changes";
     } else {
-        document.querySelector("#settings_server_list").innerHTML = '<div style="padding-left: 10px;">Not running</div>';
+        document.getElementById("server_container_status").style.display = "none";
 
         current_path = false;
         updateCurrentPath();
@@ -246,6 +258,9 @@ function addServer(editindex) {
         document.querySelector("#delete_server_option").style.display = "none";
         document.querySelector("#submit_button").innerText = "Create Server";
     }
+
+    navigate("server");
+    document.getElementById("server_container").scrollTop = 0;
 }
 
 function cancelAddServer() {
@@ -358,15 +373,19 @@ function deleteServer() {
     showPrompt("Delete server?", "This action cannot be undone.", [["Confirm","destructive",function() {confirmDeleteServer()}],["Cancel","",function() {hidePrompt()}]])
 }
 
-function toggleServer(index) {
+function toggleServer(index,inedit) {
 config.servers[index].enabled = !config.servers[index].enabled;
 if (config.servers[index].enabled) {
-    document.getElementById("server_"+index).classList.add("checked")
+    document.getElementById(inedit ? "edit_server_running" : "server_"+index).classList.add("checked")
 } else {
-    document.getElementById("server_"+index).classList.remove("checked")
+    document.getElementById(inedit ? "edit_server_running" : "server_"+index).classList.remove("checked")
 }
 updateRunningStates();
 window.api.saveconfig(config);
+}
+
+function toggleEditServerRunning() {
+    toggleServer(activeeditindex,true);
 }
 
 function toggleRunInBk() {
