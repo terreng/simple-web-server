@@ -427,12 +427,14 @@ DirectoryEntryHandler.prototype = {
                     try {
                         var origdata = JSON.parse(data)
                     } catch(e) {
-                        this.write('Htaccess JSON parse error\n\nError: ' + e, 500)
+                        console.warn('Htaccess JSON parse error', e, htaccessPath + this.htaccessName)
+                        this.error('', 500)
                         this.finish()
                         return
                     }
-                    if (origdata.length == 0 || ! origdata.length) {
-                        this.write('htaccess has no length value', 500)
+                    if (! Array.isArray(origdata)) {
+                        console.warn(htaccessPath + this.htaccessName)
+                        this.error('invalid config', 500)
                         this.finish()
                         return
                     }
@@ -540,15 +542,16 @@ DirectoryEntryHandler.prototype = {
                                             eval('(function() {var handler = function(req, res, httpRequest, appInfo, clearModuleCache, requireFile) {' + dataa + '};handler(req, res, WSC.httpRequest, {"server": "Simple Web Server"}, clearModuleCache, requireFile)})();')
                                         } catch(e) {
                                             console.error(e)
-                                            this.write('Error with your script, check logs', 500)
+                                            this.error('Check logs', 500)
                                             this.finish()
                                         }
                                     } else {
-                                        this.write('The keys do not match or were not found', 403)
+                                        consle.error('js keys missing!', htaccessPath + this.htaccessName)
+                                        this.error('Script auth error', 403)
                                     }
                                 }.bind(this))
                             } else if (file.isDirectory) {
-                                this.error('SSJS cannot be performed on a directory', 500)
+                                this.error('Config Error', 500)
                             } else {
                                 this.error('', 404)
                             }
@@ -617,10 +620,10 @@ DirectoryEntryHandler.prototype = {
         this.deletePutHtaccess('allow put', 'deny put', putCheck.bind(this), putMain.bind(this))
     },
     get: function() {
-        this.setHeader('accept-ranges','bytes')
-        this.setHeader('connection','keep-alive')
+        this.setHeader('accept-ranges', 'bytes')
+        this.setHeader('connection', 'keep-alive')
         if (! this.fs) {
-            this.write("error: need to select a directory to serve",500)
+            this.error("need to select a directory to serve", 500)
             return
         }
         this.request.isVersioning = false
@@ -740,9 +743,9 @@ DirectoryEntryHandler.prototype = {
                         throw new Error('not an array')
                     }
                 } catch(e) {
-                    this.write('<p>'+this.htaccessName+' file found, but it is not a valid json array. Please read the htaccess readme <a href="https://github.com/terreng/simple-web-server/blob/main/howTo/HTACCESS.md">here</a></p>\n\n\n'+e, 500)
+                    this.error('', 500)
                     this.finish()
-                    console.error('htaccess json array error')
+                    console.error('config error', htaccesspath)
                     return
                 }
 
@@ -897,7 +900,7 @@ DirectoryEntryHandler.prototype = {
                                         this.write(html.join('\n'))
                                         this.finish()
                                     } else {
-                                        this.write('An unexpected error occured. Please check your '+this.htaccessName+' file for any configuration errors.\nPlease remember, the send directory listing feature CANNOT use "all files", you must specify each file separately.\nPlease check your settings. If everything seems to be in place, please report an issue on github.\n\nhttps://github.com/kzahel/web-server-chrome\n\nPlease copy and paste the following information.\n\n\nfilepath: '+filepath+'\nrequestURI: '+this.request.uri+'\nrequested file (according to htaccess): '+data.original_request_path+'\nrequested file (according to requestURI): '+data.filerequested, 500)
+                                        this.error('', 500)
                                         this.finish()
                                     }
                                 }
@@ -1002,7 +1005,8 @@ DirectoryEntryHandler.prototype = {
                                     this.request.isVersioning = true
                                     this.onEntry(file)
                                 } else {
-                                    this.write('path in htaccess file for version '+vdata4+' is missing or the file does not exist. Please check to make sure you have properly inputed the value', 500)
+                                    console.warn('path in htaccess file for version '+vdata4+' is missing or the file does not exist. Please check to make sure you have properly inputed the value', this.request.path)
+                                    this.error('', 500)
                                 }
                             } else if (data.type == 'serverSideJavaScript') {
                                 if (! data.key) {
@@ -1045,14 +1049,14 @@ DirectoryEntryHandler.prototype = {
                                             eval('(function() {var handler = function(req, res, httpRequest, appInfo, clearModuleCache, requireFile) {' + dataa + '};handler(req, res, WSC.httpRequest, {"server": "Simple Web Server"}, clearModuleCache, requireFile)})();')
                                         } catch(e) {
                                             console.error(e)
-                                            this.write('Error with your script, check logs', 500)
+                                            this.error('', 500)
                                             this.finish()
                                         }
                                     } else {
-                                        this.write('The keys do not match or were not found', 403)
+                                        this.error('Script auth error', 403)
                                     }
                                 } else if (file.isDirectory) {
-                                    this.error('SSJS cannot be performed on a directory', 500)
+                                    this.error('error', 500)
                                 } else {
                                     this.error('', 404)
                                 }
@@ -1344,9 +1348,8 @@ DirectoryEntryHandler.prototype = {
         }
     },
     htaccessError: function(errormsg) {
-        this.write('Htaccess Configuration error. Please check to make sure that you are not missing some values.\n\nError Message: '+errormsg, 500)
-        this.finish()
-        return
+        this.error('config error', 500)
+        console.warn('htaccess error: ' + errormsg)
     },
     // everything from here to the end of the prototype are tools for server side post/get handling
     getFile: function(path, callback) {
