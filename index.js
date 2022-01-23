@@ -1,4 +1,4 @@
-const {app, BrowserWindow, ipcMain, Menu, Tray } = require('electron');
+const {app, BrowserWindow, ipcMain, Menu, Tray, dialog } = require('electron');
 const { networkInterfaces } = require('os');
 
 if (! String.prototype.replaceAll) {
@@ -197,6 +197,18 @@ ipcMain.on('saveconfig', function(event, arg1) {
     startServers();
 })
 
+ipcMain.handle('showPicker', async (event, arg) => {
+    var result = await dialog.showOpenDialog(mainWindow, {
+        defaultPath: arg.current_path || undefined,
+        properties: ['openDirectory', 'createDirectory']
+    });
+    return result.filePaths;
+});
+
+ipcMain.handle('generateCrypto', async (event, arg) => {
+    return WSC.createCrypto();
+});
+
 app.on('activate', function () {
     if (mainWindow === null) {
         createWindow()
@@ -209,15 +221,18 @@ app.on('activate', function () {
 function createWindow() {
 
     mainWindow = new BrowserWindow({
+        backgroundColor: '#ffffff',//TODO: adjust based on dark mode
         width: 420,
+        minWidth: 280,
         height: 700,
+        minHeight: 200,
         frame: true,
         //skipTaskbar: true,
         title: "Simple Web Server",
         icon: "images/icon.ico",
         webPreferences: {
             //webSecurity: false,
-            scrollBounce: true,
+            scrollBounce: false,
             nodeIntegration: false,
             contextIsolation: true,
             enableRemoteModule: true,
