@@ -1,7 +1,7 @@
 {
   "name": "simple-web-server",
   "productName": "Simple Web Server",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "main": "index.js",
   "description": "A continuation of Web Server for Chrome, built with Electron.",
   "author": {
@@ -48,8 +48,7 @@
     "http": "^0.0.1-security",
     "https": "^1.0.0",
     "node-blob": "0.0.2",
-    "node-forge": "^1.0.0",
-    "send": "^0.17.1"
+    "node-forge": "^1.0.0"
   },
   "config": {
     "forge": {
