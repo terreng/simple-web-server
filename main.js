@@ -4,23 +4,28 @@ var server_states = [];
 var running_states = {
     "stopped": {
         "text": "Stopped",
-        "color": "gray"
+        "list_color": "gray",
+        "edit_color": "var(--atext)"
     },
     "starting": {
         "text": "Starting...",
-        "color": "gray"
+        "list_color": "gray",
+        "edit_color": "var(--atext)"
     },
     "running": {
         "text": "Running",
-        "color": "green"
+        "list_color": "green",
+        "edit_color": "green"
     },
     "error": {
         "text": "Error",
-        "color": "red"
+        "list_color": "red",
+        "edit_color": "red"
     },
     "unknown": {
         "text": "Starting...",
-        "color": "gray"
+        "list_color": "gray",
+        "edit_color": "var(--atext)"
     },
 }
 
@@ -71,7 +76,7 @@ function backToMain() {
 function renderServerList() {
     var pendhtml = "";
     for (var i = 0; i < (config.servers || []).length; i++) {
-        pendhtml += '<div class="server '+(config.servers[i].enabled ? "checked" : "")+'" id="server_'+i+'"><div onclick="toggleServer('+i+')"><div class="switch"></div></div><div onclick="addServer('+i+')"><div>'+htmlescape(config.servers[i].path)+'</div><div><span class="server_status" style="color: '+running_states[getServerStatus(config.servers[i]).state].color+';">'+running_states[getServerStatus(config.servers[i]).state].text+'</span> &bull; Port '+String(config.servers[i].port)+(config.servers[i].localnetwork ? ' &bull; LAN' : '')+(config.servers[i].https ? ' &bull; HTTPS' : '')+'</div></div></div>'
+        pendhtml += '<div class="server '+(config.servers[i].enabled ? "checked" : "")+'" id="server_'+i+'"><div onclick="toggleServer('+i+')"><div class="switch"></div></div><div onclick="addServer('+i+')"><div>'+htmlescape(config.servers[i].path)+'</div><div><span class="server_status" style="color: '+running_states[getServerStatus(config.servers[i]).state].list_color+';">'+running_states[getServerStatus(config.servers[i]).state].text+'</span> &bull; Port '+String(config.servers[i].port)+(config.servers[i].localnetwork ? ' &bull; LAN' : '')+(config.servers[i].https ? ' &bull; HTTPS' : '')+'</div></div></div>'
     }
     if (pendhtml == "") {
         pendhtml = '<div style="color: var(--fullscreen_placeholder);text-align: center;position: absolute;top: 48%;width: 100%;transform: translateY(-50%);"><i class="material-icons" style="font-size: 70px;">dns</i><div style="font-size: 18px;padding-top: 20px;">You haven\'t created any servers yet</div></div>';
@@ -107,7 +112,11 @@ function getServerStatusBox(local_config) {
             return '<div class="status_box"><div>Web server URL'+(url_list.length == 1 ? '' : 's')+'</div><div>'+url_list.map(function(a) {return '<a href="'+a+'" target="_blank" onclick="window.api.openExternal(this.href);event.preventDefault()">'+a+'</a>'}).join('<div style="padding-top: 6px;"></div>')+"</div></div>";
 
         } else if (getServerStatus(local_config).state == "error") {
-            return '<div class="status_box error_status_box"><div>Error</div><div>'+htmlescape(getServerStatus(local_config).error_message)+"</div></div>";
+            if (getServerStatus(local_config).error_message.indexOf("EADDRINUSE") > -1) {
+                return '<div class="status_box error_status_box"><div>Port in use</div><div>Web server failed to start because port '+local_config.port+' is already in use by another program.</div></div>';
+            } else {
+                return '<div class="status_box error_status_box"><div>Error</div><div>'+htmlescape(getServerStatus(local_config).error_message)+'</div></div>';
+            }
         } else {
             return "";
         }
@@ -119,11 +128,11 @@ function getServerStatusBox(local_config) {
 function updateRunningStates() {
     for (var i = 0; i < (config.servers || []).length; i++) {
         document.getElementById("server_"+i).querySelector(".server_status").innerHTML = running_states[getServerStatus(config.servers[i]).state].text;
-        document.getElementById("server_"+i).querySelector(".server_status").style.color = running_states[getServerStatus(config.servers[i]).state].color;
+        document.getElementById("server_"+i).querySelector(".server_status").style.color = running_states[getServerStatus(config.servers[i]).state].list_color;
     }
     if (document.getElementById("server_container").style.display == "block" && activeeditindex !== false) {
         document.getElementById("edit_server_running").querySelector(".label").innerHTML = running_states[getServerStatus(config.servers[activeeditindex]).state].text;
-        document.getElementById("edit_server_running").querySelector(".label").style.color = running_states[getServerStatus(config.servers[activeeditindex]).state].color;
+        document.getElementById("edit_server_running").querySelector(".label").style.color = running_states[getServerStatus(config.servers[activeeditindex]).state].edit_color;
         document.querySelector("#settings_server_list").innerHTML = getServerStatusBox(config.servers[activeeditindex]);
     }
 }
@@ -181,7 +190,7 @@ function addServer(editindex) {
             document.getElementById("edit_server_running").classList.remove("checked");
         }
         document.getElementById("edit_server_running").querySelector(".label").innerHTML = running_states[getServerStatus(config.servers[editindex]).state].text;
-        document.getElementById("edit_server_running").querySelector(".label").style.color = running_states[getServerStatus(config.servers[editindex]).state].color;
+        document.getElementById("edit_server_running").querySelector(".label").style.color = running_states[getServerStatus(config.servers[editindex]).state].edit_color;
         document.querySelector("#settings_server_list").innerHTML = getServerStatusBox(config.servers[editindex]);
 
         current_path = config.servers[editindex].path;
