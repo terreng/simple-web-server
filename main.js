@@ -37,7 +37,7 @@ window.api.initipc(function (event, message) {
         if (config.darkmode) {
             document.body.classList.add("darkmode");
         }
-        document.body.style.display = "block";
+        document.body.style.visibility = "visible";
     }
     if (message.type == "state") {
         server_states = message.server_states;
@@ -156,6 +156,11 @@ function openSettings() {
         document.querySelector("#background").classList.add("checked");
     } else {
         document.querySelector("#background").classList.remove("checked");
+    }
+    if (config.updates !== false) {
+        document.querySelector("#updates").classList.add("checked");
+    } else {
+        document.querySelector("#backupdatesground").classList.remove("checked");
     }
     if (config.darkmode) {
         document.querySelector("#darkmode").classList.add("checked");
@@ -418,6 +423,17 @@ if (config.background) {
 } else {
     document.querySelector("#background").classList.add("checked");
     config.background = true
+}
+window.api.saveconfig(config);
+}
+
+function toggleUpdates() {
+if (config.updates !== false) {
+    document.querySelector("#updates").classList.remove("checked");
+    config.updates = false;
+} else {
+    document.querySelector("#updates").classList.add("checked");
+    config.updates = true
 }
 window.api.saveconfig(config);
 }
