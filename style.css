@@ -304,19 +304,6 @@ body.darkmode {/*TODO*/
     font-weight: 500;
 }
 
-.settings_server_list ul {
-    margin: 0;
-    font-size: 18px;
-}
-
-.settings_server_list li {
-    margin-bottom: 10px;
-}
-
-.settings_server_list {
-    padding-bottom: 10px;
-}
-
 .checkbox_option input {
     margin: 0px;
     width: 20px;
@@ -501,9 +488,7 @@ body.darkmode {/*TODO*/
 }
 
 .switch_option {
-    padding: 12px;
-    padding-top: 16px;
-    padding-bottom: 4px;
+    padding: 13px 12px;
     overflow: hidden;
     cursor: pointer;
 }
@@ -698,8 +683,12 @@ body.darkmode {/*TODO*/
     padding: 7px 8px;
     margin: 7px 12px;
     font-size: 18px;
-    margin-bottom: 0px;
-    margin-top: 13px;
+    margin-bottom: 8px;
+    margin-top: 6px;
+}
+
+.settings_server_list {
+    padding-bottom: 1px;
 }
 
 .error_status_box {
