@@ -725,6 +725,7 @@ body.darkmode {/*TODO*/
     height: 28px;
     padding: 6px 10px;
     padding-left: 14px;
+    color: var(--icons);
 }
 
 .link_icon_item > div:nth-child(1) span {

@@ -74,14 +74,17 @@ function backToMain() {
 }
 
 function backToSettings() {
-    openSettings();
+    openSettings(true);
 }
 
 function openLicenses() {
     fetch('open_source_licenses.txt').then(response => response.text()).then(function(text) {
-        document.querySelector("#licenses_content").innerText = text;
+        fetch('LICENSE').then(response => response.text()).then(function(text2) {
+            document.querySelector("#licenses_content").innerText = text2+"\n"+text;
+        })
     })
     navigate("licenses");
+    document.querySelector("#licenses_container").scrollTop = 0;
 }
 
 function renderServerList() {
@@ -161,7 +164,7 @@ function configsEqual(config1, config2) {
     }
 }
 
-function openSettings() {
+function openSettings(dont_reset_scroll) {
     navigate("settings");
     if (config.background) {
         document.querySelector("#background").classList.add("checked");
@@ -177,6 +180,9 @@ function openSettings() {
         document.querySelector("#darkmode").classList.add("checked");
     } else {
         document.querySelector("#darkmode").classList.remove("checked");
+    }
+    if (dont_reset_scroll !== true) {
+        document.querySelector("#settings_container").scrollTop = 0;
     }
 }
 
