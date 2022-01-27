@@ -716,14 +716,15 @@ body.darkmode {/*TODO*/
 .link_icon_item {
     overflow: hidden;
     color: var(--text-primary);
+    margin: 4px 0px;
 }
     
 .link_icon_item > div:nth-child(1) {
     float: left;
     width: 28px;
     height: 28px;
-    padding: 8px 10px;
-    padding-left: 12px;
+    padding: 6px 10px;
+    padding-left: 14px;
 }
 
 .link_icon_item > div:nth-child(1) span {
@@ -737,5 +738,5 @@ body.darkmode {/*TODO*/
     font-size: 18px;
     line-height: 28px;
     height: 28px;
-    padding: 8px 2px;
+    padding: 6px 2px;
 }

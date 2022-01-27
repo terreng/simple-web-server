@@ -49,7 +49,7 @@ window.onresize = function() {
     reevaluateSectionHeights();
 }
 
-var screens = ["main", "settings", "server"]
+var screens = ["main", "settings", "server", "licenses"]
 function navigate(screen) {
     for (var i = 0; i < screens.length; i++) {
         if (document.getElementById(screens[i]+"_title")) {
@@ -71,6 +71,17 @@ function openMain() {
 
 function backToMain() {
     openMain();
+}
+
+function backToSettings() {
+    openSettings();
+}
+
+function openLicenses() {
+    fetch('open_source_licenses.txt').then(response => response.text()).then(function(text) {
+        document.querySelector("#licenses_content").innerText = text;
+    })
+    navigate("licenses");
 }
 
 function renderServerList() {
