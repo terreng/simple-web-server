@@ -33,7 +33,11 @@ window.api.initipc(function (event, message) {
     if (message.type == "init") {
         config = message.config;
         ip = message.ip;
-        openMain();
+        if (config.background != null) {
+            openMain();
+        } else {
+            initWelcome();
+        }
         if (config.darkmode) {
             document.body.classList.add("darkmode");
         }
@@ -49,7 +53,7 @@ window.onresize = function() {
     reevaluateSectionHeights();
 }
 
-var screens = ["main", "settings", "server", "licenses"]
+var screens = ["main", "settings", "server", "licenses", "welcome"]
 function navigate(screen) {
     for (var i = 0; i < screens.length; i++) {
         if (document.getElementById(screens[i]+"_title")) {
@@ -174,7 +178,7 @@ function openSettings(dont_reset_scroll) {
     if (config.updates !== false) {
         document.querySelector("#updates").classList.add("checked");
     } else {
-        document.querySelector("#backupdatesground").classList.remove("checked");
+        document.querySelector("#updates").classList.remove("checked");
     }
     if (config.darkmode) {
         document.querySelector("#darkmode").classList.add("checked");
@@ -436,9 +440,11 @@ function toggleEditServerRunning() {
 function toggleRunInBk() {
 if (config.background) {
     document.querySelector("#background").classList.remove("checked");
+    document.querySelector("#background_welcome").classList.remove("checked");
     config.background = false;
 } else {
     document.querySelector("#background").classList.add("checked");
+    document.querySelector("#background_welcome").classList.add("checked");
     config.background = true
 }
 window.api.saveconfig(config);
@@ -447,9 +453,11 @@ window.api.saveconfig(config);
 function toggleUpdates() {
 if (config.updates !== false) {
     document.querySelector("#updates").classList.remove("checked");
+    document.querySelector("#updates_welcome").classList.remove("checked");
     config.updates = false;
 } else {
     document.querySelector("#updates").classList.add("checked");
+    document.querySelector("#updates_welcome").classList.add("checked");
     config.updates = true
 }
 window.api.saveconfig(config);
@@ -636,4 +644,15 @@ function generateCrypto() {
             }
         }
     });
+}
+
+function initWelcome() {
+    config.background = false;
+    config.updates = true;
+    window.api.saveconfig(config);
+    navigate("welcome");
+}
+
+function initContinue() {
+    openMain();
 }

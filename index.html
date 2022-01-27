@@ -367,6 +367,54 @@
             <div class="button primary" onclick="submitAddServer()" id="submit_button">Save Changes</div>
         </div>
 
+        <!--Welcome screen-->
+        <div class="container fullest_container" id="welcome_container">
+            <div style="
+                top: 45%;
+                position: absolute;
+                left: 0;
+                right: 0;
+                transform: translateY(-50%);
+            ">
+
+                <div style="
+                    margin: 0 auto;
+                    width: 80px;
+                    height: 80px;
+                    padding-top: 14px;
+                "><img src="images/logo.png" style="
+                    width: 80px;
+                "></div>
+                <div style="
+                    font-size: 18px;
+                    font-weight: 500;
+                    text-align: center;
+                    padding-top: 9px;
+                    padding-bottom: 6px;
+                    margin-bottom: 7%;
+                ">Simple Web Server</div>
+
+                <div class="switch_option" id="background_welcome" onclick="toggleRunInBk()">
+                    <div class="switch"></div>
+                    <div class="label">Keep running when closed</div>
+                </div>
+
+                <div class="switch_option checked" id="updates_welcome" onclick="toggleUpdates()">
+                    <div class="switch"></div>
+                    <div class="label">Check for updates</div>
+                </div>
+
+                <div style="overflow: hidden;"><div class="button primary" onclick="initContinue()" style="
+                    float: left;
+                    transform: translateX(-50%);
+                    margin-left: 50%;
+                    margin-top: 8%;
+                    ">Get Started</div></div>
+
+            </div>
+
+        </div>
+
         <div id="prompt_bk" onclick="hidePrompt()"></div>
 
         <div id="prompt" class="prompt_hide">

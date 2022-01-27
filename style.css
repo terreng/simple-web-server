@@ -168,6 +168,11 @@ body.darkmode {/*TODO*/
     bottom: 0px;
 }
 
+.fullest_container {
+    top: 0px;
+    bottom: 0px;
+}
+
 .server {
     padding: 0px;
     height: 80px;
