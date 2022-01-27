@@ -164,6 +164,10 @@ body.darkmode {/*TODO*/
     right: 0;
 }
 
+.full_container {
+    bottom: 0px;
+}
+
 .server {
     padding: 0px;
     height: 80px;
@@ -643,7 +647,7 @@ body.darkmode {/*TODO*/
     white-space: nowrap;
     text-overflow: ellipsis;
     padding-right: 9px;
-    color: var(--atext);
+    color: var(--text-primary);
 }
 
 .filepicker_input_option input:active {
@@ -707,4 +711,31 @@ body.darkmode {/*TODO*/
 
 .status_box > div:nth-child(2) > a {
     color: var(--link);
+}
+
+.link_icon_item {
+    overflow: hidden;
+    color: var(--text-primary);
+}
+    
+.link_icon_item > div:nth-child(1) {
+    float: left;
+    width: 28px;
+    height: 28px;
+    padding: 8px 10px;
+    padding-left: 12px;
+}
+
+.link_icon_item > div:nth-child(1) span {
+    font-size: 28px;
+    width: 28px;
+    height: 28px;
+}
+
+.link_icon_item > div:nth-child(2) {
+    float: left;
+    font-size: 18px;
+    line-height: 28px;
+    height: 28px;
+    padding: 8px 2px;
 }

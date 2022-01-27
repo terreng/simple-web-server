@@ -5,12 +5,12 @@ var running_states = {
     "stopped": {
         "text": "Stopped",
         "list_color": "gray",
-        "edit_color": "var(--atext)"
+        "edit_color": "var(--text-primary)"
     },
     "starting": {
         "text": "Starting...",
         "list_color": "gray",
-        "edit_color": "var(--atext)"
+        "edit_color": "var(--text-primary)"
     },
     "running": {
         "text": "Running",
@@ -25,7 +25,7 @@ var running_states = {
     "unknown": {
         "text": "Starting...",
         "list_color": "gray",
-        "edit_color": "var(--atext)"
+        "edit_color": "var(--text-primary)"
     },
 }
 
