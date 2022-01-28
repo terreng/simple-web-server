@@ -12,7 +12,6 @@ global.net = require('net');
 global.forge = require('node-forge');
 global.fs = require('fs');
 global.path = require('path');
-global.send = require('send');
 global.atob = require("atob");
 global.Blob = require('node-blob');
 
