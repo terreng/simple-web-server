@@ -81,12 +81,17 @@ function backToSettings() {
     openSettings(true);
 }
 
+var loaded_licenses = false;
+
 function openLicenses() {
-    fetch('open_source_licenses.txt').then(response => response.text()).then(function(text) {
-        fetch('LICENSE').then(response => response.text()).then(function(text2) {
-            document.querySelector("#licenses_content").innerText = text2+"\n"+text;
+    if (loaded_licenses !== true) {
+        fetch('open_source_licenses.txt').then(response => response.text()).then(function(text) {
+            fetch('LICENSE').then(response => response.text()).then(function(text2) {
+                loaded_licenses = true;
+                document.querySelector("#licenses_content").innerText = text2+"\n"+text;
+            })
         })
-    })
+    }
     navigate("licenses");
     document.querySelector("#licenses_container").scrollTop = 0;
 }
