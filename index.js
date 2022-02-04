@@ -151,7 +151,7 @@ app.on('ready', function() {
             config.servers[i].httpsCert = config.servers[i].httpsCert.replace(/ /g, '\r\n');
         }
     }
-    if (mainWindow === null) {
+    if (mainWindow == null) {
     createWindow();
     }
     startServers();
@@ -197,7 +197,7 @@ app.on('activate', function () {
     if (!app.requestSingleInstanceLock()) {
         return;
     }
-    if (mainWindow === null) {
+    if (mainWindow == null) {
         createWindow()
         if (process.platform === "darwin") {
             app.dock.show();
