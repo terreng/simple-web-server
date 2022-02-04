@@ -189,6 +189,9 @@ ipcMain.handle('generateCrypto', async (event, arg) => {
 });
 
 app.on('activate', function () {
+    if (!app.requestSingleInstanceLock()) {
+        app.quit()
+    }
     if (mainWindow === null) {
         createWindow()
         if (process.platform === "darwin") {
