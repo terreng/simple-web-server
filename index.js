@@ -123,6 +123,9 @@ app.on('second-instance', function (event, commandLine, workingDirectory) {
 })
 
 app.on('ready', function() {
+    if (!app.requestSingleInstanceLock()) {
+        return;
+    }
     /**
     tray = new Tray('images/icon.ico')
     const contextMenu = Menu.buildFromTemplate([
@@ -148,7 +151,9 @@ app.on('ready', function() {
             config.servers[i].httpsCert = config.servers[i].httpsCert.replace(/ /g, '\r\n');
         }
     }
+    if (mainWindow === null) {
     createWindow();
+    }
     startServers();
 })
 
@@ -190,7 +195,7 @@ ipcMain.handle('generateCrypto', async (event, arg) => {
 
 app.on('activate', function () {
     if (!app.requestSingleInstanceLock()) {
-        app.quit()
+        return;
     }
     if (mainWindow === null) {
         createWindow()
