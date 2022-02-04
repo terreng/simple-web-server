@@ -1,4 +1,6 @@
-<h1>Basic options</h1>
+# Server Options
+
+## Basic options
 <table>
     <tbody>
         <tr>
@@ -89,7 +91,7 @@
     </tbody>
 </table>
 
-<h1>Basic rules</h1>
+## Basic rules
 <table>
     <tbody>
         <tr>
@@ -197,7 +199,7 @@
     </tbody>
 </table>
 
-<h1>Advanced rules</h1>
+## Advanced rules
 <table>
     <tbody>
         <tr>
@@ -375,7 +377,7 @@
 
 TODO: Mention that you can do page for any error. 403, 404, 429, 400, 401, 500
 
-<h1>Error Pages</h1>
+## Error Pages
 <table>
     <tbody>
         <tr>
@@ -466,7 +468,7 @@ TODO: Mention that you can do page for any error. 403, 404, 429, 400, 401, 500
     </tbody>
 </table>
 
-<h1>Security</h1>
+## Security
 <table>
     <tbody>
         <tr>
