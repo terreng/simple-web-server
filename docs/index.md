@@ -1,7 +1,7 @@
 # Documentation
 
-[Install instructions](guides/install.md)
+[Install instructions](/install)
 
-[Server options](options/index.md)
+[Server options](/options)
 
-[App settings](settings/index.md)
+[App settings](/settings)
