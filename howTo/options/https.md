@@ -1,4 +1,4 @@
-<h4><a href="../">Documentation</a> / <a href="./index.md">Server Options</a> / Configuring https</h4>
+<h4><a href="../index.md">Documentation</a> / <a href="./index.md">Server Options</a> / Configuring https</h4>
 
 # Configuring https
 
