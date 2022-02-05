@@ -1,0 +1,13 @@
+{
+    "latest": "1.1.0",
+    "versions": {
+        "1.1.0": {
+            "name": "1.1.0",
+            "download": "https://simplewebserver.org/download"
+        },
+        "1.0.0": {
+            "name": "1.0.0",
+            "download": "https://github.com/terreng/simple-web-server/releases/tag/v1.0.0"
+        }
+    }
+}
