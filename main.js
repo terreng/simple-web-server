@@ -28,6 +28,10 @@ var running_states = {
         "edit_color": "var(--text-primary)"
     },
 }
+var download_url;
+function updateBanner() {
+    window.api.openExternal(download_url);
+}
 
 window.api.initipc(function (event, message) {
     if (message.type == "init") {
@@ -46,6 +50,10 @@ window.api.initipc(function (event, message) {
     if (message.type == "state") {
         server_states = message.server_states;
         updateRunningStates();
+    }
+    if (message.type == "update") {
+        document.getElementById("update_banner").style.display = "block";
+        download_url = message.url;
     }
 });
 
@@ -460,6 +468,7 @@ if (config.updates !== false) {
     document.querySelector("#updates").classList.remove("checked");
     document.querySelector("#updates_welcome").classList.remove("checked");
     config.updates = false;
+    document.getElementById("update_banner").style.display = "none";
 } else {
     document.querySelector("#updates").classList.add("checked");
     document.querySelector("#updates_welcome").classList.add("checked");
