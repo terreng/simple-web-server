@@ -1,4 +1,4 @@
-<h4><a href="../">Documentation</a>  /  <a href="/index.md">Server Options</a>  /  <a href="/htaccess.md">Enable .swshtaccess configuration files</a>  /  How to use .swshtaccess</h4>
+<h4><a href="../">Documentation</a>  /  <a href="/index.md">Server Options</a>  /  How to use .swshtaccess</h4>
 <h1>How to use .swshtaccess</h1>
 <br>
 <p>Web Server for Chrome DOES NOT have support for .htaccess files. Instead, we have .swshtaccess files, which gets the same thing done (Not all features implimented).</p>
