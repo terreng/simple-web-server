@@ -502,7 +502,7 @@ TODO: Mention that you can do page for any error. 403, 404, 429, 400, 401, 500
                 false
             </td>
             <td>
-                Make server accessible over a secure connection (https) instead of just http.
+                Make server accessible over a secure connection (https) instead of http.
             </td>
         </tr>
         <tr>
