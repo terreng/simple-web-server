@@ -1,4 +1,4 @@
-<h4><a href="../index.md">Documentation</a>  /  Server Options</h4>
+<!-- This file is parsed by the app. Tables must remain at the highest level. Changing the order of the table will break the app. -->
 
 # Server Options
 
