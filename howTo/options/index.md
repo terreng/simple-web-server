@@ -1,3 +1,5 @@
+<h4><a href="../">Documentation</a>  /  Server Options</h4>
+
 # Server Options
 
 ## Basic options
