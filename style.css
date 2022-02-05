@@ -88,6 +88,8 @@ body {
     --input-outline-focus: #d09608;
     --input-outline-blur: gray;
     --shadow: rgba(0, 0, 0, 0.3);
+    --fullscreen_placeholder: gray;
+    --link: #0067dc;
     background: var(--background);
     color: var(--text-primary);
     user-select: none;
@@ -162,11 +164,19 @@ body.darkmode {/*TODO*/
     right: 0;
 }
 
+.full_container {
+    bottom: 0px;
+}
+
+.fullest_container {
+    top: 0px;
+    bottom: 0px;
+}
+
 .server {
-    padding: 15px;
-    height: 50px;
+    padding: 0px;
+    height: 80px;
     border-bottom: 1px solid var(--line);
-    border-right: solid #f44336 8px;
     transition: 0.1s background-color;
     cursor: pointer;
 }
@@ -180,38 +190,46 @@ body.darkmode {/*TODO*/
 }
 
 .server.enabled {
-    border-right: solid #4caf50 8px;
+
 }
 
 .server > div:nth-child(1) {
     float: left;
-    height: 50px;
+    height: 80px;
+    padding-left: 10px;
+    width: 50px;
+    padding-right: 10px;
 }
 
-.server > div:nth-child(1) > input {
-    width: 30px;
-    height: 30px;
-    margin: 0;
-    margin-top: 10px;
-    cursor: pointer;
+.server > div:nth-child(1) > .switch {
+    margin-top: 27px;
 }
 
 .server > div:nth-child(2) {
     font-size: 20px;
-    padding-left: 15px;
+    padding-left: 5px;
+    padding-right: 15px;
     float: left;
-    width: calc(100% - 45px);
+    width: calc(100% - 90px);
     cursor: pointer;
+    height: 56px;
+    padding-top: 12px;
+    padding-bottom: 12px;
 }
 
 .server > div:nth-child(2) > div:nth-child(1) {
     padding-bottom: 4px;
+    text-align: left;
+    direction: rtl;
     overflow: hidden;
     white-space: nowrap;
     text-overflow: ellipsis;
+    line-height: 26px;
 }
 .server > div:nth-child(2) > div:nth-child(2) {
     color: gray;
+    line-height: 26px;
+    font-size: 18px;
 }
 
 .button_row {
@@ -293,19 +311,6 @@ body.darkmode {/*TODO*/
     font-size: 18px;
     padding: 10px;
     font-weight: 500;
-}
-
-.settings_server_list ul {
-    margin: 0;
-    font-size: 18px;
-}
-
-.settings_server_list li {
-    margin-bottom: 10px;
-}
-
-.settings_server_list {
-    padding-bottom: 10px;
 }
 
 .checkbox_option input {
@@ -492,9 +497,7 @@ body.darkmode {/*TODO*/
 }
 
 .switch_option {
-    padding: 12px;
-    padding-top: 16px;
-    padding-bottom: 4px;
+    padding: 13px 12px;
     overflow: hidden;
     cursor: pointer;
 }
@@ -649,6 +652,7 @@ body.darkmode {/*TODO*/
     white-space: nowrap;
     text-overflow: ellipsis;
     padding-right: 9px;
+    color: var(--text-primary);
 }
 
 .filepicker_input_option input:active {
@@ -674,4 +678,71 @@ body.darkmode {/*TODO*/
 
 .filepicker_input_option input:active + .button {
     background-color: var(--button-active);
+}
+
+#server_container_status {
+    border-bottom: 1px solid var(--line);
+    padding-bottom: 4px;
+}
+
+.status_box {
+    border-radius: 7px;
+    border: 2px solid #d4d4d4;
+    background-color: #f7f7f7;
+    padding: 7px 8px;
+    margin: 7px 12px;
+    font-size: 18px;
+    margin-bottom: 8px;
+    margin-top: 6px;
+}
+
+.settings_server_list {
+    padding-bottom: 1px;
+}
+
+.error_status_box {
+    border: 2px solid #ffafaf;
+    background-color: #ffe9e9;
+}
+
+.status_box > div:nth-child(1) {
+    font-weight: 500;
+    padding-bottom: 10px;
+}
+
+.status_box > div:nth-child(2) {
+    user-select: text;
+}
+
+.status_box > div:nth-child(2) > a {
+    color: var(--link);
+}
+
+.link_icon_item {
+    overflow: hidden;
+    color: var(--text-primary);
+    margin: 4px 0px;
+}
+    
+.link_icon_item > div:nth-child(1) {
+    float: left;
+    width: 28px;
+    height: 28px;
+    padding: 6px 10px;
+    padding-left: 14px;
+    color: var(--icons);
+}
+
+.link_icon_item > div:nth-child(1) span {
+    font-size: 28px;
+    width: 28px;
+    height: 28px;
+}
+
+.link_icon_item > div:nth-child(2) {
+    float: left;
+    font-size: 18px;
+    line-height: 28px;
+    height: 28px;
+    padding: 6px 2px;
 }

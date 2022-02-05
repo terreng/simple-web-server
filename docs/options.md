@@ -1,4 +1,8 @@
-<h1>Basic options</h1>
+<!-- This file is parsed by the app. Tables must remain at the highest level. Changing the order of the table will break the app. -->
+
+# Server Options
+
+## Basic options
 <table>
     <tbody>
         <tr>
@@ -89,7 +93,7 @@
     </tbody>
 </table>
 
-<h1>Basic rules</h1>
+## Basic rules
 <table>
     <tbody>
         <tr>
@@ -197,7 +201,7 @@
     </tbody>
 </table>
 
-<h1>Advanced rules</h1>
+## Advanced rules
 <table>
     <tbody>
         <tr>
@@ -375,7 +379,7 @@
 
 TODO: Mention that you can do page for any error. 403, 404, 429, 400, 401, 500
 
-<h1>Error Pages</h1>
+## Error Pages
 <table>
     <tbody>
         <tr>
@@ -466,7 +470,7 @@ TODO: Mention that you can do page for any error. 403, 404, 429, 400, 401, 500
     </tbody>
 </table>
 
-<h1>Security</h1>
+## Security
 <table>
     <tbody>
         <tr>
@@ -500,7 +504,7 @@ TODO: Mention that you can do page for any error. 403, 404, 429, 400, 401, 500
                 false
             </td>
             <td>
-                Make server accessible over a secure connection (https) instead of just http.
+                Make server accessible over a secure connection (https) instead of http.
             </td>
         </tr>
         <tr>
