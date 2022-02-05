@@ -8,6 +8,7 @@ if (!fs.existsSync("www/out")){
 }
 fs.copyFileSync("www/index.html", "www/out/index.html");
 fs.copyFileSync("www/style.css", "www/out/style.css");
+fs.copyFileSync("www/404.html", "www/out/404.html");
 
 //convert to markdown and fix links
 
