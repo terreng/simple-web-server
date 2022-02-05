@@ -1,4 +1,4 @@
-<h4><a href="../">Documentation</a>  /  Server Options</h4>
+<h4><a href="../index.md">Documentation</a>  /  Server Options</h4>
 
 # Server Options
 
