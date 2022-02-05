@@ -1,6 +1,6 @@
 # Documentation
 
-[Install instructions](/install)
+[Install instructions](./install)
 
 [Server options](/options)
 
