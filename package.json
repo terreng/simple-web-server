@@ -27,7 +27,8 @@
     "make": "electron-forge make",
     "makeWin": "electron-forge make --platform win32",
     "makeDarwin": "electron-forge make --platform darwin",
-    "makeLinux": "electron-forge make --platform linux"
+    "makeLinux": "electron-forge make --platform linux",
+    "makewww": "cp -r docs www/docs && npm --prefix ./www install ./www && node www/build.js"
   },
   "devDependencies": {
     "@electron-forge/cli": "^6.0.0-beta.57",
