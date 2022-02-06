@@ -1,3 +1,4 @@
+var version = "1000000";
 const {app, BrowserWindow, ipcMain, Menu, Tray, dialog, shell } = require('electron');
 const { networkInterfaces } = require('os');
 
@@ -155,6 +156,10 @@ app.on('ready', function() {
     createWindow();
     }
     startServers();
+    checkForUpdates();
+    setInterval(function() {
+        checkForUpdates()
+    }, 1000*60*60) //Every hour
 })
 
 app.on('window-all-closed', function () {
@@ -178,6 +183,9 @@ ipcMain.on('quit', quit)
 ipcMain.on('saveconfig', function(event, arg1) {
     fs.writeFileSync(path.join(app.getPath('userData'), "config.json"), JSON.stringify(arg1, null, 2), "utf8");
     config = arg1;
+    if (config.updates == true && last_update_check_skipped == true) {
+        checkForUpdates();
+    }
     startServers();
 })
 
@@ -235,6 +243,9 @@ function createWindow() {
     mainWindow.webContents.on('did-finish-load', function() {
         mainWindow.webContentsLoaded = true;
         mainWindow.webContents.send('message', {"type": "init", "config": config, ip: getIPs()});
+        if (update_url) {
+            mainWindow.webContents.send('message', {"type": "update", "url": update_url});
+        }
         updateServerStates();
     });
 
@@ -419,5 +430,50 @@ function configsEqual(config1, config2) {
         return true;
     } else {
         return false;
+    }
+}
+
+var update_url;
+var last_update_check_skipped = false;
+
+function checkForUpdates() {
+    if (config.updates == true) {
+        last_update_check_skipped = false;
+        var req = global.https.request({
+            hostname: 'example.com',
+            port: 443,
+            path: '/todos',
+            method: 'GET'
+        }, function(res) {
+            if (res.statusCode == 200) {
+                res.on('data', function(data) {
+                    try {
+                        var version_update = JSON.parse(data);
+                    } catch (e) {
+                        console.log("Update check failed (invalid response)");
+                    }
+                    if (version_update.update) {
+                        if (version_update.download !== update_url) {
+                            console.log("Update available: "+version_update.download)
+                        }
+                        update_url = version_update.download;
+                        if (mainWindow.webContentsLoaded) {
+                            mainWindow.webContents.send('message', {"type": "update", "url": update_url});
+                        }
+                    }
+                })
+            } else {
+                console.log("Update check failed (status code "+res.statusCode+")");
+            }
+        })
+        
+        req.on('error', function(error) {
+            console.log("Update check failed");
+            console.log(error)
+        })
+        
+        req.end();
+    } else {
+        last_update_check_skipped = true;
     }
 }

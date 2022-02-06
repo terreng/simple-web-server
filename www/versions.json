@@ -1,11 +1,11 @@
 {
-    "latest": "1_1_0",
+    "latest": "1001000",
     "versions": {
-        "1_1_0": {
+        "1001000": {
             "name": "1.1.0",
             "download": "https://simplewebserver.org/download"
         },
-        "1_0_0": {
+        "1000000": {
             "name": "1.0.0",
             "download": "https://github.com/terreng/simple-web-server/releases/tag/v1.0.0"
         }
