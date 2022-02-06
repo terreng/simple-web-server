@@ -1,4 +1,4 @@
-var version = "1000000";
+var version = 1001000;
 const {app, BrowserWindow, ipcMain, Menu, Tray, dialog, shell } = require('electron');
 const { networkInterfaces } = require('os');
 
@@ -185,6 +185,9 @@ ipcMain.on('saveconfig', function(event, arg1) {
     config = arg1;
     if (config.updates == true && last_update_check_skipped == true) {
         checkForUpdates();
+    }
+    if (config.updates == false) {
+        last_update_check_skipped = true;
     }
     startServers();
 })
@@ -440,9 +443,9 @@ function checkForUpdates() {
     if (config.updates == true) {
         last_update_check_skipped = false;
         var req = global.https.request({
-            hostname: 'example.com',
+            hostname: 'simplewebserver.org',
             port: 443,
-            path: '/todos',
+            path: '/versions/'+version+".json",
             method: 'GET'
         }, function(res) {
             if (res.statusCode == 200) {

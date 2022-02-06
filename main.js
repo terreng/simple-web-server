@@ -28,10 +28,6 @@ var running_states = {
         "edit_color": "var(--text-primary)"
     },
 }
-var download_url;
-function updateBanner() {
-    window.api.openExternal(download_url);
-}
 
 window.api.initipc(function (event, message) {
     if (message.type == "init") {
@@ -53,7 +49,7 @@ window.api.initipc(function (event, message) {
     }
     if (message.type == "update") {
         document.getElementById("update_banner").style.display = "block";
-        download_url = message.url;
+        document.getElementById("update_banner").href = message.url;
     }
 });
 
