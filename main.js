@@ -38,6 +38,7 @@ window.api.initipc(function (event, message) {
         } else {
             initWelcome();
         }
+        document.getElementById("stop_and_quit_button").style.display = config.background ? "block" : "none";
         if (config.darkmode) {
             document.body.classList.add("darkmode");
         }
@@ -456,6 +457,7 @@ if (config.background) {
     document.querySelector("#background_welcome").classList.add("checked");
     config.background = true
 }
+document.getElementById("stop_and_quit_button").style.display = config.background ? "block" : "none";
 window.api.saveconfig(config);
 }
 
