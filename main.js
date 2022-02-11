@@ -1,21 +1,59 @@
 var config = {};
 var ip;
+var server_states = [];
+var running_states = {
+    "stopped": {
+        "text": "Stopped",
+        "list_color": "gray",
+        "edit_color": "var(--text-primary)"
+    },
+    "starting": {
+        "text": "Starting...",
+        "list_color": "gray",
+        "edit_color": "var(--text-primary)"
+    },
+    "running": {
+        "text": "Running",
+        "list_color": "green",
+        "edit_color": "green"
+    },
+    "error": {
+        "text": "Error",
+        "list_color": "red",
+        "edit_color": "red"
+    },
+    "unknown": {
+        "text": "Starting...",
+        "list_color": "gray",
+        "edit_color": "var(--text-primary)"
+    },
+}
 
 window.api.initipc(function (event, message) {
-    config = message.config;
-    ip = message.ip;
-    openMain();
-    if (config.darkmode) {
-        document.body.classList.add("darkmode");
+    if (message.type == "init") {
+        config = message.config;
+        ip = message.ip;
+        if (config.background != null) {
+            openMain();
+        } else {
+            initWelcome();
+        }
+        if (config.darkmode) {
+            document.body.classList.add("darkmode");
+        }
+        document.body.style.visibility = "visible";
     }
-    document.body.style.display = "block";
+    if (message.type == "state") {
+        server_states = message.server_states;
+        updateRunningStates();
+    }
 });
 
 window.onresize = function() {
     reevaluateSectionHeights();
 }
 
-var screens = ["main", "settings", "server"]
+var screens = ["main", "settings", "server", "licenses", "welcome"]
 function navigate(screen) {
     for (var i = 0; i < screens.length; i++) {
         if (document.getElementById(screens[i]+"_title")) {
@@ -39,27 +77,121 @@ function backToMain() {
     openMain();
 }
 
+function backToSettings() {
+    openSettings(true);
+}
+
+var loaded_licenses = false;
+
+function openLicenses() {
+    if (loaded_licenses !== true) {
+        fetch('open_source_licenses.txt').then(response => response.text()).then(function(text) {
+            fetch('LICENSE').then(response => response.text()).then(function(text2) {
+                loaded_licenses = true;
+                document.querySelector("#licenses_content").innerText = text2+"\n"+text;
+            })
+        })
+    }
+    navigate("licenses");
+    document.querySelector("#licenses_container").scrollTop = 0;
+}
+
 function renderServerList() {
     var pendhtml = "";
-    if (config.servers) {
-    for (var i = 0; i < config.servers.length; i++) {
-        pendhtml += '<div class="server '+(config.servers[i].enabled ? "enabled" : "")+'"><div><input type="checkbox" '+(config.servers[i].enabled ? "checked" : "")+' oninput="checkboxChanged()"></div><div onclick="addServer('+i+')"><div>'+htmlescape(config.servers[i].path.split(/[\/\\]/)[config.servers[i].path.split(/[\/\\]/).length-1])+'</div><div>:'+String(config.servers[i].port)+'</div></div></div>'
+    for (var i = 0; i < (config.servers || []).length; i++) {
+        pendhtml += '<div class="server '+(config.servers[i].enabled ? "checked" : "")+'" id="server_'+i+'"><div onclick="toggleServer('+i+')"><div class="switch"></div></div><div onclick="addServer('+i+')"><div>'+htmlescape(config.servers[i].path)+'</div><div><span class="server_status" style="color: '+running_states[getServerStatus(config.servers[i]).state].list_color+';">'+running_states[getServerStatus(config.servers[i]).state].text+'</span> &bull; Port '+String(config.servers[i].port)+(config.servers[i].localnetwork ? ' &bull; LAN' : '')+(config.servers[i].https ? ' &bull; HTTPS' : '')+'</div></div></div>'
     }
+    if (pendhtml == "") {
+        pendhtml = '<div style="color: var(--fullscreen_placeholder);text-align: center;position: absolute;top: 48%;width: 100%;transform: translateY(-50%);"><i class="material-icons" style="font-size: 70px;">dns</i><div style="font-size: 18px;padding-top: 20px;">You haven\'t created any servers yet</div></div>';
     }
     document.getElementById("servers_list").innerHTML = pendhtml;
 }
 
-function openSettings() {
+function getServerStatus(local_config) {
+    if (local_config.enabled) {
+        for (var i = 0; i < server_states.length; i++) {
+            if (configsEqual(server_states[i].config, local_config)) {
+                return {"state": server_states[i].state, "error_message": server_states[i].error_message}
+            }
+        }
+        return {"state": "unknown"};
+    } else {
+        return {"state": "stopped"};
+    }
+}
+
+function getServerStatusBox(local_config) {
+    if (local_config.enabled) {
+        if (getServerStatus(local_config).state == "running") {
+
+            var url_list = [];
+
+            for (var i = 0; i < ip.length; i++) {
+                if (ip[i] == '127.0.0.1' || local_config.localnetwork) {
+                    url_list.push((local_config.https ? 'https' : 'http')+'://'+ip[i]+':'+local_config.port);
+                }
+            }
+        
+            return '<div class="status_box"><div>Web server URL'+(url_list.length == 1 ? '' : 's')+'</div><div>'+url_list.map(function(a) {return '<a href="'+a+'" target="_blank" onclick="window.api.openExternal(this.href);event.preventDefault()">'+a+'</a>'}).join('<div style="padding-top: 6px;"></div>')+"</div></div>";
+
+        } else if (getServerStatus(local_config).state == "error") {
+            if (getServerStatus(local_config).error_message.indexOf("EADDRINUSE") > -1) {
+                return '<div class="status_box error_status_box"><div>Port in use</div><div>Web server failed to start because port '+local_config.port+' is already in use by another program.</div></div>';
+            } else {
+                return '<div class="status_box error_status_box"><div>Error</div><div>'+htmlescape(getServerStatus(local_config).error_message)+'</div></div>';
+            }
+        } else {
+            return "";
+        }
+    } else {
+        return "";
+    }
+}
+
+function updateRunningStates() {
+    for (var i = 0; i < (config.servers || []).length; i++) {
+        document.getElementById("server_"+i).querySelector(".server_status").innerHTML = running_states[getServerStatus(config.servers[i]).state].text;
+        document.getElementById("server_"+i).querySelector(".server_status").style.color = running_states[getServerStatus(config.servers[i]).state].list_color;
+    }
+    if (document.getElementById("server_container").style.display == "block" && activeeditindex !== false) {
+        document.getElementById("edit_server_running").querySelector(".label").innerHTML = running_states[getServerStatus(config.servers[activeeditindex]).state].text;
+        document.getElementById("edit_server_running").querySelector(".label").style.color = running_states[getServerStatus(config.servers[activeeditindex]).state].edit_color;
+        document.querySelector("#settings_server_list").innerHTML = getServerStatusBox(config.servers[activeeditindex]);
+    }
+}
+
+function configsEqual(config1, config2) {
+    if (JSON.stringify(Object.keys(config1).sort()) == JSON.stringify(Object.keys(config2).sort())) {
+        for (var o = 0; o < Object.keys(config1).length; o++) {
+            if (JSON.stringify(config1[Object.keys(config1)[o]]) !== JSON.stringify(config2[Object.keys(config1)[o]])) {
+                return false;
+            }
+        }
+        return true;
+    } else {
+        return false;
+    }
+}
+
+function openSettings(dont_reset_scroll) {
     navigate("settings");
     if (config.background) {
         document.querySelector("#background").classList.add("checked");
     } else {
         document.querySelector("#background").classList.remove("checked");
     }
+    if (config.updates !== false) {
+        document.querySelector("#updates").classList.add("checked");
+    } else {
+        document.querySelector("#updates").classList.remove("checked");
+    }
     if (config.darkmode) {
         document.querySelector("#darkmode").classList.add("checked");
     } else {
         document.querySelector("#darkmode").classList.remove("checked");
+    }
+    if (dont_reset_scroll !== true) {
+        document.querySelector("#settings_container").scrollTop = 0;
     }
 }
 
@@ -68,9 +200,9 @@ var activeeditindex = false;
 
 function addServer(editindex) {
     resetAllSections();
-    navigate("server");
+    
     last_gen_crypto_date = false;
-    document.getElementById("server_container").scrollTop = 0;
+
     document.querySelector("#folder_path_error").style.display = "none";
     if (editindex != null) {
         document.querySelector("#edit_server_title").innerText = "Edit Server";
@@ -82,18 +214,15 @@ function addServer(editindex) {
     activeeditindex = (editindex != null ? editindex : false);
 
     if (editindex != null) {
-		var urlList = ''
-		// Will make it easier when https is enabled
-		var prot = config.servers[editindex].https ? 'https' : 'http'
-		var port = config.servers[editindex].port
-		if (ip.length > 0 && config.servers[editindex].localnetwork) {
-			for (var i=0; i<ip.length; i++) {
-				if (ip[i] != '127.0.0.1') {
-					urlList += '<li><a href="'+prot+'://'+ip[i]+':'+port+'" target="_blank" onclick="window.api.openExternal(this.href);event.preventDefault()">'+prot+'://'+ip[i]+':'+port+'</a></li>'
-				}
-			}
-		}
-        document.querySelector("#settings_server_list").innerHTML = config.servers[editindex].enabled ? ('<ul><li><a href="'+prot+'://127.0.0.1:'+port+'" target="_blank" onclick="window.api.openExternal(this.href);event.preventDefault()">'+prot+'://127.0.0.1:'+port+'</a></li>'+urlList+'</ul>') : '<div style="padding-left: 10px;">Not running</div>';
+        document.getElementById("server_container_status").style.display = "block";
+        if (config.servers[editindex].enabled) {
+            document.getElementById("edit_server_running").classList.add("checked");
+        } else {
+            document.getElementById("edit_server_running").classList.remove("checked");
+        }
+        document.getElementById("edit_server_running").querySelector(".label").innerHTML = running_states[getServerStatus(config.servers[editindex]).state].text;
+        document.getElementById("edit_server_running").querySelector(".label").style.color = running_states[getServerStatus(config.servers[editindex]).state].edit_color;
+        document.querySelector("#settings_server_list").innerHTML = getServerStatusBox(config.servers[editindex]);
 
         current_path = config.servers[editindex].path;
         updateCurrentPath();
@@ -135,7 +264,7 @@ function addServer(editindex) {
         document.querySelector("#delete_server_option").style.display = "block";
         document.querySelector("#submit_button").innerText = "Save Changes";
     } else {
-        document.querySelector("#settings_server_list").innerHTML = '<div style="padding-left: 10px;">Not running</div>';
+        document.getElementById("server_container_status").style.display = "none";
 
         current_path = false;
         updateCurrentPath();
@@ -183,6 +312,9 @@ function addServer(editindex) {
         document.querySelector("#delete_server_option").style.display = "none";
         document.querySelector("#submit_button").innerText = "Create Server";
     }
+
+    navigate("server");
+    document.getElementById("server_container").scrollTop = 0;
 }
 
 function cancelAddServer() {
@@ -295,22 +427,43 @@ function deleteServer() {
     showPrompt("Delete server?", "This action cannot be undone.", [["Confirm","destructive",function() {confirmDeleteServer()}],["Cancel","",function() {hidePrompt()}]])
 }
 
-function checkboxChanged() {
-var server_checkboxes = document.querySelector("#servers_list").querySelectorAll("input");
-for (var i = 0; i < server_checkboxes.length; i++) {
-    config.servers[i].enabled = server_checkboxes[i].checked;
+function toggleServer(index,inedit) {
+config.servers[index].enabled = !config.servers[index].enabled;
+if (config.servers[index].enabled) {
+    document.getElementById(inedit ? "edit_server_running" : "server_"+index).classList.add("checked")
+} else {
+    document.getElementById(inedit ? "edit_server_running" : "server_"+index).classList.remove("checked")
 }
-renderServerList();
+updateRunningStates();
 window.api.saveconfig(config);
+}
+
+function toggleEditServerRunning() {
+    toggleServer(activeeditindex,true);
 }
 
 function toggleRunInBk() {
 if (config.background) {
     document.querySelector("#background").classList.remove("checked");
+    document.querySelector("#background_welcome").classList.remove("checked");
     config.background = false;
 } else {
     document.querySelector("#background").classList.add("checked");
+    document.querySelector("#background_welcome").classList.add("checked");
     config.background = true
+}
+window.api.saveconfig(config);
+}
+
+function toggleUpdates() {
+if (config.updates !== false) {
+    document.querySelector("#updates").classList.remove("checked");
+    document.querySelector("#updates_welcome").classList.remove("checked");
+    config.updates = false;
+} else {
+    document.querySelector("#updates").classList.add("checked");
+    document.querySelector("#updates_welcome").classList.add("checked");
+    config.updates = true
 }
 window.api.saveconfig(config);
 }
@@ -496,4 +649,15 @@ function generateCrypto() {
             }
         }
     });
+}
+
+function initWelcome() {
+    config.background = false;
+    config.updates = true;
+    window.api.saveconfig(config);
+    navigate("welcome");
+}
+
+function initContinue() {
+    openMain();
 }

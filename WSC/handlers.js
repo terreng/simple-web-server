@@ -35,7 +35,7 @@ BaseHandler.prototype = {
                     if (! file.error && file.isFile) {
                         file.text(function(data) {
                             if (this.app.opts.customErrorReplaceString.trim() !== '') {
-                                var data = data.replaceAll(this.app.opts.customErrorReplaceString, this.request.origpath.htmlEscape())
+                                var data = data.split(this.app.opts.customErrorReplaceString).join(this.request.origpath.htmlEscape())
                             }
                             if (httpCode == 401) {
                                 this.setHeader("WWW-Authenticate", "Basic")
@@ -511,7 +511,7 @@ DirectoryEntryHandler.prototype = {
                                 file.text(function(dataa) {
                                     var contents = dataa
                                     var validFile = false
-                                    var key = contents.replaceAll(' ', '').split('postKey=')
+                                    var key = contents.replace(/ /g, '').split('postKey=')
                                     if (key.length > 1) {
                                         var key = key.pop()
                                         var key = key.substring(1, key.length).split('"')[0].split("'")[0]
@@ -1018,7 +1018,7 @@ DirectoryEntryHandler.prototype = {
                                     var dataa = await file.textPromise()
                                     var contents = dataa
                                     var validFile = false
-                                    var key = contents.replaceAll(' ', '').split('SSJSKey=')
+                                    var key = contents.replace(/ /g, '').split('SSJSKey=')
                                     if (key.length > 1) {
                                         var key = key.pop()
                                         var key = key.substring(1, key.length).split('"')[0].split("'")[0]

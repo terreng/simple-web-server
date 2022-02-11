@@ -1,7 +1,7 @@
 {
   "name": "simple-web-server",
   "productName": "Simple Web Server",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "main": "index.js",
   "description": "A continuation of Web Server for Chrome, built with Electron.",
   "author": {
@@ -27,7 +27,8 @@
     "make": "electron-forge make",
     "makeWin": "electron-forge make --platform win32",
     "makeDarwin": "electron-forge make --platform darwin",
-    "makeLinux": "electron-forge make --platform linux"
+    "makeLinux": "electron-forge make --platform linux",
+    "makewww": "cp -r docs www/docs && npm --prefix ./www install ./www && node www/build.js"
   },
   "devDependencies": {
     "@electron-forge/cli": "^6.0.0-beta.57",
@@ -47,9 +48,9 @@
     "atob": "^2.1.2",
     "http": "^0.0.1-security",
     "https": "^1.0.0",
+    "markdown": "^0.5.0",
     "node-blob": "0.0.2",
-    "node-forge": "^1.0.0",
-    "send": "^0.17.1"
+    "node-forge": "^1.0.0"
   },
   "config": {
     "forge": {

@@ -4,9 +4,9 @@ function getByPath(path, callback, FileSystem) {
     if (! (path.startsWith('/') || path.startsWith('\\'))) {
         var path = '/' + path
     }
-    this.origpath = path.replaceAll('//', '/')
+    this.origpath = path.replace(/\/\//g, '/')
     this.fullPath = this.origpath
-    this.path = this.fs.mainPath + WSC.utils.relativePath(path, '').replaceAll('//', '/')
+    this.path = this.fs.mainPath + WSC.utils.relativePath(path, '').replace(/\/\//g, '/')
     this.callback = callback
 }
 
@@ -31,7 +31,7 @@ getByPath.prototype = {
             try {
                 if (error.path && typeof error.path == 'string' && error.errno == -4048) {
                     var err = { }
-                    err.path = error.path.replaceAll('\\', '/').replaceAll('//', '/')
+                    err.path = error.path.replace(/\\/g, '/').replace(/\/\//g, '/')
                     if (error.path.endsWith('/')) {
                         var split = err.path.split('/')
                         err.name = split[split.length-1]
@@ -211,7 +211,7 @@ getByPath.prototype = {
 
 
 function FileSystem(mainPath) {
-    var mainPath = mainPath.replaceAll('\\', '/').replaceAll('\\', '/')
+    var mainPath = mainPath.replace(/\/\//g, '/').replace(/\\/g, '/')
     if (mainPath.endsWith('/')) {
         var mainPath = mainPath.substring(0, mainPath.length - 1)
     }
@@ -220,7 +220,7 @@ function FileSystem(mainPath) {
 
 FileSystem.prototype = {
     getByPath: function(path, callback) {
-        var path = path.replaceAll('//', '/').replaceAll('\\', '/')
+        var path = path.replace(/\/\//g, '/').replace(/\\/g, '/')
         var entry = new getByPath(path, callback, this)
         entry.getFile()
     },
@@ -238,7 +238,7 @@ FileSystem.prototype = {
         var path = WSC.utils.relativePath(path, '')
         var origpath = path
         var path = this.mainPath + path
-        var path = path.replaceAll('//', '/').replaceAll('\\', '/')
+        var path = path.replace(/\/\//g, '/').replace(/\\/g, '/')
         var folder = WSC.utils.stripOffFile(path)
         if (! fs.existsSync(folder)) {
             try {
@@ -290,7 +290,7 @@ FileSystem.prototype = {
         var path = WSC.utils.relativePath(path, '')
         this.origpath = path
         var path = this.mainPath + path
-        var path = path.replaceAll('//', '/').replaceAll('\\', '/')
+        var path = path.replace(/\/\//g, '/').replace(/\\/g, '/')
         var folder = WSC.utils.stripOffFile(path)
         if (! fs.existsSync(folder)) {
             try {

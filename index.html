@@ -1,10 +1,11 @@
 <html lang="en">
     <head>
         <meta charset="utf-8">
+        <meta http-equiv="Content-Security-Policy" content="default-src 'self' 'unsafe-inline'">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <link rel="stylesheet" href="style.css">
     </head>
-    <body style="display: none;">
+    <body style="visibility: hidden;">
 
         <!--Main server list-->
         <div class="top_title" id="main_title">
@@ -14,19 +15,6 @@
 
         <div class="container" id="main_container">
             <div id="servers_list">
-                <div class="server">
-                    <div>
-                        <input type="checkbox">
-                    </div>
-                    <div>
-                        <div>
-                            /admin
-                        </div>
-                        <div>
-                            :8881
-                        </div>
-                    </div>
-                </div>
             </div>
         </div>
 
@@ -41,18 +29,73 @@
             <div class="title_text">Settings</div>
         </div>
 
-        <div class="container" id="settings_container">
+        <div class="container full_container" id="settings_container">
+            <div style="padding-top: 8px;"></div>
+
             <div class="switch_option" id="background" onclick="toggleRunInBk()">
                 <div class="switch"></div>
                 <div class="label">Keep running when closed</div>
             </div>
 
-            <!--<div class="switch_option" id="darkmode" onclick="toggleDarkMode()">
+            <div class="switch_option" id="updates" onclick="toggleUpdates()">
+                <div class="switch"></div>
+                <div class="label">Check for updates</div>
+            </div>
+
+            <div class="switch_option" id="darkmode" style="display: none;" onclick="toggleDarkMode()">
                 <div class="switch"></div>
                 <div class="label">Dark theme</div>
-            </div>-->
+            </div>
 
-            <div style="padding: 10px;padding-top:20px;">Version 1.0.0<br>Open source, MIT License<br><a href="https://github.com/terreng/web-server" target="_blank" onclick="window.api.openExternal(this.href);event.preventDefault()">https://github.com/terreng/web-server</a></div>
+            <div style="
+                position: -webkit-sticky;
+                position: sticky;
+                top: 100vh;
+            ">
+                <div style="
+                    margin: 0 auto;
+                    width: 80px;
+                    height: 80px;
+                    padding-top: 14px;
+                "><img src="images/logo.png" style="
+                    width: 80px;
+                "></div>
+                <div style="
+                    font-size: 18px;
+                    font-weight: 500;
+                    text-align: center;
+                    padding-top: 9px;
+                    padding-bottom: 6px;
+                ">Simple Web Server</div>
+                <div style="
+                    text-align: center;
+                    padding-bottom: 10px;
+                ">Version 1.1.0&nbsp; • &nbsp;<a href="javascript:openLicenses()" style="
+                    color: var(--text-primary);
+                    text-decoration: none;
+                ">MIT License</a></div>
+
+                <a href="https://simplewebserver.org" target="_blank" onclick="window.api.openExternal(this.href);event.preventDefault()"><div class="link_icon_item"><div><span class="material-icons">public</span></div><div>Documentation</div></div></a>
+                <a href="https://github.com/terreng/simple-web-server/issues" target="_blank" onclick="window.api.openExternal(this.href);event.preventDefault()"><div class="link_icon_item"><div><svg style="width:28px;height:28px;color:var(--icons)" viewBox="0 0 24 24"><path fill="currentColor" d="M12,2A10,10 0 0,0 2,12C2,16.42 4.87,20.17 8.84,21.5C9.34,21.58 9.5,21.27 9.5,21C9.5,20.77 9.5,20.14 9.5,19.31C6.73,19.91 6.14,17.97 6.14,17.97C5.68,16.81 5.03,16.5 5.03,16.5C4.12,15.88 5.1,15.9 5.1,15.9C6.1,15.97 6.63,16.93 6.63,16.93C7.5,18.45 8.97,18 9.54,17.76C9.63,17.11 9.89,16.67 10.17,16.42C7.95,16.17 5.62,15.31 5.62,11.5C5.62,10.39 6,9.5 6.65,8.79C6.55,8.54 6.2,7.5 6.75,6.15C6.75,6.15 7.59,5.88 9.5,7.17C10.29,6.95 11.15,6.84 12,6.84C12.85,6.84 13.71,6.95 14.5,7.17C16.41,5.88 17.25,6.15 17.25,6.15C17.8,7.5 17.45,8.54 17.35,8.79C18,9.5 18.38,10.39 18.38,11.5C18.38,15.32 16.04,16.16 13.81,16.41C14.17,16.72 14.5,17.33 14.5,18.26C14.5,19.6 14.5,20.68 14.5,21C14.5,21.27 14.66,21.59 15.17,21.5C19.14,20.16 22,16.42 22,12A10,10 0 0,0 12,2Z" /></svg></div><div>Issues & Suggestions</div></div></a>
+                <a href="javascript:openLicenses()"><div class="link_icon_item"><div><span class="material-icons">article</span></div><div>Open Source Licenses</div></div></a>
+                <div style="padding-top: 10px;"></div>
+            </div>
+        </div>
+
+        <!--Open Source Licenses-->
+        <div class="top_title" id="licenses_title">
+            <div class="title_icon" onclick="backToSettings()"><i class="material-icons">arrow_back</i></div>
+            <div class="title_text">Open Source Licenses</div>
+        </div>
+
+        <div class="container full_container" id="licenses_container">
+            <div id="licenses_content" style="
+                line-break: anywhere;
+                white-space: pre-wrap;
+                padding: 10px;
+                font-size: 14px;
+                user-select: text;
+            "></div>
         </div>
 
         <!--Edit server-->
@@ -63,16 +106,18 @@
 
         <div class="container" id="server_container">
 
+            <div id="server_container_status">
+
             <div style="padding-top: 6px;"></div>
 
-            <div class="settings_title">Web Server URL(s)</div>
+            <div class="switch_option" id="edit_server_running" onclick="toggleEditServerRunning()">
+                <div class="switch"></div>
+                <div class="label"></div>
+            </div>
 
             <div class="settings_server_list" id="settings_server_list">
-                <ul>
-                    <li>
-                        <a href="http://127.0.0.1:8887" target="_blank" onclick="window.api.openExternal(this.href);event.preventDefault()">http://127.0.0.1:8887</a>
-                    </li>
-                </ul>
+            </div>
+
             </div>
 
             <div style="padding-top: 6px;"></div>
@@ -320,6 +365,62 @@
         <div class="button_row" id="server_actions">
             <div class="button left" onclick="cancelAddServer()">Cancel</div>
             <div class="button primary" onclick="submitAddServer()" id="submit_button">Save Changes</div>
+        </div>
+
+        <!--Welcome screen-->
+        <div class="container fullest_container" id="welcome_container">
+            <div style="
+                top: 45%;
+                position: absolute;
+                left: 0;
+                right: 0;
+                transform: translateY(-50%);
+            ">
+
+                <div style="
+                    margin: 0 auto;
+                    width: 80px;
+                    height: 80px;
+                    padding-top: 14px;
+                "><img src="images/logo.png" style="
+                    width: 80px;
+                "></div>
+                <div style="
+                    font-size: 18px;
+                    font-weight: 500;
+                    text-align: center;
+                    padding-top: 9px;
+                    padding-bottom: 6px;
+                    margin-bottom: 7%;
+                ">Simple Web Server</div>
+
+                <div style="
+                    width: 100%;
+                    max-width: 330px;
+                    margin: 0 auto;
+                ">
+
+                <div class="switch_option" id="background_welcome" onclick="toggleRunInBk()">
+                    <div class="switch"></div>
+                    <div class="label">Keep running when closed</div>
+                </div>
+
+                <div class="switch_option checked" id="updates_welcome" onclick="toggleUpdates()">
+                    <div class="switch"></div>
+                    <div class="label">Check for updates</div>
+                </div>
+
+                </div>
+
+                <div style="overflow: hidden;"><div class="button primary" onclick="initContinue()" style="
+                    float: left;
+                    transform: translateX(-50%);
+                    margin-left: 50%;
+                    margin-top: 8%;
+                    ">Get Started</div></div>
+
+            </div>
+
         </div>
 
         <div id="prompt_bk" onclick="hidePrompt()"></div>

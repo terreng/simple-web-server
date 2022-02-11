@@ -1,4 +1,6 @@
-# Using https cert/key
+<h4><a href="../index.md">Documentation</a> / <a href="./index.md">Server Options</a> / Configuring https</h4>
+
+# Configuring https
 
 The server has the ability to auto-generate https certificates, although when you try to visit it, it will show as untrusted and insecure. To use a custom generated certificate, the instructions are below
 
