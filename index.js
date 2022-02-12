@@ -246,8 +246,8 @@ function createWindow() {
     mainWindow.webContents.on('did-finish-load', function() {
         mainWindow.webContentsLoaded = true;
         mainWindow.webContents.send('message', {"type": "init", "config": config, ip: getIPs()});
-        if (update_url) {
-            mainWindow.webContents.send('message', {"type": "update", "url": update_url});
+        if (update_info) {
+            mainWindow.webContents.send('message', {"type": "update", "url": update_info.url, "text": update_info.text});
         }
         updateServerStates();
     });
@@ -436,7 +436,7 @@ function configsEqual(config1, config2) {
     }
 }
 
-var update_url;
+var update_info;
 var last_update_check_skipped = false;
 
 function checkForUpdates() {
@@ -456,12 +456,12 @@ function checkForUpdates() {
                         console.log("Update check failed (invalid response)");
                     }
                     if (version_update.update) {
-                        if (version_update.download !== update_url) {
+                        if (version_update.download !== (update_info || {}).url) {
                             console.log("Update available: "+version_update.download)
                         }
-                        update_url = version_update.download;
+                        update_info = {"url":version_update.download,"text":version_update.banner_text};
                         if (mainWindow.webContentsLoaded) {
-                            mainWindow.webContents.send('message', {"type": "update", "url": update_url});
+                            mainWindow.webContents.send('message', {"type": "update", "url": update_info.url, "text": update_info.text});
                         }
                     }
                 })

@@ -51,6 +51,7 @@ window.api.initipc(function (event, message) {
     if (message.type == "update") {
         document.getElementById("update_banner").style.display = "block";
         document.getElementById("update_banner").href = message.url;
+        document.getElementById("update_banner_text").innerText = message.text || "An updated version of Simple Web Server is available";
     }
 });
 
