@@ -52,6 +52,11 @@ window.api.initipc(function (event, message) {
         document.getElementById("update_banner").style.display = "block";
         document.getElementById("update_banner").href = message.url;
         document.getElementById("update_banner_text").innerText = message.text || "An updated version of Simple Web Server is available";
+        if (message.attributes.indexOf("high_priority") > -1) {
+            document.getElementById("update_banner").classList.add("high_priority");
+        } else {
+            document.getElementById("update_banner").classList.remove("high_priority");
+        }
     }
 });
 

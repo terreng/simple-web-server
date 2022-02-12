@@ -247,7 +247,7 @@ function createWindow() {
         mainWindow.webContentsLoaded = true;
         mainWindow.webContents.send('message', {"type": "init", "config": config, ip: getIPs()});
         if (update_info) {
-            mainWindow.webContents.send('message', {"type": "update", "url": update_info.url, "text": update_info.text});
+            mainWindow.webContents.send('message', {"type": "update", "url": update_info.url, "text": update_info.text, "attributes": update_info.attributes});
         }
         updateServerStates();
     });
@@ -459,9 +459,9 @@ function checkForUpdates() {
                         if (version_update.download !== (update_info || {}).url) {
                             console.log("Update available: "+version_update.download)
                         }
-                        update_info = {"url":version_update.download,"text":version_update.banner_text};
+                        update_info = {"url": version_update.download, "text": version_update.banner_text, "attributes": JSON.parse(version_update.attributes || '[]')};
                         if (mainWindow.webContentsLoaded) {
-                            mainWindow.webContents.send('message', {"type": "update", "url": update_info.url, "text": update_info.text});
+                            mainWindow.webContents.send('message', {"type": "update", "url": update_info.url, "text": update_info.text, "attributes": update_info.attributes});
                         }
                     }
                 })

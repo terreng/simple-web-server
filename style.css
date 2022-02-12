@@ -757,6 +757,10 @@ body.darkmode {/*TODO*/
     display: none;
 }
 
+#update_banner.high_priority {
+    background: #ffe082;
+}
+
 #update_banner > div:nth-child(1) {
     font-size: 18px;
     float: left;
