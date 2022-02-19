@@ -25,9 +25,12 @@
     "start": "electron-forge start",
     "package": "electron-forge package",
     "make": "electron-forge make",
-    "makeWin": "electron-forge make --platform win32",
-    "makeDarwin": "electron-forge make --platform darwin",
-    "makeLinux": "electron-forge make --platform linux",
+    "makewindowsx86": "electron-forge make --platform win32 --arch x64",
+    "makewindowsarm64": "electron-forge make --platform win32 --arch arm64",
+    "makemacosx86": "electron-forge make --platform darwin --arch x64",
+    "makemacosarm64": "electron-forge make --platform darwin --arch arm64",
+    "makemacosuniversal": "",
+    "makelinux": "electron-forge make --platform linux",
     "makewww": "cp -r docs www/docs && npm --prefix ./www install ./www && node www/build.js"
   },
   "devDependencies": {
@@ -38,13 +41,12 @@
     "@electron-forge/maker-rpm": "6.0.0-beta.53",
     "@electron-forge/maker-squirrel": "6.0.0-beta.53",
     "@electron-forge/maker-zip": "6.0.0-beta.53",
-    "@electron-forge/plugin-webpack": "6.0.0-beta.53",
-    "@electron-forge/publisher-github": "6.0.0-beta.52",
     "electron": "^13.3.0",
     "electron-squirrel-startup": "^1.0.0",
     "electron-windows-store": "^2.1.0"
   },
   "dependencies": {
+    "@electron-forge/maker-wix": "^6.0.0-beta.63",
     "atob": "^2.1.2",
     "http": "^0.0.1-security",
     "https": "^1.0.0",
@@ -55,11 +57,20 @@
   "config": {
     "forge": {
       "packagerConfig": {
-        "icon": "images/icon.ico"
+        "icon": "images/icon.ico",
+        "ignore": [
+          ".git/",
+          "dist/",
+          "www/",
+          "out/",
+          ".github/",
+          ".gitignore"
+        ]
       },
       "make_targets": {
         "win32": [
           "squirrel",
+          "wix",
           "appx"
         ],
         "darwin": [
@@ -87,6 +98,12 @@
           ]
         },
         {
+          "name": "@electron-forge/maker-dmg",
+          "platforms": [
+            "darwin"
+          ]
+        },
+        {
           "name": "@electron-forge/maker-deb",
           "config": {}
         },
@@ -99,6 +116,13 @@
           "config": {
             "publisher": "CN=SimpleWebServer",
             "expandedBaseImage": "images/icon.ico"
+          }
+        },
+        {
+          "name": "@electron-forge/maker-wix",
+          "config": {
+            "language": 1033,
+            "manufacturer": "Simple Web Server"
           }
         }
       ]

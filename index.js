@@ -1,5 +1,6 @@
 var version = 1001000;
 const {app, BrowserWindow, ipcMain, Menu, Tray, dialog, shell } = require('electron');
+if (require('electron-squirrel-startup')) return app.quit();
 const { networkInterfaces } = require('os');
 
 global.savingLogs = false;
