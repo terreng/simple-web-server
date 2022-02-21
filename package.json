@@ -31,7 +31,8 @@
     "makemacosarm64": "electron-forge make --platform darwin --arch arm64",
     "makemacosuniversal": "",
     "makelinux": "electron-forge make --platform linux",
-    "makewww": "cp -r docs www/docs && npm --prefix ./www install ./www && node www/build.js"
+    "makewww": "cp -r docs www/docs && npm --prefix ./www install ./www && node www/build.js",
+    "tauri": "tauri"
   },
   "devDependencies": {
     "@electron-forge/cli": "^6.0.0-beta.57",
@@ -41,12 +42,14 @@
     "@electron-forge/maker-rpm": "6.0.0-beta.53",
     "@electron-forge/maker-squirrel": "6.0.0-beta.53",
     "@electron-forge/maker-zip": "6.0.0-beta.53",
+    "@tauri-apps/cli": "^1.0.0-rc.5",
     "electron": "^13.3.0",
     "electron-squirrel-startup": "^1.0.0",
     "electron-windows-store": "^2.1.0"
   },
   "dependencies": {
     "@electron-forge/maker-wix": "^6.0.0-beta.63",
+    "@tauri-apps/api": "^1.0.0-rc.1",
     "atob": "^2.1.2",
     "http": "^0.0.1-security",
     "https": "^1.0.0",
