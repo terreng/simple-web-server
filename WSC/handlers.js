@@ -630,7 +630,7 @@ DirectoryEntryHandler.prototype = {
         if (this.app.opts.cacheControl && typeof this.app.opts.cacheControl == 'string' && this.app.opts.cacheControl.trim() !== '') {
             this.setHeader('Cache-Control',this.app.opts.cacheControl)
         }
-        if (this.app.opts.excludeDotHtml && ! this.request.origpath.endsWith("/")) {
+        if (this.app.opts.excludeDotHtml && ! this.request.origpath.endsWith("/") && this.request.path != '') {
             var extension = this.request.path.split('.').pop();
             var more = this.request.uri.split('.'+extension).pop()
             if (['htm', 'html'].includes(extension)) {
@@ -674,7 +674,7 @@ DirectoryEntryHandler.prototype = {
                 }
             }
             //Start main onEntry function
-            if (this.entry && this.entry.isFile && this.request.origpath.endsWith('/')) {
+            if (this.entry && this.entry.isFile && this.request.origpath.endsWith('/') && this.request.path !== '') {
                 this.setHeader('location', this.request.path)
                 this.writeHeaders(301)
                 this.finish()
