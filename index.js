@@ -16,6 +16,7 @@ global.fs = require('fs');
 global.path = require('path');
 global.atob = require("atob");
 global.Blob = require('node-blob');
+global.send = require('send');
 
 WSC = require("./WSC.js");
 
@@ -216,6 +217,27 @@ app.on('activate', function () {
         }
     }
 })
+
+var lastIps = getIPs()
+setInterval(function() {
+    // I did some research, this is the best way to do this
+    var ips = getIPs()
+    var newIp = false
+    if (lastIps.length !== ips.length) {
+        newIp = true
+    }
+    if (newIp === false) {
+        for (var i=0; i<ips.length; i++) {
+            if (! lastIps.includes(ips[i])) {
+                newIp = true
+                break
+            }
+        }
+    }
+    if (newIp === true) {
+        //variable ips contains new ips
+    }
+}, 20000) //every 20 seconds
 
 function createWindow() {
 
