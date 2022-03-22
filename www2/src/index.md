@@ -1,10 +1,9 @@
 ---
 home: true
-heroImage: https://raw.githubusercontent.com/terreng/simple-web-server/main/images/icon.png
-heroText: Simple Web Server
+heroImage: https://v1.vuepress.vuejs.org/hero.png
 tagline: Create a local web server in just a few clicks with an easy to use interface.
-actionText: Download →
-actionLink: /download/
+actionText: Quick Start →
+actionLink: /guide/
 features:
 - title: Feature 1 Title
   details: Feature 1 Description
