@@ -1,22 +1,25 @@
+# Using custom scripts
 
-<h1>How to use custom scripts</h1>
-<br>
-<h2>How it works</h2>
-<br>
-<p>Perform a post/get request towards a js file, This js file will be checked for a key (Security) and with the correct key, the document will temporarily append the script and will execute the requested script</h2>
-<br>
-<p>As a security feature, you must have the request path and a key programed in a .swshtaccess file and in the js file.</p>
-<p>The file name does not need to end with .js  The extension can be anything you want as the extension does not matter and will not be checked</p>
-<p>You do not need to have htaccess enabled, this does not enable htaccess. It is just easier to keep everything in 1 place</p>
-<p>It is recommended to have the log to file function on, so it is easier to see if something goes wrong</p>
-<p>WHILE IT IS NOT REQUIRED - IT IS VERY HIGHLY RECOMENDED TO TURN ON THE HTACCESS FEATURE - AS IT WILL BLOCK USERS FROM PERFORMING A GET REQUEST TOWARDS THE FILE</p>
-<br><br>
-<h2>Writing the htaccess file</h2>
-<p>The file needs to be in the same path as the requested file</p>
-<p>The file name should be .swshtaccess (case sensitive)</p>
-<p>Example:</p>
+## How it works
 
-For info on how to write for a get request, please read the [htaccess readme](htaccess.md)
+Perform a post/get request towards a js file, This js file will be checked for a key (Security) and with the correct key, the document will temporarily append the script and will execute the requested script
+
+As a security feature, you must have the request path and a key programed in a .swsswsaccess file and in the js file.
+The file name does not need to end with .js  The extension can be anything you want as the extension does not matter and will not be checked
+You do not need to have swsaccess enabled, this does not enable swsaccess. It is just easier to keep everything in 1 place
+It is recommended to have the log to file function on, so it is easier to see if something goes wrong
+
+::: warning
+While not required, it is very highly recomended to turn on the swsaccess feature, as it will block users from performing a get request towards the file.
+:::
+
+## Writing the swsaccess file
+
+The file needs to be in the same path as the requested file
+The file name should be .swsswsaccess (case sensitive)
+Example:
+
+For info on how to write for a get request, please read the [swsaccess readme](swsaccess.md)
 
 ```
 [
@@ -31,13 +34,14 @@ Change `request_path` to the file you would like to perform this towards
 Change `key` to a random string of numbers and letters
 Do not change `type`
 
-<h2>Adding key verification to the .js file</h2>
-<p>Add the following line to your htaccess file</p>
+## Adding key verification to the .js file
+
+Add the following line to your swsaccess file
 
 ```
 postKey = 'wa4e76yhefy54t4a'
 ```
-Change `wa4e76yhefy54t4a` to the value of the key that you had inputed into the htaccess file
+Change `wa4e76yhefy54t4a` to the value of the key that you had inputed into the swsaccess file
 The start of the line (`postKey = `) MUST STAY THE SAME (case sensitive). The server does not check for a set variable, but it will scan the file for the text `postKey`
 THIS LINE MUST BE ITS OWN LINE!! You CANNOT combine multiple lines of code with `;`
 Indenting this line may cause for the server to not find this line and in result, the code will not be executed
@@ -45,8 +49,7 @@ YOU CANNOT PUT SPACES, `"`, or `'` IN YOUR KEY
 
 the res and req variables ARE NOT WINDOW VARIABLES. DO NOT USE THEM AS SUCH
 
-<br>
-<h2>Writing the code inside the file</h2>
+## Writing the code inside the file
 
 Example:
 ```
@@ -56,12 +59,12 @@ res.end() // THEN end the request
 ```
 res contains all the functions to respond, while req contains all the request information
 
-*NOTE* - You can use BOTH server side javascript and Server Side POST in the same file! Just declare 2 seperate keys in the htaccess and in the file!
+*NOTE* - You can use BOTH server side javascript and Server Side POST in the same file! Just declare 2 seperate keys in the swsaccess and in the file!
 
 To Debug the code, open the main window and press ctrl + shift + i
 
 
-<h1>res Commands</h1>
+## res Commands
 
 ### `res.end()`: function
 This function MUST be called at the end of the file. If called before finished processing, the server will cut off your script
@@ -102,7 +105,7 @@ Example:
 })
 ```
 
-<h2>Chunked encoding</h2>
+## Chunked encoding
 
 ### `res.writeChunk(data)`: function
 `data: String ||  Buffer  || ArrayBuffer`
@@ -122,7 +125,7 @@ res.writeChunk('\n\nAnd this is the last chunk')
 res.end() // VERY IMPORTANT (as always)
 ```
 
-<h1>req Commands</h1>
+## req Commands
 
 ### `req.bodyparams`: If the request is made with the html `form` element, then this will have all the values of the form
 
@@ -145,7 +148,7 @@ This contains the requested file (Will end with / if is directory)
 This contains the requested file. (Will NOT end with / if is directory)
 
 
-# FileSystem
+## FileSystem
 
 ### `res.getFile(path, callback)`: function
 This function will read a file. Relative urls are supported.
@@ -221,7 +224,7 @@ Will send a the default javascript directory listing
 ### `res.renderDirectoryListing(results)`
 Will send a plain, static directory listing
 
-# Promise based fs functions
+## Promise based fs functions
 
 Same use as functions above, just uses promises to use await or .then when reading the file.
 
@@ -232,7 +235,7 @@ Same use as functions above, just uses promises to use await or .then when readi
 `res.deleteFilePromise(path)`
 
 
-# Processing the request body
+## Processing the request body
 
 ### `res.readBody(callback)`
 callback: function
@@ -272,7 +275,7 @@ res.readBodyPromise().then(function(body) {
 stream request body to file. Saves memory on larger requests
 
 
-# Requiring modules
+## Requiring modules
 
 First, you MUST require a file through the `requireFile` function.
 In the folder that has the module you required, you can open a terminal/command prompt window and install the modules you want.
@@ -285,12 +288,8 @@ To clear module cache: call the `clearModuleCache` function
 
 
 
-# Another Useful Tool
-
-The `httpRequest` tool has been moved [here](httpRequest.md)
+## Another Useful Tool
 
 `global.tempData`: json This global variable is a place that you can store data if you need. It will NOT be cleared after the end of the response.
-
-Want to create a script compatible between this server and [Web Server For Chrome](https://github.com/ethanaobrien/web-server-chrome)?
 
 The `appInfo` variable will tell you which server you are using

@@ -1,5 +1,6 @@
+# Creating a custom request handler
 
-# httpRequest
+This guide covers how to write a custom `httpRequest` handler script.
 
 
 ## Step 1: create the request

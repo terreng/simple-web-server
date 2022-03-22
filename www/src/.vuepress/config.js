@@ -28,6 +28,7 @@ module.exports = {
     sidebarDepth: 3,
     repo: '',
     editLinks: false,
+    smoothScroll: true,
     docsDir: '',
     editLinkText: '',
     lastUpdated: false,
@@ -48,11 +49,22 @@ module.exports = {
     sidebar: {
       '/docs/': [
         {
-          title: 'Documentation',
+          title: 'Configuration',
           collapsable: false,
           children: [
             'options',
             'settings',
+          ]
+        },
+        {
+          title: 'Guides',
+          collapsable: false,
+          children: [
+            'config file',
+            'https',
+            'swsaccess',
+            'custom scripts',
+            'custom request handler'
           ]
         }
       ],

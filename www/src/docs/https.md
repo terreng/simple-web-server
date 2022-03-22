@@ -1,6 +1,4 @@
-<h4><a href="../index.md">Documentation</a> / <a href="./index.md">Server Options</a> / Configuring https</h4>
-
-# Configuring https
+# Configuring HTTPS
 
 The server has the ability to auto-generate https certificates, although when you try to visit it, it will show as untrusted and insecure. To use a custom generated certificate, the instructions are below
 
@@ -61,8 +59,7 @@ Tip: You can also seperate the key with a space (` `) instead of using `\r\n`
 Then paste your cert/key in the proper input in the UI
 
 
-
-#### When connecting to the server
+### When connecting to the server
 
 the page will say it is insecure (if you used a self signed certificate)
 

@@ -148,7 +148,7 @@ If hidden/dot files are enabled, determines if they will be shown in the directo
 - Type: `true/false`
 - Default: `false`
 
-You can use .swshtaccess files to set additional rules per directory. Learn more here.
+You can use .swshtaccess files to set additional rules per directory. To learn more, see [Advanced configuration using .swshtaccess files](swsaccess.md).
 
 ## Error pages
 
@@ -213,6 +213,10 @@ Optionally override this option to provide a custom HTTPS certificate.
 - Default: -
 
 Optionally override this option to provide a custom HTTPS private key.
+
+::: tip
+For more information on how to configure HTTPS with a custom certificate, see [Configuring HTTPS](https.md).
+:::
 
 ### Enable HTTP Basic authentication
 
