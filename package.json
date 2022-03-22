@@ -30,7 +30,7 @@
     "makemacosx86": "electron-forge make --platform darwin --arch x64",
     "makemacosarm64": "electron-forge make --platform darwin --arch arm64",
     "makemacosuniversal": "",
-    "makelinux": "electron-forge make --platform linux",
+    "makelinux": "electron-forge make --platform linux"
   },
   "devDependencies": {
     "@electron-forge/cli": "^6.0.0-beta.57",

@@ -186,7 +186,7 @@ You can specify a custom file path for any error page in the config.json file. T
 - Type: path string
 - Default: -
 
-Optionally specify a custom string that will be looked for in your error pages and replaced with the current path. For example, if your custom 404 page included: "The file at {{PATH}} does not exist" and you set this option to "{{PATH}}", when your file is served it would say "The file at /example.txt does not exist".
+Optionally specify a custom string that will be looked for in your error pages and replaced with the current path. For example, if your custom 404 page included: <span v-pre>`The file at {{PATH}} does not exist`</span> and you set this option to <span v-pre>`{{PATH}}`</span>, when your file is served it would say `The file at /example.txt does not exist`.
 
 ## Security
 
