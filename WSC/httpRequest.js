@@ -69,6 +69,9 @@ httpRequest.prototype = {
                 this.req.setHeader('content-length', data.byteLength)
             }
             this.req.on('response', this.onResponse.bind(this))
+            if (this.responseData) {
+                this.req.write(this.responseData)
+            }
             this.req.end()
         } catch(error) {
             if (this.onerror && typeof this.onerror == 'function') {
