@@ -715,7 +715,7 @@ DirectoryEntryHandler.prototype = {
                             }
                         }
                     }
-                    if (!this.app.opts.directoryListing && this.app.opts.showIndex) {
+                    if (!this.app.opts.directoryListing) {
                         this.error("", 404)
                     } else {
                         this.renderDirListing(results)
@@ -1175,22 +1175,18 @@ DirectoryEntryHandler.prototype = {
             this.error('', 404)
             return
         }
-        function readyToSend() {
-            global.ConnetionS[this.request.ip]--
-            send(this.req, entry.path, {index: false, lastModified: false, dotfiles: 'allow', etag: false, cacheControl: false})
-                .on('error', function(error) {
-                    this.res.statusCode = error.status
-                    this.res.statusMessage = WSC.HTTPRESPONSES[error.status] || 'Internal Server Error'
-                    this.res.write('error')
-                    this.res.end()
-                }.bind(this))
-                .pipe(this.res)
-        }
+        global.ConnetionS[this.request.ip]--
         if (! this.headersWritten) {
-            this.writeHeaders(200, false, readyToSend.bind(this))
-        } else {
-            readyToSend.bind(this)()
+            this.writeHeaders(200, false)
         }
+        //todo - remove send dependency (I dont trust it)
+        send(this.req, entry.path, {index: false, lastModified: false, dotfiles: 'allow', etag: false, cacheControl: false})
+            .on('error', function(error) {
+                this.res.statusCode = error.status
+                this.res.statusMessage = WSC.HTTPRESPONSES[error.status] || 'Internal Server Error';
+                this.res.write('error')
+                this.res.end()
+            }.bind(this)).pipe(this.res)
     },
     entriesSortFunc: function(a,b) {
         var anl = a.name.toLowerCase()

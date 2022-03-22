@@ -14,6 +14,7 @@ global.fs = require('fs');
 global.path = require('path');
 global.atob = require("atob");
 global.Blob = require('node-blob');
+global.send = require('send');
 
 WSC = require("./WSC.js");
 
