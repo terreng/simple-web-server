@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en-US">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>Simple Web Server</title>
+    <meta name="generator" content="VuePress 1.9.7">
+    
+    <meta name="description" content="Create a local web server in just a few clicks with an easy to use interface.">
+    <meta name="theme-color" content="#d09608">
+    
+    <link rel="preload" href="/assets/css/0.styles.0d9f39a9.css" as="style"><link rel="preload" href="/assets/js/app.99e52765.js" as="script"><link rel="preload" href="/assets/js/2.df3668a0.js" as="script"><link rel="preload" href="/assets/js/13.b362babb.js" as="script"><link rel="prefetch" href="/assets/js/10.69d5ea0e.js"><link rel="prefetch" href="/assets/js/11.b4f214ee.js"><link rel="prefetch" href="/assets/js/12.969da1e4.js"><link rel="prefetch" href="/assets/js/14.9e284939.js"><link rel="prefetch" href="/assets/js/15.ab0f09c2.js"><link rel="prefetch" href="/assets/js/16.802cd28f.js"><link rel="prefetch" href="/assets/js/17.4ebd5c76.js"><link rel="prefetch" href="/assets/js/18.e8593565.js"><link rel="prefetch" href="/assets/js/19.f8ec335f.js"><link rel="prefetch" href="/assets/js/20.7aae0a7f.js"><link rel="prefetch" href="/assets/js/3.d71e3132.js"><link rel="prefetch" href="/assets/js/4.e27a7f7a.js"><link rel="prefetch" href="/assets/js/5.e9f4081f.js"><link rel="prefetch" href="/assets/js/6.c7b54f12.js"><link rel="prefetch" href="/assets/js/7.81b258a5.js"><link rel="prefetch" href="/assets/js/8.ec70f3a4.js"><link rel="prefetch" href="/assets/js/9.effed064.js">
+    <link rel="stylesheet" href="/assets/css/0.styles.0d9f39a9.css">
+  </head>
+  <body>
+    <div id="app" data-server-rendered="true"><div class="theme-container"><header class="navbar"><div class="sidebar-button"><svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" role="img" viewBox="0 0 448 512" class="icon"><path fill="currentColor" d="M436 124H12c-6.627 0-12-5.373-12-12V80c0-6.627 5.373-12 12-12h424c6.627 0 12 5.373 12 12v32c0 6.627-5.373 12-12 12zm0 160H12c-6.627 0-12-5.373-12-12v-32c0-6.627 5.373-12 12-12h424c6.627 0 12 5.373 12 12v32c0 6.627-5.373 12-12 12zm0 160H12c-6.627 0-12-5.373-12-12v-32c0-6.627 5.373-12 12-12h424c6.627 0 12 5.373 12 12v32c0 6.627-5.373 12-12 12z"></path></svg></div> <a href="/" class="home-link router-link-active"><!----> <span class="site-name">Simple Web Server</span></a> <div class="links"><div class="search-box"><input aria-label="Search" autocomplete="off" spellcheck="false" value=""> <!----></div> <nav class="nav-links can-hide"><div class="nav-item"><a href="/download/" class="nav-link">
+  Download
+</a></div><div class="nav-item"><a href="/docs/" class="nav-link router-link-active">
+  Documentation
+</a></div><div class="nav-item"><a href="https://github.com/terreng/simple-web-server" target="_blank" rel="noopener noreferrer" class="nav-link external">
+  GitHub
+  <span><svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false" x="0px" y="0px" viewBox="0 0 100 100" width="15" height="15" class="icon outbound"><path fill="currentColor" d="M18.8,85.1h56l0,0c2.2,0,4-1.8,4-4v-32h-8v28h-48v-48h28v-8h-32l0,0c-2.2,0-4,1.8-4,4v56C14.8,83.3,16.6,85.1,18.8,85.1z"></path> <polygon fill="currentColor" points="45.7,48.7 51.3,54.3 77.2,28.5 77.2,37.2 85.2,37.2 85.2,14.9 62.8,14.9 62.8,22.9 71.5,22.9"></polygon></svg> <span class="sr-only">(opens new window)</span></span></a></div> <!----></nav></div></header> <div class="sidebar-mask"></div> <aside class="sidebar"><nav class="nav-links"><div class="nav-item"><a href="/download/" class="nav-link">
+  Download
+</a></div><div class="nav-item"><a href="/docs/" class="nav-link router-link-active">
+  Documentation
+</a></div><div class="nav-item"><a href="https://github.com/terreng/simple-web-server" target="_blank" rel="noopener noreferrer" class="nav-link external">
+  GitHub
+  <span><svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false" x="0px" y="0px" viewBox="0 0 100 100" width="15" height="15" class="icon outbound"><path fill="currentColor" d="M18.8,85.1h56l0,0c2.2,0,4-1.8,4-4v-32h-8v28h-48v-48h28v-8h-32l0,0c-2.2,0-4,1.8-4,4v56C14.8,83.3,16.6,85.1,18.8,85.1z"></path> <polygon fill="currentColor" points="45.7,48.7 51.3,54.3 77.2,28.5 77.2,37.2 85.2,37.2 85.2,14.9 62.8,14.9 62.8,22.9 71.5,22.9"></polygon></svg> <span class="sr-only">(opens new window)</span></span></a></div> <!----></nav>  <ul class="sidebar-links"><li><section class="sidebar-group depth-0"><p class="sidebar-heading open"><span>Documentation</span> <!----></p> <ul class="sidebar-links sidebar-group-items"><li><a href="/docs/options.html" class="sidebar-link">Server Options</a></li><li><a href="/docs/settings.html" class="sidebar-link">App Settings</a></li></ul></section></li></ul> </aside> <main class="page"> <div class="theme-default-content content__default"><h4><a href="../index.md">Documentation</a>  /  <a href="./index.md">Server Options</a>  /  How to use .swshtaccess</h4> <h1>How to use .swshtaccess</h1> <br> <p>Web Server for Chrome DOES NOT have support for .htaccess files. Instead, we have .swshtaccess files, which gets the same thing done (Not all features implimented).</p> <br><br> <h1>How to</h1> <p>All Htaccess features are built to have 100% compatibility with changes in settings</p> <h2>Currently supported</h2> <p>301 - Moved Permanently. Tells the server that when chosen file is requested to move to a different directory or file. The browser will cache this</p> <p>302 - Found. Tells the server that when chosen file is requested to move to a different directory or file. Not cached by the browser</p> <p>307 - Temporary Redirect. Tells the server that when chosen file is requested to move to a different directory or file. Not cached by the browser.</p> <p>401 - Unauthorized. The page will require login. For some reason, I cannot find how to clear the cache of the authorization header, which means that once you type it in, the browser will not ask for a login, unless you have multiple password protected pages with different passwords, The authentication header will change whenever you enter a different password.</p> <p>403 - blocks any request to the file</p> <p>denyDirectAccess - This will deny direct access to image/video/audio files. This option only works if https is enabled or if the user is on a localhost address.</p> <p>Render Directory Listing - Ignores the value of 404 instead of directory listing and renders the directory listing</p> <p>Deny deleting for a specific file or directory - Ignores value of delete option and will deny delete to requested file</p> <p>Allow deleting for certian file - Ignores value of delete option and will allow deleting requested file</p> <p>Deny uploading for a specific file or directory - Ignores value of PUT option and will deny put to requested file</p> <p>Allow uploading for certian file - Ignores value of PUT option and will allow deleting requested file.</p> <p>send directory contents - Will send the current directory at the end of the file. See the How To for a more advanced description</p> <p>additional header - Will set an additional header</p> <p>Versioning - relative file hosting</p> <p>serverSideJavaScript - Just what it sounds like</p> <p>If you want more features - Make an issue!</p> <br> <h1>Making the file</h1> <p>A .swshtaccess file is actually a javascript array, which means one problem with the file will cause it not to work - So be careful. No additional info can be put into the file</p> <p>Note - If you are trying to redirect to some index.html file and you have the option to automatically show index.html turned on, your path will go from '/somepath/index.html' to '/somepath/'</p> <p>Note - If you are trying to redirect to some .html file and you have the option to remove .html extension turned on, leave the .html extension. The web server will handle the request and forward it to have no .html extension</p> <p>Note - when selecting the file to scan for, if you are trying to edit some index.html (or index.htm, or index.xhtml, or index.xhtm) Put the file name in place of request path. example: <code>&quot;request_path&quot;: &quot;index.html&quot;,</code>. Security will scan any way to get the the file</p> <p>Note - when selecting the file to scan, if the file is some .html and you have the option to remove the .html extension turned on, leave the .html extension. The Web Server is programed to handle the request!</p> <p>Note - To set more than 1 ruleset per file, see instruction at bottom of the page</p> <p>Note - 401 (unauthorized) username and passwords are CASE SENSITIVE!!
+</p><p>Note - .swshtaccess file MUST be in the same directory as the file you want to change. The file does not need to exist (Mainly for 301, 302, and 307).</p> <p>IMPORTANT NOTE - EVERYTHING IN THE FILE (AND THE FILE NAME) IS CASE SENSITIVE!!</p> <br><p></p> <p>To use option for all files, the value of request path will be 'all files' It should look like this <code>&quot;request_path&quot;: &quot;all files&quot;,</code></p> <br> <h2>301 Example</h2> <p>Tells the server that when chosen file is requested to move to a different directory or file. The browser will cache this</p> <div class="language- extra-class"><pre class="language-text"><code>[
+    {
+        &quot;request_path&quot;: &quot;name of file you want to modify&quot;,
+        &quot;type&quot;: 301, 
+        &quot;redirto&quot;: &quot;/path/you/want/to/redirect/to&quot;
+    }
+]
+</code></pre></div><br> <h2>302 Example</h2> <p>Tells the server that when chosen file is requested to move to a different directory or file. Not cached by the browser</p> <div class="language- extra-class"><pre class="language-text"><code>[
+    {
+        &quot;request_path&quot;: &quot;name of file you want to modify&quot;,
+        &quot;type&quot;: 302, 
+        &quot;redirto&quot;: &quot;/path/you/want/to/redirect/to&quot;
+    }
+]
+</code></pre></div><br> <h2>307 Example</h2> <p>Tells the server that when chosen file is requested to move to a different directory or file. Not cached by the browser.</p> <div class="language- extra-class"><pre class="language-text"><code>[
+    {
+        &quot;request_path&quot;: &quot;name of file you want to modify&quot;,
+        &quot;type&quot;: 307, 
+        &quot;redirto&quot;: &quot;/path/you/want/to/redirect/to&quot;
+    }
+]
+</code></pre></div><br> <h2>401 Example</h2> <p>The page will require login.</p> <div class="language- extra-class"><pre class="language-text"><code>[
+    {
+        &quot;request_path&quot;: &quot;name of file you want to modify&quot;,
+        &quot;type&quot;: 401,
+        &quot;username&quot;: &quot;test&quot;,
+        &quot;password&quot;: &quot;example&quot;
+    }
+]
+</code></pre></div><br> <h2>denyDirectAccess Example</h2> <p>This will deny direct access to image/video/audio files. This option only works if https is enabled or if the user is on a localhost address.</p> <div class="language- extra-class"><pre class="language-text"><code>[
+    {
+        &quot;request_path&quot;: &quot;name of file you want to modify&quot;,
+        &quot;type&quot;: &quot;denyDirectAccess&quot;
+    }
+]
+</code></pre></div><br> <h2>Directory Listing</h2> <p>Ignores the value of 404 instead of directory listing and renders the directory listing</p> <div class="language- extra-class"><pre class="language-text"><code>[
+    {
+        &quot;type&quot;: &quot;directory listing&quot;
+    }
+]
+</code></pre></div><br> <h2>Deny uploading</h2> <p>Ignores value of PUT option and will deny put to requested file</p> <div class="language- extra-class"><pre class="language-text"><code>[
+    {
+        &quot;request_path&quot;: &quot;name of file you want to modify&quot;,
+        &quot;type&quot;: &quot;deny put&quot;
+    }
+]
+</code></pre></div><br> <h2>Deny delete</h2> <p>Ignores value of delete option and will deny delete to requested file</p> <div class="language- extra-class"><pre class="language-text"><code>[
+    {
+        &quot;request_path&quot;: &quot;name of file you want to modify&quot;,
+        &quot;type&quot;: &quot;deny delete&quot;
+    }
+]
+</code></pre></div><br> <h2>Allow Uploading</h2> <p>Ignores value of PUT option and will allow deleting requested file</p> <div class="language- extra-class"><pre class="language-text"><code>[
+    {
+        &quot;request_path&quot;: &quot;name of file you want to modify&quot;,
+        &quot;type&quot;: &quot;allow put&quot;
+    }
+]
+</code></pre></div><br> <h2>Allow delete</h2> <p>Ignores value of delete option and will allow deleting requested file</p> <div class="language- extra-class"><pre class="language-text"><code>[
+    {
+        &quot;request_path&quot;: &quot;name of file you want to modify&quot;,
+        &quot;type&quot;: &quot;allow delete&quot;
+    }
+]
+</code></pre></div><br> <h2>403 - Block File</h2> <p>Just blocks the file</p> <div class="language- extra-class"><pre class="language-text"><code>[
+    {
+        &quot;request_path&quot;: &quot;name of file you want to modify&quot;,
+        &quot;type&quot;: 403
+    }
+]
+</code></pre></div><br> <h2>Versioning</h2> <p>Versions of a file</p> <div class="language- extra-class"><pre class="language-text"><code>[
+    {
+        &quot;request_path&quot;: &quot;name of file you want to modify&quot;,
+        &quot;type&quot;: &quot;versioning&quot;,
+        &quot;default&quot;: 4,
+        &quot;variable&quot;: &quot;v&quot;,
+        &quot;version_data&quot;: {&quot;1&quot;: &quot;Path to file&quot;,
+                         &quot;2&quot;: &quot;Path to file&quot;,
+                         &quot;3&quot;: &quot;Path to file&quot;,
+                         &quot;4&quot;: &quot;Path to file&quot;
+                        }
+    }
+]
+</code></pre></div><p>Example of request path</p> <div class="language- extra-class"><pre class="language-text"><code>{
+    &quot;1&quot;: &quot;/data/path/to/file/index.html&quot;
+}
+</code></pre></div><p>or, if the you were in the <code>/data/asd/</code> directory</p> <div class="language- extra-class"><pre class="language-text"><code>{
+    &quot;1&quot;: &quot;../path/to/file/index.html&quot;
+}
+</code></pre></div><p>You can add as many versions as you would like.</p> <p>I have recently made it to where you can use relative paths!</p> <p>Versioning pretty much just makes the server think that you requested another file. So you can do a directory or whatever! The file will be checked with the htaccess of that current directory</p> <p>The variable is what the user needs to request. If we use v, the user would request something like <code>localhost:8887/example.mp4?v=1</code></p><p>Note that you do not need an extension for the requested file.</p> <br> <h2>additional header</h2> <p>Sends an additional header</p><p></p> <div class="language- extra-class"><pre class="language-text"><code>[
+    {
+        &quot;request_path&quot;: &quot;name of file you want to modify&quot;,
+        &quot;type&quot;: &quot;additional header&quot;,
+        &quot;headerType&quot;: &quot;the type of header&quot;,
+        &quot;headerValue&quot;: &quot;the value of the header&quot;
+    }
+]
+</code></pre></div><p>If you go to a site (Like <a href="https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers">Mozilla</a>) it will show the header as</p> <p><code>Cookie: name=value</code>. The first part of the header (In this case, <code>Cookie</code>) will be the <code>headerType</code> and the second part of the header (In this case, <code>name=value</code>) will be the <code>headerValue</code>.
+The end result will be</p> <div class="language- extra-class"><pre class="language-text"><code>[
+    {
+        &quot;request_path&quot;: &quot;name of file you want to modify&quot;,
+        &quot;type&quot;: &quot;additional header&quot;,
+        &quot;headerType&quot;: &quot;Cookie&quot;,
+        &quot;headerValue&quot;: &quot;name=value&quot;
+    }
+]
+</code></pre></div><br> <h2>send directory contents</h2> <p>Will send the current directory along with the file</p> <p>Example:</p> <div class="language- extra-class"><pre class="language-text"><code>[
+    {
+        &quot;request_path&quot;: &quot;name of file you want to modify&quot;,
+        &quot;type&quot;: &quot;send directory contents&quot;,
+        &quot;dir_to_send&quot;: &quot;../somepath/&quot;
+    }
+]
+</code></pre></div><p>More howto (send directory contents)</p> <p>This feature CANNOT use the <code>all files</code> value for the <code>request_path</code> field. You must specify each file separately
+</p><p>if dir_to_send is not specified, then the current directory will be sent</p> <p>Getting info from sent contents</p> <p>This is what is sent</p><p></p> <div class="language- extra-class"><pre class="language-text"><code>&lt;script&gt;addRow(&quot;index.html&quot;, &quot;index.html&quot;, false, 6276, &quot;6.1 KiB&quot;, 302113940, &quot;5/25/21, 1:09:40 PM&quot;)&lt;/script&gt;
+</code></pre></div><p>It will send as an addRow function. The contents are, as follows.</p> <p><code>addRow(filename, filenameencoded, isdirectory, size, sizestr, date, datestr)</code></p> <p><code>filename</code>: The raw file name.
+<code>filenameencoded</code>: The encoded file name (For things like setting link locations)
+<code>isdirectory</code>: If the sent row is a directory, this will be true. Will send as <code>true</code> or <code>false</code> <code>size</code>: File size (in Bytes) Example: <code>254014</code> <code>sizestr</code>: File size (As a string) Example: <code>248.1 KiB</code> <code>date</code>: Date not in a string format. Example: <code>142132146</code> <code>datestr</code>: Date as a string. Example: <code>3/11/21, 3:21:46 AM</code> <br></p><h2>serverSideJavaScript</h2> <p>Allows you to process and respond as you wish</p> <p>Example:</p><p></p> <div class="language- extra-class"><pre class="language-text"><code>[
+    {
+        &quot;request_path&quot;: &quot;name of file you want to modify&quot;,
+        &quot;type&quot;: &quot;serverSideJavaScript&quot;,
+        &quot;key&quot;: &quot;ATonOfRaNdOmNumbersAndLetters&quot;
+    }
+]
+</code></pre></div><p>Please refer to the <a href="custom scripts.md">custom scripts readme</a> To learn how to respond.</p> <p>The only difference is - DO NOT declare the type as postKey in the htaccess file and instead of using <code>postKey = 'wa4e76yhefy54t4a'</code> use <code>SSJSKey = 'wa4e76yhefy54t4a'</code></p> <br> <h1>How to use more than 1 ruleset per file</h1> <p>Pay VERY close attention to the syntax. One thing wrong will cause an error!!</p> <p>First, I provide an example</p> <div class="language- extra-class"><pre class="language-text"><code>[
+    {
+        &quot;request_path&quot;: &quot;oranges.html&quot;,
+        &quot;type&quot;: 401,
+        &quot;username&quot;: &quot;Username&quot;,
+        &quot;password&quot;: &quot;Password&quot;
+    },
+    {
+        &quot;type&quot;: &quot;directory listing&quot;
+    },
+    {
+        &quot;request_path&quot;: &quot;all files&quot;,
+        &quot;type&quot;: &quot;deny delete&quot;
+    }
+]
+</code></pre></div><p>You basically have <code>[</code> and <code>]</code> surrounding the entire file and each ruleset inside <code>{</code> these <code>}</code>
+You MUST separate each ruleset with a comma (As shown in the example). The failure to do so will result in an error.
+For the last ruleset, no comma can be after the <code>}</code>. This will break the array and give you an error.</p> <p>When using multiple rulesets per file, the server will first check if an authentication rule is in place. If it is, the server will require the user to enter the password before it will allow the user to do anything. After the user has correct auth (if the auth is present) it will check for rulesets from the top of the file, to the bottom. The redirects, the directory listing, and sending the current directory with the file cannot both be used, whatever the web server picks up first is what will be executed.</p> <p>You can have as many additional headers as you like!</p></div> <footer class="page-edit"><!----> <!----></footer> <!----> </main></div><div class="global-ui"></div></div>
+    <script src="/assets/js/app.99e52765.js" defer></script><script src="/assets/js/2.df3668a0.js" defer></script><script src="/assets/js/13.b362babb.js" defer></script>
+  </body>
+</html>
