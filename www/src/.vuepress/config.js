@@ -39,7 +39,7 @@ module.exports = {
       },
       {
         text: 'Documentation',
-        link: '/docs/'
+        link: '/docs/options.html'
       },
       {
         text: 'GitHub',
