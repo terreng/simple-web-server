@@ -25,6 +25,7 @@ module.exports = {
    * ref：https://v1.vuepress.vuejs.org/theme/default-theme-config.html
    */
   themeConfig: {
+    sidebarDepth: 3,
     repo: '',
     editLinks: false,
     docsDir: '',
