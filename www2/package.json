@@ -1,0 +1,19 @@
+{
+  "name": "simple-web-server-website",
+  "version": "0.0.1",
+  "description": "Create a local web server in just a few clicks with an easy to use interface.",
+  "main": "index.js",
+  "authors": {
+    "name": "",
+    "email": ""
+  },
+  "repository": "https://github.com/terreng/simple-web-server/simple-web-server",
+  "scripts": {
+    "dev": "vuepress dev src",
+    "build": "vuepress build src"
+  },
+  "license": "MIT",
+  "devDependencies": {
+    "vuepress": "^1.5.3"
+  }
+}
