@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en-US">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>Simple Web Server</title>
+    <meta name="generator" content="VuePress 1.9.7">
+    
+    <meta name="description" content="Create a local web server in just a few clicks with an easy to use interface.">
+    <meta name="theme-color" content="#d09608">
+    
+    <link rel="preload" href="/assets/css/0.styles.0d9f39a9.css" as="style"><link rel="preload" href="/assets/js/app.99e52765.js" as="script"><link rel="preload" href="/assets/js/2.df3668a0.js" as="script"><link rel="preload" href="/assets/js/12.969da1e4.js" as="script"><link rel="prefetch" href="/assets/js/10.69d5ea0e.js"><link rel="prefetch" href="/assets/js/11.b4f214ee.js"><link rel="prefetch" href="/assets/js/13.b362babb.js"><link rel="prefetch" href="/assets/js/14.9e284939.js"><link rel="prefetch" href="/assets/js/15.ab0f09c2.js"><link rel="prefetch" href="/assets/js/16.802cd28f.js"><link rel="prefetch" href="/assets/js/17.4ebd5c76.js"><link rel="prefetch" href="/assets/js/18.e8593565.js"><link rel="prefetch" href="/assets/js/19.f8ec335f.js"><link rel="prefetch" href="/assets/js/20.7aae0a7f.js"><link rel="prefetch" href="/assets/js/3.d71e3132.js"><link rel="prefetch" href="/assets/js/4.e27a7f7a.js"><link rel="prefetch" href="/assets/js/5.e9f4081f.js"><link rel="prefetch" href="/assets/js/6.c7b54f12.js"><link rel="prefetch" href="/assets/js/7.81b258a5.js"><link rel="prefetch" href="/assets/js/8.ec70f3a4.js"><link rel="prefetch" href="/assets/js/9.effed064.js">
+    <link rel="stylesheet" href="/assets/css/0.styles.0d9f39a9.css">
+  </head>
+  <body>
+    <div id="app" data-server-rendered="true"><div class="theme-container"><header class="navbar"><div class="sidebar-button"><svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" role="img" viewBox="0 0 448 512" class="icon"><path fill="currentColor" d="M436 124H12c-6.627 0-12-5.373-12-12V80c0-6.627 5.373-12 12-12h424c6.627 0 12 5.373 12 12v32c0 6.627-5.373 12-12 12zm0 160H12c-6.627 0-12-5.373-12-12v-32c0-6.627 5.373-12 12-12h424c6.627 0 12 5.373 12 12v32c0 6.627-5.373 12-12 12zm0 160H12c-6.627 0-12-5.373-12-12v-32c0-6.627 5.373-12 12-12h424c6.627 0 12 5.373 12 12v32c0 6.627-5.373 12-12 12z"></path></svg></div> <a href="/" class="home-link router-link-active"><!----> <span class="site-name">Simple Web Server</span></a> <div class="links"><div class="search-box"><input aria-label="Search" autocomplete="off" spellcheck="false" value=""> <!----></div> <nav class="nav-links can-hide"><div class="nav-item"><a href="/download/" class="nav-link">
+  Download
+</a></div><div class="nav-item"><a href="/docs/" class="nav-link router-link-active">
+  Documentation
+</a></div><div class="nav-item"><a href="https://github.com/terreng/simple-web-server" target="_blank" rel="noopener noreferrer" class="nav-link external">
+  GitHub
+  <span><svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false" x="0px" y="0px" viewBox="0 0 100 100" width="15" height="15" class="icon outbound"><path fill="currentColor" d="M18.8,85.1h56l0,0c2.2,0,4-1.8,4-4v-32h-8v28h-48v-48h28v-8h-32l0,0c-2.2,0-4,1.8-4,4v56C14.8,83.3,16.6,85.1,18.8,85.1z"></path> <polygon fill="currentColor" points="45.7,48.7 51.3,54.3 77.2,28.5 77.2,37.2 85.2,37.2 85.2,14.9 62.8,14.9 62.8,22.9 71.5,22.9"></polygon></svg> <span class="sr-only">(opens new window)</span></span></a></div> <!----></nav></div></header> <div class="sidebar-mask"></div> <aside class="sidebar"><nav class="nav-links"><div class="nav-item"><a href="/download/" class="nav-link">
+  Download
+</a></div><div class="nav-item"><a href="/docs/" class="nav-link router-link-active">
+  Documentation
+</a></div><div class="nav-item"><a href="https://github.com/terreng/simple-web-server" target="_blank" rel="noopener noreferrer" class="nav-link external">
+  GitHub
+  <span><svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false" x="0px" y="0px" viewBox="0 0 100 100" width="15" height="15" class="icon outbound"><path fill="currentColor" d="M18.8,85.1h56l0,0c2.2,0,4-1.8,4-4v-32h-8v28h-48v-48h28v-8h-32l0,0c-2.2,0-4,1.8-4,4v56C14.8,83.3,16.6,85.1,18.8,85.1z"></path> <polygon fill="currentColor" points="45.7,48.7 51.3,54.3 77.2,28.5 77.2,37.2 85.2,37.2 85.2,14.9 62.8,14.9 62.8,22.9 71.5,22.9"></polygon></svg> <span class="sr-only">(opens new window)</span></span></a></div> <!----></nav>  <ul class="sidebar-links"><li><section class="sidebar-group depth-0"><p class="sidebar-heading open"><span>Documentation</span> <!----></p> <ul class="sidebar-links sidebar-group-items"><li><a href="/docs/options.html" class="sidebar-link">Server Options</a></li><li><a href="/docs/settings.html" class="sidebar-link">App Settings</a></li></ul></section></li></ul> </aside> <main class="page"> <div class="theme-default-content content__default"><h1>How to use custom scripts</h1> <br> <h2>How it works</h2> <br> <p>Perform a post/get request towards a js file, This js file will be checked for a key (Security) and with the correct key, the document will temporarily append the script and will execute the requested script <br></p><p>As a security feature, you must have the request path and a key programed in a .swshtaccess file and in the js file.</p> <p>The file name does not need to end with .js  The extension can be anything you want as the extension does not matter and will not be checked</p> <p>You do not need to have htaccess enabled, this does not enable htaccess. It is just easier to keep everything in 1 place</p> <p>It is recommended to have the log to file function on, so it is easier to see if something goes wrong</p> <p>WHILE IT IS NOT REQUIRED - IT IS VERY HIGHLY RECOMENDED TO TURN ON THE HTACCESS FEATURE - AS IT WILL BLOCK USERS FROM PERFORMING A GET REQUEST TOWARDS THE FILE</p> <br><br> <h2>Writing the htaccess file</h2> <p>The file needs to be in the same path as the requested file</p> <p>The file name should be .swshtaccess (case sensitive)</p> <p>Example:</p> <p>For info on how to write for a get request, please read the <a href="/docs/htaccess.html">htaccess readme</a></p> <div class="language- extra-class"><pre class="language-text"><code>[
+    {
+        &quot;type&quot;: &quot;POSTkey&quot;,
+        &quot;request_path&quot;: &quot;index.js&quot;,
+        &quot;key&quot;: &quot;wa4e76yhefy54t4a&quot;
+    }
+]
+</code></pre></div><p>Change <code>request_path</code> to the file you would like to perform this towards
+Change <code>key</code> to a random string of numbers and letters
+Do not change <code>type</code></p> <h2>Adding key verification to the .js file</h2> <p>Add the following line to your htaccess file</p> <div class="language- extra-class"><pre class="language-text"><code>postKey = 'wa4e76yhefy54t4a'
+</code></pre></div><p>Change <code>wa4e76yhefy54t4a</code> to the value of the key that you had inputed into the htaccess file
+The start of the line (<code>postKey =</code>) MUST STAY THE SAME (case sensitive). The server does not check for a set variable, but it will scan the file for the text <code>postKey</code>
+THIS LINE MUST BE ITS OWN LINE!! You CANNOT combine multiple lines of code with <code>;</code>
+Indenting this line may cause for the server to not find this line and in result, the code will not be executed
+YOU CANNOT PUT SPACES, <code>&quot;</code>, or <code>'</code> IN YOUR KEY</p> <p>the res and req variables ARE NOT WINDOW VARIABLES. DO NOT USE THEM AS SUCH</p> <br> <h2>Writing the code inside the file</h2> <p>Example:</p> <div class="language- extra-class"><pre class="language-text"><code>res.contentType('text/plain') // ALWAYS set the headers first
+res.write('test') // THEN send the data
+res.end() // THEN end the request
+</code></pre></div><p>res contains all the functions to respond, while req contains all the request information</p> <p><em>NOTE</em> - You can use BOTH server side javascript and Server Side POST in the same file! Just declare 2 seperate keys in the htaccess and in the file!</p> <p>To Debug the code, open the main window and press ctrl + shift + i</p> <h1>res Commands</h1> <h3 id="res-end-function"><a href="#res-end-function" class="header-anchor">#</a> <code>res.end()</code>: function</h3> <p>This function MUST be called at the end of the file. If called before finished processing, the server will cut off your script
+This function will close the http request
+You can use this function directly when finished and it will automaticaly respond with an http code of 200 (unless set otherwise)</p> <h3 id="res-write-data-httpcode-function"><a href="#res-write-data-httpcode-function" class="header-anchor">#</a> <code>res.write(data, httpCode)</code>: function</h3> <p><code>data: String || Buffer || ArrayBuffer</code>
+This function will write data to the client. Once called, you canot push any more information.</p> <h3 id="res-setheader-headertype-headervalue-function"><a href="#res-setheader-headertype-headervalue-function" class="header-anchor">#</a> <code>res.setHeader(headerType, headerValue)</code>: function</h3> <p>This function will set headers of the response.
+Instead of <code>Cookie: name=value</code>, you would put <code>res.setHeader('Cookie', 'name=value')</code></p> <h3 id="res-contenttype-type-function"><a href="#res-contenttype-type-function" class="header-anchor">#</a> <code>res.contentType(type)</code>: function</h3> <p>This function will set the content type to respond with, you could also use the <code>res.setHeader()</code> function</p> <h3 id="res-writecode-httpcode-function"><a href="#res-writecode-httpcode-function" class="header-anchor">#</a> <code>res.writeCode(httpCode)</code>: function</h3> <p>Call this to respond with no message. Dont forget to finish with <code>res.end()</code></p> <h3 id="res-renderfilecontents-file-function"><a href="#res-renderfilecontents-file-function" class="header-anchor">#</a> <code>res.renderFileContents(file)</code>: function</h3> <p>Once you have called the file with <code>res.getFile()</code> (DO NOT use the <code>file.file()</code> function) use <code>res.renderFileContents()</code> to render the file
+DO NOT call <code>res.end()</code> when using this function
+Example:</p> <div class="language- extra-class"><pre class="language-text"><code>`res.getFile('../somefile.html', function(file) {
+    if (file.error) {
+        console.log('error')
+    } else if (file.isFile) {
+        res.renderFileContents(file)
+    } else if (file.isDirectory) {
+        file.getDirContents(function(results) {
+            results[2].file(function(file2) {
+                res.renderFileContents(file2)
+            })
+        }
+    }
+})
+</code></pre></div><h2>Chunked encoding</h2> <h3 id="res-writechunk-data-function"><a href="#res-writechunk-data-function" class="header-anchor">#</a> <code>res.writeChunk(data)</code>: function</h3> <p><code>data: String || Buffer || ArrayBuffer</code>
+This feature will send the data in chunks, instead of all at once.
+To enable, you must set the transfer-encoding header to chunked
+Like this: <code>res.setHeader('transfer-encoding','chunked')</code></p> <p>Example:</p> <div class="language- extra-class"><pre class="language-text"><code>res.setHeader('transfer-encoding','chunked')
+res.contentType('text/html; charset=utf-8')
+res.writeHeaders(200)
+res.writeChunk('This is Chunk number 1')
+res.writeChunk('\n\nAnd this is chunk number 2')
+res.writeChunk('\n\nAnd this is the last chunk')
+res.end() // VERY IMPORTANT (as always)
+</code></pre></div><h1>req Commands</h1> <h3 id="req-bodyparams-if-the-request-is-made-with-the-html-form-element-then-this-will-have-all-the-values-of-the-form"><a href="#req-bodyparams-if-the-request-is-made-with-the-html-form-element-then-this-will-have-all-the-values-of-the-form" class="header-anchor">#</a> <code>req.bodyparams</code>: If the request is made with the html <code>form</code> element, then this will have all the values of the form</h3> <h3 id="req-headers-json-string"><a href="#req-headers-json-string" class="header-anchor">#</a> <code>req.headers</code>: json string</h3> <p>This contains all of the headers that the user sent when making the http request</p> <h3 id="req-arguments-json-string"><a href="#req-arguments-json-string" class="header-anchor">#</a> <code>req.arguments</code>: json string</h3> <p>This contains all of the arguments that the user has put in the url</p> <h3 id="req-method-string"><a href="#req-method-string" class="header-anchor">#</a> <code>req.method</code>: string</h3> <p>This contains the request method</p> <h3 id="req-uri-string"><a href="#req-uri-string" class="header-anchor">#</a> <code>req.uri</code>: string</h3> <p>This contains the entire requested path</p> <h3 id="req-origpath-string"><a href="#req-origpath-string" class="header-anchor">#</a> <code>req.origpath</code>: string</h3> <p>This contains the requested file (Will end with / if is directory)</p> <h3 id="req-path-string"><a href="#req-path-string" class="header-anchor">#</a> <code>req.path</code>: string</h3> <p>This contains the requested file. (Will NOT end with / if is directory)</p> <h1 id="filesystem"><a href="#filesystem" class="header-anchor">#</a> FileSystem</h1> <h3 id="res-getfile-path-callback-function"><a href="#res-getfile-path-callback-function" class="header-anchor">#</a> <code>res.getFile(path, callback)</code>: function</h3> <p>This function will read a file. Relative urls are supported.
+To get the directory contents, use the <code>file.getDirContents()</code> function
+To read the file as text, use the <code>file.file()</code> function
+Example:</p> <div class="language- extra-class"><pre class="language-text"><code>`res.getFile('../test.txt', function(file) {
+    if (file.error) {
+        console.log('error')
+    } else if (file.isFile) {
+        file.file(function(text)
+            var filetext = text // file.file will read the file as text. To render the file, you can use the renderFileContents() function
+        })
+    } else if (file.isDirectory) {
+        file.getDirContents(function(results) {
+            results[2].file(function(file) {
+                console.log(file)
+            })
+        }
+    }
+})
+</code></pre></div><h3 id="res-writefile-path-data-allowreplacefile-callback-function"><a href="#res-writefile-path-data-allowreplacefile-callback-function" class="header-anchor">#</a> <code>res.writeFile(path, data, allowReplaceFile, callback)</code>: function</h3> <p>This function will save a file
+path: the path of the file
+If the path contains a non existent folder, the folder will be created
+data: string/Buffer/ArrayBuffer of the file. DO NOT SEND OTHER TYPES OF DATA - THIS COULD BREAK THE APP (Just refresh it)
+allowReplaceFile: if file exists and you want to replace the file, set this to true
+callback: function will be excecuted to tell you if there was an error or it will callback the file</p> <h3 id="res-deletefile-path-callback-function"><a href="#res-deletefile-path-callback-function" class="header-anchor">#</a> <code>res.deleteFile(path, callback)</code>: function</h3> <p>This function will delete
+path: the path of the file
+callback: function will be excecuted to tell you if there was an error or success</p> <p>Commands once you get the info using the <code>res.getFile()</code> function</p> <h3 id="entry-file-callback"><a href="#entry-file-callback" class="header-anchor">#</a> <code>entry.file(callback)</code></h3> <p>promise: <code>entry.filePromise()</code>
+This function will read the file and return the contents as a Buffer.
+If you want to display the contents of the file, it is recommended to use <code>res.renderFileContents()</code>
+This function will only work on files, not directories</p> <h3 id="entry-text-callback"><a href="#entry-text-callback" class="header-anchor">#</a> <code>entry.text(callback)</code></h3> <p>promise: <code>entry.textPromise()</code>
+Will read the file as text</p> <h3 id="entry-remove-callback"><a href="#entry-remove-callback" class="header-anchor">#</a> <code>entry.remove(callback)</code></h3> <p>promise: <code>entry.removePromise()</code>
+Use this to delete the file</p> <h3 id="entry-getdircontents-callback"><a href="#entry-getdircontents-callback" class="header-anchor">#</a> <code>entry.getDirContents(callback)</code></h3> <p>promise: <code>entry.getDirContentsPromise()</code>
+This function will get the contents of the directory in an array. Every file in the array will work with the <code>.file</code> and the <code>.getDirContents</code> functions
+This function will only work on directories, not files
+From here, you can use the contents to use in the rest of the processing.</p> <p>If you would like to render the directory listing with the results, you can use these commands.
+When the directory listing is sent, you still need to send <code>res.end()</code></p> <h3 id="res-renderdirectorylistingjson-results"><a href="#res-renderdirectorylistingjson-results" class="header-anchor">#</a> <code>res.renderDirectoryListingJSON(results)</code></h3> <p>Will send a stringified json of the directory listing</p> <h3 id="res-renderdirectorylistingstaticjs-results"><a href="#res-renderdirectorylistingstaticjs-results" class="header-anchor">#</a> <code>res.renderDirectoryListingStaticJs(results)</code></h3> <p>Will send a directory listing that can transition between javascript and static</p> <h3 id="res-renderdirectorylistingtemplate-results"><a href="#res-renderdirectorylistingtemplate-results" class="header-anchor">#</a> <code>res.renderDirectoryListingTemplate(results)</code></h3> <p>Will send a the default javascript directory listing</p> <h3 id="res-renderdirectorylisting-results"><a href="#res-renderdirectorylisting-results" class="header-anchor">#</a> <code>res.renderDirectoryListing(results)</code></h3> <p>Will send a plain, static directory listing</p> <h1 id="promise-based-fs-functions"><a href="#promise-based-fs-functions" class="header-anchor">#</a> Promise based fs functions</h1> <p>Same use as functions above, just uses promises to use await or .then when reading the file.</p> <p><code>res.getFilePromise(path)</code></p> <p><code>res.writeFilePromise(path, data, allowReplaceFile)</code></p> <p><code>res.deleteFilePromise(path)</code></p> <h1 id="processing-the-request-body"><a href="#processing-the-request-body" class="header-anchor">#</a> Processing the request body</h1> <h3 id="res-readbody-callback"><a href="#res-readbody-callback" class="header-anchor">#</a> <code>res.readBody(callback)</code></h3> <p>callback: function</p> <p>Will read from the req stream. If the body has already been read, it will return the existing body
+After calling this, <code>req.body</code> will be set</p> <p>Example:</p> <div class="language- extra-class"><pre class="language-text"><code>res.readBody(function(body) {
+    console.log(body)
+})
+</code></pre></div><h3 id="res-readbodypromise"><a href="#res-readbodypromise" class="header-anchor">#</a> <code>res.readBodyPromise()</code></h3> <p>Same as <code>res.readBody</code>, but uses promises</p> <p>Examples:</p> <div class="language- extra-class"><pre class="language-text"><code>// When inside an async function
+var body = await res.readBodyPromise()
+console.log(body)
+// or
+res.readBodyPromise().then(function(body) {
+    console.log(body)
+})
+</code></pre></div><h3 id="stream2file-writepath-allowoverwrite-callback"><a href="#stream2file-writepath-allowoverwrite-callback" class="header-anchor">#</a> <code>stream2File(writePath, allowOverWrite, callback)</code></h3> <p><code>writePath</code>: path to save file to
+<code>allowOverWrite</code>: allow file overwrite, <code>true</code> or <code>false</code> <code>callback</code>: function. Will return if there is an error, or success</p> <p>stream request body to file. Saves memory on larger requests</p> <h1 id="requiring-modules"><a href="#requiring-modules" class="header-anchor">#</a> Requiring modules</h1> <p>First, you MUST require a file through the <code>requireFile</code> function.
+In the folder that has the module you required, you can open a terminal/command prompt window and install the modules you want.
+Then, inside the file you required, you can require the modules you installed</p> <p>You CANNOT require modules inside the main file
+the <code>requireFile</code> function is only for use in the main file</p> <p>To clear module cache: call the <code>clearModuleCache</code> function</p> <h1 id="another-useful-tool"><a href="#another-useful-tool" class="header-anchor">#</a> Another Useful Tool</h1> <p>The <code>httpRequest</code> tool has been moved <a href="/docs/httpRequest.html">here</a></p> <p><code>global.tempData</code>: json This global variable is a place that you can store data if you need. It will NOT be cleared after the end of the response.</p> <p>Want to create a script compatible between this server and <a href="https://github.com/ethanaobrien/web-server-chrome" target="_blank" rel="noopener noreferrer">Web Server For Chrome<span><svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false" x="0px" y="0px" viewBox="0 0 100 100" width="15" height="15" class="icon outbound"><path fill="currentColor" d="M18.8,85.1h56l0,0c2.2,0,4-1.8,4-4v-32h-8v28h-48v-48h28v-8h-32l0,0c-2.2,0-4,1.8-4,4v56C14.8,83.3,16.6,85.1,18.8,85.1z"></path> <polygon fill="currentColor" points="45.7,48.7 51.3,54.3 77.2,28.5 77.2,37.2 85.2,37.2 85.2,14.9 62.8,14.9 62.8,22.9 71.5,22.9"></polygon></svg> <span class="sr-only">(opens new window)</span></span></a>?</p> <p>The <code>appInfo</code> variable will tell you which server you are using</p></div> <footer class="page-edit"><!----> <!----></footer> <!----> </main></div><div class="global-ui"></div></div>
+    <script src="/assets/js/app.99e52765.js" defer></script><script src="/assets/js/2.df3668a0.js" defer></script><script src="/assets/js/12.969da1e4.js" defer></script>
+  </body>
+</html>
