@@ -31,7 +31,6 @@
     "makemacosarm64": "electron-forge make --platform darwin --arch arm64",
     "makemacosuniversal": "",
     "makelinux": "electron-forge make --platform linux",
-    "makewww": "cp -r docs www/docs && npm --prefix ./www install ./www && node www/build.js"
   },
   "devDependencies": {
     "@electron-forge/cli": "^6.0.0-beta.57",
