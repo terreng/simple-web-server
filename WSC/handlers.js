@@ -1181,50 +1181,66 @@ DirectoryEntryHandler.prototype = {
             this.writeHeaders(200);
             this.finish();
         } else {
-            var fileOffset, fileEndOffset;
+            if (entry.size === 0) {
+                this.responseLength = entry.size;
+                this.writeHeaders(200);
+                this.write('');
+                this.finish();
+                return
+            }
+            var fileOffset, fileEndOffset, code;
             if (this.request.headers['range']) {
-                console.log('range request')
+                //console.log('range request')
                 var range = this.request.headers['range'].split('=')[1].trim();
                 var rparts = range.split('-');
+                fileOffset = parseInt(rparts[0]);
                 if (! rparts[1]) {
-                    fileOffset = parseInt(rparts[0]);
                     var fileEndOffset = entry.size - 1;
                     this.responseLength = entry.size-fileOffset;
                     this.setHeader('content-range','bytes '+fileOffset+'-'+(entry.size-1)+'/'+entry.size);
                     if (fileOffset == 0) {
-                        this.writeHeaders(200);
+                        code = 200;
                     } else {
-                        this.writeHeaders(206);
+                        code = 206;
                     }
-                    var stream = this.fs.createReadStream({start: fileOffset,end: entry.size-1});
-                    stream.pipe(this.res);
-                    stream.on('finish', function() {
-                        stream.close();
-                    })
-                    this.req.on("close", function() {
-                        stream.close();
-                    })
                 } else {
-                    fileOffset = parseInt(rparts[0]);
                     fileEndOffset = parseInt(rparts[1])
                     this.responseLength = fileEndOffset - fileOffset + 1;
                     this.setHeader('content-range','bytes '+fileOffset+'-'+(fileEndOffset)+'/'+entry.size)
-                    this.writeHeaders(206);
-                    var stream = this.fs.createReadStream({start: fileOffset,end: fileEndOffset});
-                    stream.pipe(this.res);
-                    stream.on('finish', function() {
-                        stream.close();
-                    })
-                    this.req.on("close", function() {
-                        stream.close();
-                    })
+                    code = 206;
                 }
             } else {
                 fileOffset = 0;
                 fileEndOffset = entry.size - 1;
-                this.writeHeaders(200);
                 this.responseLength = entry.size;
-                var stream = this.fs.createReadStream({start: fileOffset,end: fileEndOffset});
+                code = 200;
+            }
+            var compression = false;
+            var stream = this.fs.createReadStream(entry.fullPath, {start: fileOffset,end: fileEndOffset});
+            if (this.request.headers['accept-encoding'] && this.app.opts.compressResponses) {
+                var ac = this.request.headers['accept-encoding'];
+                if (ac.includes('br') || ac.includes('gzip') || ac.includes('deflate')) {
+                    compression = true;
+                    var compresionStream;
+                    if (ac.includes('gzip')) {
+                        this.setHeader('Content-Encoding', 'gzip')
+                        compresionStream = zlib.createGzip();
+                    } else if (ac.includes('br')) {
+                        this.setHeader('Content-Encoding', 'br')
+                        compresionStream = zlib.createBrotliCompress();
+                    } else if (ac.includes('deflate')) {
+                        this.setHeader('Content-Encoding', 'deflate')
+                        compresionStream = zlib.createDeflate();
+                    } else {
+                        console.log('this.. shouldnt be possible');
+                        this.res.end();
+                        return;
+                    }
+                    pipeline(stream, compresionStream, this.res, function(e) {console.warn('error', e); this.res.end()}.bind(this))
+                }
+            }
+            this.writeHeaders(code);
+            if (! compression) {
                 stream.pipe(this.res);
                 stream.on('finish', function() {
                     stream.close();
