@@ -1176,17 +1176,64 @@ DirectoryEntryHandler.prototype = {
             return
         }
         global.ConnetionS[this.request.ip]--
-        if (! this.headersWritten) {
-            this.writeHeaders(200, false)
+        if (this.request.method === 'HEAD') {
+            this.responseLength = entry.size;
+            this.writeHeaders(200);
+            this.finish();
+        } else {
+            var fileOffset, fileEndOffset;
+            if (this.request.headers['range']) {
+                console.log('range request')
+                var range = this.request.headers['range'].split('=')[1].trim();
+                var rparts = range.split('-');
+                if (! rparts[1]) {
+                    fileOffset = parseInt(rparts[0]);
+                    var fileEndOffset = entry.size - 1;
+                    this.responseLength = entry.size-fileOffset;
+                    this.setHeader('content-range','bytes '+fileOffset+'-'+(entry.size-1)+'/'+entry.size);
+                    if (fileOffset == 0) {
+                        this.writeHeaders(200);
+                    } else {
+                        this.writeHeaders(206);
+                    }
+                    var stream = this.fs.createReadStream({start: fileOffset,end: entry.size-1});
+                    stream.pipe(this.res);
+                    stream.on('finish', function() {
+                        stream.close();
+                    })
+                    this.req.on("close", function() {
+                        stream.close();
+                    })
+                } else {
+                    fileOffset = parseInt(rparts[0]);
+                    fileEndOffset = parseInt(rparts[1])
+                    this.responseLength = fileEndOffset - fileOffset + 1;
+                    this.setHeader('content-range','bytes '+fileOffset+'-'+(fileEndOffset)+'/'+entry.size)
+                    this.writeHeaders(206);
+                    var stream = this.fs.createReadStream({start: fileOffset,end: fileEndOffset});
+                    stream.pipe(this.res);
+                    stream.on('finish', function() {
+                        stream.close();
+                    })
+                    this.req.on("close", function() {
+                        stream.close();
+                    })
+                }
+            } else {
+                fileOffset = 0;
+                fileEndOffset = entry.size - 1;
+                this.writeHeaders(200);
+                this.responseLength = entry.size;
+                var stream = this.fs.createReadStream({start: fileOffset,end: fileEndOffset});
+                stream.pipe(this.res);
+                stream.on('finish', function() {
+                    stream.close();
+                })
+                this.req.on("close", function() {
+                    stream.close();
+                })
+            }
         }
-        //todo - remove send dependency (I dont trust it)
-        send(this.req, entry.path, {index: false, lastModified: false, dotfiles: 'allow', etag: false, cacheControl: false})
-            .on('error', function(error) {
-                this.res.statusCode = error.status
-                this.res.statusMessage = WSC.HTTPRESPONSES[error.status] || 'Internal Server Error';
-                this.res.write('error')
-                this.res.end()
-            }.bind(this)).pipe(this.res)
     },
     entriesSortFunc: function(a,b) {
         var anl = a.name.toLowerCase()
