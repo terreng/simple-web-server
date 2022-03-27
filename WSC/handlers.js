@@ -630,7 +630,7 @@ DirectoryEntryHandler.prototype = {
         if (this.app.opts.cacheControl && typeof this.app.opts.cacheControl == 'string' && this.app.opts.cacheControl.trim() !== '') {
             this.setHeader('Cache-Control',this.app.opts.cacheControl)
         }
-        if (this.app.opts.excludeDotHtml && ! this.request.origpath.endsWith("/")) {
+        if (this.app.opts.excludeDotHtml && ! this.request.origpath.endsWith("/") && this.request.path != '') {
             var extension = this.request.path.split('.').pop();
             var more = this.request.uri.split('.'+extension).pop()
             if (['htm', 'html'].includes(extension)) {
@@ -674,7 +674,7 @@ DirectoryEntryHandler.prototype = {
                 }
             }
             //Start main onEntry function
-            if (this.entry && this.entry.isFile && this.request.origpath.endsWith('/')) {
+            if (this.entry && this.entry.isFile && this.request.origpath.endsWith('/') && this.request.path !== '') {
                 this.setHeader('location', this.request.path)
                 this.writeHeaders(301)
                 this.finish()
@@ -1176,17 +1176,80 @@ DirectoryEntryHandler.prototype = {
             return
         }
         global.ConnetionS[this.request.ip]--
-        if (! this.headersWritten) {
-            this.writeHeaders(200, false)
+        if (this.request.method === 'HEAD') {
+            this.responseLength = entry.size;
+            this.writeHeaders(200);
+            this.finish();
+        } else {
+            if (entry.size === 0) {
+                this.responseLength = entry.size;
+                this.writeHeaders(200);
+                this.write('');
+                this.finish();
+                return
+            }
+            var fileOffset, fileEndOffset, code;
+            if (this.request.headers['range']) {
+                //console.log('range request')
+                var range = this.request.headers['range'].split('=')[1].trim();
+                var rparts = range.split('-');
+                fileOffset = parseInt(rparts[0]);
+                if (! rparts[1]) {
+                    var fileEndOffset = entry.size - 1;
+                    this.responseLength = entry.size-fileOffset;
+                    this.setHeader('content-range','bytes '+fileOffset+'-'+(entry.size-1)+'/'+entry.size);
+                    if (fileOffset == 0) {
+                        code = 200;
+                    } else {
+                        code = 206;
+                    }
+                } else {
+                    fileEndOffset = parseInt(rparts[1])
+                    this.responseLength = fileEndOffset - fileOffset + 1;
+                    this.setHeader('content-range','bytes '+fileOffset+'-'+(fileEndOffset)+'/'+entry.size)
+                    code = 206;
+                }
+            } else {
+                fileOffset = 0;
+                fileEndOffset = entry.size - 1;
+                this.responseLength = entry.size;
+                code = 200;
+            }
+            var compression = false;
+            var stream = this.fs.createReadStream(entry.fullPath, {start: fileOffset,end: fileEndOffset});
+            if (this.request.headers['accept-encoding'] && this.app.opts.compressResponses) {
+                var ac = this.request.headers['accept-encoding'];
+                if (ac.includes('br') || ac.includes('gzip') || ac.includes('deflate')) {
+                    compression = true;
+                    var compresionStream;
+                    if (ac.includes('gzip')) {
+                        this.setHeader('Content-Encoding', 'gzip')
+                        compresionStream = zlib.createGzip();
+                    } else if (ac.includes('br')) {
+                        this.setHeader('Content-Encoding', 'br')
+                        compresionStream = zlib.createBrotliCompress();
+                    } else if (ac.includes('deflate')) {
+                        this.setHeader('Content-Encoding', 'deflate')
+                        compresionStream = zlib.createDeflate();
+                    } else {
+                        console.log('this.. shouldnt be possible');
+                        this.res.end();
+                        return;
+                    }
+                    pipeline(stream, compresionStream, this.res, function(e) {console.warn('error', e); this.res.end()}.bind(this))
+                }
+            }
+            this.writeHeaders(code);
+            if (! compression) {
+                stream.pipe(this.res);
+                stream.on('finish', function() {
+                    stream.close();
+                })
+                this.req.on("close", function() {
+                    stream.close();
+                })
+            }
         }
-        //todo - remove send dependency (I dont trust it)
-        send(this.req, entry.path, {index: false, lastModified: false, dotfiles: 'allow', etag: false, cacheControl: false})
-            .on('error', function(error) {
-                this.res.statusCode = error.status
-                this.res.statusMessage = WSC.HTTPRESPONSES[error.status] || 'Internal Server Error';
-                this.res.write('error')
-                this.res.end()
-            }.bind(this)).pipe(this.res)
     },
     entriesSortFunc: function(a,b) {
         var anl = a.name.toLowerCase()

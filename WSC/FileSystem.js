@@ -300,6 +300,13 @@ FileSystem.prototype = {
             }
         }
         return fs.createWriteStream(path)
+    },
+    createReadStream: function(path, opts) {
+        var path = WSC.utils.relativePath(path, '')
+        this.origpath = path
+        var path = this.mainPath + path
+        var path = path.replace(/\/\//g, '/').replace(/\\/g, '/')
+        return fs.createReadStream(path, opts)
     }
 }
 

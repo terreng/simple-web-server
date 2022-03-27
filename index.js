@@ -16,7 +16,9 @@ global.fs = require('fs');
 global.path = require('path');
 global.atob = require("atob");
 global.Blob = require('node-blob');
-global.send = require('send');
+global.zlib = require('zlib');
+const { pipeline } = require('stream');
+global.pipeline = pipeline;
 
 WSC = require("./WSC.js");
 
