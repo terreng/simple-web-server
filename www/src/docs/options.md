@@ -86,14 +86,6 @@ Exclude .htm and .html extensions from URLs. For example, /example.html will red
 
 Optionally specify a custom Cache-Control HTTP header value.
 
-### Serve hidden/dot files
-
-- Name: `hiddenDotFiles`
-- Type: `true/false`
-- Default: `false`
-
-Allow requesting hidden/dot files. Also enables creating, modifying, and deleting them, if enabled.
-
 ### Set CORS headers
 
 - Name: `cors`
@@ -101,6 +93,22 @@ Allow requesting hidden/dot files. Also enables creating, modifying, and deletin
 - Default: `false`
 
 Allow cross origin requests. Sets `Access-Control-Allow-Origin` header to `*`, `Access-Control-Allow-Methods` to `GET, POST, PUT, DELETE`, and `Access-Control-Max-Age` to `120`.
+
+### HTTP compression
+
+- Name: `compression`
+- Type: `true/false`
+- Default: `false`
+
+Serve files with compression. Only works for supported browsers. This reduces network data usage, but may slow down the server on low-end computers. Supports gzip, Brotli, and deflate compression formats.
+
+### Serve hidden/dot files
+
+- Name: `hiddenDotFiles`
+- Type: `true/false`
+- Default: `false`
+
+Allow requesting hidden/dot files. Also enables creating, modifying, and deleting them, if enabled.
 
 ### Allow file upload
 

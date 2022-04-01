@@ -1217,7 +1217,7 @@ DirectoryEntryHandler.prototype = {
             }
             var compression = false;
             var stream = this.fs.createReadStream(entry.fullPath, {start: fileOffset,end: fileEndOffset});
-            if (this.request.headers['accept-encoding'] && this.app.opts.compressResponses) {
+            if (this.request.headers['accept-encoding'] && this.app.opts.compression) {
                 var ac = this.request.headers['accept-encoding'];
                 if (ac.includes('br') || ac.includes('gzip') || ac.includes('deflate')) {
                     compression = true;
@@ -1236,7 +1236,7 @@ DirectoryEntryHandler.prototype = {
                         this.res.end();
                         return;
                     }
-                    pipeline(stream, compresionStream, this.res, function(e) {console.warn('error', e); this.res.end()}.bind(this))
+                    pipeline(stream, compresionStream, this.res, function(err) {if (err) {console.warn('Compression Error:', err); this.res.end()}}.bind(this))
                 }
             }
             this.writeHeaders(code);
