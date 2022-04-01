@@ -93,14 +93,14 @@ Optionally specify a custom Cache-Control HTTP header value.
 - Default: `false`
 
 Allow cross origin requests. Sets `Access-Control-Allow-Origin` header to `*`, `Access-Control-Allow-Methods` to `GET, POST, PUT, DELETE`, and `Access-Control-Max-Age` to `120`.
-
+<!-- This option is not accessible from the UI
 ### HTTP compression
 
 - Name: `compression`
 - Type: `true/false`
 - Default: `false`
 
-Serve files with compression. Only works for supported browsers. This reduces network data usage, but may slow down the server on low-end computers. Supports gzip, Brotli, and deflate compression formats.
+Serve files with compression. Only works for supported browsers. This reduces network data usage, but may slow down the server on low-end computers. Supports gzip, Brotli, and deflate compression formats.-->
 
 ### Serve hidden/dot files
 
