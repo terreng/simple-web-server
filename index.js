@@ -1,6 +1,6 @@
 var version = 1001000;
 const {app, BrowserWindow, ipcMain, Menu, Tray, dialog, shell } = require('electron');
-if (require('electron-squirrel-startup')) return app.quit();
+if (require('electron-squirrel-startup')) app.quit();
 const { networkInterfaces } = require('os');
 
 global.savingLogs = false;
@@ -146,9 +146,15 @@ app.on('ready', function() {
     })
     */
     try {
-        config = JSON.parse(fs.readFileSync(path.join(app.getPath('userData'), "config.json")));
+        config = fs.readFileSync(path.join(app.getPath('userData'), "config.json"));
     } catch(error) {
-        config = {};
+        config = "{}";
+    }
+    try {
+        config = JSON.parse(config);
+    } catch(error) {
+        dialog.showErrorBox("Failed to parse config.json", "Something went wrong while parsing config.json. The file is improperly formatted.");
+        app.quit();
     }
     for (var i = 0; i < (config.servers || []).length; i++) {
         if (config.servers[i].httpsKey && config.servers[i].httpsCert) {
