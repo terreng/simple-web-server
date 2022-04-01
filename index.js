@@ -220,26 +220,29 @@ app.on('activate', function () {
     }
 })
 
-var lastIps = getIPs()
+var lastIps = [];
 setInterval(function() {
-    // I did some research, this is the best way to do this
     var ips = getIPs()
-    var newIp = false
+    var ipsChanged = false
     if (lastIps.length !== ips.length) {
-        newIp = true
+        ipsChanged = true
     }
-    if (newIp === false) {
+    if (ipsChanged === false) {
         for (var i=0; i<ips.length; i++) {
             if (! lastIps.includes(ips[i])) {
-                newIp = true
+                ipsChanged = true
                 break
             }
         }
     }
-    if (newIp === true) {
-        //variable ips contains new ips
+    if (ipsChanged === true) {
+        lastIps = ips;
+        if (mainWindow && mainWindow.webContentsLoaded) {
+            mainWindow.webContents.send('message', {"type": "ipchange", ip: ips});
+            console.log("IP(s) changed: "+JSON.stringify(ips));
+        }
     }
-}, 20000) //every 20 seconds
+}, 5000) //every 5 seconds
 
 function createWindow() {
 
@@ -270,7 +273,8 @@ function createWindow() {
     
     mainWindow.webContents.on('did-finish-load', function() {
         mainWindow.webContentsLoaded = true;
-        mainWindow.webContents.send('message', {"type": "init", "config": config, ip: getIPs()});
+        lastIps = getIPs()
+        mainWindow.webContents.send('message', {"type": "init", "config": config, ip: lastIps});
         if (update_info) {
             mainWindow.webContents.send('message', {"type": "update", "url": update_info.url, "text": update_info.text, "attributes": update_info.attributes});
         }

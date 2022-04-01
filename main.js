@@ -58,6 +58,10 @@ window.api.initipc(function (event, message) {
             document.getElementById("update_banner").classList.remove("high_priority");
         }
     }
+    if (message.type == "ipchange") {
+        ip = message.ip;
+        updateOnIpChange();
+    }
 });
 
 window.onresize = function() {
@@ -167,6 +171,12 @@ function updateRunningStates() {
     if (document.getElementById("server_container").style.display == "block" && activeeditindex !== false) {
         document.getElementById("edit_server_running").querySelector(".label").innerHTML = running_states[getServerStatus(config.servers[activeeditindex]).state].text;
         document.getElementById("edit_server_running").querySelector(".label").style.color = running_states[getServerStatus(config.servers[activeeditindex]).state].edit_color;
+        document.querySelector("#settings_server_list").innerHTML = getServerStatusBox(config.servers[activeeditindex]);
+    }
+}
+
+function updateOnIpChange() {
+    if (document.getElementById("server_container").style.display == "block" && activeeditindex !== false) {
         document.querySelector("#settings_server_list").innerHTML = getServerStatusBox(config.servers[activeeditindex]);
     }
 }
