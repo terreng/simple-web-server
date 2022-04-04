@@ -54,6 +54,7 @@ module.exports = {
             'swsaccess',
             'custom scripts',
             'custom request handler',
+            'logs',
             'build',
             'wsc'
           ]
