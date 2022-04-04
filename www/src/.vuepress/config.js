@@ -53,7 +53,9 @@ module.exports = {
             'https',
             'swsaccess',
             'custom scripts',
-            'custom request handler'
+            'custom request handler',
+            'build',
+            'wsc'
           ]
         }
       ],
