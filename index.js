@@ -104,10 +104,8 @@ function getIPs() {
     var ips = []
     for (var k in ifaces) {
         for (var i=0; i<ifaces[k].length; i++) {
-            if (ifaces[k][i].family == 'IPv4') {
-                ips.push({address:ifaces[k][i].address, isIpv4:true})
-            } else if (!ifaces[k][i].address.startsWith('fe80::')) { //this is basically 127.0.0.1 for IPv6
-                ips.push({address:ifaces[k][i].address, isIpv4:false})
+            if (!ifaces[k][i].address.startsWith('fe80::')) { //this is basically 127.0.0.1 for IPv6
+                ips.push([ifaces[k][i].address, ifaces[k][i].family.toLowerCase()])
             }
         }
     }
@@ -215,17 +213,10 @@ setInterval(function() {
     // I did some research, this is the best way to do this
     var ips = getIPs()
     var newIp = false
-    if (lastIps.length !== ips.length) {
+    if (lastIps.length !== ips.length || JSON.stringify(lastIps) === ips) {
         newIp = true
     }
-    if (newIp === false) {
-        for (var i=0; i<ips.length; i++) {
-            if (! lastIps.includes(ips[i])) {
-                newIp = true
-                break
-            }
-        }
-    }
+    lastIps = ips;
     if (newIp === true) {
         //variable ips contains new ips
     }
