@@ -1,10 +1,10 @@
-const {app, BrowserWindow, ipcMain, Menu, Tray, dialog, shell } = require('electron');
-const { networkInterfaces } = require('os');
+const {app, BrowserWindow, ipcMain, Menu, Tray, dialog, shell} = require('electron');
+const {networkInterfaces} = require('os');
 
 global.savingLogs = false;
 global.pendingSave = false;
 
-const { URL } = require('url');
+const {URL} = require('url');
 global.URL = URL;
 global.http = require('http');
 global.https = require('https');
@@ -15,12 +15,12 @@ global.path = require('path');
 global.atob = require("atob");
 global.Blob = require('node-blob');
 global.zlib = require('zlib');
-const { pipeline } = require('stream');
+const {pipeline} = require('stream');
 global.pipeline = pipeline;
 
 WSC = require("./WSC.js");
 
-//let tray //There seem to be problems with the tray discarding. Could you take a look at it?
+//let tray //There seem to be problems with the tray discarding.
 
 
 console = function(old_console) {
@@ -101,11 +101,11 @@ const quit = function(event) {
 
 function getIPs() {
     let ifaces = networkInterfaces();
-    var ips = [ ]
+    var ips = []
     for (var k in ifaces) {
         for (var i=0; i<ifaces[k].length; i++) {
-            if (ifaces[k][i].family == 'IPv4') {
-                ips.push(ifaces[k][i].address)
+            if (!ifaces[k][i].address.startsWith('fe80::')) { //this is basically 127.0.0.1 for IPv6
+                ips.push([ifaces[k][i].address, ifaces[k][i].family.toLowerCase()])
             }
         }
     }
@@ -213,17 +213,10 @@ setInterval(function() {
     // I did some research, this is the best way to do this
     var ips = getIPs()
     var newIp = false
-    if (lastIps.length !== ips.length) {
+    if (lastIps.length !== ips.length || JSON.stringify(lastIps) === ips) {
         newIp = true
     }
-    if (newIp === false) {
-        for (var i=0; i<ips.length; i++) {
-            if (! lastIps.includes(ips[i])) {
-                newIp = true
-                break
-            }
-        }
-    }
+    lastIps = ips;
     if (newIp === true) {
         //variable ips contains new ips
     }
@@ -358,7 +351,7 @@ function startServers() {
             if (serverconfig.enabled && !found_already_running) {
                 var this_server = {"config":serverconfig,"state":"starting"};
 
-                var hostname = serverconfig.localnetwork ? '0.0.0.0' : '127.0.0.1';
+                var hostname = serverconfig.localnetwork ? (serverconfig.ipv6 ? '::' : '0.0.0.0') : '127.0.0.1';
                 if (serverconfig.https) {
                     if (!serverconfig.httpsKey || !serverconfig.httpsCert) {
                         var crypto = WSC.createCrypto();
@@ -404,12 +397,11 @@ function startServers() {
                     updateServerStates();
                 });
                 server.on('listening', function() {
+                    console.log('Listening on ' + (serverconfig.https ? 'https' : 'http') + '://' + hostname + ':' + serverconfig.port)
                     this_server.state = "running";
                     updateServerStates();
                 });
                 server.listen(serverconfig.port, hostname);
-
-                console.log('Listening on ' + (serverconfig.https ? 'https' : 'http') + '://' + hostname + ':' + serverconfig.port)
 
                 var connections = {}
 
