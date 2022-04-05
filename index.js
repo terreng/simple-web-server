@@ -106,7 +106,7 @@ function getIPs() {
     var ips = []
     for (var k in ifaces) {
         for (var i=0; i<ifaces[k].length; i++) {
-            if (!ifaces[k][i].address.startsWith('fe80::')) { //this is basically 127.0.0.1 for IPv6
+            if (!ifaces[k][i].address.startsWith('fe80::') && ['IPv4', 'IPv6'].indexOf(ifaces[k][i].family) > -1) {
                 ips.push([ifaces[k][i].address, ifaces[k][i].family.toLowerCase()])
             }
         }
@@ -375,7 +375,7 @@ function startServers() {
             if (serverconfig.enabled && !found_already_running) {
                 var this_server = {"config":serverconfig,"state":"starting"};
 
-                var hostname = serverconfig.localnetwork ? (serverconfig.ipv6 ? '::' : '0.0.0.0') : '127.0.0.1';
+                var hostname = serverconfig.localnetwork ? (serverconfig.ipv6 ? '::' : '0.0.0.0') : (serverconfig.ipv6 ? '::1' : '127.0.0.1');
                 if (serverconfig.https) {
                     if (!serverconfig.httpsKey || !serverconfig.httpsCert) {
                         var crypto = WSC.createCrypto();

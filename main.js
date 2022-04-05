@@ -114,7 +114,7 @@ function openLicenses() {
 function renderServerList() {
     var pendhtml = "";
     for (var i = 0; i < (config.servers || []).length; i++) {
-        pendhtml += '<div class="server '+(config.servers[i].enabled ? "checked" : "")+'" id="server_'+i+'"><div onclick="toggleServer('+i+')"><div class="switch"></div></div><div onclick="addServer('+i+')"><div>'+htmlescape(config.servers[i].path)+'</div><div><span class="server_status" style="color: '+running_states[getServerStatus(config.servers[i]).state].list_color+';">'+running_states[getServerStatus(config.servers[i]).state].text+'</span> &bull; Port '+String(config.servers[i].port)+(config.servers[i].localnetwork ? ' &bull; LAN' : '')+(config.servers[i].https ? ' &bull; HTTPS' : '')+'</div></div></div>'
+        pendhtml += '<div class="server '+(config.servers[i].enabled ? "checked" : "")+'" id="server_'+i+'"><div onclick="toggleServer('+i+')"><div class="switch"></div></div><div onclick="addServer('+i+')"><div>'+htmlescape(config.servers[i].path)+'</div><div><span class="server_status" style="color: '+running_states[getServerStatus(config.servers[i]).state].list_color+';">'+running_states[getServerStatus(config.servers[i]).state].text+'</span> &bull; Port '+String(config.servers[i].port)+(config.servers[i].ipv6 ? ' &bull; IPv6' : '')+(config.servers[i].localnetwork ? ' &bull; LAN' : '')+(config.servers[i].https ? ' &bull; HTTPS' : '')+'</div></div></div>'
     }
     if (pendhtml == "") {
         pendhtml = '<div style="color: var(--fullscreen_placeholder);text-align: center;position: absolute;top: 48%;width: 100%;transform: translateY(-50%);"><i class="material-icons" style="font-size: 70px;">dns</i><div style="font-size: 18px;padding-top: 20px;">You haven\'t created any servers yet</div></div>';
@@ -142,8 +142,8 @@ function getServerStatusBox(local_config) {
             var url_list = [];
 
             for (var i = 0; i < ip.length; i++) {
-                if (ip[i] == '127.0.0.1' || local_config.localnetwork) {
-                    url_list.push((local_config.https ? 'https' : 'http')+'://'+ip[i]+':'+local_config.port);
+                if ((ip[i][0] == '127.0.0.1' && local_config.ipv6 != true) || (ip[i][0] == '::1' && local_config.ipv6 == true) || (local_config.localnetwork && ((ip[i][1] == "ipv4") || (ip[i][1] == "ipv6" && local_config.ipv6 == true)))) {
+                    url_list.push((local_config.https ? 'https' : 'http')+'://'+(ip[i][1] == "ipv6" ? "["+ip[i][0]+"]" : ip[i][0])+':'+local_config.port);
                 }
             }
         
@@ -257,6 +257,7 @@ function addServer(editindex) {
         toggleCheckbox("directoryListing", config.servers[editindex].directoryListing != null ? config.servers[editindex].directoryListing : true);
         toggleCheckbox("excludeDotHtml", config.servers[editindex].excludeDotHtml != null ? config.servers[editindex].excludeDotHtml : false);
 
+        toggleCheckbox("ipv6", config.servers[editindex].ipv6 != null ? config.servers[editindex].ipv6 : false);
         document.querySelector("#cacheControl").value = config.servers[editindex].cacheControl || "";
         toggleCheckbox("hiddenDotFiles", config.servers[editindex].hiddenDotFiles != null ? config.servers[editindex].hiddenDotFiles : false);
         toggleCheckbox("cors", config.servers[editindex].cors != null ? config.servers[editindex].cors : false);
@@ -305,6 +306,7 @@ function addServer(editindex) {
         toggleCheckbox("directoryListing", true);
         toggleCheckbox("excludeDotHtml", false);
 
+        toggleCheckbox("ipv6", false);
         document.querySelector("#cacheControl").value = "";
         toggleCheckbox("hiddenDotFiles", false);
         toggleCheckbox("cors", false);
@@ -395,6 +397,7 @@ function submitAddServer() {
         "directoryListing": isChecked("directoryListing"),
         "excludeDotHtml": isChecked("excludeDotHtml"),
 
+        "ipv6": isChecked("ipv6"),
         "cacheControl": document.querySelector("#cacheControl").value,
         "hiddenDotFiles": isChecked("hiddenDotFiles"),
         "cors": isChecked("cors"),
