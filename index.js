@@ -106,7 +106,7 @@ function getIPs() {
     var ips = []
     for (var k in ifaces) {
         for (var i=0; i<ifaces[k].length; i++) {
-            if (!ifaces[k][i].address.startsWith('fe80::') && ['IPv4', 'IPv6'].indexOf(ifaces[k][i].family) > -1) {
+            if (!ifaces[k][i].address.startsWith('fe80::') && ['IPv4', 'IPv6'].includes(ifaces[k][i].family)) {
                 ips.push([ifaces[k][i].address, ifaces[k][i].family.toLowerCase()])
             }
         }

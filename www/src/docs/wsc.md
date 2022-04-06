@@ -11,7 +11,7 @@ Simple Web Server has many new features and capabilities for users coming from W
 - You can now run multiple local web servers at the same time
 - Simple Web Server has many more server configuration options
 
-However, some features from Web Server for Chrome have been removed in favor of alternate solutions. Here is a list of removed options:
+Please note that some features from Web Server for Chrome have been removed in favor of alternative solutions. Here is a list of removed options:
 
 <table>
     <tr>
