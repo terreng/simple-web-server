@@ -1,9 +1,6 @@
-
-
 String.prototype.htmlEscape = function() {
     return this.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;")
 }
-
 
 module.exports = {
     humanFileSize: function(bytes, si=false, dp=1) {
@@ -82,22 +79,22 @@ module.exports = {
     },
     htaccessFileRequested: function(filerequested, index) {
         if (index) {
-            if (filerequested == 'index.html' ||
-                filerequested == 'index.htm' ||
-                filerequested == 'index' ||
-                filerequested == 'index.xhtm' ||
-                filerequested == 'index.xhtml' ||
-                filerequested == '') {
+            if (filerequested === 'index.html' ||
+                filerequested === 'index.htm' ||
+                filerequested === 'index' ||
+                filerequested === 'index.xhtm' ||
+                filerequested === 'index.xhtml' ||
+                filerequested === '') {
                 return 'index'
             } else {
                 return filerequested
             }
         } else {
-            if (filerequested == 'index.html' ||
-                filerequested == 'index.htm' ||
-                filerequested == 'index' ||
-                filerequested == 'index.xhtm' ||
-                filerequested == 'index.xhtml') {
+            if (filerequested === 'index.html' ||
+                filerequested === 'index.htm' ||
+                filerequested === 'index' ||
+                filerequested === 'index.xhtm' ||
+                filerequested === 'index.xhtml') {
                 return 'index'
             } else {
                 return filerequested
@@ -140,7 +137,5 @@ module.exports = {
         } else {
             return finalpath
         }
-        
     }
 }
-

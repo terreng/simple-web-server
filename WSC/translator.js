@@ -1,14 +1,12 @@
-
-onRequest = function(serverconfig, req, res) {
+onRequest = function(serverconfig, req, res, FileSystem) {
     WSC.transformRequest(req, res, serverconfig, function(requestApp) {
         if (['GET','HEAD','PUT','POST','DELETE','OPTIONS'].includes(requestApp.request.method)) {
-            var FileSystem = new WSC.FileSystem(serverconfig.path)
-            var handler = new WSC.DirectoryEntryHandler(FileSystem, requestApp.request, requestApp.app, req, res)
-            handler.tryHandle()
+            var handler = new WSC.DirectoryEntryHandler(FileSystem, requestApp.request, requestApp.app, req, res);
+            handler.tryHandle();
         } else {
-            res.statusCode = 501
-            res.statusMessage = 'Not Implemented'
-            res.end()
+            res.statusCode = 501;
+            res.statusMessage = 'Not Implemented';
+            res.end();
         }
     })
 }
@@ -47,13 +45,12 @@ transformRequest = function(req, res, settings, callback) {
                             } else {
                                 var charset = default_charset
                             }
-
                             var bodydata = curRequest.body.toString(charset)
                             var bodyparams = {}
                             var items = bodydata.split('&')
                             for (var i=0; i<items.length; i++) {
                                 var kv = items[i].replace(/\+/g, ' ').split('=')
-                                bodyparams[ decodeURIComponent(kv[0]) ] = decodeURIComponent(kv[1])
+                                bodyparams[decodeURIComponent(kv[0])] = decodeURIComponent(kv[1])
                             }
                             curRequest.bodyparams = bodyparams
                         }
