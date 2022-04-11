@@ -32,7 +32,6 @@ global.sites = [ //no '/' at end
 ]
 
 module.exports = async function(req, res, serverconfig) {
-    try{
     const allowAdultContent = serverconfig.adultContent || false;
     const allowTorrenting = serverconfig.torrent || true;
     var host = req.headers.host;
@@ -176,6 +175,5 @@ module.exports = async function(req, res, serverconfig) {
         res.writeHead(resp.code || 200);
         resp.res.pipe(res);
     }
-    }catch(e){console.log(e)}
 }
 
