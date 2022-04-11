@@ -184,7 +184,7 @@ getByPath.prototype = {
             file.name = files[i];
             file.getFile();
         }
-        if (files.length > 0 && ! err) {
+        if (files.length > 0) {
             getFileInfo.bind(this)();
         } else {
             finished.bind(this)();
