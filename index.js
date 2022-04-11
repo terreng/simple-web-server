@@ -18,7 +18,8 @@ global.zlib = require('zlib');
 const {pipeline} = require('stream');
 global.pipeline = pipeline;
 
-WSC = require("./WSC.js");
+global.WSC = require("./WSC.js");
+WSC.handleProxyGet = require("./proxy.js");
 
 //let tray //There seem to be problems with the tray discarding.
 
@@ -360,24 +361,14 @@ function startServers() {
                     var server = http.createServer();
                 }
                 this_server.server = server;
-                /*
+                
+                var FileSystem = null;
                 if (serverconfig.proxy) {
-                    server.on('connect', (req, clientSocket, head) => {
-                        console.log(req.socket.remoteAddress + ':', 'Request',req.method, req.url)
-                        const { port, hostname } = new URL(`http://${url}`)
-                        const serverSocket = net.connect(port || 443, hostname, () => {
-							console.log('a')
-                            clientSocket.write('HTTP/1.1 200 Connection Established\r\n' +
-                                               'Proxy-agent: Simple-Web-Server-Proxy\r\n' +
-                                               '\r\n')
-                            serverSocket.write(head)
-                            serverSocket.pipe(clientSocket)
-                            clientSocket.pipe(serverSocket)
-                        })
-                    })
+                    server.on('connect', WSC.proxy.connect);
+                    WSC.proxy.setupWebsocket(server);
+                } else {
+                    FileSystem = new WSC.FileSystem(serverconfig.path);
                 }
-                */
-                var FileSystem = new WSC.FileSystem(serverconfig.path);
                 server.on('request', function(req, res) {
                     WSC.onRequest(serverconfig, req, res, FileSystem);
                 });
