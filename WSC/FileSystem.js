@@ -1,5 +1,8 @@
 
 function getByPath(path, callback, FileSystem) {
+    if (!path) {
+        return null;
+    }
     this.fs = FileSystem;
     if (! (path.startsWith('/') || path.startsWith('\\'))) {
         var path = '/' + path;

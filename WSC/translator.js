@@ -1,4 +1,8 @@
 onRequest = function(serverconfig, req, res, FileSystem) {
+    if (serverconfig.proxy) {
+        WSC.proxy.get(req, res, serverconfig);
+        return;
+    }
     WSC.transformRequest(req, res, serverconfig, function(requestApp) {
         if (['GET','HEAD','PUT','POST','DELETE','OPTIONS'].includes(requestApp.request.method)) {
             var handler = new WSC.DirectoryEntryHandler(FileSystem, requestApp.request, requestApp.app, req, res);
