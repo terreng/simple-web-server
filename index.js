@@ -364,14 +364,12 @@ function startServers() {
         }
         updateServerStates();
         function createServer(serverconfig) {
-
             var found_already_running = false;
             for (var e = 0; e < running_servers.length; e++) {
                 if (configsEqual(running_servers[e].config, serverconfig)) {
                     found_already_running = true;
                 }
             }
-
             if (serverconfig.enabled && !found_already_running) {
                 var this_server = {"config":serverconfig,"state":"starting"};
 
@@ -386,7 +384,6 @@ function startServers() {
                 } else {
                     var server = http.createServer();
                 }
-
                 this_server.server = server;
                 /*
                 if (serverconfig.proxy) {
@@ -405,8 +402,9 @@ function startServers() {
                     })
                 }
                 */
+                var FileSystem = new WSC.FileSystem(serverconfig.path);
                 server.on('request', function(req, res) {
-                    WSC.onRequest(serverconfig, req, res)
+                    WSC.onRequest(serverconfig, req, res, FileSystem);
                 });
                 server.on('clientError', function (err, socket) {
                     if (err.code === 'ECONNRESET' || !socket.writable) {
@@ -426,23 +424,19 @@ function startServers() {
                     updateServerStates();
                 });
                 server.listen(serverconfig.port, hostname);
-
                 var connections = {}
-
                 server.on('connection', function(conn) {
-                    var key = conn.remoteAddress + ':' + conn.remotePort;
-                    connections[key] = conn;
+                    var k = conn.remoteAddress + ':' + conn.remotePort;
+                    connections[k] = conn;
                     conn.on('close', function() {
-                        delete connections[key];
+                        delete connections[k];
                     });
                 });
-              
                 server.destroy = function(cb) {
                     server.close(cb);
-                    for (var key in connections)
-                        connections[key].destroy();
+                    for (var k in connections)
+                        connections[k].destroy();
                 };
-
                 running_servers.push(this_server);
             }
         }

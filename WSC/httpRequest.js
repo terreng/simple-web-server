@@ -6,12 +6,12 @@ function httpRequest() {
     this.reDirected = false
     this.reDirectCount = 0
     this.reDirectLimit = 10
-    this.headers = { }
+    this.headers = {}
     this.body = Buffer.from('')
     this.streamToFile = false
     this.savePath = null
     this.handler = null
-    this.request = { }
+    this.request = {}
 }
 
 httpRequest.prototype = {
