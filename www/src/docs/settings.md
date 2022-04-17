@@ -2,6 +2,8 @@
 
 ## App Settings
 
+Option names correspond to the option key in config.json. See [Editing config.json](config%20file.md).
+
 ### Keep running when closed
 
 - Name: `background`

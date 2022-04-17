@@ -1,5 +1,7 @@
 # Server Options
 
+Option names correspond to the option key in config.json. See [Editing config.json](config%20file.md).
+
 ## Basic options
 
 ### Enabled
@@ -8,15 +10,13 @@
 - Type: `true/false`
 - Default: -
 
-Whether the server is turned on or not
-
 ### Directory
 
 - Name: `path`
 - Type: path string
 - Default: -
 
-Directory to serve files from
+Directory to serve files from. If the directory is within a hidden folder, then make sure to enable [Serve hidden/dot files](#serve-hidden-dot-files).
 
 ### Port
 
@@ -24,7 +24,7 @@ Directory to serve files from
 - Type: number 1 - 65535
 - Default: `8080`
 
-Port that server is accessible on
+Port that the local web server is accessible on. Access the website at `http://localhost:[PORT]`.
 
 ### Accessible on local network
 
@@ -32,7 +32,14 @@ Port that server is accessible on
 - Type: `true/false`
 - Default: `false`
 
-Makes the web server accessible over LAN to other computers on the network. Access using this computer's local IP address.
+Makes the web server accessible over LAN to other computers on the network. Access it from another computer using the host computer's local IP address and the specified port. The LAN IP address is displayed in the app under web server URLs.
+
+Enabling this option requires local network access. On Windows and macOS you may see a firewall permission prompt when enabling this option. You must allow access in order for the web server to work over LAN.
+
+<figure>
+  <img src='/images/macos_lan_warning.jpeg' style='width: 250px'>
+  <figcaption>Firewall permission prompt on macOS</figcaption>
+</figure>
 
 ## Basic rules
 
@@ -42,7 +49,7 @@ Makes the web server accessible over LAN to other computers on the network. Acce
 - Type: `true/false`
 - Default: `true`
 
-Automatically serve index.html file, if it exists, when no file path is specified
+When no file path is specified, automatically serve `index.html` (if it exists).
 
 ### Single page rewrite (for SPAs)
 
@@ -58,7 +65,7 @@ Automatically rewrite all paths that don't exist to a single page. For Single Pa
 - Type: `string`
 - Default: `/index.html`
 
-If the Single page rewrite option is enabled, specify where to redirect to. For Single Page Applications.
+If the Single page rewrite option is enabled, specify what file to rewrite to. For Single Page Applications.
 
 ### Show directory listing
 
@@ -66,7 +73,7 @@ If the Single page rewrite option is enabled, specify where to redirect to. For 
 - Type: `true/false`
 - Default: `true`
 
-Show a list of files in the specified directory instead of a 404 page
+Show a list of files in the specified directory instead of a 404 page.
 
 ### Exclude .html extension
 
@@ -74,7 +81,7 @@ Show a list of files in the specified directory instead of a 404 page
 - Type: `true/false`
 - Default: `false`
 
-Exclude .htm and .html extensions from URLs. For example, /example.html will redirect to /example. If a file exists at the path without an extension, the html file will still be rendered instead.
+Exclude .htm and .html extensions from URLs. For example, `/example.html` will redirect to `/example`. If a file exists at the path without an extension, the HTML file will still be rendered instead.
 
 ## Advanced rules
 
@@ -84,7 +91,7 @@ Exclude .htm and .html extensions from URLs. For example, /example.html will red
 - Type: `string`
 - Default: -
 
-Optionally specify a custom Cache-Control HTTP header value.
+Optionally specify a custom `Cache-Control` HTTP header value. [Learn more about the Cache-Control header.](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Cache-Control)
 
 ### Set CORS headers
 
@@ -92,7 +99,7 @@ Optionally specify a custom Cache-Control HTTP header value.
 - Type: `true/false`
 - Default: `false`
 
-Allow cross origin requests. Sets `Access-Control-Allow-Origin` header to `*`, `Access-Control-Allow-Methods` to `GET, POST, PUT, DELETE`, and `Access-Control-Max-Age` to `120`.
+Allow cross origin requests. Sets `Access-Control-Allow-Origin` header to `*`, `Access-Control-Allow-Methods` to `GET, POST, PUT, DELETE`, and `Access-Control-Max-Age` to `120`. [Learn more about Cross-Origin Resource Sharing.](https://developer.mozilla.org/en-US/docs/Web/HTTP/CORS)
 
 ### Serve hidden/dot files
 
@@ -100,7 +107,7 @@ Allow cross origin requests. Sets `Access-Control-Allow-Origin` header to `*`, `
 - Type: `true/false`
 - Default: `false`
 
-Allow requesting hidden/dot files. Also enables creating, modifying, and deleting them, if enabled.
+Allow requesting hidden/dot files. These are files or folders with names that begin with a `.` character.
 
 ### Allow file upload
 
@@ -132,7 +139,7 @@ Allows DELETE requests. Includes hidden/dot files if they are enabled.
 - Type: `true/false`
 - Default: `false`
 
-Disables JavaScript on the directory listing page.
+Disables JavaScript enhancement of the directory listing page.
 
 ### Show hidden/dot files in directory listing
 
@@ -140,7 +147,7 @@ Disables JavaScript on the directory listing page.
 - Type: `true/false`
 - Default: `true`
 
-If hidden/dot files are enabled, determines if they will be shown in the directory listing. This includes .swshtaccess files.
+If hidden/dot files are enabled, determines if they will additionally be shown in the directory listing. This includes `.swshtaccess` files.
 
 ### Enable .swshtaccess configuration files
 
@@ -148,7 +155,7 @@ If hidden/dot files are enabled, determines if they will be shown in the directo
 - Type: `true/false`
 - Default: `false`
 
-You can use .swshtaccess files to set additional rules per directory. To learn more, see [Advanced configuration using .swshtaccess files](swsaccess.md).
+You can use `.swshtaccess` files to set additional rules on a per-directory basis. See [Advanced configuration using .swshtaccess files](swsaccess.md).
 
 ## Error pages
 
@@ -158,7 +165,7 @@ You can use .swshtaccess files to set additional rules per directory. To learn m
 - Type: path string
 - Default: -
 
-File path to a custom 404 page. Will fallback to default 404 page if value is empty or file does not exist.
+File path to a custom 404 page. Will fallback to a generic 404 page if this value is empty or specified path is not valid.
 
 ### Custom 403 page file path
 
@@ -166,7 +173,7 @@ File path to a custom 404 page. Will fallback to default 404 page if value is em
 - Type: path string
 - Default: -
 
-File path to a custom 403 page. Will fallback to default 403 page if value is empty or file does not exist.
+File path to a custom 403 page. Will fallback to a generic 403 page if this value is empty or specified path is not valid.
 
 ### Custom 401 page file path
 
@@ -174,10 +181,10 @@ File path to a custom 403 page. Will fallback to default 403 page if value is em
 - Type: path string
 - Default: -
 
-File path to a custom 401 page. Will fallback to default 401 page if value is empty or file does not exist.
+File path to a custom 401 page. Will fallback to a generic 401 page if this value is empty or specified path is not valid.
 
 ::: tip
-You can specify a custom file path for any error page in the config.json file. The app may check for the following error pages: 400, 401, 403, 404, 429, 500.
+You can specify a custom file path for any error page in the config.json file. The app may check for the following error pages: 400, 401, 403, 404, 429, 500. See [Editing config.json](config%20file.md).
 :::
 
 ### Custom error path variable
@@ -186,7 +193,7 @@ You can specify a custom file path for any error page in the config.json file. T
 - Type: path string
 - Default: -
 
-Optionally specify a custom string that will be looked for in your error pages and replaced with the current path. For example, if your custom 404 page included: <span v-pre>`The file at {{PATH}} does not exist`</span> and you set this option to <span v-pre>`{{PATH}}`</span>, when your file is served it would say `The file at /example.txt does not exist`.
+Optionally specify a custom string that will be looked for in your error pages and replaced with the current path. For example, if your custom 404 page included: <span v-pre>`The file at {{PATH}} does not exist`</span> and you set this option to <span v-pre>`{{PATH}}`</span>, when your custom page is served it would say `The file at /example.txt does not exist`.
 
 ## Security
 
@@ -196,7 +203,7 @@ Optionally specify a custom string that will be looked for in your error pages a
 - Type: `true/false`
 - Default: `false`
 
-Make server accessible over a secure connection (https) instead of http. Uses the same single port, so you cannot use both http and https at the same time.
+Make server accessible over a secure connection (https) instead of http. Uses the same single port, so you cannot use both http and https at the same time. See [Using HTTPS](https.md).
 
 ### SSL/TLS cerificate
 
@@ -204,7 +211,7 @@ Make server accessible over a secure connection (https) instead of http. Uses th
 - Type: string
 - Default: -
 
-Optionally override this option to provide a custom HTTPS certificate.
+Optionally override this option to provide a custom HTTPS certificate. See [Using HTTPS](https.md).
 
 ### SSL/TLS private key
 
@@ -212,11 +219,7 @@ Optionally override this option to provide a custom HTTPS certificate.
 - Type: string
 - Default: -
 
-Optionally override this option to provide a custom HTTPS private key.
-
-::: tip
-For more information on how to configure HTTPS with a custom certificate, see [Configuring HTTPS](https.md).
-:::
+Optionally override this option to provide a custom HTTPS private key. See [Using HTTPS](https.md).
 
 ### Enable HTTP Basic authentication
 
@@ -224,7 +227,12 @@ For more information on how to configure HTTPS with a custom certificate, see [C
 - Type: `true/false`
 - Default: `false`
 
-Require authentication using the basic HTTP protocol. Specify a username and password in the httpAuthUsername and httpAuthPassword options. If either option is missing or invalid, the web server will become inaccessible.
+Require authentication using the HTTP Basic authentication protocol. Specify a username and password in the HTTP Basic auth username and HTTP Basic auth password options. If either the username or password option is missing or invalid, the web server will become inaccessible.
+
+<figure>
+  <img src='/images/http_basic_auth.jpeg' style='width: 400px'>
+  <figcaption>HTTP authentication prompt in the browser.</figcaption>
+</figure>
 
 ### HTTP Basic auth username
 
@@ -232,7 +240,7 @@ Require authentication using the basic HTTP protocol. Specify a username and pas
 - Type: string
 - Default: -
 
-Username for HTTP Basic authentication. Cannot contain `:`.
+Username for HTTP Basic authentication. Cannot contain a colon (`:`) character.
 
 ### HTTP Basic auth password
 
