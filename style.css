@@ -114,8 +114,8 @@ body.darkmode {/*TODO*/
 
 .top_title > .title_text {
     font-size: 22px;
-    line-height: 22px;
-    padding-top: 19px;
+    line-height: 30px;
+    padding-top: 15px;
     padding-left: 12px;
     font-weight: 500;
     color: var(--text-primary);

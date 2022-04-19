@@ -5,3 +5,4 @@ images/.DS_Store
 www/docs
 www/out
 www/src/.vuepress/dist
+dev/
