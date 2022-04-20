@@ -1,27 +1,30 @@
 String.prototype.htmlEscape = function() {
-    return this.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;")
+    return this.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;");
+}
+if (!String.prototype.replaceAll) {
+    String.prototype.replaceAll = function(a, b) {
+        return this.split(a).join(b);
+    }
 }
 
 module.exports = {
-    humanFileSize: function(bytes, si=false, dp=1) {
+    humanFileSize: function(bytes) {
         if (! bytes) {
-            return ''
+            return '';
         }
         //from https://stackoverflow.com/questions/10420352/converting-file-size-in-bytes-to-human-readable-string/10420404
-        const thresh = si ? 1000 : 1024;
+        const thresh = 1024;
         if (Math.abs(bytes) < thresh) {
           return bytes + ' B';
         }
-        const units = si 
-          ? ['kB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB'] 
-          : ['KiB', 'MiB', 'GiB', 'TiB', 'PiB', 'EiB', 'ZiB', 'YiB'];
+        const units = ['KiB', 'MiB', 'GiB', 'TiB', 'PiB', 'EiB', 'ZiB', 'YiB'];
         let u = -1;
-        const r = 10**dp;
+        const r = 10;
         do {
           bytes /= thresh;
           ++u;
         } while (Math.round(Math.abs(bytes) * r) / r >= thresh && u < units.length - 1);
-        return bytes.toFixed(dp) + ' ' + units[u];
+        return bytes.toFixed(1) + ' ' + units[u];
     },
     lastModified: function(modificationTime) {
         if (! modificationTime) {
