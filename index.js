@@ -333,10 +333,15 @@ function startServers() {
         } else {
             running_servers[i].deleted = true;
             console.log('Killing server on port ' + running_servers[i].config.port);
-            running_servers[i].server.destroy(function() {
+            if (running_servers[i].server) {
+                running_servers[i].server.destroy(function() {
+                    closed_servers++;
+                    checkServersClosed();
+                });
+            } else {
                 closed_servers++;
                 checkServersClosed();
-            });
+            }
         }
     }
 
@@ -374,6 +379,7 @@ function startServers() {
                 var this_server = {"config":serverconfig,"state":"starting"};
 
                 var hostname = serverconfig.localnetwork ? (serverconfig.ipv6 ? '::' : '0.0.0.0') : (serverconfig.ipv6 ? '::1' : '127.0.0.1');
+                try {
                 if (serverconfig.https) {
                     if (!serverconfig.httpsKey || !serverconfig.httpsCert) {
                         var crypto = WSC.createCrypto();
@@ -383,6 +389,13 @@ function startServers() {
                     }
                 } else {
                     var server = http.createServer();
+                }
+                } catch(err) {
+                    console.error(err);
+                    this_server.state = "error";
+                    this_server.error_message = (serverconfig.https ? "There is probably something wrong with your HTTPS certificate and key.\n" : "") + err.message;
+                    running_servers.push(this_server);
+                    return;
                 }
                 this_server.server = server;
                 /*
