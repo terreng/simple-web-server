@@ -1,5 +1,5 @@
-
-module.exports = function() {
+global.forge = require('node-forge');
+function a() {
     var data = { }
     var cn = "WebServerForChrome" + (new Date()).toISOString();
   console.log('Generating 1024-bit key-pair and certificate for \"' + cn + '\".');
@@ -64,3 +64,4 @@ module.exports = function() {
   console.log('certificate created for \"' + cn + '\": \n');
 };
 
+console.log(a());

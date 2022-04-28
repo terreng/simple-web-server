@@ -855,8 +855,8 @@ DirectoryEntryHandler.prototype = {
                     var data = await file.textPromise();
                     var html = [dataa];
                     for (var w=0; w<results.length; w++) {
-                        var rawname = results[w].name.replaceAll('"', '\\"').replaceAll('\\', '\\\\');
-                        var name = encodeURIComponent(results[w].name).replaceAll('"', '\\"').replaceAll('\\', '\\\\');
+                        var rawname = results[w].name.replaceAll('\\', '\\\\').replaceAll('"', '\\"');
+                        var name = encodeURIComponent(results[w].name).replaceAll('\\', '\\\\').replaceAll('"', '\\"');
                         var isdirectory = results[w].isDirectory;
                         var modified = WSC.utils.lastModified(results[w].modificationTime);
                         var filesize = results[w].size;
@@ -1199,8 +1199,8 @@ DirectoryEntryHandler.prototype = {
             html.push('<script>onHasParentDirectory();</script>');
         }
         for (var w=0; w<results.length; w++) {
-            var rawname = results[w].name.replaceAll('"', '\\"').replaceAll('\\', '\\\\');
-            var name = encodeURIComponent(results[w].name).replaceAll('"', '\\"').replaceAll('\\', '\\\\');
+            var rawname = results[w].name.replaceAll('\\', '\\\\').replaceAll('"', '\\"');
+            var name = encodeURIComponent(results[w].name).replaceAll('\\', '\\\\').replaceAll('"', '\\"');
             var isdirectory = results[w].isDirectory;
             var modified = WSC.utils.lastModified(results[w].modificationTime);
             var filesize = results[w].size;
@@ -1228,8 +1228,8 @@ DirectoryEntryHandler.prototype = {
             html.push('<script>onHasParentDirectory();</script>');
         }
         for (var w=0; w<results.length; w++) {
-            var rawname = results[w].name.replaceAll('"', '\\"').replaceAll('\\', '\\\\');
-            var name = encodeURIComponent(results[w].name).replaceAll('"', '\\"').replaceAll('\\', '\\\\');
+            var rawname = results[w].name.replaceAll('\\', '\\\\').replaceAll('"', '\\"');
+            var name = encodeURIComponent(results[w].name).replaceAll('\\', '\\\\').replaceAll('"', '\\"');
             var isdirectory = results[w].isDirectory;
             var modified = WSC.utils.lastModified(results[w].modificationTime);
             var filesize = results[w].size;
