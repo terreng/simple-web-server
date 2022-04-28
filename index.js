@@ -151,8 +151,8 @@ app.on('ready', function() {
     }
     for (var i = 0; i < (config.servers || []).length; i++) {
         if (config.servers[i].httpsKey && config.servers[i].httpsCert) {
-            config.servers[i].httpsKey = config.servers[i].httpsKey.replace(/ /g, '\r\n');
-            config.servers[i].httpsCert = config.servers[i].httpsCert.replace(/ /g, '\r\n');
+            config.servers[i].httpsKey = '-----BEGIN RSA PRIVATE KEY-----'+config.servers[i].httpsKey.split('-----BEGIN RSA PRIVATE KEY-----').pop().split('-----END RSA PRIVATE KEY-----')[0].replace(/ /g, '\r\n')+'-----END RSA PRIVATE KEY-----';
+            config.servers[i].httpsCert = '-----BEGIN CERTIFICATE-----'+config.servers[i].httpsCert.split('-----BEGIN CERTIFICATE-----').pop().split('-----END CERTIFICATE-----')[0].replace(/ /g, '\r\n')+'-----END CERTIFICATE-----';
         }
     }
     if (mainWindow == null) {
