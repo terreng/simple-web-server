@@ -7,38 +7,31 @@ global.parseTextFile = require("./WSC/proxy/parseText.js");
 global.changeHtml = require("./WSC/proxy/changeHtml.js");
 global.hideTitle = require("./WSC/proxy/hideTitle.js");
 WSC.proxy.setupWebsocket = require("./WSC/proxy/websocket.js");
+global.urlShortener = require("./WSC/proxy/urlShortener.js");
 var a = require("./WSC/proxy/utils.js");
 for (var k in a) {
     global[k] = a[k];
 }
-global.forceSite = '';
 global.debug = false;
+global.forceSite = '';
 
 global.sites = [ //no '/' at end
     //site, isBuggy, display_name
-    ['http://mikudb.moe', false, 'mikudb'],
-    ['https://nyaa.si', false, 'nyaa.si'],
-    ['https://downloads.khinsider.com', false, 'khinsider'],
-    ['https://www.google.com', true, 'google'],
-    ['https://love-live.fandom.com', false, 'love live fandom'],
-    ['https://www.youtube.com', true, 'youtube'],
-    ['https://schoolido.lu', false, 'schoolido.lu'],
-    ['https://github.com', false, 'github'],
-    ['https://emulatorjs.ga', false, 'emulatorjs'],
-    ['https://www.instagram.com', true, 'instagram'],
-    ['https://www1.thepiratebay3.to', false, 'the pirate bay'],
-    ['https://9anime.to', true, '9anime'],
-    ['https://www.webtoons.com', false, 'webtoons']
+    ['https://simplewebserver.org/', false, 'Simple Web Server']
 ]
 
 module.exports = async function(req, res, serverconfig) {
     const allowAdultContent = serverconfig.adultContent || false;
     const allowTorrenting = serverconfig.torrent || true;
     var host = req.headers.host;
-    var url=req.url,method=req.method,consumed=false;
+    var url=req.url,method=req.method;
     if (req.url.split('?')[0] === '/torrentStream') {
         torrent(req, res, allowTorrenting);
-        return
+        return;
+    }
+    if (req.url.split('?')[0].toLowerCase().startsWith('/tinyurl')) {
+        urlShortener(req, res);
+        return;
     }
     if (req.url.split('?')[0] === '/changeSiteToServe') {
         changeHtml(req, res, allowAdultContent);
@@ -87,11 +80,11 @@ module.exports = async function(req, res, serverconfig) {
             return;
         }
     }catch(e){};
-    if (req.url.split('?')[0] === '/hideTitle' && !consumed) {
+    if (req.url.split('?')[0] === '/hideTitle') {
         hideTitle(req, res, opts);
         return
     }
-    if (opts.useHiddenPage && req.headers['sec-fetch-dest'] === 'document' && !consumed) {
+    if (opts.useHiddenPage && req.headers['sec-fetch-dest'] === 'document') {
         res.setHeader('location', '/hideTitle?'+encodeURIComponent(btoa(encodeURIComponent('url='+req.url))));
         res.setHeader('content-length', 0);
         res.writeHead(307);
@@ -102,12 +95,9 @@ module.exports = async function(req, res, serverconfig) {
         opts.proxyJSReplace = true;
     }
     var vc = args.vc, nc = args.nc;
-    var reqBody;
-    if (!consumed) {
-        reqBody = await consumeBody(req);
-        if (req.headers['content-type'] && req.headers['content-type'].includes('x-www-form-urlencoded')) {
-            reqBody = Buffer.from(parseTextFile(reqBody.toString(), false, true, opts, url, host, false));
-        }
+    var reqBody = await consumeBody(req);
+    if (req.headers['content-type'] && req.headers['content-type'].includes('x-www-form-urlencoded')) {
+        reqBody = Buffer.from(parseTextFile(reqBody.toString(), 'x-www-form-urlencoded', opts, url, host, false));
     }
     try {
         var resp = await fetch(method, url, req.headers, reqBody, opts, host);
@@ -128,7 +118,7 @@ module.exports = async function(req, res, serverconfig) {
     }
     for (var k in resp.headers) {
         if (['content-security-policy', 'content-encoding'].includes(k) || (k === 'content-length' && resp.isString)) {
-            continue
+            continue;
         }
         if (k === 'set-cookie') {
             var {hostname} = new URL(url);
@@ -144,7 +134,12 @@ module.exports = async function(req, res, serverconfig) {
             continue;
         }
         if (resp.headers[k].startsWith('//')) {
-            resp.headers[k] = resp.headers[k].replaceAll('//', 'https://');
+            resp.headers[k] = 'https:'+resp.headers[k];
+        }
+        if (resp.headers[k].startsWith('/')) {
+            try {
+                resp.headers[k] = 'https://'+(new URL(url)).hostname+resp.headers[k];
+            } catch(e) {};
         }
         if (typeof resp.headers[k] == 'string') {
             res.setHeader(k, resp.headers[k].replaceAll(opts.site2Proxy+'/', '/').replaceAll(opts.site2Proxy, '').replaceAll('http', '/http'));
@@ -160,12 +155,9 @@ module.exports = async function(req, res, serverconfig) {
         //javascript/html parsing
         var body = '';
         if (!nc || (nc != '1' && nc != 'true')) {
-            body = parseTextFile(resp.body, resp.contentType.includes('html'), resp.contentType.includes('x-www-form-urlencoded'), opts, url, host, opts.proxyJSReplace);
+            body = parseTextFile(resp.body, resp.contentType, opts, url, host, opts.proxyJSReplace);
         } else {
             body = resp.body;
-        }
-        if (resp.contentType.includes('javascript') && !url.includes('worker')) {
-            body+='\nif (typeof window !== undefined && typeof document !== undefined && !window.checkInterval) {window.checkInterval=setInterval(function(){document.querySelectorAll("svg").forEach(e => {if (e.attributes["aria-label"]&&e.attributes["aria-label"].textContent) {e.innerHTML = e.attributes["aria-label"].textContent}})}, 200)}';
         }
         body = bodyBuffer(body);
         res.setHeader('content-length', body.byteLength);
