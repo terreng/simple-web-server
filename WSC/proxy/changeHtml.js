@@ -35,9 +35,22 @@ module.exports = async function(req, res, allowAdultContent) {
         } else {
             args = transformArgs(req.url);
         }
+        if (args.site && args.site.startsWith('/http')) {
+            args.site = args.site.substring(1);
+        }
+        if (args.custom && args.custom.startsWith('/http')) {
+            args.custom = args.custom.substring(1);
+        }
         if ((args.site || args.custom)) {
             var error = false;
             var path2Redir2 = '/';
+            var opts = {};
+            if (req.headers.cookie) {
+                opts = getOpts(req.headers.cookie);
+            }
+            if (opts.site2Proxy && opts.site2Proxy === args.custom && args.site) {
+                delete args.custom;
+            }
             if (args.custom) {
                 try {
                     try {
@@ -53,10 +66,10 @@ module.exports = async function(req, res, allowAdultContent) {
                         adultContent = true;
                     }
                     if (!error) {
-                        var b;
+                        var b;/*
                         while (b = await check4Redirects(args.custom)) {
                             args.custom = b;
-                        }
+                        }*/
                         var a = new URL(args.custom);
                         if (a.hostname.includes('127.0') || a.hostname.includes('192.168')) {
                             throw new Error('Cannot use local url');
@@ -81,7 +94,7 @@ module.exports = async function(req, res, allowAdultContent) {
                 adultContent = true;
             }
             if (!error) {
-                res.setHeader('set-cookie', 'proxySettings='+(args.custom?encodeURIComponent(args.custom):args.site)+'_'+(args.JSReplaceURL?'1':'0')+'_'+(args.absoluteSite?'1':'0')+'_'+(args.hidden?'1':'0')+'_'+(args.replaceExternal?'1':'0')+'_'+(args.confirmation?'1':'0')+'; Max-Age=2592000; HttpOnly');
+                res.setHeader('set-cookie', 'proxySettings='+(args.custom?encodeURIComponent(args.custom):args.site)+'_'+(args.JSReplaceURL?'1':'0')+'_'+(args.absoluteSite?'1':'0')+'_'+(args.hidden?'1':'0')+'_'+(args.replaceExternal?'1':'0')+'_'+(args.confirmation?'1':'0')+'; '+(clearOnExit?'Max-Age=2592000;':'')+' HttpOnly');
                 if (args.shareURL) {
                     var {hostname} = new URL(args.custom?args.custom:decodeURIComponent(args.site));
                     res.setHeader('content-type', 'text/html; chartset=utf-8');
@@ -120,16 +133,13 @@ module.exports = async function(req, res, allowAdultContent) {
     } else if (adultContent) {
         html += '<p style="color:red;">Site restricted. Please contact the site owner for more information</p>';
     }
-    html += '<form action="" method="POST" autocomplete="off">';
-    for (var i=0; i<sites.length; i++) {
-        html += '<input type="radio" id="'+encodeURIComponent(sites[i][0])+'" name="site" value="'+encodeURIComponent(sites[i][0])+'"><label for="'+encodeURIComponent(sites[i][0])+'">'+sites[i][2]+(sites[i][1]?' (buggy)':'')+'</label><br>';
-    }
     var customVal='',
         rpSlashUrls=' checked',
         absoluteSite='',
         gc='',
         external='',
-        share='';
+        share='',
+        clearOnExit='';
     if (req.headers.cookie) {
         var opts = getOpts(req.headers.cookie);
         customVal = opts.site2Proxy || '';
@@ -145,8 +155,18 @@ module.exports = async function(req, res, allowAdultContent) {
         gc = args.hidden?' checked':'';
         external = args.replaceExternal?' checked':'';
         share = args.shareURL?' checked':'';
+        clearOnExit = args.clearOnExit?' checked':''
     }
-    html += ('<br><label for="custom">Custom URL</label><input type="text" id="custom" name="custom" value='+customVal+'><br><br><input type="checkbox" id="JSReplaceURL" name="JSReplaceURL" value="true"'+rpSlashUrls+'><label for="JSReplaceURL"> Replace Javascript // urls (may break some sites)</label><br><br><input type="checkbox" id="absoluteSite" name="absoluteSite" value="true"'+absoluteSite+'><label for="absoluteSite"> Set as absolute proxy site (required for some sites, recommended to clear your cookies before enabling to prevent possible leak of personal data)</label><br><br><input type="checkbox" id="hidden" name="hidden" value="true"'+gc+'><label for="hidden"> Hide page title/url from search history (will appear as google classroom)</label><br><br><input type="checkbox" id="replaceExternal" name="replaceExternal" value="true"'+external+'><label for="replaceExternal"> Replace External URLs</label><br><br><input type="checkbox" id="shareURL" name="shareURL" value="true"'+share+'><label for="shareURL"> Get url to share (or bookmark)</label><br><br>');
+    html += '<form action="" method="POST" autocomplete="off">';
+    for (var i=0; i<sites.length; i++) {
+        var c = '';
+        if (sites[i][0] === customVal) {
+            c = ' checked';
+            customVal = '';
+        }
+        html += '<input type="radio" id="'+encodeURIComponent(sites[i][0])+'" name="site" value="'+encodeURIComponent(sites[i][0])+'"'+c+'><label for="'+encodeURIComponent(sites[i][0])+'">'+sites[i][2]+(sites[i][1]?' (buggy)':'')+'</label><br>';
+    }
+    html += ('<br><label for="custom">Custom URL</label><input type="text" id="custom" name="custom" value='+customVal+'><br><br><input type="checkbox" id="JSReplaceURL" name="JSReplaceURL" value="true"'+rpSlashUrls+'><label for="JSReplaceURL"> Replace Javascript // urls (may break some sites)</label><br><br><input type="checkbox" id="absoluteSite" name="absoluteSite" value="true"'+absoluteSite+'><label for="absoluteSite"> Set as absolute proxy site (required for some sites, recommended to clear your cookies before enabling to prevent possible leak of personal data)</label><br><br><input type="checkbox" id="hidden" name="hidden" value="true"'+gc+'><label for="hidden"> Hide page title/url from search history (will appear as google classroom)</label><br><br><input type="checkbox" id="replaceExternal" name="replaceExternal" value="true"'+external+'><label for="replaceExternal"> Replace External URLs</label><br><br><input type="checkbox" id="shareURL" name="shareURL" value="true"'+share+'><label for="shareURL"> Get url to share (or bookmark)</label><br><br><input type="checkbox" id="clearOnExit" name="clearOnExit" value="true"'+clearOnExit+'><label for="clearOnExit"> Clear site to serve on Browser exit</label><br><br>');
     if (adultContent && allowAdultContent) {
         html += '<input type="checkbox" id="confirmation" name="confirmation" value="true"><label for="confirmation"> Check this box to confirm you know what you are about to see may be adult content.</label><br><br>';
     }
@@ -154,5 +174,5 @@ module.exports = async function(req, res, allowAdultContent) {
     html += '</body></html>';
     html = bodyBuffer(html);
     res.setHeader('content-length', html.byteLength);
-    res.end(html)
+    res.end(html);
 }

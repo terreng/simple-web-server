@@ -1,9 +1,7 @@
 # Web Proxy
 
-Secure web browsing to an extent
+Changes:
 
-all cookies are kept client side
-
-yeah it works on replit
-
-https://replit.com/@EthanOBrien7/canvas-cluster-007#index.js
+Changed default sites.
+Removed youtube downloader feature.
+Added option to disable torrents.

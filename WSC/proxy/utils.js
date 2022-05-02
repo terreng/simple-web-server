@@ -79,17 +79,6 @@ module.exports = {
         for (var i=0; i<files.length; i++) {
             paths.push(files[i].path);
         }
-        var result = [];
-        var level = {result};
-        paths.forEach(path => {
-            path.split('/').reduce((r, name, i, a) => {
-                if(!r[name]) {
-                    r[name] = {result: []};
-                    r.result.push({name, children: r[name].result, fullPath:path})
-                }
-                return r[name];
-            }, level)
-        })
         function processFiles(a) {
             a = a.sort(function(a, b) {
                 return a.name.toLowerCase().localeCompare(b.name.toLowerCase());
@@ -116,38 +105,75 @@ module.exports = {
                 }
             }
         }
-        return processFiles(result)
+        return processFiles(fileTree(paths));
     },
-    generateTorrentTree: function(files, magnet) {
-        var paths = [];
-        for (var i=0; i<files.length; i++) {
-            paths.push(files[i].path);
-        }
+    fileTree: function(paths) {
         var result = [];
         var level = {result};
-        paths.forEach(path => {
+        paths.forEach(info => {
+            var size = info.size;
+            path = info.path;
             path.split('/').reduce((r, name, i, a) => {
                 if(!r[name]) {
                     r[name] = {result: []};
-                    r.result.push({name, children: r[name].result, fullPath:path})
+                    r.result.push({name, children: r[name].result, path, size:size})
                 }
                 return r[name];
             }, level)
         })
+        function folderSizes(a) {
+            var size = 0;
+            for (var i=0; i<a.length; i++) {
+                if (a[i].isFile) {
+                    size += a[i].size;
+                } else {
+                    size += folderSizes(a[i].children);
+                }
+            }
+            return size;
+        }
+        function process(a) {
+            for (var i=0; i<a.length; i++) {
+                if (a[i].children.length > 0) {
+                    a[i].isFile = false;
+                    a[i].isDirectory = true;
+                    a[i].children = process(a[i].children);
+                    a[i].path = a[i].path.substring(0, a[i].path.length-a[i].path.split(a[i].name).pop().length);
+                    a[i].size = folderSizes(a[i].children);
+                    if (!a[i].path.endsWith('/')) {
+                        a[i].path += '/';
+                    }
+                } else {
+                    a[i].isFile = true;
+                    a[i].isDirectory = false;
+                    delete a[i].children;
+                }
+            }
+            return a;
+        }
+        return process(result);
+    },
+    generateTorrentTree: function(files, magnet) {
+        var paths = [];
+        for (var i=0; i<files.length; i++) {
+            paths.push({path:files[i].path,size:files[i].length});
+        }
+        var result = fileTree(paths);
         var out = '<style>ul,#myUL{list-style-type:none}#myUL{margin:0;padding:0}.caret{cursor:pointer;-webkit-user-select:none;-moz-user-select:none;-ms-user-select:none;user-select:none}.caret::before{content:"\\25B6";color:#000;display:inline-block;margin-right:6px}.caret-down::before{-ms-transform:rotate(90deg);-webkit-transform:rotate(90deg);transform:rotate(90deg)}.nested{display:none}.active{display:block}</style><ul id="myUL">';
         function processFiles(a) {
             a = a.sort(function(a, b) {
                 return a.name.toLowerCase().localeCompare(b.name.toLowerCase());
             });
             for (var i=0; i<a.length; i++) {
-                if (a[i].children.length > 0) {
-                    out += '<li><span class="caret">'+a[i].name+'</span><ul class="nested">';
+                if (a[i].isDirectory) {
+                    var q = '/torrentStream?stage=dlAsZip&directory2DL='+a[i].path+'&magnet='+magnet
+                    out += '<li><span class="caret">'+a[i].name+'</span> (<a href="'+q+'">download</a>) ('+humanFileSize(a[i].size)+')<ul class="nested">';
                     processFiles(a[i].children);
-                    out += '</ul></li>'
+                    out += '</ul></li>';
                 } else {
-                    var downloadUrl = '/torrentStream?fileName='+encodeURIComponent(a[i].fullPath)+'&stage=step2&stream=on&fetchFile=no&magnet='+magnet;
-                    var downloadUrl2 = '/torrentStream?fileName='+encodeURIComponent(a[i].fullPath)+'&stage=step2&magnet='+magnet;
-                    out += '<li><a style="text-decoration:none" href="'+downloadUrl+'">'+a[i].name+'</a> - <a style="text-decoration:none" href="'+downloadUrl2+'">download</a></li>';
+                    var downloadUrl = '/torrentStream?fileName='+encodeURIComponent(a[i].path)+'&stage=step2&stream=on&fetchFile=no&magnet='+magnet;
+                    var downloadUrl2 = '/torrentStream?fileName='+encodeURIComponent(a[i].path)+'&stage=step2&magnet='+magnet;
+                    out += '<li><a style="text-decoration:none" href="'+downloadUrl+'">'+a[i].name+'</a> - <a style="text-decoration:none" href="'+downloadUrl2+'">download</a> ('+humanFileSize(a[i].size)+')</li>';
                 }
             }
         }
@@ -212,6 +238,24 @@ module.exports = {
             .replaceAll('https%3A%2F'+host, 'https%3A%2F%2F'+host);
         return {args:args, url:url};
     },
+    humanFileSize: function(bytes) {
+        if (! bytes) {
+            return '';
+        }
+        //from https://stackoverflow.com/questions/10420352/converting-file-size-in-bytes-to-human-readable-string/10420404
+        const thresh = 1024;
+        if (Math.abs(bytes) < thresh) {
+          return bytes + ' B';
+        }
+        const units = ['KiB', 'MiB', 'GiB', 'TiB', 'PiB', 'EiB', 'ZiB', 'YiB'];
+        let u = -1;
+        const r = 10;
+        do {
+          bytes /= thresh;
+          ++u;
+        } while (Math.round(Math.abs(bytes) * r) / r >= thresh && u < units.length - 1);
+        return bytes.toFixed(1) + ' ' + units[u];
+    },
     getOpts: function(cookies) {
         var opts = {};
         if (cookies && cookies.includes('proxySettings=')) {
@@ -223,5 +267,20 @@ module.exports = {
             opts.allowAdultContent = (cookies.split('proxySettings=').pop().split(';')[0].split('_')[5] === '1');
         }
         return opts;
+    },
+    end: function(html, res, type, code) {
+        if (type) {
+            res.setHeader('content-type', type);
+        }
+        html = bodyBuffer(html);
+        res.setHeader('content-length', html.byteLength);
+        res.writeHead(code || 200);
+        res.end(html);
+    },
+    redirect: function(url, res, type) {
+        res.setHeader('location', url);
+        res.setHeader('content-length', 0);
+        res.writeHead(type);
+        res.end();
     }
 }

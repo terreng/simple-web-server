@@ -1,5 +1,4 @@
-module.exports = function(body, isHtml, isUrlEncoded, opts, url, reqHost, proxyJSReplace) {
-    //todo - replace style urls
+module.exports = function(body, contentType, opts, url, reqHost, proxyJSReplace) {
     var {site2Proxy,replaceExternalUrls} = opts;
     var date = new Date();
     var origBody = body;
@@ -21,14 +20,20 @@ module.exports = function(body, isHtml, isUrlEncoded, opts, url, reqHost, proxyJ
         .replaceNC('"'+site2Proxy.replaceNC('\\/', '/')+'/', '"/')
         .replaceNC("'"+site2Proxy.replaceNC('\\/', '/'), '\'')
         .replaceNC('"'+site2Proxy.replaceNC('\\/', '/'), '"')
+        .replaceNC(site2Proxy.split('://').pop(), reqHost)
+        .replaceNC(site2Proxy.split('://').pop(), reqHost)
         .replaceNC("'"+hostname, "'"+reqHost)
         .replaceNC('"'+hostname, '"'+reqHost)
         .replaceNC("'"+hn2, "'"+reqHost)
         .replaceNC('"'+hn2, '"'+reqHost)
-        .replaceNC('discord', 'discordddd')
         .replaceNC('wss://', 'wss://'+reqHost+'/')
-    if (isHtml) {
-        body = body.replaceNC('integrity=', 'sadfghj=').replaceAll('magnet:?', '/torrentStream?stage=step1&magnet=');
+        .replaceNC('integrity', 'integrityy')
+        .replaceNC('crossorigin', 'sadfghjj')
+        .replaceAll('magnet:?', '/torrentStream?stage=step1&magnet=')
+        .replaceNC(btoa(site2Proxy+'/'), btoa('http://'+reqHost+'/'))
+        .replaceAll('url(//', 'url(https://')
+        .replaceNC(btoa(site2Proxy), btoa('http://'+reqHost));
+    if (contentType.includes('html')) {
         var a = body.split('src');
         for (var i=1; i<a.length; i++) {
             if (a[i].replaceAll(' ', '').replaceAll('"', '').replaceAll("'", '').trim().startsWith('=//')) {
@@ -80,7 +85,7 @@ module.exports = function(body, isHtml, isUrlEncoded, opts, url, reqHost, proxyJ
             console.log('html parsing took '+(((new Date())-date)/1000)+' seconds');
         }
         return body.replaceAll('/https://', '/https:/').replaceAll('/http://', '/https:/');
-    } else if (isUrlEncoded) {
+    } else if (contentType.includes('x-www-form-urlencoded')) {
         var {hostname} = new URL(url);
         var h = hostname;
         var {hostname} = new URL(site2Proxy);
@@ -119,13 +124,14 @@ module.exports = function(body, isHtml, isUrlEncoded, opts, url, reqHost, proxyJ
             }
             body = a.join('//');
         }
-        body = body.replaceAll('http://', '/http:/').replaceAll('https://', '/https:/'); //.replaceAll('http:\\/\\/', '/http:\\/\\/').replaceAll('https:\\/\\/', '/https:\\/\\/');
+        body = body.replaceAll('http://', '/http:/').replaceAll('https://', '/https:/');
+        if (contentType.includes('javascript') && !url.includes('worker')) {
+            body+='\n!function(){if(void 0!==typeof window&&void 0!==typeof document&&!window.checkInterval){function t(t){try{t.startsWith("/")||new URL(t).hostname===window.location.hostname||(t="/"+t)}catch(e){!t.startsWith("/")&&t.startsWith("http")&&(t="/"+t)}return t}window.checkInterval=setInterval(function(){document.querySelectorAll("svg").forEach(t=>{t&&t.attributes&&t.attributes["aria-label"]&&t.attributes["aria-label"].textContent&&(t.innerHTML=t.attributes["aria-label"].textContent)})},200),window.fetch&&(window.fetch=(o=window.fetch,function(e,n){return n&&n.integrity&&delete n.integrity,o(t(e),n)})),window.XMLHttpRequest&&(window.XMLHttpRequest.prototype.open=(n=window.XMLHttpRequest.prototype.open,function(e,o,i,w,r){return n.apply(this,[e,t(o),i,w,r])})),window.WebSocket&&(window.WebSocket=(e=window.WebSocket,function(t,n){try{var{hostname:o}=new URL(t);!o===window.location.host&&(t=(n="https:"===window.location.protocol?"wss":"ws")+"://"+t)}catch(t){}return new e(t,n)}))}var e,n,o}();';
+        }
         if (debug) {
             console.log('javascript parsing took '+(((new Date())-date)/1000)+' seconds');
-        }
-        if (site2Proxy.includes('youtube')) {
-            body = body.replaceNC('www.youtube.com', reqHost).replaceNC('youtube.com', reqHost).replaceNC('www.', '').replaceNC('!a.u.startsWith("local")', 'false');
         }
         return body.replaceAll('/https://', '/https://').replaceAll('/http://', '/https://')
     }
 }
+
