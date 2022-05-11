@@ -24,7 +24,7 @@ Please note that some features from Web Server for Chrome have been removed in f
     </tr>
     <tr>
         <td>Accessible on internet</td>
-        <td><b>TODO WRITE THIS</b> Not currently supported, but planned for a future release. <a href="https://github.com/terreng/simple-web-server/issues/56" target="_blank">See issue #56</a>.</td>
+        <td>To make a web server accessible on the internet, you must first enable the <a href="/options.md#accessible-on-local-network">Accessible on local network</a> option, and then <i>port forward</i> the server's port through your router so that anyone on the internet can access it. Search online for a guide on how to set up port forwarding for your specific router, or <a href="https://www.wikihow.com/Set-Up-Port-Forwarding-on-a-Router" target="_blank">see this wikiHow guide</a>. Once you have set up port forwarding, and adjusted firewall settings if necessary, you will be able to access the web server at your public IP address and the specified port.</td>
     </tr>
     <tr>
         <td>Prevent computer from sleeping</td>
@@ -32,6 +32,6 @@ Please note that some features from Web Server for Chrome have been removed in f
     </tr>
     <tr>
         <td>Custom mod-rewrite Regexp</td>
-        <td><b>Not supported.</b> Simple Web Server provides a simple checkbox option to enable a single page rewrite to a specified file, but does not provide an option to specify a custom regular expression. This option was omitted because we are not aware of any use cases for this feature. If you want to see this feature added in a future release, please <a href="https://github.com/terreng/simple-web-server/issues" target="_blank">open an issue</a> and share your use case.</td>
+        <td><b>Not supported.</b> Simple Web Server provides a simple checkbox option to enable a single page rewrite to a specified file, but does not provide an option to specify a custom regular expression. This option was omitted because we are not aware of any use cases for this feature. If you want to see this feature added in a future release, please <a href="https://github.com/terreng/simple-web-server/issues/88" target="_blank">comment on issue #88</a> and share your use case.</td>
     </tr>
 </table>
