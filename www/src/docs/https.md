@@ -4,7 +4,7 @@ Simple Web Server supports custom HTTPS certificates, but it can also generate d
 
 ## Using a dummy certificate for testing purposes
 
-Some newer web APIs require a secure (https) connection in order to use certain features. While this isn't a problem when testing on localhost (see [Secure Contexts on MDN](https://developer.mozilla.org/en-US/docs/Web/Security/Secure_Contexts)), you may want to use a dummy HTTPS certificate to test these features on other devices over LAN.
+Some newer web APIs require a secure (https) connection in order to use certain features. While this isn't a problem when testing on localhost (see [Secure contexts on MDN](https://developer.mozilla.org/en-US/docs/Web/Security/Secure_Contexts)), you may want to use a dummy HTTPS certificate to test these features on other devices over LAN.
 
 To use HTTPS with a dummy certificate, check the HTTPS checkbox and then click the "Generate dummy cert" button.
 
