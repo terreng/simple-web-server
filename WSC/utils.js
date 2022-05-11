@@ -1,5 +1,5 @@
 String.prototype.htmlEscape = function() {
-    return this.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;");
+    return this.replaceAll(/&/g, "&amp;").replaceAll(/</g, "&lt;").replaceAll(/>/g, "&gt;").replaceAll(/"/g, "&quot;").replaceAll(/'/g, "&#039;");
 }
 if (!String.prototype.replaceAll) {
     String.prototype.replaceAll = function(a, b) {
