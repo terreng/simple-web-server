@@ -258,7 +258,7 @@ FileSystem.prototype = {
         } catch(e) {
             var error = e;
         }
-        if (error && error.errno === -4058) {
+        if (error && (error.errno === -4058 || error.errno === -2)) {
             try {
                 fs.writeFileSync(path, data);
             } catch(e) {
