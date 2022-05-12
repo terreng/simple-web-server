@@ -109,7 +109,7 @@ module.exports = function(method, url, headers, body, opts, reqHost, forceText) 
             reject(e);
         })
         if (body && !body.stream && body.data.byteLength !== 0) {
-            req.write(body);
+            req.write(body.data);
             req.end();
         } else if (body && body.stream) {
             body.data.pipe(req);
