@@ -3,7 +3,7 @@ const {app, BrowserWindow, ipcMain, Menu, Tray, dialog, shell} = require('electr
 if (require('electron-squirrel-startup')) app.quit();
 const {networkInterfaces} = require('os');
 
-global.savingLogs = false;
+global.savingLogs = true;//prevent saving logs until log option is checked. never becomes false if logging is not enabled.
 global.pendingSave = false;
 
 const {URL} = require('url');
@@ -161,6 +161,10 @@ app.on('ready', function() {
             config.servers[i].httpsKey = '-----BEGIN RSA PRIVATE KEY-----'+config.servers[i].httpsKey.split('-----BEGIN RSA PRIVATE KEY-----').pop().split('-----END RSA PRIVATE KEY-----')[0].replace(/ /g, '\r\n')+'-----END RSA PRIVATE KEY-----';
             config.servers[i].httpsCert = '-----BEGIN CERTIFICATE-----'+config.servers[i].httpsCert.split('-----BEGIN CERTIFICATE-----').pop().split('-----END CERTIFICATE-----')[0].replace(/ /g, '\r\n')+'-----END CERTIFICATE-----';
         }
+    }
+    if (config.log == true) {
+        global.savingLogs = false;
+        if (global.pendingSave) {console.saveLogs()}
     }
     if (mainWindow == null) {
     createWindow();

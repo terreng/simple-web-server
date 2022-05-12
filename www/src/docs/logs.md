@@ -1,12 +1,14 @@
 # Viewing logs
 
-By default, Simple Web Server logs all requests and any errors to a local log file.
+Simple Web Server can log all requests and any errors to a local log file, but this is disabled by default.
 
-To disable logging, set the `log` setting to `false`. See [Editing config.json](/docs/config%20file.md).
+To enable the log file, set the `log` setting to `true`. See [Editing config.json](/docs/config%20file.md).
+
+You can always view logs while the app is running as described below, even if the log file is disabled.
 
 ## Log file location
 
-Here's where to find the server.log file:
+Here's where to find the local log file:
 
 **Windows:** `C:\Users\[USERNAME]\AppData\Roaming\Simple Web Server\server.log`
 

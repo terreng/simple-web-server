@@ -18,3 +18,11 @@ When enabled, the app will continue to run web servers in the background even wh
 - Type: `true/false`
 
 Periodically check if there is a new version of the app available. Updates are not automatically installed.
+
+### Local logging <Badge type="tip" text="Hidden" vertical="top" />
+
+- Name: `log`
+- Type: `true/false`
+- Default: `false`
+
+Set this option to `true` to enable logging of all requests and any errors to a local log file. See [Viewing logs](/docs/logs.md). This option is not accessible from the app. See [Editing config.json](/docs/config%20file.md).
