@@ -71,8 +71,10 @@ module.exports = function(method, url, headers, body, opts, reqHost, forceText) 
         for (var k in newHeaders) {
             req.setHeader(k, newHeaders[k]);
         }
-        if (body && body.byteLength !== 0) {
-            req.setHeader('content-length', body.byteLength);
+        if (body && !body.stream && body.data.byteLength !== 0) {
+            req.setHeader('content-length', body.data.byteLength);
+        } else if (body && body.stream && body.length) {
+            req.setHeader('content-length', body.length);
         }
         req.on('response', async function(res) {
             if ((!res.headers['content-type'] ||
@@ -106,9 +108,11 @@ module.exports = function(method, url, headers, body, opts, reqHost, forceText) 
         req.on('error', function(e) {
             reject(e);
         })
-        if (body && body.byteLength > 0) {
-            req.write(body)
+        if (body && !body.stream && body.data.byteLength !== 0) {
+            req.write(body);
+            req.end();
+        } else if (body && body.stream) {
+            body.data.pipe(req);
         }
-        req.end()
     })
 }

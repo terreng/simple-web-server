@@ -24,6 +24,8 @@ module.exports = async function(req, res, serverconfig) {
     const allowAdultContent = serverconfig.adultContent || false;
     const allowTorrenting = serverconfig.torrent || true;
     var host = req.headers.host;
+    req.on('error', function() {});
+    res.on('error', function() {});
     var url=req.url,method=req.method,consumed=false;
     if (req.url.split('?')[0] === '/torrentStream') {
         torrent(req, res, allowTorrenting);
@@ -31,7 +33,7 @@ module.exports = async function(req, res, serverconfig) {
     }
     if (req.url === '/worker.js?proxyWorker=true') {
         res.setHeader('content-type', 'text/javascript; chartset=utf-8');
-        res.end(fs.readFileSync("worker.js", "utf8"));
+        res.end(fs.readFileSync("./WSC/proxy/worker.js", "utf8"));
         return;
     }
     if (req.url.split('?')[0].toLowerCase().startsWith('/tinyurl')) {
