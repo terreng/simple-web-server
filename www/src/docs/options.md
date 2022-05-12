@@ -37,6 +37,11 @@ Makes the web server accessible over LAN to other computers on the network. Acce
 Enabling this option requires local network access. On Windows and macOS you may see a firewall permission prompt when enabling this option. You must allow access in order for the web server to work over LAN.
 
 <figure>
+  <img src='/images/windows_lan_warning.jpeg' style='width: 400px'>
+  <figcaption>Firewall permission prompt on Windows</figcaption>
+</figure>
+
+<figure>
   <img src='/images/macos_lan_warning.jpeg' style='width: 250px'>
   <figcaption>Firewall permission prompt on macOS</figcaption>
 </figure>
