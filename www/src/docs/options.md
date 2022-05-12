@@ -90,6 +90,14 @@ Exclude .htm and .html extensions from URLs. For example, `/example.html` will r
 
 ## Advanced rules
 
+### Listen on IPV6
+
+- Name: `ipv6`
+- Type: `true/false`
+- Default: `false`
+
+Listen over IPV6 instead of the default, which is IPV4. This will change the web server URL(s) to be IPV6 instead of IPV4, however some IPV4 addresses will remain functional when LAN is enabled.
+
 ### Cache-Control header value
 
 - Name: `cacheControl`
