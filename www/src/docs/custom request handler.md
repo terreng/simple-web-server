@@ -1,4 +1,4 @@
-# Creating a custom request handler
+# Creating a custom request handler <Badge type="tip" text="Unfinished / May change" vertical="top" />
 
 This guide covers how to write a custom `httpRequest` handler script.
 

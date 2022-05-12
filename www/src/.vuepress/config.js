@@ -51,12 +51,18 @@ module.exports = {
           children: [
             'config file',
             'https',
-            'swsaccess',
-            'custom scripts',
-            'custom request handler',
             'logs',
             'build',
             'wsc'
+          ]
+        },
+        {
+          title: 'Advanced Guides',
+          collapsable: false,
+          children: [
+            'swsaccess',
+            'custom scripts',
+            'custom request handler',
           ]
         }
       ],

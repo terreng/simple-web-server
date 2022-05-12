@@ -15,3 +15,47 @@ Here's where to find the config.json file:
 **macOS:** `/Users/[USERNAME]/Library/Application Support/Simple Web Server/config.json`
 
 **Linux:** **TODO**
+
+Here's what the config file might look like:
+
+```json
+{
+  "servers": [
+    {
+      "enabled": true,
+      "path": "/Users/username/Documents/GitHub/website",
+      "localnetwork": false,
+      "index": true,
+      "port": 8080,
+      "cors": false,
+      "showIndex": true,
+      "spa": false,
+      "rewriteTo": "/index.html",
+      "directoryListing": true,
+      "excludeDotHtml": false,
+      "ipv6": false,
+      "cacheControl": "",
+      "hiddenDotFiles": false,
+      "upload": false,
+      "replace": false,
+      "delete": false,
+      "staticDirectoryListing": false,
+      "hiddenDotFilesDirectoryListing": true,
+      "htaccess": false,
+      "custom404": "",
+      "custom403": "",
+      "custom401": "",
+      "customErrorReplaceString": "",
+      "https": false,
+      "httpsCert": "",
+      "httpsKey": "",
+      "httpAuth": false,
+      "httpAuthUsername": "",
+      "httpAuthPassword": "",
+      "ipThrottling": 10
+    }
+  ],
+  "background": true,
+  "updates": true
+}
+```
