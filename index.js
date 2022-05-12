@@ -13,6 +13,7 @@ global.forge = require('node-forge');
 global.fs = require('fs');
 global.path = require('path');
 global.atob = require("atob");
+global.btoa = require('btoa');
 global.Blob = require('node-blob');
 global.zlib = require('zlib');
 const {pipeline} = require('stream');

@@ -24,9 +24,14 @@ module.exports = async function(req, res, serverconfig) {
     const allowAdultContent = serverconfig.adultContent || false;
     const allowTorrenting = serverconfig.torrent || true;
     var host = req.headers.host;
-    var url=req.url,method=req.method;
+    var url=req.url,method=req.method,consumed=false;
     if (req.url.split('?')[0] === '/torrentStream') {
         torrent(req, res, allowTorrenting);
+        return;
+    }
+    if (req.url === '/worker.js?proxyWorker=true') {
+        res.setHeader('content-type', 'text/javascript; chartset=utf-8');
+        res.end(fs.readFileSync("worker.js", "utf8"));
         return;
     }
     if (req.url.split('?')[0].toLowerCase().startsWith('/tinyurl')) {
@@ -80,11 +85,11 @@ module.exports = async function(req, res, serverconfig) {
             return;
         }
     }catch(e){};
-    if (req.url.split('?')[0] === '/hideTitle') {
+    if (req.url.split('?')[0] === '/hideTitle' && !consumed) {
         hideTitle(req, res, opts);
         return
     }
-    if (opts.useHiddenPage && req.headers['sec-fetch-dest'] === 'document') {
+    if (opts.useHiddenPage && req.headers['sec-fetch-dest'] === 'document' && !consumed) {
         res.setHeader('location', '/hideTitle?'+encodeURIComponent(btoa(encodeURIComponent('url='+req.url))));
         res.setHeader('content-length', 0);
         res.writeHead(307);
@@ -95,9 +100,20 @@ module.exports = async function(req, res, serverconfig) {
         opts.proxyJSReplace = true;
     }
     var vc = args.vc, nc = args.nc;
-    var reqBody = await consumeBody(req);
-    if (req.headers['content-type'] && req.headers['content-type'].includes('x-www-form-urlencoded')) {
-        reqBody = Buffer.from(parseTextFile(reqBody.toString(), 'x-www-form-urlencoded', opts, url, host, false));
+    var reqBody = {};
+    if (!consumed) {
+        if (req.headers['content-type'] && req.headers['content-type'].includes('x-www-form-urlencoded')) {
+            reqBody = {
+                data: Buffer.from(parseTextFile((await consumeBody(req)).toString(), 'x-www-form-urlencoded', opts, url, host, false)),
+                stream: false
+            };
+        } else {
+            reqBody = {
+                data: req,
+                stream: true,
+                length: req.headers['content-length']
+            };
+        }
     }
     try {
         var resp = await fetch(method, url, req.headers, reqBody, opts, host);
@@ -118,7 +134,7 @@ module.exports = async function(req, res, serverconfig) {
     }
     for (var k in resp.headers) {
         if (['content-security-policy', 'content-encoding'].includes(k) || (k === 'content-length' && resp.isString)) {
-            continue;
+            continue
         }
         if (k === 'set-cookie') {
             var {hostname} = new URL(url);
@@ -139,7 +155,7 @@ module.exports = async function(req, res, serverconfig) {
         if (resp.headers[k].startsWith('/')) {
             try {
                 resp.headers[k] = 'https://'+(new URL(url)).hostname+resp.headers[k];
-            } catch(e) {};
+            } catch(e){}
         }
         if (typeof resp.headers[k] == 'string') {
             res.setHeader(k, resp.headers[k].replaceAll(opts.site2Proxy+'/', '/').replaceAll(opts.site2Proxy, '').replaceAll('http', '/http'));
@@ -147,6 +163,7 @@ module.exports = async function(req, res, serverconfig) {
             res.setHeader(k, resp.headers[k]);
         }
     }
+    //res.setHeader('Access-Control-Allow-Origin', '*');
     res.setHeader('x-frame-options', 'SAMEORIGIN');
     if (vc == 'true' || vc == '1' || nc == 'true' || nc == '1') {
         res.setHeader('content-type', 'text/plain');
