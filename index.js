@@ -165,6 +165,7 @@ app.on('ready', function() {
     if (mainWindow == null) {
     createWindow();
     }
+    console.log("\n"+((new Date()).toLocaleString()+"\n"));
     startServers();
     checkForUpdates();
     setInterval(function() {
@@ -237,7 +238,7 @@ setInterval(function() {
         lastIps = ips;
         if (mainWindow && mainWindow.webContentsLoaded) {
             mainWindow.webContents.send('message', {"type": "ipchange", ip: ips});
-            console.log("IP(s) changed: "+JSON.stringify(ips));
+            console.log("["+(new Date()).toLocaleString()+"] IP(s) changed: "+JSON.stringify(ips));
         }
     }
 }, 5000) //every 5 seconds
@@ -332,7 +333,7 @@ function startServers() {
             need_close_servers--;
         } else {
             running_servers[i].deleted = true;
-            console.log('Killing server on port ' + running_servers[i].config.port);
+            console.log("["+(new Date()).toLocaleString()+'] Killing server on port ' + running_servers[i].config.port);
             if (running_servers[i].server) {
                 running_servers[i].server.destroy(function() {
                     closed_servers++;
@@ -432,7 +433,7 @@ function startServers() {
                     updateServerStates();
                 });
                 server.on('listening', function() {
-                    console.log('Listening on ' + (serverconfig.https ? 'https' : 'http') + '://' + hostname + ':' + serverconfig.port)
+                    console.log("["+(new Date()).toLocaleString()+'] Listening on ' + (serverconfig.https ? 'https' : 'http') + '://' + hostname + ':' + serverconfig.port)
                     this_server.state = "running";
                     updateServerStates();
                 });
@@ -486,11 +487,11 @@ function checkForUpdates() {
                     try {
                         var version_update = JSON.parse(data);
                     } catch (e) {
-                        console.log("Update check failed (invalid response)");
+                        console.log("["+(new Date()).toLocaleString()+"] Update check failed (invalid response)");
                     }
                     if (version_update.update) {
                         if (version_update.download !== (update_info || {}).url) {
-                            console.log("Update available: "+version_update.download)
+                            console.log("["+(new Date()).toLocaleString()+"] Update available: "+version_update.download)
                         }
                         update_info = {"url": version_update.download, "text": version_update.banner_text, "attributes": JSON.parse(version_update.attributes || '[]')};
                         if (mainWindow.webContentsLoaded) {
@@ -499,12 +500,12 @@ function checkForUpdates() {
                     }
                 })
             } else {
-                console.log("Update check failed (status code "+res.statusCode+")");
+                console.log("["+(new Date()).toLocaleString()+"] Update check failed (status code "+res.statusCode+")");
             }
         })
         
         req.on('error', function(error) {
-            console.log("Update check failed");
+            console.log("["+(new Date()).toLocaleString()+"] Update check failed");
             console.log(error)
         })
         

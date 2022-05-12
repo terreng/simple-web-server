@@ -177,7 +177,7 @@ DirectoryEntryHandler.prototype = {
             return
         }
         global.ConnetionS[this.request.ip]++
-        console.log(this.request.ip + ':', 'Request',this.request.method, this.request.uri)
+        console.log("["+(new Date()).toLocaleString()+"]", this.request.ip + ':', 'Request',this.request.method, this.request.uri)
         /*
         if (this.app.opts.optIpBlocking && this.app.opts.optIpBlockList) {
             var file = await this.fs.asyncGetByPath(this.app.opts.optIpBlockList)
@@ -229,7 +229,7 @@ DirectoryEntryHandler.prototype = {
 
         if (this.app.opts.spa) {
             if (!this.request.uri.match(/.*\.[\d\w]+$/)) {
-                console.log("Single page rewrite rule matched", this.request.uri);
+                //console.log("Single page rewrite rule matched", this.request.uri);
                 this.rewrite_to = this.app.opts.rewriteTo || "/index.html";
             }
         }
@@ -1124,7 +1124,7 @@ DirectoryEntryHandler.prototype = {
                         this.setHeader('Content-Encoding', 'deflate');
                         compresionStream = zlib.createDeflate();
                     } else {
-                        console.log('this.. shouldnt be possible');
+                        //console.log('this.. shouldnt be possible');
                         this.res.end();
                         return;
                     }
