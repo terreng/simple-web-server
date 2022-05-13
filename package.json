@@ -3,7 +3,7 @@
   "productName": "Simple Web Server",
   "version": "1.1.0",
   "main": "index.js",
-  "description": "A continuation of Web Server for Chrome, built with Electron.",
+  "description": "Create a local web server in just a few clicks with an easy to use interface. A continuation of Web Server for Chrome, built with Electron.",
   "author": {
     "name": "Terren Gurule",
     "url": "https://github.com/terreng"
@@ -22,90 +22,56 @@
   "homepage": "https://terreng.github.io/simple-web-server/",
   "bugs": "https://github.com/terreng/simple-web-server/issues",
   "scripts": {
-    "start": "electron-forge start",
-    "package": "electron-forge package",
-    "make": "electron-forge make",
-    "makeWin": "electron-forge make --platform win32",
-    "makeDarwin": "electron-forge make --platform darwin",
-    "makeLinux": "electron-forge make --platform linux",
-    "makewww": "cp -r docs www/docs && npm --prefix ./www install ./www && node www/build.js"
+    "start": "electron .",
+    "make": "electron-builder --config",
+    "make_macos_x64": "electron-builder --mac dmg --x64",
+    "make_macos_ia32": "electron-builder --mac dmg --ia32",
+    "make_macos_arm64": "electron-builder --mac dmg --arm64",
+    "make_windows_x64": "electron-builder --windows nsis --x64",
+    "make_windows_ia32": "electron-builder --windows nsis --ia32",
+    "make_windows_arm64": "electron-builder --windows nsis --arm64"
+  },
+  "build": {
+    "appId": "org.simplewebserver.simplewebserver",
+    "productName": "Simple Web Server",
+    "copyright": "MIT License",
+    "files": [
+      "./index.js",
+      "./directory-listing-template-static.html",
+      "./directory-listing-template.html",
+      "./index.html",
+      "./LICENSE",
+      "./main.js",
+      "./mime.js",
+      "./open_source_licenses.txt",
+      "./preload.js",
+      "./style.css",
+      "./WSC.js",
+      "./proxy.js",
+      "./images/logo.png",
+      "./fonts/**",
+      "./WSC/**"
+    ],
+    "mac": {
+      "icon": "images/icon.icns"
+    },
+    "win": {
+      "icon": "images/icon.ico"
+    }
   },
   "devDependencies": {
-    "@electron-forge/cli": "^6.0.0-beta.57",
-    "@electron-forge/maker-appx": "^6.0.0-beta.59",
-    "@electron-forge/maker-deb": "6.0.0-beta.53",
-    "@electron-forge/maker-dmg": "6.0.0-beta.53",
-    "@electron-forge/maker-rpm": "6.0.0-beta.53",
-    "@electron-forge/maker-squirrel": "6.0.0-beta.53",
-    "@electron-forge/maker-zip": "6.0.0-beta.53",
-    "@electron-forge/plugin-webpack": "6.0.0-beta.53",
-    "@electron-forge/publisher-github": "6.0.0-beta.52",
-    "electron": "^18.2.3",
-    "electron-squirrel-startup": "^1.0.0",
-    "electron-windows-store": "^2.1.0"
+    "electron": "^13.6.6",
+    "electron-builder": "^23.0.3"
   },
   "dependencies": {
     "atob": "^2.1.2",
     "btoa": "^1.2.1",
     "http": "^0.0.1-security",
     "https": "^1.0.0",
-    "jszip": "^3.7.1",
-    "markdown": "^0.5.0",
-    "node-blob": "^0.0.2",
+    "node-blob": "0.0.2",
     "node-forge": "^1.3.1",
     "node-gzip": "^1.1.2",
+    "jszip": "^3.7.1",
     "torrent-stream": "^1.2.1"
-  },
-  "config": {
-    "forge": {
-      "packagerConfig": {
-        "icon": "images/icon.ico"
-      },
-      "make_targets": {
-        "win32": [
-          "squirrel",
-          "appx"
-        ],
-        "darwin": [
-          "zip",
-          "dmg"
-        ],
-        "linux": [
-          "deb",
-          "rpm",
-          "flatpak",
-          "snap"
-        ]
-      },
-      "makers": [
-        {
-          "name": "@electron-forge/maker-squirrel",
-          "config": {
-            "name": "web_server"
-          }
-        },
-        {
-          "name": "@electron-forge/maker-zip",
-          "platforms": [
-            "darwin"
-          ]
-        },
-        {
-          "name": "@electron-forge/maker-deb",
-          "config": {}
-        },
-        {
-          "name": "@electron-forge/maker-rpm",
-          "config": {}
-        },
-        {
-          "name": "@electron-forge/maker-appx",
-          "config": {
-            "publisher": "CN=SimpleWebServer",
-            "expandedBaseImage": "images/icon.ico"
-          }
-        }
-      ]
-    }
   }
 }
