@@ -53,6 +53,9 @@
     ],
     "mac": {
       "icon": "images/icon.icns"
+    },
+    "win": {
+      "icon": "images/icon.ico"
     }
   },
   "devDependencies": {
