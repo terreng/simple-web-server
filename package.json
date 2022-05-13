@@ -29,7 +29,13 @@
     "make_macos_arm64": "electron-builder --mac dmg --arm64",
     "make_windows_x64": "electron-builder --windows nsis --x64",
     "make_windows_ia32": "electron-builder --windows nsis --ia32",
-    "make_windows_arm64": "electron-builder --windows nsis --arm64"
+    "make_windows_arm64": "electron-builder --windows nsis --arm64",
+    "make_linux_deb_x64": "electron-builder --linux deb --x64",
+    "make_linux_deb_ia32": "electron-builder --linux deb --ia32",
+    "make_linux_deb_arm64": "electron-builder --linux deb --arm64",
+    "make_linux_targz_x64": "electron-builder --linux targz --x64",
+    "make_linux_targz_ia32": "electron-builder --linux targz --ia32",
+    "make_linux_targz_arm64": "electron-builder --linux targz --arm64"
   },
   "build": {
     "appId": "org.simplewebserver.simplewebserver",
@@ -48,6 +54,9 @@
       "./style.css",
       "./WSC.js",
       "./images/logo.png",
+      "./images/icon.ico",
+      "./images/icon.icns",
+      "./images/512x512.png",
       "./fonts/**",
       "./WSC/**"
     ],
@@ -56,7 +65,13 @@
     },
     "win": {
       "icon": "images/icon.ico",
-      "createDesktopShortcut": "always"
+      "createDesktopShortcut": "always",
+      "publisherName": "Simple Web Server"
+    },
+    "linux": {
+      "icon": "images/512x512.png",
+      "category": "Development",
+      "vendor": "Simple Web Server"
     }
   },
   "devDependencies": {
