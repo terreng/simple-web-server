@@ -17,6 +17,7 @@ global.atob = require("atob");
 global.Blob = require('node-blob');
 global.zlib = require('zlib');
 const {pipeline} = require('stream');
+var path = global.path;
 global.pipeline = pipeline;
 
 WSC = require("./WSC.js");
@@ -257,7 +258,7 @@ function createWindow() {
         frame: true,
         //skipTaskbar: true,
         title: "Simple Web Server",
-        icon: "./images/icon.ico",
+        icon: path.join(__dirname, "images/icon.ico"),
         webPreferences: {
             scrollBounce: false,
             nodeIntegration: false,
