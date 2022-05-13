@@ -6,3 +6,4 @@ www/docs
 www/out
 www/src/.vuepress/dist
 dev/
+dist/
