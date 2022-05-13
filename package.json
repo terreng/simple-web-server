@@ -55,7 +55,8 @@
       "icon": "images/icon.icns"
     },
     "win": {
-      "icon": "images/icon.ico"
+      "icon": "images/icon.ico",
+      "createDesktopShortcut": "always"
     }
   },
   "devDependencies": {
