@@ -55,8 +55,6 @@
       "./WSC.js",
       "./images/logo.png",
       "./images/icon.ico",
-      "./images/icon.icns",
-      "./images/512x512.png",
       "./fonts/**",
       "./WSC/**"
     ],

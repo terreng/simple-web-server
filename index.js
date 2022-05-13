@@ -257,7 +257,7 @@ function createWindow() {
         frame: true,
         //skipTaskbar: true,
         title: "Simple Web Server",
-        icon: "images/icon.ico",
+        icon: "./images/icon.ico",
         webPreferences: {
             scrollBounce: false,
             nodeIntegration: false,
