@@ -65,8 +65,10 @@
     },
     "win": {
       "icon": "images/icon.ico",
-      "createDesktopShortcut": "always",
       "publisherName": "Simple Web Server"
+    },
+    "nsis": {
+      "createDesktopShortcut": "always"
     },
     "linux": {
       "icon": "images/512x512.png",
