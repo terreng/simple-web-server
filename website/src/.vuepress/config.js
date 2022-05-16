@@ -24,7 +24,7 @@ module.exports = {
     nav: [
       {
         text: 'Download',
-        link: '/download/',
+        link: '/download.html',
       },
       {
         text: 'Documentation',

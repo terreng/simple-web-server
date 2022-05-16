@@ -24,7 +24,7 @@
   "bugs": "https://github.com/terreng/simple-web-server/issues",
   "scripts": {
     "start": "electron .",
-    "make": "electron-builder --config",
+    "make": "electron-builder",
     "make_macos_x64": "electron-builder --mac dmg --x64",
     "make_macos_ia32": "electron-builder --mac dmg --ia32",
     "make_macos_arm64": "electron-builder --mac dmg --arm64",

@@ -10,10 +10,11 @@
   "repository": "https://github.com/terreng/simple-web-server/simple-web-server",
   "scripts": {
     "dev": "vuepress dev src",
-    "build": "npm install && vuepress build src && node build.js"
+    "build": "npm install && vuepress build src && node build.js",
+    "builddev": "vuepress build src && node build.js"
   },
   "license": "MIT",
   "devDependencies": {
-    "vuepress": "^1.5.3"
+    "vuepress": "^1.9.7"
   }
 }
