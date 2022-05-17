@@ -1,4 +1,5 @@
 var version = 1001000;
+var install_source = "website"; //"website" | "microsoftstore"
 const {app, BrowserWindow, ipcMain, Menu, Tray, dialog, shell} = require('electron');
 const {networkInterfaces} = require('os');
 
@@ -494,10 +495,10 @@ function checkForUpdates() {
                         console.log("["+(new Date()).toLocaleString()+"] Update check failed (invalid response)");
                     }
                     if (version_update.update) {
-                        if (version_update.download !== (update_info || {}).url) {
-                            console.log("["+(new Date()).toLocaleString()+"] Update available: "+version_update.download)
+                        if (version_update.download[install_source] !== (update_info || {}).url) {
+                            console.log("["+(new Date()).toLocaleString()+"] Update available: "+version_update.download[install_source])
                         }
-                        update_info = {"url": version_update.download, "text": version_update.banner_text, "attributes": JSON.parse(version_update.attributes || '[]')};
+                        update_info = {"url": version_update.download[install_source], "text": version_update.banner_text, "attributes": JSON.parse(version_update.attributes || '[]')};
                         if (mainWindow.webContentsLoaded) {
                             mainWindow.webContents.send('message', {"type": "update", "url": update_info.url, "text": update_info.text, "attributes": update_info.attributes});
                         }
