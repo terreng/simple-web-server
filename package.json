@@ -76,7 +76,8 @@
       "publisherName": "Simple Web Server"
     },
     "nsis": {
-      "createDesktopShortcut": "always"
+      "createDesktopShortcut": "always",
+      "artifactName": "${productName} Installer ${version} ${arch}.${ext}"
     },
     "linux": {
       "icon": "images/512x512.png",
