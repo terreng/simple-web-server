@@ -85,7 +85,8 @@
     },
     "appx": {
       "publisherDisplayName": "Simple Web Server",
-      "displayName": "Simple Web Server"
+      "displayName": "Simple Web Server",
+      "applicationId": "org.simplewebserver.simplewebserver"
     }
   },
   "devDependencies": {
