@@ -1,7 +1,9 @@
+var version = 1001000;
+var install_source = "website"; //"website" | "microsoftstore"
 const {app, BrowserWindow, ipcMain, Menu, Tray, dialog, shell} = require('electron');
 const {networkInterfaces} = require('os');
 
-global.savingLogs = false;
+global.savingLogs = true;//prevent saving logs until log option is checked. never becomes false if logging is not enabled.
 global.pendingSave = false;
 
 const {URL} = require('url');
@@ -16,6 +18,7 @@ global.atob = require("atob");
 global.Blob = require('node-blob');
 global.zlib = require('zlib');
 const {pipeline} = require('stream');
+var path = global.path;
 global.pipeline = pipeline;
 
 WSC = require("./WSC.js");
@@ -104,7 +107,7 @@ function getIPs() {
     var ips = []
     for (var k in ifaces) {
         for (var i=0; i<ifaces[k].length; i++) {
-            if (!ifaces[k][i].address.startsWith('fe80::')) { //this is basically 127.0.0.1 for IPv6
+            if (!ifaces[k][i].address.startsWith('fe80::') && ['IPv4', 'IPv6'].includes(ifaces[k][i].family)) {
                 ips.push([ifaces[k][i].address, ifaces[k][i].family.toLowerCase()])
             }
         }
@@ -144,20 +147,35 @@ app.on('ready', function() {
     })
     */
     try {
-        config = JSON.parse(fs.readFileSync(path.join(app.getPath('userData'), "config.json")));
+        config = fs.readFileSync(path.join(app.getPath('userData'), "config.json"));
     } catch(error) {
-        config = {};
+        config = "{}";
+    }
+    try {
+        config = JSON.parse(config);
+    } catch(error) {
+        dialog.showErrorBox("Failed to parse config.json", "Something went wrong while parsing config.json. The file is improperly formatted.");
+        app.quit();
     }
     for (var i = 0; i < (config.servers || []).length; i++) {
         if (config.servers[i].httpsKey && config.servers[i].httpsCert) {
-            config.servers[i].httpsKey = config.servers[i].httpsKey.replace(/ /g, '\r\n');
-            config.servers[i].httpsCert = config.servers[i].httpsCert.replace(/ /g, '\r\n');
+            config.servers[i].httpsKey = '-----BEGIN RSA PRIVATE KEY-----'+config.servers[i].httpsKey.split('-----BEGIN RSA PRIVATE KEY-----').pop().split('-----END RSA PRIVATE KEY-----')[0].replace(/ /g, '\r\n')+'-----END RSA PRIVATE KEY-----';
+            config.servers[i].httpsCert = '-----BEGIN CERTIFICATE-----'+config.servers[i].httpsCert.split('-----BEGIN CERTIFICATE-----').pop().split('-----END CERTIFICATE-----')[0].replace(/ /g, '\r\n')+'-----END CERTIFICATE-----';
         }
+    }
+    if (config.log == true) {
+        global.savingLogs = false;
+        if (global.pendingSave) {console.saveLogs()}
     }
     if (mainWindow == null) {
     createWindow();
     }
+    console.log("\n"+((new Date()).toLocaleString()+"\n"));
     startServers();
+    checkForUpdates();
+    setInterval(function() {
+        checkForUpdates()
+    }, 1000*60*60) //Every hour
 })
 
 app.on('window-all-closed', function () {
@@ -181,6 +199,12 @@ ipcMain.on('quit', quit)
 ipcMain.on('saveconfig', function(event, arg1) {
     fs.writeFileSync(path.join(app.getPath('userData'), "config.json"), JSON.stringify(arg1, null, 2), "utf8");
     config = arg1;
+    if (config.updates == true && last_update_check_skipped == true) {
+        checkForUpdates();
+    }
+    if (config.updates == false) {
+        last_update_check_skipped = true;
+    }
     startServers();
 })
 
@@ -208,19 +232,21 @@ app.on('activate', function () {
     }
 })
 
-var lastIps = getIPs()
+var lastIps = [];
 setInterval(function() {
-    // I did some research, this is the best way to do this
     var ips = getIPs()
-    var newIp = false
-    if (lastIps.length !== ips.length || JSON.stringify(lastIps) === ips) {
-        newIp = true
+    var ipsChanged = false
+    if (lastIps.length !== ips.length || JSON.stringify(lastIps.sort(function(a, b){if(a[0] < b[0]) {return -1;}; if(a[0] > b[0]) {return 1;}; return 0;})) !== JSON.stringify(ips.sort(function(a, b){if(a[0] < b[0]) {return -1;}; if(a[0] > b[0]) {return 1;}; return 0;}))) {
+        ipsChanged = true
     }
-    lastIps = ips;
-    if (newIp === true) {
-        //variable ips contains new ips
+    if (ipsChanged === true) {
+        lastIps = ips;
+        if (mainWindow && mainWindow.webContentsLoaded) {
+            mainWindow.webContents.send('message', {"type": "ipchange", ip: ips});
+            console.log("["+(new Date()).toLocaleString()+"] IP(s) changed: "+JSON.stringify(ips));
+        }
     }
-}, 20000) //every 20 seconds
+}, 5000) //every 5 seconds
 
 function createWindow() {
 
@@ -233,7 +259,7 @@ function createWindow() {
         frame: true,
         //skipTaskbar: true,
         title: "Simple Web Server",
-        icon: "images/icon.ico",
+        icon: path.join(__dirname, "images/icon.ico"),
         webPreferences: {
             scrollBounce: false,
             nodeIntegration: false,
@@ -251,7 +277,11 @@ function createWindow() {
     
     mainWindow.webContents.on('did-finish-load', function() {
         mainWindow.webContentsLoaded = true;
-        mainWindow.webContents.send('message', {"type": "init", "config": config, ip: getIPs()});
+        lastIps = getIPs()
+        mainWindow.webContents.send('message', {"type": "init", "config": config, ip: lastIps});
+        if (update_info) {
+            mainWindow.webContents.send('message', {"type": "update", "url": update_info.url, "text": update_info.text, "attributes": update_info.attributes});
+        }
         updateServerStates();
     });
 
@@ -308,11 +338,16 @@ function startServers() {
             need_close_servers--;
         } else {
             running_servers[i].deleted = true;
-            console.log('Killing server on port ' + running_servers[i].config.port);
-            running_servers[i].server.destroy(function() {
+            console.log("["+(new Date()).toLocaleString()+'] Killing server on port ' + running_servers[i].config.port);
+            if (running_servers[i].server) {
+                running_servers[i].server.destroy(function() {
+                    closed_servers++;
+                    checkServersClosed();
+                });
+            } else {
                 closed_servers++;
                 checkServersClosed();
-            });
+            }
         }
     }
 
@@ -348,7 +383,9 @@ function startServers() {
             }
             if (serverconfig.enabled && !found_already_running) {
                 var this_server = {"config":serverconfig,"state":"starting"};
-                var hostname = serverconfig.localnetwork ? (serverconfig.ipv6 ? '::' : '0.0.0.0') : '127.0.0.1';
+
+                var hostname = serverconfig.localnetwork ? (serverconfig.ipv6 ? '::' : '0.0.0.0') : (serverconfig.ipv6 ? '::1' : '127.0.0.1');
+                try {
                 if (serverconfig.https) {
                     if (!serverconfig.httpsKey || !serverconfig.httpsCert) {
                         var crypto = WSC.createCrypto();
@@ -358,6 +395,13 @@ function startServers() {
                     }
                 } else {
                     var server = http.createServer();
+                }
+                } catch(err) {
+                    console.error(err);
+                    this_server.state = "error";
+                    this_server.error_message = (serverconfig.https ? "There is probably something wrong with your HTTPS certificate and key.\n" : "") + err.message;
+                    running_servers.push(this_server);
+                    return;
                 }
                 this_server.server = server;
                 /*
@@ -394,7 +438,7 @@ function startServers() {
                     updateServerStates();
                 });
                 server.on('listening', function() {
-                    console.log('Listening on ' + (serverconfig.https ? 'https' : 'http') + '://' + hostname + ':' + serverconfig.port)
+                    console.log("["+(new Date()).toLocaleString()+'] Listening on ' + (serverconfig.https ? 'https' : 'http') + '://' + hostname + ':' + serverconfig.port)
                     this_server.state = "running";
                     updateServerStates();
                 });
@@ -428,5 +472,50 @@ function configsEqual(config1, config2) {
         return true;
     } else {
         return false;
+    }
+}
+
+var update_info;
+var last_update_check_skipped = false;
+
+function checkForUpdates() {
+    if (config.updates == true) {
+        last_update_check_skipped = false;
+        var req = global.https.request({
+            hostname: 'simplewebserver.org',
+            port: 443,
+            path: '/versions/'+version+".json",
+            method: 'GET'
+        }, function(res) {
+            if (res.statusCode == 200) {
+                res.on('data', function(data) {
+                    try {
+                        var version_update = JSON.parse(data);
+                    } catch (e) {
+                        console.log("["+(new Date()).toLocaleString()+"] Update check failed (invalid response)");
+                    }
+                    if (version_update.update) {
+                        if (version_update.download[install_source] !== (update_info || {}).url) {
+                            console.log("["+(new Date()).toLocaleString()+"] Update available: "+version_update.download[install_source])
+                        }
+                        update_info = {"url": version_update.download[install_source], "text": version_update.banner_text, "attributes": JSON.parse(version_update.attributes || '[]')};
+                        if (mainWindow.webContentsLoaded) {
+                            mainWindow.webContents.send('message', {"type": "update", "url": update_info.url, "text": update_info.text, "attributes": update_info.attributes});
+                        }
+                    }
+                })
+            } else {
+                console.log("["+(new Date()).toLocaleString()+"] Update check failed (status code "+res.statusCode+")");
+            }
+        })
+        
+        req.on('error', function(error) {
+            console.log("["+(new Date()).toLocaleString()+"] Update check failed");
+            console.log(error)
+        })
+        
+        req.end();
+    } else {
+        last_update_check_skipped = true;
     }
 }

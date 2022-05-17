@@ -20,16 +20,8 @@ WSC.DirectoryEntryHandler = handlers.DirectoryEntryHandler
 WSC.BaseHandler = handlers.BaseHandler
 
 var main_fs = new WSC.FileSystem(__dirname)
-main_fs.getByPath('/directory-listing-template.html', function(file) {
-    file.text(function(data) {
-        WSC.template_data = data
-    })
-})
-main_fs.getByPath('/directory-listing-template-static.html', function(file) {
-    file.text(function(data) {
-        WSC.static_template_data = data
-    })
-})
+WSC.template_data = global.fs.readFileSync(global.path.resolve(__dirname, "directory-listing-template.html"), "utf8");
+WSC.static_template_data = global.fs.readFileSync(global.path.resolve(__dirname, "directory-listing-template-static.html"), "utf8");
 
 module.exports = WSC;
 

@@ -1,0 +1,13 @@
+{
+    "latest": "1001000",
+    "versions": {
+        "1001000": {
+            "name": "1.1.0",
+            "download": {"website": "https://simplewebserver.org/download", "microsoftstore": "https://simplewebserver.org/download"}
+        },
+        "1000000": {
+            "name": "1.0.0",
+            "download": {"website": "https://github.com/terreng/simple-web-server/releases/tag/v1.0.0"}
+        }
+    }
+}

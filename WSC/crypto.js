@@ -1,4 +1,3 @@
-
 module.exports = function() {
     var data = { }
     var cn = "WebServerForChrome" + (new Date()).toISOString();
@@ -63,4 +62,3 @@ module.exports = function() {
   return data;
   console.log('certificate created for \"' + cn + '\": \n');
 };
-

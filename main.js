@@ -38,6 +38,7 @@ window.api.initipc(function (event, message) {
         } else {
             initWelcome();
         }
+        document.getElementById("stop_and_quit_button").style.display = config.background ? "block" : "none";
         if (config.darkmode) {
             document.body.classList.add("darkmode");
         }
@@ -46,6 +47,20 @@ window.api.initipc(function (event, message) {
     if (message.type == "state") {
         server_states = message.server_states;
         updateRunningStates();
+    }
+    if (message.type == "update") {
+        document.getElementById("update_banner").style.display = "block";
+        document.getElementById("update_banner").href = message.url;
+        document.getElementById("update_banner_text").innerText = message.text || "An updated version of Simple Web Server is available";
+        if (message.attributes.indexOf("high_priority") > -1) {
+            document.getElementById("update_banner").classList.add("high_priority");
+        } else {
+            document.getElementById("update_banner").classList.remove("high_priority");
+        }
+    }
+    if (message.type == "ipchange") {
+        ip = message.ip;
+        updateOnIpChange();
     }
 });
 
@@ -99,7 +114,7 @@ function openLicenses() {
 function renderServerList() {
     var pendhtml = "";
     for (var i = 0; i < (config.servers || []).length; i++) {
-        pendhtml += '<div class="server '+(config.servers[i].enabled ? "checked" : "")+'" id="server_'+i+'"><div onclick="toggleServer('+i+')"><div class="switch"></div></div><div onclick="addServer('+i+')"><div>'+htmlescape(config.servers[i].path)+'</div><div><span class="server_status" style="color: '+running_states[getServerStatus(config.servers[i]).state].list_color+';">'+running_states[getServerStatus(config.servers[i]).state].text+'</span> &bull; Port '+String(config.servers[i].port)+(config.servers[i].localnetwork ? ' &bull; LAN' : '')+(config.servers[i].https ? ' &bull; HTTPS' : '')+'</div></div></div>'
+        pendhtml += '<div class="server '+(config.servers[i].enabled ? "checked" : "")+'" id="server_'+i+'"><div onclick="toggleServer('+i+')"><div class="switch"></div></div><div onclick="addServer('+i+')"><div>'+htmlescape(config.servers[i].path)+'</div><div><span class="server_status" style="color: '+running_states[getServerStatus(config.servers[i]).state].list_color+';">'+running_states[getServerStatus(config.servers[i]).state].text+'</span> &bull; Port '+String(config.servers[i].port)+(config.servers[i].ipv6 ? ' &bull; IPv6' : '')+(config.servers[i].localnetwork ? ' &bull; LAN' : '')+(config.servers[i].https ? ' &bull; HTTPS' : '')+'</div></div></div>'
     }
     if (pendhtml == "") {
         pendhtml = '<div style="color: var(--fullscreen_placeholder);text-align: center;position: absolute;top: 48%;width: 100%;transform: translateY(-50%);"><i class="material-icons" style="font-size: 70px;">dns</i><div style="font-size: 18px;padding-top: 20px;">You haven\'t created any servers yet</div></div>';
@@ -127,8 +142,8 @@ function getServerStatusBox(local_config) {
             var url_list = [];
 
             for (var i = 0; i < ip.length; i++) {
-                if (ip[i] == '127.0.0.1' || local_config.localnetwork) {
-                    url_list.push((local_config.https ? 'https' : 'http')+'://'+ip[i]+':'+local_config.port);
+                if ((ip[i][0] == '127.0.0.1' && local_config.ipv6 != true) || (ip[i][0] == '::1' && local_config.ipv6 == true) || (local_config.localnetwork && ((ip[i][1] == "ipv4") || (ip[i][1] == "ipv6" && local_config.ipv6 == true)))) {
+                    url_list.push((local_config.https ? 'https' : 'http')+'://'+(ip[i][1] == "ipv6" ? "["+ip[i][0]+"]" : ip[i][0])+':'+local_config.port);
                 }
             }
         
@@ -156,6 +171,12 @@ function updateRunningStates() {
     if (document.getElementById("server_container").style.display == "block" && activeeditindex !== false) {
         document.getElementById("edit_server_running").querySelector(".label").innerHTML = running_states[getServerStatus(config.servers[activeeditindex]).state].text;
         document.getElementById("edit_server_running").querySelector(".label").style.color = running_states[getServerStatus(config.servers[activeeditindex]).state].edit_color;
+        document.querySelector("#settings_server_list").innerHTML = getServerStatusBox(config.servers[activeeditindex]);
+    }
+}
+
+function updateOnIpChange() {
+    if (document.getElementById("server_container").style.display == "block" && activeeditindex !== false) {
         document.querySelector("#settings_server_list").innerHTML = getServerStatusBox(config.servers[activeeditindex]);
     }
 }
@@ -236,6 +257,7 @@ function addServer(editindex) {
         toggleCheckbox("directoryListing", config.servers[editindex].directoryListing != null ? config.servers[editindex].directoryListing : true);
         toggleCheckbox("excludeDotHtml", config.servers[editindex].excludeDotHtml != null ? config.servers[editindex].excludeDotHtml : false);
 
+        toggleCheckbox("ipv6", config.servers[editindex].ipv6 != null ? config.servers[editindex].ipv6 : false);
         document.querySelector("#cacheControl").value = config.servers[editindex].cacheControl || "";
         toggleCheckbox("hiddenDotFiles", config.servers[editindex].hiddenDotFiles != null ? config.servers[editindex].hiddenDotFiles : false);
         toggleCheckbox("cors", config.servers[editindex].cors != null ? config.servers[editindex].cors : false);
@@ -284,6 +306,7 @@ function addServer(editindex) {
         toggleCheckbox("directoryListing", true);
         toggleCheckbox("excludeDotHtml", false);
 
+        toggleCheckbox("ipv6", false);
         document.querySelector("#cacheControl").value = "";
         toggleCheckbox("hiddenDotFiles", false);
         toggleCheckbox("cors", false);
@@ -374,6 +397,7 @@ function submitAddServer() {
         "directoryListing": isChecked("directoryListing"),
         "excludeDotHtml": isChecked("excludeDotHtml"),
 
+        "ipv6": isChecked("ipv6"),
         "cacheControl": document.querySelector("#cacheControl").value,
         "hiddenDotFiles": isChecked("hiddenDotFiles"),
         "cors": isChecked("cors"),
@@ -452,6 +476,7 @@ if (config.background) {
     document.querySelector("#background_welcome").classList.add("checked");
     config.background = true
 }
+document.getElementById("stop_and_quit_button").style.display = config.background ? "block" : "none";
 window.api.saveconfig(config);
 }
 
@@ -460,6 +485,7 @@ if (config.updates !== false) {
     document.querySelector("#updates").classList.remove("checked");
     document.querySelector("#updates_welcome").classList.remove("checked");
     config.updates = false;
+    document.getElementById("update_banner").style.display = "none";
 } else {
     document.querySelector("#updates").classList.add("checked");
     document.querySelector("#updates_welcome").classList.add("checked");

@@ -1,5 +1,12 @@
 
 function getByPath(path, callback, FileSystem) {
+    if (!path) {
+        if (typeof path == 'string') {
+            path = '/';
+        } else {
+            return null;
+        }
+    }
     this.fs = FileSystem;
     if (! (path.startsWith('/') || path.startsWith('\\'))) {
         var path = '/' + path;
@@ -12,6 +19,9 @@ function getByPath(path, callback, FileSystem) {
 
 getByPath.prototype = {
     getFile: function() {
+        if (!this.path) {
+            return null;
+        }
         var path = this.path
         this.hidden = function(path) {
             var a = path.split('/');
@@ -21,7 +31,7 @@ getByPath.prototype = {
                 }
             }
             return false;
-        }(path)
+        }(path);
         try {
             var stats = fs.statSync(path);
         } catch(e) {
@@ -29,7 +39,7 @@ getByPath.prototype = {
         }
         if (error) {
             try {
-                if (error.path && typeof error.path == 'string' && error.errno == -4048) {
+                if (error.path && typeof error.path == 'string' && error.code === 'EPERM') {
                     var err = {};
                     err.path = error.path.replace(/\\/g, '/').replace(/\/\//g, '/');
                     if (error.path.endsWith('/')) {
@@ -99,6 +109,10 @@ getByPath.prototype = {
         }.bind(this));
     },
     file: function(callback) {
+        if (!this.path) {
+            callback(null);
+            return null;
+        }
         if (! callback) {
             return;
         }
@@ -121,6 +135,10 @@ getByPath.prototype = {
         }.bind(this))
     },
     remove: function(callback) {
+        if (!this.path) {
+            callback(null);
+            return null;
+        }
         if (! callback) {
             callback = function() {};
         }
@@ -154,6 +172,10 @@ getByPath.prototype = {
         if (! callback) {
             return;
         }
+        if (!this.path) {
+            callback(null);
+            return null;
+        }
         if (this.isFile) {
             callback({error: 'Cannot preform on file'});
             return;
@@ -174,7 +196,7 @@ getByPath.prototype = {
         function getFileInfo() {
             var file = new getByPath(this.origpath + '/' + files[i], function(file) {
                 results.push(file);
-                if (i != totalLength) {
+                if (i < totalLength) {
                     i++;
                     getFileInfo.bind(this)();
                 } else {
@@ -236,7 +258,7 @@ FileSystem.prototype = {
         } catch(e) {
             var error = e;
         }
-        if (error && error.errno === -4058) {
+        if (error && error.code === 'ENOENT') {
             try {
                 fs.writeFileSync(path, data);
             } catch(e) {

@@ -22,7 +22,7 @@ BaseHandler.prototype = {
     },
     error: async function(msg, httpCode) {
         var defaultMsg = '<h1>' + httpCode + ' - ' + WSC.HTTPRESPONSES[httpCode] + '</h1>\n\n<p>' + msg + '</p>';
-        if (this.request.method == "HEAD") {
+        if (this.request.method === "HEAD") {
             this.responseLength = 0;
             this.writeHeaders(httpCode);
             this.finish();
@@ -177,7 +177,7 @@ DirectoryEntryHandler.prototype = {
             return
         }
         global.ConnetionS[this.request.ip]++
-        console.log(this.request.ip + ':', 'Request',this.request.method, this.request.uri)
+        console.log("["+(new Date()).toLocaleString()+"]", this.request.ip + ':', 'Request',this.request.method, this.request.uri)
         /*
         if (this.app.opts.optIpBlocking && this.app.opts.optIpBlockList) {
             var file = await this.fs.asyncGetByPath(this.app.opts.optIpBlockList)
@@ -229,7 +229,7 @@ DirectoryEntryHandler.prototype = {
 
         if (this.app.opts.spa) {
             if (!this.request.uri.match(/.*\.[\d\w]+$/)) {
-                console.log("Single page rewrite rule matched", this.request.uri);
+                //console.log("Single page rewrite rule matched", this.request.uri);
                 this.rewrite_to = this.app.opts.rewriteTo || "/index.html";
             }
         }
@@ -343,7 +343,7 @@ DirectoryEntryHandler.prototype = {
     },
     delete: function() {
         async function deleteMain() {
-            var entry = await this.fs.asyncGetByPath(this.request.path);
+            var entry = await this.fs.asyncGetByPath(this.request.origpath);
             if (entry.error) {
                 this.writeHeaders(404);
                 this.finish();
@@ -508,7 +508,7 @@ DirectoryEntryHandler.prototype = {
     },
     put: function() {
         async function putMain() {
-            var entry = await this.fs.asyncGetByPath(this.request.path)
+            var entry = await this.fs.asyncGetByPath(this.request.origpath)
             if (entry.error) {
                 var file = this.fs.createWriteStream(this.request.origpath)
                 file.on('error', function (err) {
@@ -596,13 +596,13 @@ DirectoryEntryHandler.prototype = {
         this.entry = entry;
         async function excludedothtmlcheck() {
             if (this.app.opts.excludeDotHtml && this.request.path != '' && ! this.request.origpath.endsWith("/")) {
-                var file = await this.fs.asyncGetByPath(this.request.path+'.html');
+                var file = await this.fs.asyncGetByPath(this.request.origpath+'.html');
                 if (! file.error && file.isFile) {
                     this.setHeader('content-type','text/html; charset=utf-8');
                     this.renderFileContents(file);
                     return;
                 }
-                var file = await this.fs.asyncGetByPath(this.request.path+'.htm');
+                var file = await this.fs.asyncGetByPath(this.request.origpath+'.htm');
                 if (! file.error && file.isFile) {
                     this.setHeader('content-type','text/html; charset=utf-8');
                     this.renderFileContents(file);
@@ -630,7 +630,7 @@ DirectoryEntryHandler.prototype = {
                 if (this.entry.error.code == 'EPERM') {
                     this.error('', 403);
                 } else {
-                    this.error('entry not found: ' + (this.rewrite_to || this.request.path), 404);
+                    this.error('entry not found: ' + (this.rewrite_to || this.request.path).htmlEscape(), 404);
                 }
             } else if (this.entry.isFile) {
                 this.renderFileContents(this.entry);
@@ -855,8 +855,8 @@ DirectoryEntryHandler.prototype = {
                     var data = await file.textPromise();
                     var html = [dataa];
                     for (var w=0; w<results.length; w++) {
-                        var rawname = results[w].name;
-                        var name = encodeURIComponent(results[w].name);
+                        var rawname = results[w].name.replaceAll('\\', '\\\\').replaceAll('"', '\\"');
+                        var name = encodeURIComponent(results[w].name).replaceAll('\\', '\\\\').replaceAll('"', '\\"');
                         var isdirectory = results[w].isDirectory;
                         var modified = WSC.utils.lastModified(results[w].modificationTime);
                         var filesize = results[w].size;
@@ -1024,7 +1024,7 @@ DirectoryEntryHandler.prototype = {
         }
         var filerequest = this.request.origpath;
         if (this.app.opts.excludeDotHtml) {
-            var file = await this.fs.asyncGetByPath(this.request.path+'.html');
+            var file = await this.fs.asyncGetByPath(this.request.origpath+'.html');
             if (! file.error) {
                 if (this.request.origpath.endsWith("/")) {
                     htaccessMain.bind(this)('');
@@ -1036,7 +1036,7 @@ DirectoryEntryHandler.prototype = {
                 htaccessMain.bind(this)(filerequested);
                 return;
             }
-            var file = await this.fs.asyncGetByPath(this.request.path+'.htm');
+            var file = await this.fs.asyncGetByPath(this.request.origpath+'.htm');
             if (! file.error) {
                 if (this.request.origpath.endsWith("/")) {
                     htaccessMain.bind(this)('');
@@ -1109,7 +1109,7 @@ DirectoryEntryHandler.prototype = {
             }
             var compression = false;
             var stream = this.fs.createReadStream(entry.fullPath, {start: fileOffset,end: fileEndOffset});
-            if (this.request.headers['accept-encoding'] && this.app.opts.compressResponses) {
+            if (this.request.headers['accept-encoding'] && this.app.opts.compression) {
                 var ac = this.request.headers['accept-encoding'];
                 if (ac.includes('br') || ac.includes('gzip') || ac.includes('deflate')) {
                     compression = true;
@@ -1124,11 +1124,11 @@ DirectoryEntryHandler.prototype = {
                         this.setHeader('Content-Encoding', 'deflate');
                         compresionStream = zlib.createDeflate();
                     } else {
-                        console.log('this.. shouldnt be possible');
+                        //console.log('this.. shouldnt be possible');
                         this.res.end();
                         return;
                     }
-                    pipeline(stream, compresionStream, this.res, function(e) {console.warn('error', e); this.res.end()}.bind(this))
+                    pipeline(stream, compresionStream, this.res, function(err) {if (err) {console.warn('Compression Error:', err); this.res.end()}}.bind(this))
                 }
             }
             this.writeHeaders(code);
@@ -1199,8 +1199,8 @@ DirectoryEntryHandler.prototype = {
             html.push('<script>onHasParentDirectory();</script>');
         }
         for (var w=0; w<results.length; w++) {
-            var rawname = results[w].name;
-            var name = encodeURIComponent(results[w].name);
+            var rawname = results[w].name.replaceAll('\\', '\\\\').replaceAll('"', '\\"');
+            var name = encodeURIComponent(results[w].name).replaceAll('\\', '\\\\').replaceAll('"', '\\"');
             var isdirectory = results[w].isDirectory;
             var modified = WSC.utils.lastModified(results[w].modificationTime);
             var filesize = results[w].size;
@@ -1228,8 +1228,8 @@ DirectoryEntryHandler.prototype = {
             html.push('<script>onHasParentDirectory();</script>');
         }
         for (var w=0; w<results.length; w++) {
-            var rawname = results[w].name;
-            var name = encodeURIComponent(results[w].name);
+            var rawname = results[w].name.replaceAll('\\', '\\\\').replaceAll('"', '\\"');
+            var name = encodeURIComponent(results[w].name).replaceAll('\\', '\\\\').replaceAll('"', '\\"');
             var isdirectory = results[w].isDirectory;
             var modified = WSC.utils.lastModified(results[w].modificationTime);
             var filesize = results[w].size;
