@@ -5,11 +5,15 @@
   "main": "index.js",
   "description": "Create a local web server in just a few clicks with an easy to use interface. A continuation of Web Server for Chrome, built with Electron.",
   "author": {
-    "name": "Terren Gurule",
-    "url": "https://github.com/terreng",
-    "email": "11605395+terreng@users.noreply.github.com"
+    "name": "Simple Web Server",
+    "url": "https://simplewebserver.org",
+    "email": "noreply@simplewebserver.org"
   },
   "contributors": [
+    {
+      "name": "Terren Gurule",
+      "url": "https://github.com/terreng"
+    },
     {
       "name": "Ethan O'Brien",
       "url": "https://github.com/ethanaobrien"
