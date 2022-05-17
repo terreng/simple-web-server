@@ -22,7 +22,7 @@ Current version: **1.1.0**
 These downloads are not signed. You will probably see a warning message when running the installer. Click **More info** and then **Run anyway** to continue.
 
 <figure>
-  <img src='/images/windows_code_sign_warning.jpeg' style='width: 400px'>
+  <img src='/images/windows_code_sign_warning.jpeg' style='width: 350px'>
   <figcaption>Windows Defender warning message</figcaption>
 </figure>
 :::
