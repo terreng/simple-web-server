@@ -12,9 +12,9 @@ Current version: **1.1.0**
 
 ## Windows
 
-**Installer (.exe):** [64 bit]() | [32 bit]() | [ARM]()
+**Installer (.exe):** [64 bit](https://github.com/terreng/simple-web-server/releases/download/v1.1.0/Simple%20Web%20Server%20Installer%201.1.0%20x64.exe) | [32 bit](https://github.com/terreng/simple-web-server/releases/download/v1.1.0/Simple%20Web%20Server%20Installer%201.1.0%20ia32.exe) | [ARM](https://github.com/terreng/simple-web-server/releases/download/v1.1.0/Simple%20Web%20Server%20Installer%201.1.0%20arm64.exe)
 
-**Portable (.zip):** [64 bit]() | [32 bit]() | [ARM]()
+**Portable (.zip):** [64 bit](https://github.com/terreng/simple-web-server/releases/download/v1.1.0/Simple%20Web%20Server-1.1.0-win.zip) | [32 bit](https://github.com/terreng/simple-web-server/releases/download/v1.1.0/Simple%20Web%20Server-1.1.0-ia32-win.zip) | [ARM](https://github.com/terreng/simple-web-server/releases/download/v1.1.0/Simple%20Web%20Server-1.1.0-arm64-win.zip)
 
 [How to check if your computer is 32 bit or 64 bit](https://support.microsoft.com/en-us/windows/32-bit-and-64-bit-windows-frequently-asked-questions-c6ca9541-8dce-4d48-0415-94a3faa2e13d)
 
