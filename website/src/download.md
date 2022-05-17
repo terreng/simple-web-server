@@ -8,5 +8,16 @@ Simple Web Server is not supported on Chrome OS. Chrome OS users should use [Web
 
 ## Windows
 
+**Installer (.exe):** [64 bit]() | [32 bit]() | [ARM]()
+
+**Portable (.zip):** [64 bit]() | [32 bit]() | [ARM]()
+
+[How to check if your computer is 32 bit or 64 bit](https://support.microsoft.com/en-us/windows/32-bit-and-64-bit-windows-frequently-asked-questions-c6ca9541-8dce-4d48-0415-94a3faa2e13d)
+
 ## macOS
 
+**Installer (.dmg):** [Intel]() | [Apple Silicon]()
+
+**Portable (.zip):** [Intel]() | [Apple Silicon]()
+
+[How to check if your Mac has an Intel processor or Apple silicon](https://support.apple.com/en-us/HT211814)
