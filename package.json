@@ -50,7 +50,6 @@
   "build": {
     "appId": "org.simplewebserver.simplewebserver",
     "productName": "Simple Web Server",
-    "identityName": "Simple Web Server",
     "copyright": "MIT License",
     "files": [
       "./index.js",
