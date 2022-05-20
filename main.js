@@ -33,7 +33,7 @@ window.api.initipc(function (event, message) {
     if (message.type == "init") {
         config = message.config;
         ip = message.ip;
-        if (config.background != null) {
+        if (config.background != null && config.updates != null) {
             openMain();
         } else {
             initWelcome();
@@ -201,7 +201,7 @@ function openSettings(dont_reset_scroll) {
     } else {
         document.querySelector("#background").classList.remove("checked");
     }
-    if (config.updates !== false) {
+    if (config.updates == true) {
         document.querySelector("#updates").classList.add("checked");
     } else {
         document.querySelector("#updates").classList.remove("checked");
@@ -481,7 +481,7 @@ window.api.saveconfig(config);
 }
 
 function toggleUpdates() {
-if (config.updates !== false) {
+if (config.updates == true) {
     document.querySelector("#updates").classList.remove("checked");
     document.querySelector("#updates_welcome").classList.remove("checked");
     config.updates = false;
