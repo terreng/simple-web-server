@@ -73,7 +73,9 @@
       "./fonts/**",
       "./WSC/**"
     ],
-    "buildResources": "build",
+    "directories": {
+      "buildResources": "build"
+    },
     "mac": {
       "icon": "images/icon.icns"
     },
