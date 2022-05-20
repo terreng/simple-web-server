@@ -1,0 +1,5 @@
+# Privacy Policy
+
+We don't collect or store any personal information. The app has analytics or telemetry, with the exception of optional update checking. If you enable the "Check for updates" option, the app will periodically check a URL on simplewebserver.org to see if any updates are available. We don't log these requests, but we may derive anonymized web traffic analytics from these requests in aggregate.
+
+If you download the app from the Microsoft Store, then we may receive App Analytics Data and Error Reporting Data from Microsoft. We will only use this information to analyze and monitor the use of the app, and resolve issues. Our use of analytics and error reporting data from Microsoft complies with the [App Developer Agreement](https://query.prod.cms.rt.microsoft.com/cms/api/am/binary/RE4o4bH).
