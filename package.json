@@ -49,7 +49,8 @@
     "make_linux_targz_ia32": "electron-builder --linux targz --ia32",
     "make_linux_targz_arm64": "electron-builder --linux targz --arm64",
     "make_all_macos": "npm run make_macos_x64 && npm run make_macos_arm64 && npm run make_macos_zip_x64 && npm run make_macos_zip_arm64",
-    "make_all_windows": "npm run make_windows_x64 && npm run make_windows_ia32 && npm run make_windows_arm64 && npm run make_windows_zip_x64 && npm run make_windows_zip_ia32 && npm run make_windows_zip_arm64 && npm run make_windows_appx_x64 && npm run make_windows_appx_ia32 && npm run make_windows_appx_arm64"
+    "make_all_windows": "npm run make_windows_x64 && npm run make_windows_ia32 && npm run make_windows_arm64 && npm run make_windows_zip_x64 && npm run make_windows_zip_ia32 && npm run make_windows_zip_arm64",
+    "make_all_windowsappx": "npm run make_windows_appx_x64 && npm run make_windows_appx_ia32 && npm run make_windows_appx_arm64"
   },
   "build": {
     "appId": "org.simplewebserver.simplewebserver",
