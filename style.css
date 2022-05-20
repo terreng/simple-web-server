@@ -230,6 +230,9 @@ body.darkmode {/*TODO*/
     color: gray;
     line-height: 26px;
     font-size: 18px;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
 }
 
 .button_row {
