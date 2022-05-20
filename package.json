@@ -30,7 +30,7 @@
     "start": "electron .",
     "make": "electron-builder",
     "make_macos_x64": "electron-builder --mac dmg --x64 -c.mac.identity=null",
-    "make_macos_arm64": "electron-builder --mac dmg --arm64 -c.mac.identity=null",
+    "make_macos_arm64": "electron-builder --mac dmg --arm64 -c.mac.identity=\"Simple Web Server\"",
     "make_macos_zip_x64": "electron-builder --mac zip --x64 -c.mac.identity=null",
     "make_macos_zip_arm64": "electron-builder --mac zip --arm64 -c.mac.identity=null",
     "make_windows_x64": "electron-builder --windows nsis --x64",
