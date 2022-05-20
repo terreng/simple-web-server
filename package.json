@@ -94,7 +94,7 @@
       "displayName": "Simple Web Server",
       "applicationId": "org.simplewebserver.simplewebserver",
       "identityName": "50257Terren.SimpleWebServer",
-      "publisher": "823B8264-37A4-4589-B252-9E44611E01EB"
+      "publisherName": "823B8264-37A4-4589-B252-9E44611E01EB"
     }
   },
   "devDependencies": {
