@@ -11,7 +11,8 @@ module.exports = {
     ['link', { rel: 'icon', type: 'image/png', sizes: '32x32', href: '/favicon-32x32.png' }],
     ['link', { rel: 'apple-touch-icon', sizes: '180x180', href: '/apple-touch-icon.png' }],
     ['link', { rel: 'shortcut icon', href: '/favicon.ico' }],
-    ['meta', { name: 'keywords', content: 'Simple Web Server,web server,Web Server for Chrome,local web server' }]
+    ['meta', { name: 'keywords', content: 'Simple Web Server,web server,Web Server for Chrome,local web server' }],
+    ['script', { type: 'module', src: '/ms-store-badge.bundled.js' }]
   ],
   themeConfig: {
     sidebarDepth: 3,
