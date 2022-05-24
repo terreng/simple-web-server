@@ -106,6 +106,9 @@
   },
   "dependencies": {
     "atob": "^2.1.2",
+    "dotenv": "^16.0.1",
+    "electron-notarize": "^1.2.1",
+    "electron-osx-sign": "^0.6.0",
     "http": "^0.0.1-security",
     "https": "^1.0.0",
     "node-blob": "0.0.2",

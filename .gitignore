@@ -7,3 +7,5 @@ www/out
 www/src/.vuepress/dist
 dev/
 dist/
+build/.env
+.env
