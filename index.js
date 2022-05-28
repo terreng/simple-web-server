@@ -118,7 +118,7 @@ function getIPs() {
 let mainWindow;
 var config = {};
 
-if (!app.requestSingleInstanceLock()) {
+if (!process.mas && !app.requestSingleInstanceLock()) {
     app.quit();
 }
 
@@ -129,7 +129,7 @@ app.on('second-instance', function (event, commandLine, workingDirectory) {
 })
 
 app.on('ready', function() {
-    if (!app.hasSingleInstanceLock()) {
+    if (!process.mas && !app.hasSingleInstanceLock()) {
         return;
     }
     /**
@@ -221,7 +221,7 @@ ipcMain.handle('generateCrypto', async (event, arg) => {
 });
 
 app.on('activate', function () {
-    if (!app.hasSingleInstanceLock()) {
+    if (!process.mas && !app.hasSingleInstanceLock()) {
         return;
     }
     if (mainWindow == null) {
