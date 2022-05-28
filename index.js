@@ -112,14 +112,14 @@ function getIPs() {
             }
         }
     }
-    return ips
+    return ips;
 }
 
 let mainWindow;
 var config = {};
 
 if (!app.requestSingleInstanceLock()) {
-    app.quit()
+    app.quit();
 }
 
 app.on('second-instance', function (event, commandLine, workingDirectory) {
@@ -129,7 +129,7 @@ app.on('second-instance', function (event, commandLine, workingDirectory) {
 })
 
 app.on('ready', function() {
-    if (!app.requestSingleInstanceLock()) {
+    if (!app.hasSingleInstanceLock()) {
         return;
     }
     /**
@@ -221,7 +221,7 @@ ipcMain.handle('generateCrypto', async (event, arg) => {
 });
 
 app.on('activate', function () {
-    if (!app.requestSingleInstanceLock()) {
+    if (!app.hasSingleInstanceLock()) {
         return;
     }
     if (mainWindow == null) {
