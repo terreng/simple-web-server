@@ -1,8 +1,8 @@
 # Download
 
-<ms-store-badge productid="9PC6682RJCDD" size="large"></ms-store-badge>
+<ms-store-badge productid="9PC6682RJCDD" size="large" style="margin-right: 10px;"></ms-store-badge><a href="https://apps.apple.com/us/app/simple-web-server/id1625925255?mt=12&amp;itsct=apps_box_badge&amp;itscg=30200" target="_blank" rel="noopener"><img src="/appstorebadge.svg" alt="Download on the Mac App Store" style="border-radius:13px;height: 60px;"></a>
 
-Current version: **1.1.0** | [Download older versions](https://github.com/terreng/simple-web-server/releases)
+Current version: **1.1.0** | [Older versions and release notes](https://github.com/terreng/simple-web-server/releases)
 
 ## Direct download
 
@@ -14,6 +14,7 @@ Current version: **1.1.0** | [Download older versions](https://github.com/terren
 
 [How to check if your computer is 32 bit or 64 bit](https://support.microsoft.com/en-us/windows/32-bit-and-64-bit-windows-frequently-asked-questions-c6ca9541-8dce-4d48-0415-94a3faa2e13d)
 
+<p>
 <details>
   <summary>These downloads are not signed. You will probably see a warning message when running the installer.</summary>
 
@@ -24,6 +25,7 @@ Current version: **1.1.0** | [Download older versions](https://github.com/terren
       <figcaption>Windows Defender warning message</figcaption>
   </figure>
 </details>
+</p>
 
 
 ### macOS

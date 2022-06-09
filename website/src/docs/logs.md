@@ -12,7 +12,9 @@ Here's where to find the local log file:
 
 **Windows:** `C:\Users\[USERNAME]\AppData\Roaming\Simple Web Server\server.log`
 
-**macOS:** `/Users/[USERNAME]/Library/Application Support/Simple Web Server/server.log`
+**macOS (Direct download):** `/Users/[USERNAME]/Library/Application Support/Simple Web Server/server.log`
+
+**macOS (App Store):** `/Users/[USERNAME]/Library/Containers/org.simplewebserver.simplewebserver/Data/Library/Application Support/Simple Web Server/server.log`
 
 **Linux:** **TODO**
 

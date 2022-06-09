@@ -12,7 +12,9 @@ Here's where to find the config.json file:
 
 **Windows:** `C:\Users\[USERNAME]\AppData\Roaming\Simple Web Server\config.json`
 
-**macOS:** `/Users/[USERNAME]/Library/Application Support/Simple Web Server/config.json`
+**macOS (Direct download):** `/Users/[USERNAME]/Library/Application Support/Simple Web Server/config.json`
+
+**macOS (App Store):** `/Users/[USERNAME]/Library/Containers/org.simplewebserver.simplewebserver/Data/Library/Application Support/Simple Web Server/config.json`
 
 **Linux:** **TODO**
 
