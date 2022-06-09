@@ -7,3 +7,7 @@ www/out
 www/src/.vuepress/dist
 dev/
 dist/
+build/.env
+.env
+build/development_provisioning_profile.provisionprofile
+build/mas_provisioning_profile.provisionprofile

@@ -19,6 +19,8 @@ When enabled, the app will continue to run web servers in the background even wh
 
 Periodically check if there is a new version of the app available. Updates are not automatically installed.
 
+This option is not available if you download the app from the Mac App Store.
+
 ### Local logging <Badge type="tip" text="Hidden" vertical="top" />
 
 - Name: `log`

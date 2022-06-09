@@ -28,11 +28,13 @@ var running_states = {
         "edit_color": "var(--text-primary)"
     },
 }
+var install_source;
 
 window.api.initipc(function (event, message) {
     if (message.type == "init") {
         config = message.config;
         ip = message.ip;
+        install_source = message.install_source;
         if (config.background != null && config.updates != null) {
             openMain();
         } else {
@@ -205,6 +207,9 @@ function openSettings(dont_reset_scroll) {
         document.querySelector("#updates").classList.add("checked");
     } else {
         document.querySelector("#updates").classList.remove("checked");
+    }
+    if (install_source == "macappstore") {
+        document.querySelector("#updates").style.display = "none";
     }
     if (config.darkmode) {
         document.querySelector("#darkmode").classList.add("checked");
@@ -682,6 +687,9 @@ function initWelcome() {
     config.updates = true;
     window.api.saveconfig(config);
     navigate("welcome");
+    if (install_source == "macappstore") {
+        document.querySelector("#updates_welcome").style.display = "none";
+    }
 }
 
 function initContinue() {

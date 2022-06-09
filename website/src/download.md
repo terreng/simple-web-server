@@ -1,16 +1,12 @@
 # Download
 
-Simple Web Server is available for Windows and macOS. 
+<ms-store-badge productid="9PC6682RJCDD" size="large" style="margin-right: 10px;"></ms-store-badge><a href="https://apps.apple.com/us/app/simple-web-server/id1625925255?mt=12&amp;itsct=apps_box_badge&amp;itscg=30200" target="_blank" rel="noopener"><img src="/appstorebadge.svg" alt="Download on the Mac App Store" style="border-radius:13px;height: 60px;"></a>
 
-You can also [manually build](/docs/build.md) and install the app. We don't offer a Linux download yet, so Linux users should manually build for their platform.
+Current version: **1.1.0** | [Older versions and release notes](https://github.com/terreng/simple-web-server/releases)
 
-Simple Web Server is not supported on Chrome OS. Chrome OS users should use [Web Server for Chrome](https://chrome.google.com/webstore/detail/web-server-for-chrome/ofhbbkphhbklhfoeikjpcbhemlocgigb) for as long as Chrome Apps continue to work on the platform.
+## Direct download
 
-Current version: **1.1.0**
-
-[Download older versions](https://github.com/terreng/simple-web-server/releases)
-
-## Windows
+### Windows
 
 **Download from the Microsoft Store (Recommended)**
 
@@ -22,16 +18,21 @@ Current version: **1.1.0**
 
 [How to check if your computer is 32 bit or 64 bit](https://support.microsoft.com/en-us/windows/32-bit-and-64-bit-windows-frequently-asked-questions-c6ca9541-8dce-4d48-0415-94a3faa2e13d)
 
-::: warning
-These downloads are not signed. You will probably see a warning message when running the installer. Click **More info** and then **Run anyway** to continue.
+<p>
+<details>
+  <summary>These downloads are not signed. You will probably see a warning message when running the installer.</summary>
 
-<figure>
-  <img src='/images/windows_code_sign_warning.jpeg' style='width: 350px'>
-  <figcaption>Windows Defender warning message</figcaption>
-</figure>
-:::
+  Click **More info** and then **Run anyway** to continue.
 
-## macOS
+  <figure>
+      <img src='/images/windows_code_sign_warning.jpeg' style='width: 350px'>
+      <figcaption>Windows Defender warning message</figcaption>
+  </figure>
+</details>
+</p>
+
+
+### macOS
 
 **Installer (.dmg):** [Intel Chip](https://github.com/terreng/simple-web-server/releases/download/v1.1.0/Simple-Web-Server-1.1.0.dmg) | [Apple Silicon](https://github.com/terreng/simple-web-server/releases/download/v1.1.0/Simple-Web-Server-1.1.0-arm64-mac.dmg) (Mac OSX 10.12+)
 
@@ -39,6 +40,10 @@ These downloads are not signed. You will probably see a warning message when run
 
 [How to check if your Mac has an Intel processor or Apple silicon](https://support.apple.com/en-us/HT211814)
 
-::: warning
-These downloads are not signed. You will probably see a warning message when running the installer.
-:::
+### Linux
+
+We don't offer a Linux download yet, so Linux users should [manually build](/docs/build.md) for their platform.
+
+### Chrome OS
+
+Simple Web Server is not supported on Chrome OS. Chrome OS users should use [Web Server for Chrome](https://chrome.google.com/webstore/detail/web-server-for-chrome/ofhbbkphhbklhfoeikjpcbhemlocgigb) for as long as Chrome Apps continue to work on the platform.
