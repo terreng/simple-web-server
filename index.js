@@ -199,10 +199,10 @@ ipcMain.on('quit', quit)
 ipcMain.on('saveconfig', function(event, arg1) {
     fs.writeFileSync(path.join(app.getPath('userData'), "config.json"), JSON.stringify(arg1, null, 2), "utf8");
     config = arg1;
-    if (config.updates == true && last_update_check_skipped == true) {
+    if (config.updates == true && install_source !== "macappstore" && last_update_check_skipped == true) {
         checkForUpdates();
     }
-    if (config.updates == false) {
+    if (config.updates == false || install_source == "macappstore") {
         last_update_check_skipped = true;
     }
     startServers();
@@ -278,7 +278,7 @@ function createWindow() {
     mainWindow.webContents.on('did-finish-load', function() {
         mainWindow.webContentsLoaded = true;
         lastIps = getIPs()
-        mainWindow.webContents.send('message', {"type": "init", "config": config, ip: lastIps});
+        mainWindow.webContents.send('message', {"type": "init", "config": config, ip: lastIps, install_source: install_source});
         if (update_info) {
             mainWindow.webContents.send('message', {"type": "update", "url": update_info.url, "text": update_info.text, "attributes": update_info.attributes});
         }
@@ -479,7 +479,7 @@ var update_info;
 var last_update_check_skipped = false;
 
 function checkForUpdates() {
-    if (config.updates == true) {
+    if (config.updates == true && install_source !== "macappstore") {
         last_update_check_skipped = false;
         var req = global.https.request({
             hostname: 'simplewebserver.org',
