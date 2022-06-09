@@ -8,10 +8,6 @@ Current version: **1.1.0** | [Older versions and release notes](https://github.c
 
 ### Windows
 
-**Download from the Microsoft Store (Recommended)**
-
-<ms-store-badge productid="9PC6682RJCDD" size="large"></ms-store-badge>
-
 **Installer (.exe):** [64 bit](https://github.com/terreng/simple-web-server/releases/download/v1.1.0/Simple-Web-Server-Installer-1.1.0-x64.exe) | [32 bit](https://github.com/terreng/simple-web-server/releases/download/v1.1.0/Simple-Web-Server-Installer-1.1.0-ia32.exe) | [ARM](https://github.com/terreng/simple-web-server/releases/download/v1.1.0/Simple-Web-Server-Installer-1.1.0-arm64.exe)
 
 **Portable (.zip):** [64 bit](https://github.com/terreng/simple-web-server/releases/download/v1.1.0/Simple-Web-Server-1.1.0-win.zip) | [32 bit](https://github.com/terreng/simple-web-server/releases/download/v1.1.0/Simple-Web-Server-1.1.0-ia32-win.zip) | [ARM](https://github.com/terreng/simple-web-server/releases/download/v1.1.0/Simple-Web-Server-1.1.0-arm64-win.zip)
