@@ -53,6 +53,7 @@
     "make_all_windowsappx": "npm run make_windows_appx_x64 && npm run make_windows_appx_ia32 && npm run make_windows_appx_arm64"
   },
   "build": {
+    "buildVersion": "6",
     "appId": "org.simplewebserver.simplewebserver",
     "productName": "Simple Web Server",
     "copyright": "MIT License",
@@ -76,8 +77,32 @@
     "directories": {
       "buildResources": "build"
     },
+    "afterSign": "build/notarize.js",
     "mac": {
-      "icon": "images/icon.icns"
+      "icon": "images/icon.icns",
+      "gatekeeperAssess": false,
+      "hardenedRuntime": true,
+      "entitlements": "build/entitlements.mac.plist",
+      "entitlementsInherit": "build/entitlements_inherit.mac.plist",
+      "category": "public.app-category.developer-tools",
+      "provisioningProfile": "build/mas_provisioning_profile.provisionprofile"
+    },
+    "mas": {
+      "gatekeeperAssess": false,
+      "hardenedRuntime": false,
+      "entitlements": "build/entitlements.mas.plist",
+      "entitlementsInherit": "build/entitlements_inherit.mas.plist",
+      "provisioningProfile": "build/mas_provisioning_profile.provisionprofile"
+    },
+    "masDev": {
+      "gatekeeperAssess": false,
+      "hardenedRuntime": false,
+      "entitlements": "build/entitlements.mas.plist",
+      "entitlementsInherit": "build/entitlements_inherit.mas.plist",
+      "provisioningProfile": "build/development_provisioning_profile.provisionprofile"
+    },
+    "dmg": {
+      "sign": false
     },
     "win": {
       "icon": "images/icon.ico",
@@ -101,7 +126,7 @@
     }
   },
   "devDependencies": {
-    "electron": "^13.6.6",
+    "electron": "^19.0.3",
     "electron-builder": "^23.0.3"
   },
   "dependencies": {
