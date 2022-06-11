@@ -1132,14 +1132,23 @@ DirectoryEntryHandler.prototype = {
                 }
             }
             this.writeHeaders(code);
-            if (! compression) {
-                stream.pipe(this.res);
-                stream.on('finish', function() {
-                    stream.close();
+            if (!compression) {
+                var res = this.res;
+                stream.on('open', function() {
+                    stream.pipe(res).on('error', function(error) {
+                        console.error(error);
+                        stream.close();
+                        //return error
+                    })
                 })
-                this.req.on("close", function() {
+                stream.on('error', function(error) {
+                    console.error(error);
                     stream.close();
+                    //return error
                 })
+                /*this.req.on("close", function() {
+                    stream.close();
+                })*/
             }
         }
     },
