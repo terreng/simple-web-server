@@ -211,7 +211,8 @@ ipcMain.on('saveconfig', function(event, arg1) {
 ipcMain.handle('showPicker', async (event, arg) => {
     var result = await dialog.showOpenDialog(mainWindow, {
         defaultPath: arg.current_path || undefined,
-        properties: ['openDirectory', 'createDirectory']
+        properties: ['openDirectory', 'createDirectory'],
+        securityScopedBookmarks: true
     });
     return result.filePaths;
 });
