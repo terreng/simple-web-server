@@ -117,6 +117,7 @@ function getIPs() {
 
 let mainWindow;
 var config = {};
+var mas_bookmarks = {};
 
 if (!process.mas && !app.requestSingleInstanceLock()) {
     app.quit();
@@ -147,7 +148,7 @@ app.on('ready', function() {
     })
     */
     try {
-        config = fs.readFileSync(path.join(app.getPath('userData'), "config.json"));
+        config = fs.readFileSync(path.join(app.getPath('userData'), "config.json"), "utf8");
     } catch(error) {
         config = "{}";
     }
@@ -167,6 +168,20 @@ app.on('ready', function() {
         global.savingLogs = false;
         if (global.pendingSave) {console.saveLogs()}
     }
+
+    if (process.mas || true) {
+        try {
+            mas_bookmarks = fs.readFileSync(path.join(app.getPath('userData'), "mas_bookmarks.json"), "utf8");
+        } catch(error) {
+            mas_bookmarks = "{}"
+        }
+        try {
+            mas_bookmarks = JSON.parse(mas_bookmarks);
+        } catch(error) {
+            mas_bookmarks = {};
+        }
+    }
+
     if (mainWindow == null) {
     createWindow();
     }
@@ -197,7 +212,11 @@ var isQuitting = false;
 ipcMain.on('quit', quit)
 
 ipcMain.on('saveconfig', function(event, arg1) {
-    fs.writeFileSync(path.join(app.getPath('userData'), "config.json"), JSON.stringify(arg1, null, 2), "utf8");
+    fs.writeFile(path.join(app.getPath('userData'), "config.json"), JSON.stringify(arg1, null, 2), "utf8", function(err) {
+        if (err) {
+            console.error(err);
+        }
+    });
     config = arg1;
     if (config.updates == true && install_source !== "macappstore" && last_update_check_skipped == true) {
         checkForUpdates();
@@ -214,8 +233,73 @@ ipcMain.handle('showPicker', async (event, arg) => {
         properties: ['openDirectory', 'createDirectory'],
         securityScopedBookmarks: true
     });
+    if (result.filePaths && result.filePaths.length > 0 && result.bookmarks && result.bookmarks.length > 0) {
+        addToSecurityScopedBookmarks(result.filePaths[0], result.bookmarks[0]);//Will only be called in mas build
+    }
     return result.filePaths;
 });
+
+function addToSecurityScopedBookmarks(path, bookmark) {
+    if (bookmark && bookmark.length > 0) {
+        mas_bookmarks[path] = {"bookmark": bookmark};
+        fs.writeFile(path.join(app.getPath('userData'), "mas_bookmarks.json"), JSON.stringify(mas_bookmarks, null, 2), "utf8", function(err) {
+            if (err) {
+                console.error(err);
+            }
+        });
+    }
+}
+
+// Provide path, returns bookmark
+function matchSecurityScopedBookmark(path) {
+    var matching_bookmarks = Object.keys(mas_bookmarks).filter(function(a) {return a.startsWith(path);});
+    if (matching_bookmarks.length > 0) {
+        var longest_matching_bookmark = matching_bookmarks.reduce(function(a, b) {return a.length > b.length ? a : b;});
+        return mas_bookmarks[longest_matching_bookmark].bookmark;
+    } else {
+        return null;
+    }
+}
+
+// Provide path, accesses and then returns bookmark
+function matchAndAccessSecurityScopedBookmark(path) {
+    var bookmark = matchSecurityScopedBookmark(path);
+    accessSecurityScopedBookmark(bookmark);
+    return bookmark;
+}
+
+var in_use_mas_bookmarks = {};
+
+// Accesses bookmark
+function accessSecurityScopedBookmark(bookmark) {
+    if (!bookmark) {
+        return;
+    }
+    if (in_use_mas_bookmarks[bookmark]) {
+        in_use_mas_bookmarks[bookmark].count++;
+    } else {
+        in_use_mas_bookmarks[bookmark] = {
+            count: 1,
+            stopAccessing: app.startAccessingSecurityScopedResource(bookmark)
+        };
+    }
+}
+
+// Release bookmark
+function releaseSecurityScopedBookmark(bookmark) {
+    if (!bookmark) {
+        return;
+    }
+    if (in_use_mas_bookmarks[bookmark]) {
+        in_use_mas_bookmarks[bookmark].count--;
+        if (in_use_mas_bookmarks[bookmark].count == 0) {
+            in_use_mas_bookmarks[bookmark].stopAccessing();
+            delete in_use_mas_bookmarks[bookmark];
+        }
+    } else {
+        throw new Error("Attempting to release security scoped bookmark that wasn't accessed");
+    }
+}
 
 ipcMain.handle('generateCrypto', async (event, arg) => {
     return WSC.createCrypto();
