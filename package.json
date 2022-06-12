@@ -29,10 +29,12 @@
   "scripts": {
     "start": "electron .",
     "make": "electron-builder",
-    "make_macos_x64": "electron-builder --mac dmg --x64 -c.mac.identity=null",
-    "make_macos_arm64": "electron-builder --mac dmg --arm64 -c.mac.identity=\"Simple Web Server\"",
-    "make_macos_zip_x64": "electron-builder --mac zip --x64 -c.mac.identity=null",
-    "make_macos_zip_arm64": "electron-builder --mac zip --arm64 -c.mac.identity=null",
+    "make_macos_x64": "electron-builder --mac dmg --x64 -c.mac.identity=\"Terren Gurule\"",
+    "make_macos_arm64": "electron-builder --mac dmg --arm64 -c.mac.identity=\"Terren Gurule\"",
+    "make_macos_zip_x64": "electron-builder --mac zip --x64 -c.mac.identity=\"Terren Gurule\"",
+    "make_macos_zip_arm64": "electron-builder --mac zip --arm64 -c.mac.identity=\"Terren Gurule\"",
+    "make_macos_mas_universal": "electron-builder --mac mas --universal -c.mac.identity=\"Terren Gurule\"",
+    "make_macos_mas_universal_dev": "electron-builder --mac mas-dev --universal -c.mac.identity=\"Terren Gurule\"",
     "make_windows_x64": "electron-builder --windows nsis --x64",
     "make_windows_ia32": "electron-builder --windows nsis --ia32",
     "make_windows_arm64": "electron-builder --windows nsis --arm64",
@@ -85,7 +87,6 @@
       "entitlements": "build/entitlements.mac.plist",
       "entitlementsInherit": "build/entitlements_inherit.mac.plist",
       "category": "public.app-category.developer-tools",
-      "provisioningProfile": "build/mas_provisioning_profile.provisionprofile",
       "electronLanguages": ["en"]
     },
     "mas": {

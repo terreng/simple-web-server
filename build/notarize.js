@@ -2,8 +2,7 @@ require('dotenv').config();
 const { notarize } = require('electron-notarize');
 
 exports.default = async function notarizing(context) {
-    return;
-    
+
   const { electronPlatformName, appOutDir } = context;  
   if (electronPlatformName !== 'darwin') {//will be mas for mac app store
     return;
