@@ -1,6 +1,10 @@
 {
     "latest": "1001000",
     "versions": {
+        "1001002": {
+            "name": "1.1.2",
+            "download": {"website": "https://simplewebserver.org/download", "microsoftstore": "https://simplewebserver.org/download", "macappstore": "https://simplewebserver.org/download"}
+        },
         "1001001": {
             "name": "1.1.1",
             "download": {"website": "https://simplewebserver.org/download", "microsoftstore": "https://simplewebserver.org/download", "macappstore": "https://simplewebserver.org/download"}

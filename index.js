@@ -1,4 +1,4 @@
-var version = 1001001;
+var version = 1001002;
 var install_source = "website"; //"website" | "microsoftstore" | "macappstore"
 const {app, BrowserWindow, ipcMain, Menu, Tray, dialog, shell} = require('electron');
 const {networkInterfaces} = require('os');
