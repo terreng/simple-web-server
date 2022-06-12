@@ -116,7 +116,7 @@ function openLicenses() {
 function renderServerList() {
     var pendhtml = "";
     for (var i = 0; i < (config.servers || []).length; i++) {
-        pendhtml += '<div class="server '+(config.servers[i].enabled ? "checked" : "")+'" id="server_'+i+'"><div onclick="toggleServer('+i+')"><div class="switch"></div></div><div onclick="addServer('+i+')"><div>'+htmlescape(config.servers[i].path)+'</div><div><span class="server_status" style="color: '+running_states[getServerStatus(config.servers[i]).state].list_color+';">'+running_states[getServerStatus(config.servers[i]).state].text+'</span> &bull; Port '+String(config.servers[i].port)+(config.servers[i].ipv6 ? ' &bull; IPv6' : '')+(config.servers[i].localnetwork ? ' &bull; LAN' : '')+(config.servers[i].https ? ' &bull; HTTPS' : '')+'</div></div></div>'
+        pendhtml += '<div class="server '+(config.servers[i].enabled ? "checked" : "")+'" id="server_'+i+'"><div onclick="toggleServer('+i+')"><div class="switch"></div></div><div onclick="addServer('+i+')"><div><span>'+htmlescape(config.servers[i].path)+'</span></div><div><span class="server_status" style="color: '+running_states[getServerStatus(config.servers[i]).state].list_color+';">'+running_states[getServerStatus(config.servers[i]).state].text+'</span> &bull; Port '+String(config.servers[i].port)+(config.servers[i].ipv6 ? ' &bull; IPv6' : '')+(config.servers[i].localnetwork ? ' &bull; LAN' : '')+(config.servers[i].https ? ' &bull; HTTPS' : '')+'</div></div></div>'
     }
     if (pendhtml == "") {
         pendhtml = '<div style="color: var(--fullscreen_placeholder);text-align: center;position: absolute;top: 48%;width: 100%;transform: translateY(-50%);"><i class="material-icons" style="font-size: 70px;">dns</i><div style="font-size: 18px;padding-top: 20px;">You haven\'t created any servers yet</div></div>';
@@ -558,7 +558,11 @@ function httpAuthUsernameChange() {
 }
 
 function updateCurrentPath() {
-    document.querySelector("#path").value = current_path ? current_path : "";
+    if (current_path) {
+        document.querySelector("#path > div > span").innerText = current_path;
+    } else {
+        document.querySelector("#path > div > span").innerHTML = '<span style="color: #757575;">Choose folder</span>';
+    }
     document.querySelector("#folder_path_error").style.display = "none";
 }
 

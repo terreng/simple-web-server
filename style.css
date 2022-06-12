@@ -226,6 +226,10 @@ body.darkmode {/*TODO*/
     text-overflow: ellipsis;
     line-height: 26px;
 }
+.server > div:nth-child(2) > div:nth-child(1) > span {
+    direction: ltr;
+    unicode-bidi: bidi-override;
+}
 .server > div:nth-child(2) > div:nth-child(2) {
     color: gray;
     line-height: 26px;
@@ -642,23 +646,39 @@ body.darkmode {/*TODO*/
     position: relative;
 }
 
-.filepicker_input_option input {
-    width: calc(100% - 39px);
+.filepicker_input_option #path {
+    width: calc(100% - 39px - 19px);
     border-right: 0px;
-    border-top-right-radius: 0px;
-    border-bottom-right-radius: 0px;
     cursor: pointer;
     background-color: var(--background);
+    overflow: hidden;
+    color: var(--text-primary);
+    font-size: 20px;
+    padding: 6px 8px;
+    padding-right: 9px;
+    -webkit-appearance: none;
+    border-radius: 7px;
+    border: 2px solid var(--input-outline-blur);
+    outline: none;
+    transition: 0.1s border;
+    border-top-right-radius: 0px;
+    border-bottom-right-radius: 0px
+}
+
+.filepicker_input_option #path > div {
     text-align: left;
     direction: rtl;
     overflow: hidden;
     white-space: nowrap;
     text-overflow: ellipsis;
-    padding-right: 9px;
-    color: var(--text-primary);
 }
 
-.filepicker_input_option input:active {
+.filepicker_input_option #path > div > span {
+    direction: ltr;
+    unicode-bidi: bidi-override;
+}
+
+.filepicker_input_option #path:active {
     border: 2px solid var(--input-outline-focus);
     border-right: 0px;
 }
@@ -675,11 +695,11 @@ body.darkmode {/*TODO*/
     border-bottom-left-radius: 0px;
 }
 
-.filepicker_input_option input:hover + .button {
+.filepicker_input_option #path:hover + .button {
     background-color: var(--button-hover);
 }
 
-.filepicker_input_option input:active + .button {
+.filepicker_input_option #path:active + .button {
     background-color: var(--button-active);
 }
 
