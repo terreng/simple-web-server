@@ -301,6 +301,13 @@ function releaseSecurityScopedBookmark(bookmark) {
     }
 }
 
+var bookmarks = {
+    match: matchSecurityScopedBookmark,
+    matchAndAccess: matchAndAccessSecurityScopedBookmark,
+    access: accessSecurityScopedBookmark,
+    release: releaseSecurityScopedBookmark
+}
+
 ipcMain.handle('generateCrypto', async (event, arg) => {
     return WSC.createCrypto();
 });
