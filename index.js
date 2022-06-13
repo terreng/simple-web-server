@@ -93,6 +93,10 @@ console = function(old_console) {
     return new_console;
 }(console)
 
+process.on('uncaughtException', function(e) {
+    // this won't respond to the client, but at least we have the error.
+    console.warn('Uncaught Exception: ', e);
+});
 
 const quit = function(event) {
     isQuitting = true;
@@ -157,12 +161,6 @@ app.on('ready', function() {
     } catch(error) {
         dialog.showErrorBox("Failed to parse config.json", "Something went wrong while parsing config.json. The file is improperly formatted.");
         app.quit();
-    }
-    for (var i = 0; i < (config.servers || []).length; i++) {
-        if (config.servers[i].httpsKey && config.servers[i].httpsCert) {
-            config.servers[i].httpsKey = '-----BEGIN RSA PRIVATE KEY-----'+config.servers[i].httpsKey.split('-----BEGIN RSA PRIVATE KEY-----').pop().split('-----END RSA PRIVATE KEY-----')[0].replace(/ /g, '\r\n')+'-----END RSA PRIVATE KEY-----';
-            config.servers[i].httpsCert = '-----BEGIN CERTIFICATE-----'+config.servers[i].httpsCert.split('-----BEGIN CERTIFICATE-----').pop().split('-----END CERTIFICATE-----')[0].replace(/ /g, '\r\n')+'-----END CERTIFICATE-----';
-        }
     }
     if (config.log == true) {
         global.savingLogs = false;
@@ -301,7 +299,7 @@ function releaseSecurityScopedBookmark(bookmark) {
     }
 }
 
-var bookmarks = {
+global.bookmarks = {
     match: matchSecurityScopedBookmark,
     matchAndAccess: matchAndAccessSecurityScopedBookmark,
     access: accessSecurityScopedBookmark,
@@ -483,7 +481,7 @@ function startServers() {
                         var crypto = WSC.createCrypto();
                         var server = https.createServer({key: crypto.privateKey, cert: crypto.cert});
                     } else {
-                        var server = https.createServer({key: serverconfig.httpsKey, cert: serverconfig.httpsCert});
+                        var server = https.createServer({key:  ('-----BEGIN RSA PRIVATE KEY-----'+config.servers[i].httpsKey.split('-----BEGIN RSA PRIVATE KEY-----').pop().split('-----END RSA PRIVATE KEY-----')[0].replace(/ /g, '\r\n')+'-----END RSA PRIVATE KEY-----'), cert: ('-----BEGIN CERTIFICATE-----'+config.servers[i].httpsCert.split('-----BEGIN CERTIFICATE-----').pop().split('-----END CERTIFICATE-----')[0].replace(/ /g, '\r\n')+'-----END CERTIFICATE-----')});
                     }
                 } else {
                     var server = http.createServer();

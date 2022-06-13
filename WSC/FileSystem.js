@@ -22,7 +22,7 @@ getByPath.prototype = {
         if (!this.path) {
             return null;
         }
-        var path = this.path
+        var path = this.path;
         this.hidden = function(path) {
             var a = path.split('/');
             for (var i=0; i<a.length; i++) {
@@ -32,14 +32,17 @@ getByPath.prototype = {
             }
             return false;
         }(path);
+        var bm = bookmarks.matchAndAccess(path);
         try {
             var stats = fs.statSync(path);
         } catch(e) {
+            console.warn('error stating file "'+path+'"', e);
             var error = e;
         }
+        bookmarks.release(bm);
         if (error) {
             try {
-                if (error.path && typeof error.path == 'string' && error.code === 'EPERM') {
+                if (error.path && typeof error.path == 'string') {
                     var err = {};
                     err.path = error.path.replace(/\\/g, '/').replace(/\/\//g, '/');
                     if (error.path.endsWith('/')) {
@@ -72,13 +75,17 @@ getByPath.prototype = {
             }
             this.name = folder.split('/').pop();
             var folder = WSC.utils.stripOffFile(folder);
+            var bm = bookmarks.matchAndAccess(folder);
             try {
                 var files = fs.readdirSync(folder, {encoding: 'utf-8'});
             } catch(e) {
+                console.warn('error reading direcotry "'+files+'"', e);
                 this.callback({error: 'Path Not Found'});
                 this.callback = null;
+                bookmarks.release(bm);
                 return;
             }
+            bookmarks.release(bm);
             if (files.includes(this.name)) {
                 this.callback(this);
                 this.callback = null;
@@ -121,12 +128,15 @@ getByPath.prototype = {
             callback({error: 'Cannot preform on directory'});
             return;
         }
+        var bm = bookmarks.matchAndAccess(path);
         try {
             var data = fs.readFileSync(path);
         } catch(e) {
+            bookmarks.release(bm);
             callback({error:err});
             return;
         }
+        bookmarks.release(bm);
         callback(data);
     },
     filePromise: function() {
@@ -142,12 +152,14 @@ getByPath.prototype = {
         if (! callback) {
             callback = function() {};
         }
+        var bm = bookmarks.matchAndAccess(this.path);
         if (this.isDirectory) {
             try {
                 fs.rmdirSync(this.path, {recursive: false});
             } catch(e) {
                 var err = e;
             }
+            bookmarks.release(bm);
             if (err) {
                 callback({error: err, success: false});
             } else {
@@ -157,9 +169,11 @@ getByPath.prototype = {
             try {
                 fs.unlinkSync(this.path);
             } catch(e) {
+                bookmarks.release(bm);
                 callback({error: err, success: false})
                 return;
             }
+            bookmarks.release(bm);
             callback({error: false, success: true})
         }
     },
@@ -180,13 +194,16 @@ getByPath.prototype = {
             callback({error: 'Cannot preform on file'});
             return;
         }
-        var path = this.path
+        var path = this.path;
+        var bm = bookmarks.matchAndAccess(path);
         try {
             var files = fs.readdirSync(path, {encoding: 'utf-8'});
         } catch(e) {
+            bookmarks.release(bm);
             callback({error:err});
             return;
         }
+        bookmarks.release(bm);
         var results = [];
         var i = 0;
         var totalLength = files.length - 1;
@@ -248,11 +265,14 @@ FileSystem.prototype = {
         var path = this.mainPath + path;
         var path = path.replace(/\/\//g, '/').replace(/\\/g, '/');
         var folder = WSC.utils.stripOffFile(path);
+        var bm = bookmarks.matchAndAccess(folder);
         if (! fs.existsSync(folder)) {
             try {
                 fs.mkdirSync(folder, {recursive: true});
             } catch(e) {}
         }
+        bookmarks.release(bm);
+        var bm = bookmarks.matchAndAccess(path);
         try {
             var stats = fs.statSync(path);
         } catch(e) {
@@ -262,25 +282,31 @@ FileSystem.prototype = {
             try {
                 fs.writeFileSync(path, data);
             } catch(e) {
+                bookmarks.release(bm);
                 callback({error: err, success: false});
                 return;
             }
+            bookmarks.release(bm);
             callback({error: false, success: true});
         } else if (!error && allowOverWrite) {
             try {
                 fs.unlinkSync(path);
             } catch(e) {
+                bookmarks.release(bm);
                 callback({error: err, success: false});
                 return;
             }
             try {
                 fs.writeFileSync(path, data);
             } catch(e) {
+                bookmarks.release(bm);
                 callback({error: err, success: false});
                 return;
             }
+            bookmarks.release(bm);
             callback({error: false, success: true});
         } else {
+            bookmarks.release(bm);
             callback({error: error, success: false});
         }
         
@@ -291,21 +317,36 @@ FileSystem.prototype = {
         var path = this.mainPath + path;
         var path = path.replace(/\/\//g, '/').replace(/\\/g, '/');
         var folder = WSC.utils.stripOffFile(path);
+        var bm = bookmarks.matchAndAccess(folder);
         if (! fs.existsSync(folder)) {
             try {
                 fs.mkdirSync(folder, {recursive: true});
             } catch(e) {
+                bookmarks.release(bm);
                 return {error: 'error creating folder'};
             }
         }
-        return fs.createWriteStream(path);
+        bookmarks.release(bm);
+        var bm = bookmarks.matchAndAccess(path);
+        var stream = fs.createWriteStream(path);
+        stream.on('close', function(e) {
+            //console.log('close', path);
+            bookmarks.release(bm);
+        })
+        return stream;
     },
     createReadStream: function(path, opts) {
         var path = WSC.utils.relativePath(path, '');
         this.origpath = path;
         var path = this.mainPath + path;
         var path = path.replace(/\/\//g, '/').replace(/\\/g, '/');
-        return fs.createReadStream(path, opts);
+        var bm = bookmarks.matchAndAccess(path);
+        var stream = fs.createReadStream(path, opts);
+        stream.on('close', function(e) {
+            //console.log('close', path);
+            bookmarks.release(bm);
+        })
+        return stream;
     }
 }
 
