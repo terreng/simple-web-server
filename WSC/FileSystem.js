@@ -131,7 +131,7 @@ getByPath.prototype = {
         var bm = bookmarks.matchAndAccess(path);
         try {
             var data = fs.readFileSync(path);
-        } catch(e) {
+        } catch(err) {
             bookmarks.release(bm);
             callback({error:err});
             return;
@@ -168,7 +168,7 @@ getByPath.prototype = {
         } else {
             try {
                 fs.unlinkSync(this.path);
-            } catch(e) {
+            } catch(err) {
                 bookmarks.release(bm);
                 callback({error: err, success: false})
                 return;
@@ -198,7 +198,7 @@ getByPath.prototype = {
         var bm = bookmarks.matchAndAccess(path);
         try {
             var files = fs.readdirSync(path, {encoding: 'utf-8'});
-        } catch(e) {
+        } catch(err) {
             bookmarks.release(bm);
             callback({error:err});
             return;
@@ -281,7 +281,7 @@ FileSystem.prototype = {
         if (error && error.code === 'ENOENT') {
             try {
                 fs.writeFileSync(path, data);
-            } catch(e) {
+            } catch(err) {
                 bookmarks.release(bm);
                 callback({error: err, success: false});
                 return;
@@ -291,14 +291,14 @@ FileSystem.prototype = {
         } else if (!error && allowOverWrite) {
             try {
                 fs.unlinkSync(path);
-            } catch(e) {
+            } catch(err) {
                 bookmarks.release(bm);
                 callback({error: err, success: false});
                 return;
             }
             try {
                 fs.writeFileSync(path, data);
-            } catch(e) {
+            } catch(err) {
                 bookmarks.release(bm);
                 callback({error: err, success: false});
                 return;
