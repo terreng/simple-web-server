@@ -1,5 +1,5 @@
 var version = 1001002;
-var install_source = "website"; //"website" | "microsoftstore" | "macappstore"
+var install_source = "macappstore"; //"website" | "microsoftstore" | "macappstore"
 const {app, BrowserWindow, ipcMain, Menu, Tray, dialog, shell} = require('electron');
 const {networkInterfaces} = require('os');
 
@@ -237,9 +237,9 @@ ipcMain.handle('showPicker', async (event, arg) => {
     return result.filePaths;
 });
 
-function addToSecurityScopedBookmarks(path, bookmark) {
+function addToSecurityScopedBookmarks(filepath, bookmark) {
     if (bookmark && bookmark.length > 0) {
-        mas_bookmarks[path] = {"bookmark": bookmark};
+        mas_bookmarks[filepath] = {"bookmark": bookmark};
         fs.writeFile(path.join(app.getPath('userData'), "mas_bookmarks.json"), JSON.stringify(mas_bookmarks, null, 2), "utf8", function(err) {
             if (err) {
                 console.error(err);
@@ -249,8 +249,8 @@ function addToSecurityScopedBookmarks(path, bookmark) {
 }
 
 // Provide path, returns bookmark
-function matchSecurityScopedBookmark(path) {
-    var matching_bookmarks = Object.keys(mas_bookmarks).filter(function(a) {return a.startsWith(path);});
+function matchSecurityScopedBookmark(filepath) {
+    var matching_bookmarks = Object.keys(mas_bookmarks).filter(function(a) {return a.startsWith(filepath);});
     if (matching_bookmarks.length > 0) {
         var longest_matching_bookmark = matching_bookmarks.reduce(function(a, b) {return a.length > b.length ? a : b;});
         return mas_bookmarks[longest_matching_bookmark].bookmark;
@@ -260,8 +260,8 @@ function matchSecurityScopedBookmark(path) {
 }
 
 // Provide path, accesses and then returns bookmark
-function matchAndAccessSecurityScopedBookmark(path) {
-    var bookmark = matchSecurityScopedBookmark(path);
+function matchAndAccessSecurityScopedBookmark(filepath) {
+    var bookmark = matchSecurityScopedBookmark(filepath);
     accessSecurityScopedBookmark(bookmark);
     return bookmark;
 }
@@ -276,9 +276,10 @@ function accessSecurityScopedBookmark(bookmark) {
     if (in_use_mas_bookmarks[bookmark]) {
         in_use_mas_bookmarks[bookmark].count++;
     } else {
+        var stopAccessing = app.startAccessingSecurityScopedResource(bookmark);
         in_use_mas_bookmarks[bookmark] = {
             count: 1,
-            stopAccessing: app.startAccessingSecurityScopedResource(bookmark)
+            stopAccessing: stopAccessing
         };
     }
 }

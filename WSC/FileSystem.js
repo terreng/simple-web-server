@@ -79,7 +79,7 @@ getByPath.prototype = {
             try {
                 var files = fs.readdirSync(folder, {encoding: 'utf-8'});
             } catch(e) {
-                console.warn('error reading direcotry "'+folder+'"', e);
+                console.warn('error reading directory "'+folder+'"', e);
                 this.callback({error: 'Path Not Found'});
                 this.callback = null;
                 bookmarks.release(bm);

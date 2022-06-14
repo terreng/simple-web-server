@@ -676,6 +676,7 @@ body.darkmode {/*TODO*/
 .filepicker_input_option #path > div > span {
     direction: ltr;
     unicode-bidi: bidi-override;
+    line-height: 23px;
 }
 
 .filepicker_input_option #path:active {
