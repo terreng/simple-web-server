@@ -1,4 +1,4 @@
-var version = 1001003;
+var version = 1001004;
 var install_source = "macappstore"; //"website" | "microsoftstore" | "macappstore"
 const {app, BrowserWindow, ipcMain, Menu, Tray, dialog, shell} = require('electron');
 const {networkInterfaces} = require('os');
@@ -134,18 +134,6 @@ app.on('ready', function() {
     if (!process.mas && !app.hasSingleInstanceLock()) {
         return;
     }
-    global.tray = new Tray(path.join(__dirname, "images/icon.ico"))
-    const contextMenu = Menu.buildFromTemplate([
-      { label: 'Show', click:  function(){ if (mainWindow) {mainWindow.show()} } },
-      { label: 'Exit', click:  function(){ quit() } }
-    ])
-    global.tray.setToolTip('Simple Web Server')
-    global.tray.setContextMenu(contextMenu)
-    global.tray.on('click', function(e){
-        if (mainWindow) {
-            mainWindow.show();
-        }
-    })
     try {
         config = fs.readFileSync(path.join(app.getPath('userData'), "config.json"), "utf8");
     } catch(error) {
@@ -173,6 +161,26 @@ app.on('ready', function() {
         } catch(error) {
             mas_bookmarks = {};
         }
+    }
+
+    if (config.tray) {
+        global.tray = new Tray(path.join(__dirname, "images/icon.ico"))
+        const contextMenu = Menu.buildFromTemplate([
+          { label: 'Show', click:  function(){ if (mainWindow) {mainWindow.show()} } },
+          { label: 'Exit', click:  function(){ quit() } }
+        ])
+        global.tray.setToolTip('Simple Web Server')
+        global.tray.setContextMenu(contextMenu)
+        global.tray.on('click', function(e){
+            if (mainWindow == null) {
+                createWindow()
+                if (process.platform === "darwin") {
+                    app.dock.show();
+                }
+            } else {
+                mainWindow.show();
+            }
+        })
     }
 
     if (mainWindow == null) {
@@ -245,7 +253,7 @@ function addToSecurityScopedBookmarks(filepath, bookmark) {
 
 // Provide path, returns bookmark
 function matchSecurityScopedBookmark(filepath) {
-    var matching_bookmarks = Object.keys(mas_bookmarks).filter(function(a) {return a.startsWith(filepath);});
+    var matching_bookmarks = Object.keys(mas_bookmarks).filter(function(a) {return filepath.startsWith(a);});
     if (matching_bookmarks.length > 0) {
         var longest_matching_bookmark = matching_bookmarks.reduce(function(a, b) {return a.length > b.length ? a : b;});
         return mas_bookmarks[longest_matching_bookmark].bookmark;
