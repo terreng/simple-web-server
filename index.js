@@ -23,9 +23,6 @@ global.pipeline = pipeline;
 
 WSC = require("./WSC.js");
 
-//let tray //There seem to be problems with the tray discarding.
-
-
 console = function(old_console) {
     var new_console = {
         logs: [],
@@ -100,9 +97,9 @@ process.on('uncaughtException', function(e) {
 
 const quit = function(event) {
     isQuitting = true;
-    //if ('undefined' != typeof tray) {
-    //    tray.destroy()
-    //}
+    if (global.tray) {
+        global.tray.destroy()
+    }
     app.quit()
 };
 
@@ -137,20 +134,18 @@ app.on('ready', function() {
     if (!process.mas && !app.hasSingleInstanceLock()) {
         return;
     }
-    /**
-    tray = new Tray('images/icon.ico')
+    global.tray = new Tray(path.join(__dirname, "images/icon.ico"))
     const contextMenu = Menu.buildFromTemplate([
       { label: 'Show', click:  function(){ if (mainWindow) {mainWindow.show()} } },
       { label: 'Exit', click:  function(){ quit() } }
     ])
-    tray.setToolTip('Simple Web Server')
-    tray.setContextMenu(contextMenu)
-    tray.on('click', function(e){
+    global.tray.setToolTip('Simple Web Server')
+    global.tray.setContextMenu(contextMenu)
+    global.tray.on('click', function(e){
         if (mainWindow) {
             mainWindow.show();
         }
     })
-    */
     try {
         config = fs.readFileSync(path.join(app.getPath('userData'), "config.json"), "utf8");
     } catch(error) {
@@ -193,9 +188,9 @@ app.on('ready', function() {
 
 app.on('window-all-closed', function () {
     if (config.background !== true) {
-        //if (tray) {
-        //    tray.destroy()
-        //}
+        if (global.tray) {
+            global.tray.destroy()
+        }
         app.quit()
     } else {
         //Stay running even when all windows closed

@@ -654,7 +654,7 @@ DirectoryEntryHandler.prototype = {
             if (! this.entry) {
                 this.error('no entry',404);
             } else if (this.entry.error) {
-                if (this.entry.error.code == 'EPERM') {
+                if (this.entry.error.code === 'EPERM') {
                     this.error('', 403);
                 } else {
                     this.error('entry not found: ' + (this.rewrite_to || this.request.path).htmlEscape(), 404);
@@ -663,6 +663,14 @@ DirectoryEntryHandler.prototype = {
                 this.renderFileContents(this.entry);
             } else {
                 var results = await this.entry.getDirContentsPromise();
+                if (results.error) {
+                    if (results.error.code === 'EPERM') {
+                        this.error('', 403);
+                    } else {
+                        this.error('', 500);
+                    }
+                    return;
+                }
                 if (this.app.opts.showIndex) {
                     for (var i=0; i<results.length; i++) {
                         if (['index.xhtml', 'index.xhtm'].includes(results[i].name.toLowerCase())) {
@@ -773,7 +781,7 @@ DirectoryEntryHandler.prototype = {
                     data = origdata[i];
                     var filefound = true;
                 }
-                if ((origdata[i].request_path == filerequested || origdata[i].request_path == 'all files') &&
+                if ((origdata[i].request_path === filerequested || origdata[i].request_path == 'all files') &&
                     ! filefound &&
                     origdata[i].type !== 'allow delete' &&
                     origdata[i].type !== 'allow put' &&
@@ -870,13 +878,28 @@ DirectoryEntryHandler.prototype = {
                         return;
                     }
                     var results = await entryy.getDirContentsPromise();
+                    if (results.error) {
+                        if (results.error.code === 'EPERM') {
+                            this.error('', 403);
+                        } else {
+                            this.error('', 500);
+                        }
+                        return;
+                    }
                     var fullrequestpath = this.request.origpath;
                     var finpath = fullrequestpath.split('/').pop();
                     var finalpath = fullrequestpath.substring(0, fullrequestpath.length - finpath.length) + data.original_request_path;
                     var file = await this.fs.asyncGetByPath(finalpath);
                     if (file.error || !file.isFile) {
-                        this.error('', 500);
-                        this.finish();
+                        if (file.error) {
+                            if (file.error.code === 'EPERM') {
+                                this.error('', 403);
+                            } else {
+                                this.error('', 500);
+                            }
+                        } else {
+                            this.error('', 500);
+                        }
                         return;
                     }
                     var data = await file.textPromise();
@@ -1001,7 +1024,7 @@ DirectoryEntryHandler.prototype = {
                                 global.tempData = {};
                             }
                             try {
-                                eval('(function() {var handler = function(req, res, httpRequest, appInfo, clearModuleCache, requireFile) {' + dataa + '};handler(req, res, WSC.httpRequest, {"server": "Simple Web Server"}, clearModuleCache, requireFile)})();');
+                                eval('(function() {var handler = function(req, res, httpRequest, appInfo, clearModuleCache, requireFile) {\n' + dataa + '\n};handler(req, res, WSC.httpRequest, {"server": "Simple Web Server"}, clearModuleCache, requireFile)})();');
                             } catch(e) {
                                 console.error(e);
                                 this.error('', 500);
@@ -1313,20 +1336,28 @@ DirectoryEntryHandler.prototype = {
         entry.getDirContents(callback);
     },
     renderDirListing: function(results) {
-        try {
-        if (this.request.arguments && ['1','true'].includes(this.request.arguments.json) || (this.request.headers['accept'] && this.request.headers['accept'].toLowerCase() == 'application/json')) {
-            this.renderDirectoryListingJSON(results);
-        } else if (this.request.arguments && ['1','true'].includes(this.request.arguments.static)) {
-            this.renderDirectoryListing(results);
-        } else if (this.request.arguments && ['1','true'].includes(this.request.arguments.staticjs)) {
-            this.renderDirectoryListingStaticJs(results);
-        } else if (this.request.arguments && ['1','true'].includes(this.request.arguments.js)) {
-            this.renderDirectoryListingTemplate(results);
-        } else if (this.app.opts.staticDirectoryListing) {
-            this.renderDirectoryListing(results);
-        } else {
-            this.renderDirectoryListingStaticJs(results);
+        if (!results || (results && (results.error || !Array.isArray(results)))) {
+            if (results.error.code === 'EPERM') {
+                this.error('', 403);
+            } else {
+                this.error('', 500);
+            }
+            return;
         }
+        try {
+            if (this.request.arguments && ['1','true'].includes(this.request.arguments.json) || (this.request.headers['accept'] && this.request.headers['accept'].toLowerCase() == 'application/json')) {
+                this.renderDirectoryListingJSON(results);
+            } else if (this.request.arguments && ['1','true'].includes(this.request.arguments.static)) {
+                this.renderDirectoryListing(results);
+            } else if (this.request.arguments && ['1','true'].includes(this.request.arguments.staticjs)) {
+                this.renderDirectoryListingStaticJs(results);
+            } else if (this.request.arguments && ['1','true'].includes(this.request.arguments.js)) {
+                this.renderDirectoryListingTemplate(results);
+            } else if (this.app.opts.staticDirectoryListing) {
+                this.renderDirectoryListing(results);
+            } else {
+                this.renderDirectoryListingStaticJs(results);
+            }
         } catch(e) {
             this.error("Something went wrong", 500);
             if (e) console.warn('error: ', e); 
