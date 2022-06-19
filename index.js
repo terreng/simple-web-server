@@ -253,7 +253,9 @@ function addToSecurityScopedBookmarks(filepath, bookmark) {
 
 // Provide path, returns bookmark
 function matchSecurityScopedBookmark(filepath) {
-    var matching_bookmarks = Object.keys(mas_bookmarks).filter(function(a) {return filepath.startsWith(a);});
+    var matching_bookmarks = Object.keys(mas_bookmarks).filter(function(a) {
+        return filepath.startsWith(a) && (filepath.length == a.length || ["/","\\"].indexOf(filepath.substring(a.length,a.length+1)) > -1);
+    });
     if (matching_bookmarks.length > 0) {
         var longest_matching_bookmark = matching_bookmarks.reduce(function(a, b) {return a.length > b.length ? a : b;});
         return mas_bookmarks[longest_matching_bookmark].bookmark;
