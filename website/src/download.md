@@ -30,7 +30,7 @@ Current version: **1.1.4** | [Older versions and release notes](https://github.c
 
 ### macOS
 
-**Installer (.dmg):** [Intel Chip](https://github.com/terreng/simple-web-server/releases/download/v1.1.4/Simple-Web-Server-1.1.4.dmg) | [Apple Silicon](https://github.com/terreng/simple-web-server/releases/download/v1.1.4/Simple-Web-Server-1.1.4-arm64-mac.dmg) (Mac OSX 10.12+)
+**Installer (.dmg):** [Intel Chip](https://github.com/terreng/simple-web-server/releases/download/v1.1.4/Simple-Web-Server-1.1.4.dmg) | [Apple Silicon](https://github.com/terreng/simple-web-server/releases/download/v1.1.4/Simple-Web-Server-1.1.4-arm64.dmg) (Mac OSX 10.12+)
 
 **Standalone (.app inside .zip):** [Intel Chip](https://github.com/terreng/simple-web-server/releases/download/v1.1.4/Simple-Web-Server-1.1.4-mac.zip) | [Apple Silicon](https://github.com/terreng/simple-web-server/releases/download/v1.1.4/Simple-Web-Server-1.1.4-arm64-mac.zip)
 
