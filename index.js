@@ -1,5 +1,5 @@
-var version = 1001000;
-var install_source = "macappstore"; //"website" | "microsoftstore" | "macappstore"
+var version = 1001004;
+var install_source = "website"; //"website" | "microsoftstore" | "macappstore"
 const {app, BrowserWindow, ipcMain, Menu, Tray, dialog, shell} = require('electron');
 const {networkInterfaces} = require('os');
 
@@ -22,9 +22,6 @@ var path = global.path;
 global.pipeline = pipeline;
 
 WSC = require("./WSC.js");
-
-//let tray //There seem to be problems with the tray discarding.
-
 
 console = function(old_console) {
     var new_console = {
@@ -93,12 +90,16 @@ console = function(old_console) {
     return new_console;
 }(console)
 
+process.on('uncaughtException', function(e) {
+    // this won't respond to the client, but at least we have the error.
+    console.warn('Uncaught Exception: ', e);
+});
 
 const quit = function(event) {
     isQuitting = true;
-    //if ('undefined' != typeof tray) {
-    //    tray.destroy()
-    //}
+    if (global.tray) {
+        global.tray.destroy()
+    }
     app.quit()
 };
 
@@ -117,6 +118,7 @@ function getIPs() {
 
 let mainWindow;
 var config = {};
+var mas_bookmarks = {};
 
 if (!process.mas && !app.requestSingleInstanceLock()) {
     app.quit();
@@ -132,22 +134,8 @@ app.on('ready', function() {
     if (!process.mas && !app.hasSingleInstanceLock()) {
         return;
     }
-    /**
-    tray = new Tray('images/icon.ico')
-    const contextMenu = Menu.buildFromTemplate([
-      { label: 'Show', click:  function(){ if (mainWindow) {mainWindow.show()} } },
-      { label: 'Exit', click:  function(){ quit() } }
-    ])
-    tray.setToolTip('Simple Web Server')
-    tray.setContextMenu(contextMenu)
-    tray.on('click', function(e){
-        if (mainWindow) {
-            mainWindow.show();
-        }
-    })
-    */
     try {
-        config = fs.readFileSync(path.join(app.getPath('userData'), "config.json"));
+        config = fs.readFileSync(path.join(app.getPath('userData'), "config.json"), "utf8");
     } catch(error) {
         config = "{}";
     }
@@ -157,16 +145,44 @@ app.on('ready', function() {
         dialog.showErrorBox("Failed to parse config.json", "Something went wrong while parsing config.json. The file is improperly formatted.");
         app.quit();
     }
-    for (var i = 0; i < (config.servers || []).length; i++) {
-        if (config.servers[i].httpsKey && config.servers[i].httpsCert) {
-            config.servers[i].httpsKey = '-----BEGIN RSA PRIVATE KEY-----'+config.servers[i].httpsKey.split('-----BEGIN RSA PRIVATE KEY-----').pop().split('-----END RSA PRIVATE KEY-----')[0].replace(/ /g, '\r\n')+'-----END RSA PRIVATE KEY-----';
-            config.servers[i].httpsCert = '-----BEGIN CERTIFICATE-----'+config.servers[i].httpsCert.split('-----BEGIN CERTIFICATE-----').pop().split('-----END CERTIFICATE-----')[0].replace(/ /g, '\r\n')+'-----END CERTIFICATE-----';
-        }
-    }
     if (config.log == true) {
         global.savingLogs = false;
         if (global.pendingSave) {console.saveLogs()}
     }
+
+    if (process.mas || true) {
+        try {
+            mas_bookmarks = fs.readFileSync(path.join(app.getPath('userData'), "mas_bookmarks.json"), "utf8");
+        } catch(error) {
+            mas_bookmarks = "{}"
+        }
+        try {
+            mas_bookmarks = JSON.parse(mas_bookmarks);
+        } catch(error) {
+            mas_bookmarks = {};
+        }
+    }
+
+    if (config.tray) {
+        global.tray = new Tray(path.join(__dirname, "images/icon.ico"))
+        const contextMenu = Menu.buildFromTemplate([
+          { label: 'Show', click:  function(){ if (mainWindow) {mainWindow.show()} } },
+          { label: 'Exit', click:  function(){ quit() } }
+        ])
+        global.tray.setToolTip('Simple Web Server')
+        global.tray.setContextMenu(contextMenu)
+        global.tray.on('click', function(e){
+            if (mainWindow == null) {
+                createWindow()
+                if (process.platform === "darwin") {
+                    app.dock.show();
+                }
+            } else {
+                mainWindow.show();
+            }
+        })
+    }
+
     if (mainWindow == null) {
     createWindow();
     }
@@ -180,9 +196,9 @@ app.on('ready', function() {
 
 app.on('window-all-closed', function () {
     if (config.background !== true) {
-        //if (tray) {
-        //    tray.destroy()
-        //}
+        if (global.tray) {
+            global.tray.destroy()
+        }
         app.quit()
     } else {
         //Stay running even when all windows closed
@@ -197,7 +213,11 @@ var isQuitting = false;
 ipcMain.on('quit', quit)
 
 ipcMain.on('saveconfig', function(event, arg1) {
-    fs.writeFileSync(path.join(app.getPath('userData'), "config.json"), JSON.stringify(arg1, null, 2), "utf8");
+    fs.writeFile(path.join(app.getPath('userData'), "config.json"), JSON.stringify(arg1, null, 2), "utf8", function(err) {
+        if (err) {
+            console.error(err);
+        }
+    });
     config = arg1;
     if (config.updates == true && install_source !== "macappstore" && last_update_check_skipped == true) {
         checkForUpdates();
@@ -211,10 +231,86 @@ ipcMain.on('saveconfig', function(event, arg1) {
 ipcMain.handle('showPicker', async (event, arg) => {
     var result = await dialog.showOpenDialog(mainWindow, {
         defaultPath: arg.current_path || undefined,
-        properties: ['openDirectory', 'createDirectory']
+        properties: ['openDirectory', 'createDirectory'],
+        securityScopedBookmarks: true
     });
+    if (result.filePaths && result.filePaths.length > 0 && result.bookmarks && result.bookmarks.length > 0) {
+        addToSecurityScopedBookmarks(result.filePaths[0], result.bookmarks[0]);//Will only be called in mas build
+    }
     return result.filePaths;
 });
+
+function addToSecurityScopedBookmarks(filepath, bookmark) {
+    if (bookmark && bookmark.length > 0) {
+        mas_bookmarks[filepath] = {"bookmark": bookmark};
+        fs.writeFile(path.join(app.getPath('userData'), "mas_bookmarks.json"), JSON.stringify(mas_bookmarks, null, 2), "utf8", function(err) {
+            if (err) {
+                console.error(err);
+            }
+        });
+    }
+}
+
+// Provide path, returns bookmark
+function matchSecurityScopedBookmark(filepath) {
+    var matching_bookmarks = Object.keys(mas_bookmarks).filter(function(a) {
+        return filepath.startsWith(a) && (filepath.length == a.length || ["/","\\"].indexOf(filepath.substring(a.length,a.length+1)) > -1);
+    });
+    if (matching_bookmarks.length > 0) {
+        var longest_matching_bookmark = matching_bookmarks.reduce(function(a, b) {return a.length > b.length ? a : b;});
+        return mas_bookmarks[longest_matching_bookmark].bookmark;
+    } else {
+        return null;
+    }
+}
+
+// Provide path, accesses and then returns bookmark
+function matchAndAccessSecurityScopedBookmark(filepath) {
+    var bookmark = matchSecurityScopedBookmark(filepath);
+    accessSecurityScopedBookmark(bookmark);
+    return bookmark;
+}
+
+var in_use_mas_bookmarks = {};
+
+// Accesses bookmark
+function accessSecurityScopedBookmark(bookmark) {
+    if (!bookmark) {
+        return;
+    }
+    if (in_use_mas_bookmarks[bookmark]) {
+        in_use_mas_bookmarks[bookmark].count++;
+    } else {
+        var stopAccessing = app.startAccessingSecurityScopedResource(bookmark);
+        in_use_mas_bookmarks[bookmark] = {
+            count: 1,
+            stopAccessing: stopAccessing
+        };
+    }
+}
+
+// Release bookmark
+function releaseSecurityScopedBookmark(bookmark) {
+    if (!bookmark) {
+        return;
+    }
+    if (in_use_mas_bookmarks[bookmark]) {
+        in_use_mas_bookmarks[bookmark].count--;
+        if (in_use_mas_bookmarks[bookmark].count == 0) {
+            in_use_mas_bookmarks[bookmark].stopAccessing();
+            delete in_use_mas_bookmarks[bookmark];
+        }
+    } else {
+        throw new Error("Attempting to release security scoped bookmark that wasn't accessed");
+    }
+}
+
+global.bookmarks = {
+    match: matchSecurityScopedBookmark,
+    matchAndAccess: matchAndAccessSecurityScopedBookmark,
+    access: accessSecurityScopedBookmark,
+    release: releaseSecurityScopedBookmark
+}
 
 ipcMain.handle('generateCrypto', async (event, arg) => {
     return WSC.createCrypto();
@@ -391,7 +487,7 @@ function startServers() {
                         var crypto = WSC.createCrypto();
                         var server = https.createServer({key: crypto.privateKey, cert: crypto.cert});
                     } else {
-                        var server = https.createServer({key: serverconfig.httpsKey, cert: serverconfig.httpsCert});
+                        var server = https.createServer({key:  ('-----BEGIN RSA PRIVATE KEY-----'+config.servers[i].httpsKey.split('-----BEGIN RSA PRIVATE KEY-----').pop().split('-----END RSA PRIVATE KEY-----')[0].replace(/ /g, '\r\n')+'-----END RSA PRIVATE KEY-----'), cert: ('-----BEGIN CERTIFICATE-----'+config.servers[i].httpsCert.split('-----BEGIN CERTIFICATE-----').pop().split('-----END CERTIFICATE-----')[0].replace(/ /g, '\r\n')+'-----END CERTIFICATE-----')});
                     }
                 } else {
                     var server = http.createServer();

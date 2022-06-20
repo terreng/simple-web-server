@@ -235,7 +235,18 @@ DirectoryEntryHandler.prototype = {
         }
         
         if (this[this.request.method.toLowerCase()]) {
-            this[this.request.method.toLowerCase()]();
+            try {
+                var a = this[this.request.method.toLowerCase()]();
+                if (a && typeof a.then == 'function') {
+                    a.catch((e) => {
+                        this.error("Something went wrong", 500);
+                        if (e) console.warn('error: ', e);
+                    })
+                }
+            } catch(e) {
+                this.error("Something went wrong", 500);
+                if (e) console.warn('error: ', e);
+            }
         } else {
             this.writeHeaders(501);
             this.finish();
@@ -333,7 +344,10 @@ DirectoryEntryHandler.prototype = {
             return;
         }
         if (data.type == allow) {
-            callbackSkip();
+            callbackSkip().catch((e) => {
+               this.error("Something went wrong", 500);
+               if (e) console.warn('error: ', e); 
+            });
         } else if (data.type == deny) {
             this.responseLength = 0;
             this.writeHeaders(400);
@@ -365,10 +379,16 @@ DirectoryEntryHandler.prototype = {
                 this.finish();
                 return
             } else {
-                deleteMain.bind(this)();
+                deleteMain.bind(this)().catch((e) => {
+                   this.error("Something went wrong", 500);
+                   if (e) console.warn('error: ', e); 
+                });
             }
         }
-        this.deletePutHtaccess('allow delete', 'deny delete', deleteCheck.bind(this), deleteMain.bind(this))
+        this.deletePutHtaccess('allow delete', 'deny delete', deleteCheck.bind(this), deleteMain.bind(this)).catch((e) => {
+           this.error("Something went wrong", 500);
+           if (e) console.warn('error: ', e); 
+        })
     },
     post: async function() {
         var htaccessPath = WSC.utils.stripOffFile(this.request.origpath);
@@ -518,7 +538,7 @@ DirectoryEntryHandler.prototype = {
                 }.bind(this))
                 this.req.pipe(file);
                 this.req.on('end', function() {
-                    this.writeHeaders(200);
+                    this.writeHeaders(201);
                     this.finish();
                 }.bind(this))
             } else if (this.app.opts.replace) {
@@ -535,7 +555,7 @@ DirectoryEntryHandler.prototype = {
                         }.bind(this));
                         this.req.pipe(file);
                         this.req.on('end', function() {
-                            this.writeHeaders(200);
+                            this.writeHeaders(201);
                             this.finish();
                         }.bind(this))
                     }
@@ -552,10 +572,16 @@ DirectoryEntryHandler.prototype = {
                 this.finish();
                 return
             } else {
-                putMain.bind(this)();
+                putMain.bind(this)().catch((e) => {
+                   this.error("Something went wrong", 500);
+                   if (e) console.warn('error: ', e); 
+                });
             }
         }
-        this.deletePutHtaccess('allow put', 'deny put', putCheck.bind(this), putMain.bind(this));
+        this.deletePutHtaccess('allow put', 'deny put', putCheck.bind(this), putMain.bind(this)).catch((e) => {
+           this.error("Something went wrong", 500);
+           if (e) console.warn('error: ', e); 
+        });
     },
     get: function() {
         this.setHeader('accept-ranges', 'bytes');
@@ -593,6 +619,7 @@ DirectoryEntryHandler.prototype = {
         }
     },
     onEntry: async function(entry) {
+        try {
         this.entry = entry;
         async function excludedothtmlcheck() {
             if (this.app.opts.excludeDotHtml && this.request.path != '' && ! this.request.origpath.endsWith("/")) {
@@ -627,7 +654,7 @@ DirectoryEntryHandler.prototype = {
             if (! this.entry) {
                 this.error('no entry',404);
             } else if (this.entry.error) {
-                if (this.entry.error.code == 'EPERM') {
+                if (this.entry.error.code === 'EPERM') {
                     this.error('', 403);
                 } else {
                     this.error('entry not found: ' + (this.rewrite_to || this.request.path).htmlEscape(), 404);
@@ -636,6 +663,14 @@ DirectoryEntryHandler.prototype = {
                 this.renderFileContents(this.entry);
             } else {
                 var results = await this.entry.getDirContentsPromise();
+                if (results.error) {
+                    if (results.error.code === 'EPERM') {
+                        this.error('', 403);
+                    } else {
+                        this.error('', 500);
+                    }
+                    return;
+                }
                 if (this.app.opts.showIndex) {
                     for (var i=0; i<results.length; i++) {
                         if (['index.xhtml', 'index.xhtm'].includes(results[i].name.toLowerCase())) {
@@ -659,7 +694,7 @@ DirectoryEntryHandler.prototype = {
         }
     
         if (!this.app.opts.htaccess) {
-            excludedothtmlcheck.bind(this)()
+            await excludedothtmlcheck.bind(this)()
             return;
         }
         var fullrequestpath = this.request.origpath;
@@ -671,7 +706,7 @@ DirectoryEntryHandler.prototype = {
         var htaccesspath = finalpath+this.htaccessName;
         var file = await this.fs.asyncGetByPath(htaccesspath);
         if (file.error || !file.isFile) {
-            excludedothtmlcheck.bind(this)();
+            await excludedothtmlcheck.bind(this)();
             return;
         }
         var dataa = await file.textPromise();
@@ -696,7 +731,7 @@ DirectoryEntryHandler.prototype = {
             var additionalHeaders = false;
             var hasPost = false;
             if (origdata.length === 0 || !origdata.length) {
-                excludedothtmlcheck.bind(this)();
+                await excludedothtmlcheck.bind(this)();
                 return;
             }
             for (var i=0; i<origdata.length; i++) {
@@ -746,7 +781,7 @@ DirectoryEntryHandler.prototype = {
                     data = origdata[i];
                     var filefound = true;
                 }
-                if ((origdata[i].request_path == filerequested || origdata[i].request_path == 'all files') &&
+                if ((origdata[i].request_path === filerequested || origdata[i].request_path == 'all files') &&
                     ! filefound &&
                     origdata[i].type !== 'allow delete' &&
                     origdata[i].type !== 'allow put' &&
@@ -782,7 +817,7 @@ DirectoryEntryHandler.prototype = {
             }
             async function htaccessCheck2(data) {
                 if (!filefound) {
-                    excludedothtmlcheck.bind(this)();
+                    await excludedothtmlcheck.bind(this)();
                     return;
                 }
                 if ([301, 302, 307].includes(data.type)) {
@@ -800,7 +835,7 @@ DirectoryEntryHandler.prototype = {
                     if (method === "document") {
                         this.error('', 403);
                     } else {
-                        excludedothtmlcheck.bind(this)();
+                        await excludedothtmlcheck.bind(this)();
                     }
                 } else if (data.type === 403) {
                     this.error('', 403);
@@ -843,13 +878,28 @@ DirectoryEntryHandler.prototype = {
                         return;
                     }
                     var results = await entryy.getDirContentsPromise();
+                    if (results.error) {
+                        if (results.error.code === 'EPERM') {
+                            this.error('', 403);
+                        } else {
+                            this.error('', 500);
+                        }
+                        return;
+                    }
                     var fullrequestpath = this.request.origpath;
                     var finpath = fullrequestpath.split('/').pop();
                     var finalpath = fullrequestpath.substring(0, fullrequestpath.length - finpath.length) + data.original_request_path;
                     var file = await this.fs.asyncGetByPath(finalpath);
                     if (file.error || !file.isFile) {
-                        this.error('', 500);
-                        this.finish();
+                        if (file.error) {
+                            if (file.error.code === 'EPERM') {
+                                this.error('', 403);
+                            } else {
+                                this.error('', 500);
+                            }
+                        } else {
+                            this.error('', 500);
+                        }
                         return;
                     }
                     var data = await file.textPromise();
@@ -974,7 +1024,7 @@ DirectoryEntryHandler.prototype = {
                                 global.tempData = {};
                             }
                             try {
-                                eval('(function() {var handler = function(req, res, httpRequest, appInfo, clearModuleCache, requireFile) {' + dataa + '};handler(req, res, WSC.httpRequest, {"server": "Simple Web Server"}, clearModuleCache, requireFile)})();');
+                                eval('(function() {var handler = function(req, res, httpRequest, appInfo, clearModuleCache, requireFile) {\n' + dataa + '\n};handler(req, res, WSC.httpRequest, {"server": "Simple Web Server"}, clearModuleCache, requireFile)})();');
                             } catch(e) {
                                 console.error(e);
                                 this.error('', 500);
@@ -989,7 +1039,7 @@ DirectoryEntryHandler.prototype = {
                         this.error('', 404);
                     }
                 } else {
-                    excludedothtmlcheck.bind(this)();
+                    await excludedothtmlcheck.bind(this)();
                 }
             }
             //console.log(htaccessHeaders)
@@ -1027,25 +1077,25 @@ DirectoryEntryHandler.prototype = {
             var file = await this.fs.asyncGetByPath(this.request.origpath+'.html');
             if (! file.error) {
                 if (this.request.origpath.endsWith("/")) {
-                    htaccessMain.bind(this)('');
+                    await htaccessMain.bind(this)('');
                     return;
                 }
                 var filerequested = this.request.path+'.html';
                 var filerequested = filerequested.split('/').pop();
                 var filerequested = WSC.utils.htaccessFileRequested(filerequested, this.app.opts.showIndex);
-                htaccessMain.bind(this)(filerequested);
+                await htaccessMain.bind(this)(filerequested);
                 return;
             }
             var file = await this.fs.asyncGetByPath(this.request.origpath+'.htm');
             if (! file.error) {
                 if (this.request.origpath.endsWith("/")) {
-                    htaccessMain.bind(this)('');
+                    await htaccessMain.bind(this)('');
                     return;
                 }
                 var filerequested = this.request.path+'.htm';
                 var filerequested = filerequested.split('/').pop();
                 var filerequested = WSC.utils.htaccessFileRequested(filerequested, this.app.opts.showIndex);
-                htaccessMain.bind(this)(filerequested);
+                await htaccessMain.bind(this)(filerequested);
                 return;
             }
         }
@@ -1059,10 +1109,15 @@ DirectoryEntryHandler.prototype = {
         }
         var filerequested = filerequest.split('/').pop();
         var filerequested = WSC.utils.htaccessFileRequested(filerequested, this.app.opts.showIndex);
-        htaccessMain.bind(this)(filerequested);
+        await htaccessMain.bind(this)(filerequested);
         return;
+        } catch(e) {
+            this.error("Something went wrong", 500);
+            if (e) console.warn('error: ', e); 
+        }
     },
     renderFileContents: function(entry) {
+        try {
         if (! entry.path) {
             this.error('', 404);
             return;
@@ -1132,15 +1187,28 @@ DirectoryEntryHandler.prototype = {
                 }
             }
             this.writeHeaders(code);
-            if (! compression) {
-                stream.pipe(this.res);
-                stream.on('finish', function() {
-                    stream.close();
+            if (!compression) {
+                var res = this.res;
+                stream.on('open', function() {
+                    stream.pipe(res).on('error', function(error) {
+                        console.error(error);
+                        stream.close();
+                        //return error
+                    })
                 })
-                this.req.on("close", function() {
+                stream.on('error', function(error) {
+                    console.error(error);
+                    stream.close();
+                    //return error
+                })
+                res.on("close", function() {
                     stream.close();
                 })
             }
+        }
+        } catch(e) {
+            this.error("Something went wrong", 500);
+            if (e) console.warn('error: ', e); 
         }
     },
     entriesSortFunc: function(a,b) {
@@ -1156,7 +1224,6 @@ DirectoryEntryHandler.prototype = {
             // both files
             return anl.localeCompare(bnl);
         }
-            
     },
     renderDirectoryListingJSON: function(origResults) {
         this.setHeader('content-type','application/json; charset=utf-8');
@@ -1269,18 +1336,31 @@ DirectoryEntryHandler.prototype = {
         entry.getDirContents(callback);
     },
     renderDirListing: function(results) {
-        if (this.request.arguments && ['1','true'].includes(this.request.arguments.json) || (this.request.headers['accept'] && this.request.headers['accept'].toLowerCase() == 'application/json')) {
-            this.renderDirectoryListingJSON(results);
-        } else if (this.request.arguments && ['1','true'].includes(this.request.arguments.static)) {
-            this.renderDirectoryListing(results);
-        } else if (this.request.arguments && ['1','true'].includes(this.request.arguments.staticjs)) {
-            this.renderDirectoryListingStaticJs(results);
-        } else if (this.request.arguments && ['1','true'].includes(this.request.arguments.js)) {
-            this.renderDirectoryListingTemplate(results);
-        } else if (this.app.opts.staticDirectoryListing) {
-            this.renderDirectoryListing(results);
-        } else {
-            this.renderDirectoryListingStaticJs(results);
+        if (!results || (results && (results.error || !Array.isArray(results)))) {
+            if (results.error.code === 'EPERM') {
+                this.error('', 403);
+            } else {
+                this.error('', 500);
+            }
+            return;
+        }
+        try {
+            if (this.request.arguments && ['1','true'].includes(this.request.arguments.json) || (this.request.headers['accept'] && this.request.headers['accept'].toLowerCase() == 'application/json')) {
+                this.renderDirectoryListingJSON(results);
+            } else if (this.request.arguments && ['1','true'].includes(this.request.arguments.static)) {
+                this.renderDirectoryListing(results);
+            } else if (this.request.arguments && ['1','true'].includes(this.request.arguments.staticjs)) {
+                this.renderDirectoryListingStaticJs(results);
+            } else if (this.request.arguments && ['1','true'].includes(this.request.arguments.js)) {
+                this.renderDirectoryListingTemplate(results);
+            } else if (this.app.opts.staticDirectoryListing) {
+                this.renderDirectoryListing(results);
+            } else {
+                this.renderDirectoryListingStaticJs(results);
+            }
+        } catch(e) {
+            this.error("Something went wrong", 500);
+            if (e) console.warn('error: ', e); 
         }
     },
     htaccessError: function(errormsg) {

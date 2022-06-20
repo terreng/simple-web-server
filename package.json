@@ -1,7 +1,7 @@
 {
   "name": "simple-web-server",
   "productName": "Simple Web Server",
-  "version": "1.1.0",
+  "version": "1.1.4",
   "main": "index.js",
   "description": "Create a local web server in just a few clicks with an easy to use interface. A continuation of Web Server for Chrome, built with Electron.",
   "author": {
@@ -29,10 +29,12 @@
   "scripts": {
     "start": "electron .",
     "make": "electron-builder",
-    "make_macos_x64": "electron-builder --mac dmg --x64 -c.mac.identity=null",
-    "make_macos_arm64": "electron-builder --mac dmg --arm64 -c.mac.identity=\"Simple Web Server\"",
-    "make_macos_zip_x64": "electron-builder --mac zip --x64 -c.mac.identity=null",
-    "make_macos_zip_arm64": "electron-builder --mac zip --arm64 -c.mac.identity=null",
+    "make_macos_x64": "electron-builder --mac dmg --x64 -c.mac.identity=\"Terren Gurule\"",
+    "make_macos_arm64": "electron-builder --mac dmg --arm64 -c.mac.identity=\"Terren Gurule\"",
+    "make_macos_zip_x64": "electron-builder --mac zip --x64 -c.mac.identity=\"Terren Gurule\"",
+    "make_macos_zip_arm64": "electron-builder --mac zip --arm64 -c.mac.identity=\"Terren Gurule\"",
+    "make_macos_mas_universal": "electron-builder --mac mas --universal -c.mac.identity=\"Terren Gurule\"",
+    "make_macos_mas_universal_dev": "electron-builder --mac mas-dev --universal -c.mac.identity=\"Terren Gurule\"",
     "make_windows_x64": "electron-builder --windows nsis --x64",
     "make_windows_ia32": "electron-builder --windows nsis --ia32",
     "make_windows_arm64": "electron-builder --windows nsis --arm64",
@@ -50,10 +52,10 @@
     "make_linux_targz_arm64": "electron-builder --linux targz --arm64",
     "make_all_macos": "npm run make_macos_x64 && npm run make_macos_arm64 && npm run make_macos_zip_x64 && npm run make_macos_zip_arm64",
     "make_all_windows": "npm run make_windows_x64 && npm run make_windows_ia32 && npm run make_windows_arm64 && npm run make_windows_zip_x64 && npm run make_windows_zip_ia32 && npm run make_windows_zip_arm64",
-    "make_all_windowsappx": "npm run make_windows_appx_x64 && npm run make_windows_appx_ia32 && npm run make_windows_appx_arm64"
+    "make_all_windows_appx": "npm run make_windows_appx_x64 && npm run make_windows_appx_ia32 && npm run make_windows_appx_arm64"
   },
   "build": {
-    "buildVersion": "6",
+    "buildVersion": "11",
     "appId": "org.simplewebserver.simplewebserver",
     "productName": "Simple Web Server",
     "copyright": "MIT License",
@@ -85,7 +87,7 @@
       "entitlements": "build/entitlements.mac.plist",
       "entitlementsInherit": "build/entitlements_inherit.mac.plist",
       "category": "public.app-category.developer-tools",
-      "provisioningProfile": "build/mas_provisioning_profile.provisionprofile"
+      "electronLanguages": ["en"]
     },
     "mas": {
       "gatekeeperAssess": false,
@@ -110,7 +112,8 @@
     },
     "nsis": {
       "createDesktopShortcut": "always",
-      "artifactName": "${productName} Installer ${version} ${arch}.${ext}"
+      "artifactName": "${productName} Installer ${version} ${arch}.${ext}",
+      "license": "LICENSE"
     },
     "linux": {
       "icon": "images/512x512.png",

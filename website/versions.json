@@ -1,6 +1,22 @@
 {
     "latest": "1001000",
     "versions": {
+        "1001004": {
+            "name": "1.1.4",
+            "download": {"website": "https://simplewebserver.org/download", "microsoftstore": "https://simplewebserver.org/download", "macappstore": "https://simplewebserver.org/download"}
+        },
+        "1001003": {
+            "name": "1.1.3",
+            "download": {"website": "https://simplewebserver.org/download", "microsoftstore": "https://simplewebserver.org/download", "macappstore": "https://simplewebserver.org/download"}
+        },
+        "1001002": {
+            "name": "1.1.2",
+            "download": {"website": "https://simplewebserver.org/download", "microsoftstore": "https://simplewebserver.org/download", "macappstore": "https://simplewebserver.org/download"}
+        },
+        "1001001": {
+            "name": "1.1.1",
+            "download": {"website": "https://simplewebserver.org/download", "microsoftstore": "https://simplewebserver.org/download", "macappstore": "https://simplewebserver.org/download"}
+        },
         "1001000": {
             "name": "1.1.0",
             "download": {"website": "https://simplewebserver.org/download", "microsoftstore": "https://simplewebserver.org/download", "macappstore": "https://simplewebserver.org/download"}
