@@ -112,7 +112,8 @@
     },
     "nsis": {
       "createDesktopShortcut": "always",
-      "artifactName": "${productName} Installer ${version} ${arch}.${ext}"
+      "artifactName": "${productName} Installer ${version} ${arch}.${ext}",
+      "license": "LICENSE"
     },
     "linux": {
       "icon": "images/512x512.png",
