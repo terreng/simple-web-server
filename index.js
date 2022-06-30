@@ -2,6 +2,7 @@ var version = 1001004;
 var install_source = "website"; //"website" | "microsoftstore" | "macappstore"
 const {app, BrowserWindow, ipcMain, Menu, Tray, dialog, shell} = require('electron');
 const {networkInterfaces} = require('os');
+global.hostOS = require('os').platform();
 
 global.savingLogs = true;//prevent saving logs until log option is checked. never becomes false if logging is not enabled.
 global.pendingSave = false;
@@ -21,6 +22,8 @@ const {pipeline} = require('stream');
 var path = global.path;
 global.pipeline = pipeline;
 
+global.bookmarks = require('./bookmarks.js');
+global.plugins = require('./plugin.js');
 WSC = require("./WSC.js");
 
 console = function(old_console) {
@@ -118,7 +121,6 @@ function getIPs() {
 
 let mainWindow;
 var config = {};
-var mas_bookmarks = {};
 
 if (!process.mas && !app.requestSingleInstanceLock()) {
     app.quit();
@@ -240,78 +242,6 @@ ipcMain.handle('showPicker', async (event, arg) => {
     return result.filePaths;
 });
 
-function addToSecurityScopedBookmarks(filepath, bookmark) {
-    if (bookmark && bookmark.length > 0) {
-        mas_bookmarks[filepath] = {"bookmark": bookmark};
-        fs.writeFile(path.join(app.getPath('userData'), "mas_bookmarks.json"), JSON.stringify(mas_bookmarks, null, 2), "utf8", function(err) {
-            if (err) {
-                console.error(err);
-            }
-        });
-    }
-}
-
-// Provide path, returns bookmark
-function matchSecurityScopedBookmark(filepath) {
-    var matching_bookmarks = Object.keys(mas_bookmarks).filter(function(a) {
-        return filepath.startsWith(a) && (filepath.length == a.length || ["/","\\"].indexOf(filepath.substring(a.length,a.length+1)) > -1);
-    });
-    if (matching_bookmarks.length > 0) {
-        var longest_matching_bookmark = matching_bookmarks.reduce(function(a, b) {return a.length > b.length ? a : b;});
-        return mas_bookmarks[longest_matching_bookmark].bookmark;
-    } else {
-        return null;
-    }
-}
-
-// Provide path, accesses and then returns bookmark
-function matchAndAccessSecurityScopedBookmark(filepath) {
-    var bookmark = matchSecurityScopedBookmark(filepath);
-    accessSecurityScopedBookmark(bookmark);
-    return bookmark;
-}
-
-var in_use_mas_bookmarks = {};
-
-// Accesses bookmark
-function accessSecurityScopedBookmark(bookmark) {
-    if (!bookmark) {
-        return;
-    }
-    if (in_use_mas_bookmarks[bookmark]) {
-        in_use_mas_bookmarks[bookmark].count++;
-    } else {
-        var stopAccessing = app.startAccessingSecurityScopedResource(bookmark);
-        in_use_mas_bookmarks[bookmark] = {
-            count: 1,
-            stopAccessing: stopAccessing
-        };
-    }
-}
-
-// Release bookmark
-function releaseSecurityScopedBookmark(bookmark) {
-    if (!bookmark) {
-        return;
-    }
-    if (in_use_mas_bookmarks[bookmark]) {
-        in_use_mas_bookmarks[bookmark].count--;
-        if (in_use_mas_bookmarks[bookmark].count == 0) {
-            in_use_mas_bookmarks[bookmark].stopAccessing();
-            delete in_use_mas_bookmarks[bookmark];
-        }
-    } else {
-        throw new Error("Attempting to release security scoped bookmark that wasn't accessed");
-    }
-}
-
-global.bookmarks = {
-    match: matchSecurityScopedBookmark,
-    matchAndAccess: matchAndAccessSecurityScopedBookmark,
-    access: accessSecurityScopedBookmark,
-    release: releaseSecurityScopedBookmark
-}
-
 ipcMain.handle('generateCrypto', async (event, arg) => {
     return WSC.createCrypto();
 });
@@ -415,7 +345,6 @@ function updateServerStates() {
 var running_servers = [];
 
 function startServers() {
-
     if (running_servers.length > 0) {
 
     var closed_servers = 0;
@@ -478,20 +407,20 @@ function startServers() {
                 }
             }
             if (serverconfig.enabled && !found_already_running) {
-                var this_server = {"config":serverconfig,"state":"starting"};
+                var this_server = {"config":serverconfig,"state":"starting","server":null,"plugin":null};
 
                 var hostname = serverconfig.localnetwork ? (serverconfig.ipv6 ? '::' : '0.0.0.0') : (serverconfig.ipv6 ? '::1' : '127.0.0.1');
                 try {
-                if (serverconfig.https) {
-                    if (!serverconfig.httpsKey || !serverconfig.httpsCert) {
-                        var crypto = WSC.createCrypto();
-                        var server = https.createServer({key: crypto.privateKey, cert: crypto.cert});
+                    if (serverconfig.https) {
+                        if (!serverconfig.httpsKey || !serverconfig.httpsCert) {
+                            var crypto = WSC.createCrypto();
+                            var server = https.createServer({key: crypto.privateKey, cert: crypto.cert});
+                        } else {
+                            var server = https.createServer({key:  ('-----BEGIN RSA PRIVATE KEY-----'+config.servers[i].httpsKey.split('-----BEGIN RSA PRIVATE KEY-----').pop().split('-----END RSA PRIVATE KEY-----')[0].replace(/ /g, '\r\n')+'-----END RSA PRIVATE KEY-----'), cert: ('-----BEGIN CERTIFICATE-----'+config.servers[i].httpsCert.split('-----BEGIN CERTIFICATE-----').pop().split('-----END CERTIFICATE-----')[0].replace(/ /g, '\r\n')+'-----END CERTIFICATE-----')});
+                        }
                     } else {
-                        var server = https.createServer({key:  ('-----BEGIN RSA PRIVATE KEY-----'+config.servers[i].httpsKey.split('-----BEGIN RSA PRIVATE KEY-----').pop().split('-----END RSA PRIVATE KEY-----')[0].replace(/ /g, '\r\n')+'-----END RSA PRIVATE KEY-----'), cert: ('-----BEGIN CERTIFICATE-----'+config.servers[i].httpsCert.split('-----BEGIN CERTIFICATE-----').pop().split('-----END CERTIFICATE-----')[0].replace(/ /g, '\r\n')+'-----END CERTIFICATE-----')});
+                        var server = http.createServer();
                     }
-                } else {
-                    var server = http.createServer();
-                }
                 } catch(err) {
                     console.error(err);
                     this_server.state = "error";
@@ -500,26 +429,43 @@ function startServers() {
                     return;
                 }
                 this_server.server = server;
-                /*
-                if (serverconfig.proxy) {
-                    server.on('connect', (req, clientSocket, head) => {
-                        console.log(req.socket.remoteAddress + ':', 'Request',req.method, req.url)
-                        const { port, hostname } = new URL(`http://${url}`)
-                        const serverSocket = net.connect(port || 443, hostname, () => {
-							console.log('a')
-                            clientSocket.write('HTTP/1.1 200 Connection Established\r\n' +
-                                               'Proxy-agent: Simple-Web-Server-Proxy\r\n' +
-                                               '\r\n')
-                            serverSocket.write(head)
-                            serverSocket.pipe(clientSocket)
-                            clientSocket.pipe(serverSocket)
-                        })
-                    })
+                try {
+                    this_server.FileSystem = new WSC.FileSystem(serverconfig.path);
+                } catch(e) {
+                    console.warn("error setting up FileSystem for path "+serverconfig.path, e);
+                    this_server.state = "error";
+                    this_server.error_message = "FS error";
+                    running_servers.push(this_server);
+                    return;
                 }
-                */
-                var FileSystem = new WSC.FileSystem(serverconfig.path);
+                if (typeof serverconfig.plugin == 'string') {
+                    try {
+                        this_server.plugin = plugins.registerPlugin(this_server);
+                        if (typeof this_server.plugin.functions.onStart == 'function') {
+                            this_server.plugin.functions.onStart(server);
+                        }
+                    } catch(e) {
+                        console.warn('error setting up plugin', e);
+                        this_server.state = "error";
+                        this_server.error_message = "Error Regestering plugin";
+                        running_servers.push(this_server);
+                        return;
+                    }
+                }
                 server.on('request', function(req, res) {
-                    WSC.onRequest(serverconfig, req, res, FileSystem);
+                    if (this_server.plugin && typeof this_server.plugin.functions.onRequest == 'function') {
+                        var prevented = false;
+                        try {
+                            this_server.plugin.functions.onRequest(req, res, function() {prevented = true});
+                        } catch(e) {
+                            console.log('plugin error', e);
+                            res.statusCode = 500;
+                            res.end('plugin error');
+                            return;
+                        }
+                        if (prevented) return; //todo, also check if response has been written
+                    }
+                    WSC.onRequest(serverconfig, req, res, this_server.FileSystem);
                 });
                 server.on('clientError', function (err, socket) {
                     if (err.code === 'ECONNRESET' || !socket.writable) {

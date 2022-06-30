@@ -33,9 +33,9 @@ BaseHandler.prototype = {
                 this.setHeader("WWW-Authenticate", "Basic")
             }
             if (this.app.opts['custom'+httpCode] && typeof this.app.opts['custom'+httpCode] == 'string' && this.app.opts['custom'+httpCode].trim() !== '') {
-                var file = await this.fs.asyncGetByPath(this.app.opts['custom'+httpCode]);
+                var file =  this.fs.getByPath(this.app.opts['custom'+httpCode]);
                 if (!file.error && file.isFile) {
-                    var data = await file.textPromise();
+                    var data = file.text();
                     if (this.app.opts.customErrorReplaceString.trim() !== '') {
                         data = data.replaceAll(this.app.opts.customErrorReplaceString, this.request.origpath.htmlEscape());
                     }
@@ -180,7 +180,7 @@ DirectoryEntryHandler.prototype = {
         console.log("["+(new Date()).toLocaleString()+"]", this.request.ip + ':', 'Request',this.request.method, this.request.uri)
         /*
         if (this.app.opts.optIpBlocking && this.app.opts.optIpBlockList) {
-            var file = await this.fs.asyncGetByPath(this.app.opts.optIpBlockList)
+            var file =  this.fs.getByPath(this.app.opts.optIpBlockList)
             if (file && file.isFile && ! file.error) {
                 var data = await file.textPromise()
                 try {
@@ -264,12 +264,12 @@ DirectoryEntryHandler.prototype = {
             var finalpath = '/';
         }
         var htaccesspath = finalpath+this.htaccessName;
-        var file = await this.fs.asyncGetByPath(htaccesspath)
+        var file =  this.fs.getByPath(htaccesspath)
         if (file.error) {
             callback();
             return;
         }
-        var dataa = await file.textPromise();
+        var dataa = file.text();
         try {
             var origdata = JSON.parse(dataa);
         } catch(e) {
@@ -357,13 +357,13 @@ DirectoryEntryHandler.prototype = {
     },
     delete: function() {
         async function deleteMain() {
-            var entry = await this.fs.asyncGetByPath(this.request.origpath);
+            var entry =  this.fs.getByPath(this.request.origpath);
             if (entry.error) {
                 this.writeHeaders(404);
                 this.finish();
                 return;
             }
-            var e = await entry.removePromise()
+            var e = entry.remove();
             if (e.error) {
                 this.writeHeaders(500);
                 this.finish();
@@ -392,12 +392,12 @@ DirectoryEntryHandler.prototype = {
     },
     post: async function() {
         var htaccessPath = WSC.utils.stripOffFile(this.request.origpath);
-        var file = await this.fs.asyncGetByPath(htaccessPath+this.htaccessName);
+        var file =  this.fs.getByPath(htaccessPath+this.htaccessName);
         if (!file || file.error) {
             this.error('', 404);
             return;
         }
-        var data = await file.textPromise();
+        var data = file.text();
         try {
             var origdata = JSON.parse(data);
         } catch(e) {
@@ -484,7 +484,7 @@ DirectoryEntryHandler.prototype = {
             this.error('', 404);
             return;
         }
-        var dataa = await file.textPromise();
+        var dataa = file.text();
         var contents = dataa;
         var validFile = false;
         var key = contents.replace(/ /g, '').split('postKey=');
@@ -528,7 +528,7 @@ DirectoryEntryHandler.prototype = {
     },
     put: function() {
         async function putMain() {
-            var entry = await this.fs.asyncGetByPath(this.request.origpath)
+            var entry =  this.fs.getByPath(this.request.origpath)
             if (entry.error) {
                 var file = this.fs.createWriteStream(this.request.origpath)
                 file.on('error', function (err) {
@@ -623,13 +623,13 @@ DirectoryEntryHandler.prototype = {
         this.entry = entry;
         async function excludedothtmlcheck() {
             if (this.app.opts.excludeDotHtml && this.request.path != '' && ! this.request.origpath.endsWith("/")) {
-                var file = await this.fs.asyncGetByPath(this.request.origpath+'.html');
+                var file =  this.fs.getByPath(this.request.origpath+'.html');
                 if (! file.error && file.isFile) {
                     this.setHeader('content-type','text/html; charset=utf-8');
                     this.renderFileContents(file);
                     return;
                 }
-                var file = await this.fs.asyncGetByPath(this.request.origpath+'.htm');
+                var file =  this.fs.getByPath(this.request.origpath+'.htm');
                 if (! file.error && file.isFile) {
                     this.setHeader('content-type','text/html; charset=utf-8');
                     this.renderFileContents(file);
@@ -662,7 +662,7 @@ DirectoryEntryHandler.prototype = {
             } else if (this.entry.isFile) {
                 this.renderFileContents(this.entry);
             } else {
-                var results = await this.entry.getDirContentsPromise();
+                var results = this.entry.getDirContents();
                 if (results.error) {
                     if (results.error.code === 'EPERM') {
                         this.error('', 403);
@@ -704,12 +704,12 @@ DirectoryEntryHandler.prototype = {
             var finalpath = '/';
         }
         var htaccesspath = finalpath+this.htaccessName;
-        var file = await this.fs.asyncGetByPath(htaccesspath);
+        var file =  this.fs.getByPath(htaccesspath);
         if (file.error || !file.isFile) {
             await excludedothtmlcheck.bind(this)();
             return;
         }
-        var dataa = await file.textPromise();
+        var dataa = file.text();
         try {
             var origdata = JSON.parse(dataa);
             if (! Array.isArray(origdata)) {
@@ -872,12 +872,12 @@ DirectoryEntryHandler.prototype = {
                             var path2Send = '/' + path2Send;
                         }
                     }
-                    var entryy = await this.fs.asyncGetByPath(path2Send);
+                    var entryy =  this.fs.getByPath(path2Send);
                     if (entry.error || entry.isDirectory) {
                         this.htaccessError('invalid path to send dir contents');
                         return;
                     }
-                    var results = await entryy.getDirContentsPromise();
+                    var results = entryy.getDirContents();
                     if (results.error) {
                         if (results.error.code === 'EPERM') {
                             this.error('', 403);
@@ -889,7 +889,7 @@ DirectoryEntryHandler.prototype = {
                     var fullrequestpath = this.request.origpath;
                     var finpath = fullrequestpath.split('/').pop();
                     var finalpath = fullrequestpath.substring(0, fullrequestpath.length - finpath.length) + data.original_request_path;
-                    var file = await this.fs.asyncGetByPath(finalpath);
+                    var file =  this.fs.getByPath(finalpath);
                     if (file.error || !file.isFile) {
                         if (file.error) {
                             if (file.error.code === 'EPERM') {
@@ -902,7 +902,7 @@ DirectoryEntryHandler.prototype = {
                         }
                         return;
                     }
-                    var data = await file.textPromise();
+                    var data = file.text();
                     var html = [dataa];
                     for (var w=0; w<results.length; w++) {
                         var rawname = results[w].name.replaceAll('\\', '\\\\').replaceAll('"', '\\"');
@@ -965,7 +965,7 @@ DirectoryEntryHandler.prototype = {
                         }
                     }
                     //console.log(vdataa)
-                    var file = await this.fs.asyncGetByPath(vdataa);
+                    var file =  this.fs.getByPath(vdataa);
                     if (file && ! file.error) {
                         this.request.path = vdataa;
                         if (file.isFile) {
@@ -991,9 +991,9 @@ DirectoryEntryHandler.prototype = {
                         this.htaccessError('missing key');
                         return;
                     }
-                    var file = await this.fs.asyncGetByPath(WSC.utils.stripOffFile(this.request.origpath) + data.original_request_path);
+                    var file =  this.fs.getByPath(WSC.utils.stripOffFile(this.request.origpath) + data.original_request_path);
                     if (file && ! file.error && file.isFile) {
-                        var dataa = await file.textPromise();
+                        var dataa = file.text();
                         var contents = dataa;
                         var validFile = false;
                         var key = contents.replace(/ /g, '').split('SSJSKey=');
@@ -1074,7 +1074,7 @@ DirectoryEntryHandler.prototype = {
         }
         var filerequest = this.request.origpath;
         if (this.app.opts.excludeDotHtml) {
-            var file = await this.fs.asyncGetByPath(this.request.origpath+'.html');
+            var file =  this.fs.getByPath(this.request.origpath+'.html');
             if (! file.error) {
                 if (this.request.origpath.endsWith("/")) {
                     await htaccessMain.bind(this)('');
@@ -1086,7 +1086,7 @@ DirectoryEntryHandler.prototype = {
                 await htaccessMain.bind(this)(filerequested);
                 return;
             }
-            var file = await this.fs.asyncGetByPath(this.request.origpath+'.htm');
+            var file =  this.fs.getByPath(this.request.origpath+'.htm');
             if (! file.error) {
                 if (this.request.origpath.endsWith("/")) {
                     await htaccessMain.bind(this)('');

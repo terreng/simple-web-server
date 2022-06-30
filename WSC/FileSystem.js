@@ -14,6 +14,7 @@ function getByPath(path, callback, FileSystem) {
     this.origpath = path.replace(/\/\//g, '/');
     this.fullPath = this.origpath;
     this.path = this.fs.mainPath + WSC.utils.relativePath(path, '').replace(/\/\//g, '/');
+    if (typeof callback != 'function') callback=function(){};
     this.callback = callback;
 }
 
@@ -57,21 +58,22 @@ getByPath.prototype = {
                 }
                 var err = err || {error: error, isFile: false, isDirectory: false, name: 'error'};
                 this.callback(err);
+                return err;
             } catch(e) {
                 this.callback({error: error, isFile: false, isDirectory: false, name: 'error'});
+                return {error: error, isFile: false, isDirectory: false, name: 'error'};
             }
-            return;
         }
         this.size = stats.size;
         this.modificationTime = stats.mtime;
         this.isDirectory = stats.isDirectory();
         this.isFile = stats.isFile();
-        if (this.isFile) {
+        if (this.isFile && global.hostOS === 'win32') {
             var folder = path;
             if (folder.endsWith('/')) {
                 this.callback({error: 'Path Not Found'});
                 this.callback = null;
-                return;
+                return {error: 'Path Not Found'};
             }
             this.name = folder.split('/').pop();
             var folder = WSC.utils.stripOffFile(folder);
@@ -83,50 +85,44 @@ getByPath.prototype = {
                 this.callback({error: 'Path Not Found'});
                 this.callback = null;
                 bookmarks.release(bm);
-                return;
+                return {error: 'Path Not Found'};
             }
             bookmarks.release(bm);
             if (files.includes(this.name)) {
                 this.callback(this);
                 this.callback = null;
+                return this;
             } else {
                 this.callback({error: 'Path Not Found'});
                 this.callback = null;
+                return {error: 'Path Not Found'};
             }
         } else {
             this.callback(this);
             this.callback = null;
+            return this;
         }
     },
     text: function(callback) {
-        if (! callback) {
-            return;
-        }
+        if (typeof callback != 'function') callback=function(){};
         if (! this.isFile) {
             callback({error: 'Cannot preform on directory'});
-            return;
+            return {error: 'Cannot preform on directory'};
         }
-        this.file(function(file) {
-            callback(file.toString());
-        })
-    },
-    textPromise: function() {
-        return new Promise(function(resolve, reject) {
-            this.text(resolve);
-        }.bind(this));
+        var result = this.file().toString();
+        callback(result);
+        return result;
     },
     file: function(callback) {
+        if (typeof callback != 'function') callback=function(){};
         if (!this.path) {
             callback(null);
             return null;
         }
-        if (! callback) {
-            return;
-        }
         var path = this.path
         if (! this.isFile) {
             callback({error: 'Cannot preform on directory'});
-            return;
+            return {error: 'Cannot preform on directory'};
         }
         var bm = bookmarks.matchAndAccess(path);
         try {
@@ -134,23 +130,17 @@ getByPath.prototype = {
         } catch(err) {
             bookmarks.release(bm);
             callback({error:err});
-            return;
+            return {error:err};
         }
         bookmarks.release(bm);
         callback(data);
-    },
-    filePromise: function() {
-        return new Promise(function(resolve, reject) {
-            this.file(resolve);
-        }.bind(this))
+        return data;
     },
     remove: function(callback) {
+        if (typeof callback != 'function') callback=function(){};
         if (!this.path) {
             callback(null);
             return null;
-        }
-        if (! callback) {
-            callback = function() {};
         }
         var bm = bookmarks.matchAndAccess(this.path);
         if (this.isDirectory) {
@@ -162,37 +152,33 @@ getByPath.prototype = {
             bookmarks.release(bm);
             if (err) {
                 callback({error: err, success: false});
+                return {error: err, success: false};
             } else {
                 callback({error: false, success: true});
+                return {error: false, success: true};
             }
         } else {
             try {
                 fs.unlinkSync(this.path);
             } catch(err) {
                 bookmarks.release(bm);
-                callback({error: err, success: false})
-                return;
+                callback({error: err, success: false});
+                return {error: err, success: false};
             }
             bookmarks.release(bm);
-            callback({error: false, success: true})
+            callback({error: false, success: true});
+            return {error: false, success: true};
         }
-    },
-    removePromise: function() {
-        return new Promise(function(resolve, reject) {
-            this.remove(resolve);
-        }.bind(this))
     },
     getDirContents: function(callback) {
-        if (! callback) {
-            return;
-        }
+        if (typeof callback != 'function') callback=function(){};
         if (!this.path) {
             callback(null);
             return null;
         }
         if (this.isFile) {
             callback({error: 'Cannot preform on file'});
-            return;
+            return {error: 'Cannot preform on file'};
         }
         var path = this.path;
         var bm = bookmarks.matchAndAccess(path);
@@ -201,38 +187,17 @@ getByPath.prototype = {
         } catch(err) {
             bookmarks.release(bm);
             callback({error:err});
-            return;
+            return {error:err};
         }
         bookmarks.release(bm);
         var results = [];
-        var i = 0;
-        var totalLength = files.length - 1;
-        function finished() {
-            callback(results);
-        }
-        function getFileInfo() {
-            var file = new getByPath(this.origpath + '/' + files[i], function(file) {
-                results.push(file);
-                if (i < totalLength) {
-                    i++;
-                    getFileInfo.bind(this)();
-                } else {
-                    finished.bind(this)();
-                }
-            }.bind(this), this.fs);
+        for (var i=0; i<files.length; i++) {
+            var file = new getByPath(this.origpath + '/' + files[i], null, this.fs);
             file.name = files[i];
-            file.getFile();
+            results.push(file.getFile());
         }
-        if (files.length > 0) {
-            getFileInfo.bind(this)();
-        } else {
-            finished.bind(this)();
-        }
-    },
-    getDirContentsPromise: function() {
-        return new Promise(function(resolve, reject) {
-            this.getDirContents(resolve);
-        }.bind(this))
+        callback(results);
+        return results;
     }
 }
 
@@ -242,6 +207,16 @@ function FileSystem(mainPath) {
     if (mainPath.endsWith('/')) {
         var mainPath = mainPath.substring(0, mainPath.length - 1);
     }
+    var bm = bookmarks.matchAndAccess(mainPath);
+    try {
+        var stats = fs.statSync(mainPath);
+    } catch(e) {
+        throw new Error('Error checking entry');
+    }
+    if (!stats.isDirectory()) {
+        throw new Error('Entered path is not directory');
+    }
+    bookmarks.release(bm);
     this.mainPath = mainPath;
 }
 
@@ -249,12 +224,7 @@ FileSystem.prototype = {
     getByPath: function(path, callback) {
         var path = path.replace(/\/\//g, '/').replace(/\\/g, '/');
         var entry = new getByPath(path, callback, this);
-        entry.getFile();
-    },
-    asyncGetByPath: function(path) {
-        return new Promise(function(resolve, reject) {
-            this.getByPath(path, resolve);
-        }.bind(this))
+        return entry.getFile();
     },
     writeFile: function(path, data, callback, allowOverWrite) {
         if (!Buffer.isBuffer(data)) {
