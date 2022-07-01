@@ -439,11 +439,12 @@ function startServers() {
                     running_servers.push(this_server);
                     return;
                 }
-                //serverconfig.plugin = plugins.importPlugin("C:\\Users\\ethan\\Desktop\\test-plugin", serverconfig.plugin);
+                serverconfig.plugin = plugins.importPlugin("C:\\Users\\ethan\\Desktop\\test-plugin", serverconfig.plugin);
+                console.log(serverconfig.plugin)
                 if (Array.isArray(serverconfig.plugin)) {
                     try {
                         this_server.plugin = plugins.registerPlugins(this_server);
-                        this_server.plugin.functions.onStart(server);
+                        this_server.plugin.functions.onStart(server, serverconfig.plugin);
                     } catch(e) {
                         console.warn('error setting up plugin', e);
                         this_server.state = "error";
@@ -456,7 +457,7 @@ function startServers() {
                     if (Array.isArray(serverconfig.plugin)) {
                         var prevented = false;
                         try {
-                            this_server.plugin.functions.onRequest(req, res, function() {prevented = true});
+                            this_server.plugin.functions.onRequest(req, res, function() {prevented = true}, serverconfig.plugin);
                         } catch(e) {
                             console.log('plugin error', e);
                             res.statusCode = 500;
