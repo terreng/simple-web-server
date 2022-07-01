@@ -67,8 +67,10 @@ function releaseSecurityScopedBookmark(bookmark) {
 }
 
 module.exports = {
+    add: addToSecurityScopedBookmarks,
     match: matchSecurityScopedBookmark,
     matchAndAccess: matchAndAccessSecurityScopedBookmark,
     access: accessSecurityScopedBookmark,
-    release: releaseSecurityScopedBookmark
+    release: releaseSecurityScopedBookmark,
+    bookmarks: mas_bookmarks
 }

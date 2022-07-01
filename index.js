@@ -3,6 +3,7 @@ var install_source = "website"; //"website" | "microsoftstore" | "macappstore"
 const {app, BrowserWindow, ipcMain, Menu, Tray, dialog, shell} = require('electron');
 const {networkInterfaces} = require('os');
 global.hostOS = require('os').platform();
+global.eApp = app;
 
 global.savingLogs = true;//prevent saving logs until log option is checked. never becomes false if logging is not enabled.
 global.pendingSave = false;
@@ -154,14 +155,14 @@ app.on('ready', function() {
 
     if (process.mas || true) {
         try {
-            mas_bookmarks = fs.readFileSync(path.join(app.getPath('userData'), "mas_bookmarks.json"), "utf8");
+            bookmarks.bookmarks = fs.readFileSync(path.join(app.getPath('userData'), "mas_bookmarks.json"), "utf8");
         } catch(error) {
-            mas_bookmarks = "{}"
+            bookmarks.bookmarks = "{}"
         }
         try {
-            mas_bookmarks = JSON.parse(mas_bookmarks);
+            bookmarks.bookmarks = JSON.parse(bookmarks.bookmarks);
         } catch(error) {
-            mas_bookmarks = {};
+            bookmarks.bookmarks = {};
         }
     }
 
@@ -237,7 +238,7 @@ ipcMain.handle('showPicker', async (event, arg) => {
         securityScopedBookmarks: true
     });
     if (result.filePaths && result.filePaths.length > 0 && result.bookmarks && result.bookmarks.length > 0) {
-        addToSecurityScopedBookmarks(result.filePaths[0], result.bookmarks[0]);//Will only be called in mas build
+        bookmarks.add(result.filePaths[0], result.bookmarks[0]);//Will only be called in mas build
     }
     return result.filePaths;
 });
@@ -438,12 +439,11 @@ function startServers() {
                     running_servers.push(this_server);
                     return;
                 }
-                if (typeof serverconfig.plugin == 'string') {
+                //serverconfig.plugin = plugins.importPlugin("C:\\Users\\ethan\\Desktop\\test-plugin", serverconfig.plugin);
+                if (Array.isArray(serverconfig.plugin)) {
                     try {
-                        this_server.plugin = plugins.registerPlugin(this_server);
-                        if (typeof this_server.plugin.functions.onStart == 'function') {
-                            this_server.plugin.functions.onStart(server);
-                        }
+                        this_server.plugin = plugins.registerPlugins(this_server);
+                        this_server.plugin.functions.onStart(server);
                     } catch(e) {
                         console.warn('error setting up plugin', e);
                         this_server.state = "error";
@@ -453,7 +453,7 @@ function startServers() {
                     }
                 }
                 server.on('request', function(req, res) {
-                    if (this_server.plugin && typeof this_server.plugin.functions.onRequest == 'function') {
+                    if (Array.isArray(serverconfig.plugin)) {
                         var prevented = false;
                         try {
                             this_server.plugin.functions.onRequest(req, res, function() {prevented = true});
