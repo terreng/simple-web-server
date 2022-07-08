@@ -89,6 +89,7 @@ function deleteFolder(folder) {
             }
             fs.unlinkSync(curSource);
         }
+        fs.rmdirSync(folder);
     }
 }
 
