@@ -27,6 +27,9 @@ global.bookmarks = require('./bookmarks.js');
 global.plugins = require('./plugin.js');
 WSC = require("./WSC.js");
 
+global.plugin = plugins.getInstalledPlugins();
+//console.log(global.plugin);
+
 console = function(old_console) {
     var new_console = {
         logs: [],
@@ -439,9 +442,7 @@ function startServers() {
                     running_servers.push(this_server);
                     return;
                 }
-                serverconfig.plugin = plugins.importPlugin("C:\\Users\\ethan\\Desktop\\test-plugin", serverconfig.plugin);
-                console.log(serverconfig.plugin)
-                if (Array.isArray(serverconfig.plugin)) {
+                if (serverconfig.plugin) {
                     try {
                         this_server.plugin = plugins.registerPlugins(this_server);
                         this_server.plugin.functions.onStart(server, serverconfig.plugin);
@@ -454,7 +455,7 @@ function startServers() {
                     }
                 }
                 server.on('request', function(req, res) {
-                    if (Array.isArray(serverconfig.plugin)) {
+                    if (serverconfig.plugin) {
                         var prevented = false;
                         try {
                             this_server.plugin.functions.onRequest(req, res, function() {prevented = true}, serverconfig.plugin);

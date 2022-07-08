@@ -2,16 +2,21 @@
 function registerPlugins(data) {
 	var config = data.config.plugin;
     var functions = [];
-    for (var i=0; i<config.length; i++) {
-        var path = global.path.join(eApp.getPath('userData'), "plugins", config[i].id);
-        var fs = new WSC.FileSystem(path); //no point in catching it if we're just going to throw it again.
-        var manifest = JSON.parse(fs.getByPath('/manifest.json').text());
-        //addOptionsToUI(manifest.options, manifest.id);
-        if (!path.endsWith('/')) path+='/';
-        //console.log(path+manifest.script)
-        functions.push([require(path+manifest.script), manifest.id]);
-        // note - server will need to restart to load changes in plugin
-        
+    for (var k in config) {
+        console.log(config[k], k);
+        if (!config[k].enabled) continue;
+        try {
+            var path = global.path.join(eApp.getPath('userData'), "plugins", k);
+            var fs = new WSC.FileSystem(path); //no point in catching it if we're just going to throw it again.
+            var manifest = JSON.parse(fs.getByPath('/manifest.json').text());
+            //addOptionsToUI(manifest.options, manifest.id);
+            if (!path.endsWith('/')) path+='/';
+            //console.log(path+manifest.script)
+            functions.push([require(path+manifest.script), manifest.id]);
+            // note - server will need to restart to load changes in plugin
+        } catch(e) {
+            console.warn('error registering plugin', e);
+        }
     }
     
 	return {
@@ -21,14 +26,7 @@ function registerPlugins(data) {
             onStart: function(s, settings) {
                 for (var i=0; i<functions.length; i++) {
                     if (typeof functions[i][0].onStart == 'function') {
-                        var set;
-                        for (var i=0; i<settings.length; i++) {
-                            if (settings[i].id === functions[i][1]) {
-                                set = settings[i].config;
-                                break;
-                            }
-                        }
-                        functions[i][0].onStart(s, set);
+                        functions[i][0].onStart(s, settings[functions[i][1]]);
                     }
                 }
             },
@@ -37,14 +35,7 @@ function registerPlugins(data) {
                 var d = function() {e=true;}
                 for (var i=0; i<functions.length; i++) {
                     if (typeof functions[i][0].onRequest == 'function') {
-                        var set;
-                        for (var i=0; i<settings.length; i++) {
-                            if (settings[i].id === functions[i][1]) {
-                                set = settings[i].config;
-                                break;
-                            }
-                        }
-                        functions[i][0].onRequest(a, b, set, d);
+                        functions[i][0].onRequest(a, b, settings[functions[i][1]], d);
                         if (e) {
                             c();
                             break;
@@ -101,49 +92,67 @@ function deleteFolder(folder) {
     }
 }
 
-function importPlugin(path, config) {
+function getPluginInfo(id) {
+    var path = global.path.join(eApp.getPath('userData'), "plugins", id);
+    var fs = new WSC.FileSystem(path);
+    var manifest = JSON.parse(fs.getByPath('/manifest.json').text());
+    if (!manifest.id||!manifest.script||!manifest.name) throw new Error('not a valid plugin');
+    return manifest;
+}
+
+function importPlugin(path) {
     var fs = new WSC.FileSystem(path); //easiest way to verify entered directory is a directory
     var manifest = JSON.parse(fs.getByPath('/manifest.json').text());
     if (!manifest.id||!manifest.script||!manifest.name) throw new Error('not a valid plugin');
-    if (!config) config = [];
-    var inListAlready = false;
-    for (var i=0; i<config.length; i++) {
-        if (config[i].id === manifest.id) {
-            inListAlready = true;
-            break;
-        }
+    if (!global.fs.existsSync(global.path.join(eApp.getPath('userData'), "plugins"))) {
+        global.fs.mkdirSync(global.path.join(eApp.getPath('userData'), "plugins"));
     }
     if (global.fs.existsSync(global.path.join(eApp.getPath('userData'), "plugins", manifest.id))) {
         deleteFolder(global.path.join(eApp.getPath('userData'), "plugins", manifest.id));
     }
-    if (!global.fs.existsSync(global.path.join(eApp.getPath('userData'), "plugins"))) {
-        global.fs.mkdirSync(global.path.join(eApp.getPath('userData'), "plugins"));
-    }
     copyFolderRecursiveSync(path, global.path.join(eApp.getPath('userData'), "plugins", manifest.id));
-    if (!inListAlready) config.push({id:manifest.id, config:[]});
-    return config;
 }
 
-function removePlugin(id, serverConfig, config) {
-    for (var i=0; i<config.length; i++) {
-        if (config[i].id === id) {
-            config.splice(i, 1);
-            break;
-        }
-    }
-    var usedOtherPlaces = false;
-    for (var j=0; j<serverConfig.plugin.length; j++) {
-        for (var i=0; i<serverConfig.plugin[j].length; i++) {
-            if (serverConfig.plugin[j][i].id === id) {
-                usedOtherPlaces = true;
-                break;
-            }
-        }
-    }
-    if (!usedOtherPlaces && fs.existsSync(global.path.join(eApp.getPath('userData'), "plugins", id))) {
+function removePlugin(id) {
+    if (fs.existsSync(global.path.join(eApp.getPath('userData'), "plugins", id))) {
         deleteFolder(path.join(eApp.getPath('userData'), "plugins", id));
     }
+}
+
+function getInstalledPlugins() {
+    var data = {};
+    var files;
+    try {
+        files = fs.readdirSync(global.path.join(eApp.getPath('userData'), "plugins"), {encoding: 'utf-8'});
+    } catch(e) {
+        console.warn(e);
+        return data;
+    }
+    for (var i=0; i<files.length; i++) {
+        try {
+            data[files[i]] = getPluginInfo(files[i]);
+        } catch(e) {
+            console.warn('could not import plugin '+files[i], e);
+            continue;
+        };
+    }
+    return data;
+}
+
+function activate(id, config) {
+    if (config[id]) {
+        config[id].enabled = true;
+    } else {
+        config[id] = {enabled:true};
+    }
     return config;
 }
 
-module.exports = {registerPlugins, importPlugin, removePlugin};
+function deActivate(id, config) {
+    if (config[id]) {
+        config[id].enabled = false;
+    }
+    return config;
+}
+
+module.exports = {registerPlugins, importPlugin, removePlugin, getInstalledPlugins, activate, deActivate};
