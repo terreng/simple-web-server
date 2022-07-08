@@ -8,7 +8,7 @@ function registerPlugins(data) {
         try {
             var path = global.path.join(eApp.getPath('userData'), "plugins", k);
             var fs = new WSC.FileSystem(path); //no point in catching it if we're just going to throw it again.
-            var manifest = JSON.parse(fs.getByPath('/manifest.json').text());
+            var manifest = JSON.parse(fs.getByPath('/plugin.json').text());
             //addOptionsToUI(manifest.options, manifest.id);
             if (!path.endsWith('/')) path+='/';
             //console.log(path+manifest.script)
@@ -96,14 +96,14 @@ function deleteFolder(folder) {
 function getPluginInfo(id) {
     var path = global.path.join(eApp.getPath('userData'), "plugins", id);
     var fs = new WSC.FileSystem(path);
-    var manifest = JSON.parse(fs.getByPath('/manifest.json').text());
+    var manifest = JSON.parse(fs.getByPath('/plugin.json').text());
     if (!manifest.id||!manifest.script||!manifest.name) throw new Error('not a valid plugin');
     return manifest;
 }
 
 function importPlugin(path) {
     var fs = new WSC.FileSystem(path); //easiest way to verify entered directory is a directory
-    var manifest = JSON.parse(fs.getByPath('/manifest.json').text());
+    var manifest = JSON.parse(fs.getByPath('/plugin.json').text());
     if (!manifest.id||!manifest.script||!manifest.name) throw new Error('not a valid plugin');
     if (!global.fs.existsSync(global.path.join(eApp.getPath('userData'), "plugins"))) {
         global.fs.mkdirSync(global.path.join(eApp.getPath('userData'), "plugins"));
