@@ -1,5 +1,4 @@
-
-var MIMETYPES = {
+const MIMETYPES = {
     "123": "application/vnd.lotus-1-2-3", 
     "3dml": "text/vnd.in3d.3dml", 
     "3ds": "image/x-3ds", 
@@ -988,16 +987,16 @@ var MIMETYPES = {
     "zirz": "application/vnd.zul", 
     "zmm": "application/vnd.handheld-entertainment+xml"
 };
-var MIMECATEGORIES = {'video':[],'audio':[]}
-for (var key in MIMETYPES) {
-    var category = MIMETYPES[key].split('/')[0]
-    if (! MIMECATEGORIES[category]) {
-        MIMECATEGORIES[category] = [ ]
+const MIMECATEGORIES = {'video':[],'audio':[]}
+for (const key in MIMETYPES) {
+    const category = MIMETYPES[key].split('/')[0];
+    if (!MIMECATEGORIES[category]) {
+        MIMECATEGORIES[category] = [];
     }
-    MIMECATEGORIES[category].push(key)
+    MIMECATEGORIES[category].push(key);
 }
 
-var HTTPRESPONSES = {
+const HTTPRESPONSES = {
     "200": "OK", 
     "201": "Created", 
     "202": "Accepted", 

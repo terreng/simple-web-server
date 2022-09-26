@@ -2,7 +2,7 @@ module.exports = {
     onRequest: function(serverconfig, req, res, FileSystem) {
         WSC.transformRequest(req, res, serverconfig, function(requestApp) {
             if (['GET','HEAD','PUT','POST','DELETE','OPTIONS'].includes(requestApp.request.method)) {
-                const handler = new WSC.DirectoryEntryHandler(FileSystem, requestApp.request, requestApp.app, req, res);
+                const handler = new WSC.DirectoryEntryHandler(FileSystem, requestApp.request, requestApp.app.opts, req, res);
                 handler.tryHandle();
             } else {
                 res.statusCode = 501;

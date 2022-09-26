@@ -4,6 +4,7 @@ WSC.FileSystem = require('./WSC/FileSystem.js');
 WSC.createCrypto = require('./WSC/crypto.js');
 WSC.utils = require('./WSC/utils.js');
 WSC.httpRequest = require('./WSC/httpRequest.js');
+WSC.htaccess = require('./WSC/htaccess.js');
 
 const a = require('./WSC/translator.js');
 WSC.onRequest = a.onRequest;
@@ -15,9 +16,7 @@ WSC.MIMETYPES = mime.MIMETYPES;
 WSC.MIMECATEGORIES = mime.MIMECATEGORIES;
 WSC.HTTPRESPONSES = mime.HTTPRESPONSES;
 
-const handlers = require('./WSC/handlers.js');
-WSC.DirectoryEntryHandler = handlers.DirectoryEntryHandler;
-WSC.BaseHandler = handlers.BaseHandler;
+WSC.DirectoryEntryHandler = require('./WSC/handlers.js');
 
 const main_fs = new WSC.FileSystem(__dirname)
 WSC.template_data = global.fs.readFileSync(global.path.resolve(__dirname, "directory-listing-template.html"), "utf8");
