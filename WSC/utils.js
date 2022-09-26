@@ -81,5 +81,13 @@ module.exports = {
     stripOffFile: function(origpath) {
         if (origpath === '/') return '/';
         return origpath.substring(0, origpath.length - origpath.split('/').pop().length);
-    }
+    },
+    isHidden: function(path) {
+        //RegExp from https://stackoverflow.com/questions/18973655/how-to-ignore-hidden-files-in-fs-readdir-result/37030655#37030655
+        const a = path.split('/');
+        for (var i=0; i<a.length; i++) {
+            if ((/(^|\/)\.[^\/\.]/g).test(a[i])) return true;
+        }
+        return false;
+    }(path);
 }
