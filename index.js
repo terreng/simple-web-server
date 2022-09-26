@@ -2,6 +2,8 @@ var version = 1001004;
 var install_source = "website"; //"website" | "microsoftstore" | "macappstore"
 const {app, BrowserWindow, ipcMain, Menu, Tray, dialog, shell} = require('electron');
 const {networkInterfaces} = require('os');
+global.hostOS = require('os').platform();
+global.eApp = app;
 
 global.savingLogs = true;//prevent saving logs until log option is checked. never becomes false if logging is not enabled.
 global.pendingSave = false;
@@ -21,7 +23,8 @@ const {pipeline} = require('stream');
 var path = global.path;
 global.pipeline = pipeline;
 
-WSC = require("./WSC.js");
+global.bookmarks = require('./bookmarks.js');
+global.WSC = require("./WSC.js");
 
 console = function(old_console) {
     var new_console = {
@@ -118,7 +121,6 @@ function getIPs() {
 
 let mainWindow;
 var config = {};
-var mas_bookmarks = {};
 
 if (!process.mas && !app.requestSingleInstanceLock()) {
     app.quit();
@@ -152,14 +154,14 @@ app.on('ready', function() {
 
     if (process.mas || true) {
         try {
-            mas_bookmarks = fs.readFileSync(path.join(app.getPath('userData'), "mas_bookmarks.json"), "utf8");
+            bookmarks.bookmarks = fs.readFileSync(path.join(app.getPath('userData'), "mas_bookmarks.json"), "utf8");
         } catch(error) {
-            mas_bookmarks = "{}"
+            bookmarks.bookmarks = "{}"
         }
         try {
-            mas_bookmarks = JSON.parse(mas_bookmarks);
+            bookmarks.bookmarks = JSON.parse(bookmarks.bookmarks);
         } catch(error) {
-            mas_bookmarks = {};
+            bookmarks.bookmarks = {};
         }
     }
 
@@ -235,82 +237,10 @@ ipcMain.handle('showPicker', async (event, arg) => {
         securityScopedBookmarks: true
     });
     if (result.filePaths && result.filePaths.length > 0 && result.bookmarks && result.bookmarks.length > 0) {
-        addToSecurityScopedBookmarks(result.filePaths[0], result.bookmarks[0]);//Will only be called in mas build
+        bookmarks.add(result.filePaths[0], result.bookmarks[0]);//Will only be called in mas build
     }
     return result.filePaths;
 });
-
-function addToSecurityScopedBookmarks(filepath, bookmark) {
-    if (bookmark && bookmark.length > 0) {
-        mas_bookmarks[filepath] = {"bookmark": bookmark};
-        fs.writeFile(path.join(app.getPath('userData'), "mas_bookmarks.json"), JSON.stringify(mas_bookmarks, null, 2), "utf8", function(err) {
-            if (err) {
-                console.error(err);
-            }
-        });
-    }
-}
-
-// Provide path, returns bookmark
-function matchSecurityScopedBookmark(filepath) {
-    var matching_bookmarks = Object.keys(mas_bookmarks).filter(function(a) {
-        return filepath.startsWith(a) && (filepath.length == a.length || ["/","\\"].indexOf(filepath.substring(a.length,a.length+1)) > -1);
-    });
-    if (matching_bookmarks.length > 0) {
-        var longest_matching_bookmark = matching_bookmarks.reduce(function(a, b) {return a.length > b.length ? a : b;});
-        return mas_bookmarks[longest_matching_bookmark].bookmark;
-    } else {
-        return null;
-    }
-}
-
-// Provide path, accesses and then returns bookmark
-function matchAndAccessSecurityScopedBookmark(filepath) {
-    var bookmark = matchSecurityScopedBookmark(filepath);
-    accessSecurityScopedBookmark(bookmark);
-    return bookmark;
-}
-
-var in_use_mas_bookmarks = {};
-
-// Accesses bookmark
-function accessSecurityScopedBookmark(bookmark) {
-    if (!bookmark) {
-        return;
-    }
-    if (in_use_mas_bookmarks[bookmark]) {
-        in_use_mas_bookmarks[bookmark].count++;
-    } else {
-        var stopAccessing = app.startAccessingSecurityScopedResource(bookmark);
-        in_use_mas_bookmarks[bookmark] = {
-            count: 1,
-            stopAccessing: stopAccessing
-        };
-    }
-}
-
-// Release bookmark
-function releaseSecurityScopedBookmark(bookmark) {
-    if (!bookmark) {
-        return;
-    }
-    if (in_use_mas_bookmarks[bookmark]) {
-        in_use_mas_bookmarks[bookmark].count--;
-        if (in_use_mas_bookmarks[bookmark].count == 0) {
-            in_use_mas_bookmarks[bookmark].stopAccessing();
-            delete in_use_mas_bookmarks[bookmark];
-        }
-    } else {
-        throw new Error("Attempting to release security scoped bookmark that wasn't accessed");
-    }
-}
-
-global.bookmarks = {
-    match: matchSecurityScopedBookmark,
-    matchAndAccess: matchAndAccessSecurityScopedBookmark,
-    access: accessSecurityScopedBookmark,
-    release: releaseSecurityScopedBookmark
-}
 
 ipcMain.handle('generateCrypto', async (event, arg) => {
     return WSC.createCrypto();

@@ -112,7 +112,7 @@ class httpRequest {
             })
         } else {
             if (!this.savePath.startsWith('/')) {
-                this.savePath = WSC.utils.relativePath(this.savePath, WSC.utils.stripOffFile(this.handler.request.origpath));
+                this.savePath = WSC.utils.relativePath(WSC.utils.stripOffFile(this.handler.request.origpath), this.savePath);
             }
             const writeStream = this.handler.fs.createWriteStream(this.savePath);
             writeStream.on('error', this.error.bind(this));

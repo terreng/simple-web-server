@@ -51,7 +51,7 @@ module.exports = {
         if (index) pathArr.push('');
         return pathArr.includes(file) ? 'index' : file;
     },
-    relativePath: function(reqPath, curPath) {
+    relativePath: function(curPath, reqPath) {
         let endWSlash = false;
         if (reqPath.endsWith('/')) {
             endWSlash = true;
@@ -89,5 +89,5 @@ module.exports = {
             if ((/(^|\/)\.[^\/\.]/g).test(a[i])) return true;
         }
         return false;
-    }(path);
+    }
 }

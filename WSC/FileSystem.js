@@ -22,7 +22,7 @@ class getByPath {
         }
         this.origpath = path.replace(/\/\//g, '/');
         this.fullPath = this.origpath;
-        this.path = this.fs.mainPath + WSC.utils.relativePath(path, '').replace(/\/\//g, '/');
+        this.path = this.fs.mainPath + WSC.utils.relativePath('', path).replace(/\/\//g, '/');
         if (typeof callback !== 'function') callback=function(){};
         this.callback = callback;
     }
@@ -215,14 +215,14 @@ class FileSystem {
     // TODO - No callbacks
     getByPath(path, cb) {
         path = path.replace(/\/\//g, '/').replace(/\\/g, '/');
-        const entry = new getByPath(path, callback, this);
+        const entry = new getByPath(path, cb, this);
         return entry.getFile();
     }
-    writeFile(path, data, callback, allowOverWrite) {
+    writeFile(path, data, cb, allowOverWrite) {
         if (!Buffer.isBuffer(data)) {
             data = Buffer.from(data);
         }
-        path = WSC.utils.relativePath(path, '');
+        path = WSC.utils.relativePath('', path);
         const origpath = path;
         path = this.mainPath + path;
         path = path.replace(/\/\//g, '/').replace(/\\/g, '/');
@@ -246,35 +246,35 @@ class FileSystem {
                 fs.writeFileSync(path, data);
             } catch(err) {
                 bookmarks.release(bm);
-                callback({error: err, success: false});
+                cb({error: err, success: false});
                 return;
             }
             bookmarks.release(bm);
-            callback({error: false, success: true});
+            cb({error: false, success: true});
         } else if (!error && allowOverWrite) {
             try {
                 fs.unlinkSync(path);
             } catch(err) {
                 bookmarks.release(bm);
-                callback({error: err, success: false});
+                cb({error: err, success: false});
                 return;
             }
             try {
                 fs.writeFileSync(path, data);
             } catch(err) {
                 bookmarks.release(bm);
-                callback({error: err, success: false});
+                cb({error: err, success: false});
                 return;
             }
             bookmarks.release(bm);
-            callback({error: false, success: true});
+            cb({error: false, success: true});
         } else {
             bookmarks.release(bm);
-            callback({error: error, success: false});
+            cb({error: error, success: false});
         }
     }
     createWriteStream(path) {
-        path = WSC.utils.relativePath(path, '');
+        path = WSC.utils.relativePath('', path);
         path = this.mainPath + path;
         path = path.replace(/\/\//g, '/').replace(/\\/g, '/');
         const folder = WSC.utils.stripOffFile(path);
@@ -297,7 +297,7 @@ class FileSystem {
         return stream;
     }
     createReadStream(path, opts) {
-        path = WSC.utils.relativePath(path, '');
+        path = WSC.utils.relativePath('', path);
         path = this.mainPath + path;
         path = path.replace(/\/\//g, '/').replace(/\\/g, '/');
         const bm = bookmarks.matchAndAccess(path);

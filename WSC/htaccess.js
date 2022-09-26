@@ -34,15 +34,15 @@ module.exports = {
             data.dir_to_send = './';
         }
         let path2Send = data.dir_to_send;
-        const finalpath = WSC.utils.stripOffFile(this.request.origpath);
-        const path2Send = WSC.utils.relativePath(finalpath, path2Send);
+        let finalpath = WSC.utils.stripOffFile(this.request.origpath);
+        path2Send = WSC.utils.relativePath(finalpath, path2Send);
         
         const results = this.fs.getByPath(path2Send).getDirContents();
         if (results.error) {
             this.error('', ((results.error.code === 'EPERM')?403:500));
             return;
         }
-        const finalpath = WSC.utils.stripOffFile(this.request.origpath) + data.original_request_path;
+        finalpath = WSC.utils.stripOffFile(this.request.origpath) + data.original_request_path;
         const file = this.fs.getByPath(finalpath);
         if (file.error || !file.isFile) {
             if (file.error) {
@@ -52,7 +52,6 @@ module.exports = {
             }
             return;
         }
-        const data = file.text();
         const html = [entry.text()];
         for (var w=0; w<results.length; w++) {
             const rawname = results[w].name.replaceAll('\\', '\\\\').replaceAll('"', '\\"');
@@ -89,11 +88,11 @@ module.exports = {
         if (!versionData[vdata4]) {
             vdata4 = data.default;
         }
-        let vdataa = versionData[vdata4];
+        let vdataa = versionData[vdata4.toString()];
         const finalpath = WSC.utils.stripOffFile(this.request.origpath);
+        console.log(finalpath, vdataa);
         vdataa = WSC.utils.relativePath(finalpath, vdataa);
         
-        //console.log(vdataa)
         const file = this.fs.getByPath(vdataa);
         if (file && !file.error) {
             this.request.path = vdataa;
@@ -142,7 +141,7 @@ module.exports = {
                     global.cachedFiles = [];
                 }
                 const requireFile = function(path) {
-                    const path = res.fs.mainPath + WSC.utils.relativePath(path, WSC.utils.stripOffFile(res.request.origpath));
+                    path = res.fs.mainPath + WSC.utils.relativePath(WSC.utils.stripOffFile(res.request.origpath), path);
                     if (!global.cachedFiles.includes(path)) {
                         global.cachedFiles.push(path);
                     }

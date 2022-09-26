@@ -194,15 +194,15 @@ class DirectoryEntryHandler {
         if (this[this.request.method.toLowerCase()]) {
             try {
                 const a = this[this.request.method.toLowerCase()]();
-                if (typeof a.catch === 'function') {
+                if (a && typeof a.catch === 'function') {
                     a.catch((e) => {
                         this.error("Something went wrong", 500);
                         if (e) console.warn('error: ', e);
                     })
                 }
             } catch(e) {
-                this.error("Something went wrong", 500);
                 if (e) console.warn('Error: ', e);
+                this.error("Something went wrong", 500);
             }
         } else {
             this.writeHeaders(501);
@@ -373,7 +373,7 @@ class DirectoryEntryHandler {
             this.error('', 404);
             return;
         }
-        const data = file.text();
+        let data = file.text();
         let origdata;
         try {
             origdata = JSON.parse(data);
@@ -484,7 +484,7 @@ class DirectoryEntryHandler {
             global.cachedFiles = [];
         }
         const requireFile = function(path) {
-            path = res.fs.mainPath + WSC.utils.relativePath(path, WSC.utils.stripOffFile(res.request.origpath));
+            path = res.fs.mainPath + WSC.utils.relativePath(WSC.utils.stripOffFile(res.request.origpath), path);
             if (!global.cachedFiles.includes(path)) {
                 global.cachedFiles.push(path);
             }
@@ -1033,7 +1033,7 @@ class DirectoryEntryHandler {
     // everything from here to the end of the class are tools for server side post/get handling
     getFile(path, callback) {
         if (!path.startsWith('/')) {
-            path = WSC.utils.relativePath(path, WSC.utils.stripOffFile(this.request.origpath));
+            path = WSC.utils.relativePath(WSC.utils.stripOffFile(this.request.origpath), path);
         }
         if (!callback) return;
         callback(this.fs.getByPath(path)); //TODO - don't use callbacks
@@ -1045,7 +1045,7 @@ class DirectoryEntryHandler {
     }
     writeFile(path, data, allowReplaceFile, callback) {
         if (!path.startsWith('/')) {
-            path = WSC.utils.relativePath(path, WSC.utils.stripOffFile(this.request.origpath));
+            path = WSC.utils.relativePath(WSC.utils.stripOffFile(this.request.origpath), path);
         }
         if (!callback) {
             callback = function(){};
@@ -1059,7 +1059,7 @@ class DirectoryEntryHandler {
     }
     deleteFile(path, callback) {
         if (!path.startsWith('/')) {
-            path = WSC.utils.relativePath(path, WSC.utils.stripOffFile(this.request.origpath));
+            path = WSC.utils.relativePath(WSC.utils.stripOffFile(this.request.origpath), path);
         }
         if (!callback) {
             callback = function(){};
@@ -1130,7 +1130,7 @@ class DirectoryEntryHandler {
     }
     stream2File(path, allowOverWrite, callback) {
         if (!path.startsWith('/')) {
-            path = WSC.utils.relativePath(path, WSC.utils.stripOffFile(this.request.origpath));
+            path = WSC.utils.relativePath(WSC.utils.stripOffFile(this.request.origpath), path);
         }
         if (!callback) {
             callback = function(){};
