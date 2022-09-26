@@ -113,7 +113,7 @@ class DirectoryEntryHandler {
                 this.setHeader('content-type',type);
             }
         }
-        if (this.app.opts.cors) {
+        if (this.opts.cors) {
             this.setCORS();
         }
         this.headersWritten = true;
@@ -157,7 +157,7 @@ class DirectoryEntryHandler {
         if (!global.ConnetionS[this.request.ip] || global.ConnetionS[this.request.ip] < 0) {
             global.ConnetionS[this.request.ip] = 0;
         }
-        if (this.app.opts.ipThrottling && this.app.opts.ipThrottling !== 0 && global.ConnetionS[this.request.ip] > this.app.opts.ipThrottling) {
+        if (this.opts.ipThrottling && this.opts.ipThrottling !== 0 && global.ConnetionS[this.request.ip] > this.opts.ipThrottling) {
             this.error('', 429);
             return;
         }
@@ -210,7 +210,7 @@ class DirectoryEntryHandler {
         }
     }
     deletePutHtaccess(allow, deny, callback, callbackSkip) {
-        if (!this.app.opts.htaccess) {
+        if (!this.opts.htaccess) {
             callback();
             return;
         }
@@ -509,10 +509,10 @@ class DirectoryEntryHandler {
             return;
         }
         this.request.isVersioning = false;
-        if (typeof this.app.opts.cacheControl === 'string' && this.app.opts.cacheControl.trim() !== '') {
-            this.setHeader('cache-control',this.app.opts.cacheControl);
+        if (typeof this.opts.cacheControl === 'string' && this.opts.cacheControl.trim() !== '') {
+            this.setHeader('cache-control', this.opts.cacheControl);
         }
-        if (this.app.opts.excludeDotHtml && !this.request.origpath.endsWith("/") && this.request.path !== '') {
+        if (this.opts.excludeDotHtml && !this.request.origpath.endsWith("/") && this.request.path !== '') {
             const extension = this.request.path.split('.').pop();
             const more = this.request.uri.substring(0, this.request.path.origpath);
             if (['htm', 'html'].includes(extension)) {
@@ -538,7 +538,7 @@ class DirectoryEntryHandler {
         }
     }
     onEntryMain() {
-        if (this.app.opts.excludeDotHtml && this.request.path != '' && ! this.request.origpath.endsWith("/")) {
+        if (this.opts.excludeDotHtml && this.request.path != '' && ! this.request.origpath.endsWith("/")) {
             let file = this.fs.getByPath(this.request.origpath+'.html');
             if (!file.error && file.isFile) {
                 this.setHeader('content-type','text/html; charset=utf-8');
@@ -582,7 +582,7 @@ class DirectoryEntryHandler {
                 this.error('', ((results.error.code === 'EPERM')?403:500));
                 return;
             }
-            if (this.app.opts.showIndex) {
+            if (this.opts.showIndex) {
                 for (let i=0; i<results.length; i++) {
                     if (['index.xhtml', 'index.xhtm'].includes(results[i].name.toLowerCase())) {
                         this.setHeader('content-type','application/xhtml+xml; charset=utf-8');
@@ -595,7 +595,7 @@ class DirectoryEntryHandler {
                     }
                 }
             }
-            if (!this.app.opts.directoryListing) {
+            if (!this.opts.directoryListing) {
                 this.error("", 404);
             } else {
                 this.renderDirListing(results);
@@ -705,10 +705,10 @@ class DirectoryEntryHandler {
                 if (this.request.origpath.split('/').pop() === origdata[i].original_request_path || 
                     (['html', 'htm'].includes(origdata[i].original_request_path.split('.').pop()) && 
                      origdata[i].original_request_path.split('/').pop().split('.')[0] === this.request.origpath.split('/').pop() &&
-                     this.app.opts.excludeDotHtml) ||
+                     this.opts.excludeDotHtml) ||
                     (origdata[i].original_request_path.split('/').pop() === 'index.html' && 
                      this.request.origpath.endsWith('/') &&
-                     this.app.opts.showIndex)) {
+                     this.opts.showIndex)) {
                     data = origdata[i];
                     filefound = true;
                 }
@@ -776,14 +776,14 @@ class DirectoryEntryHandler {
         this.handleHtaccessRequest(data);
     }
     htaccessInit() {
-        if (this.app.opts.excludeDotHtml) {
+        if (this.opts.excludeDotHtml) {
             let file = this.fs.getByPath(this.request.origpath+'.html');
             if (!file.error) {
                 if (this.request.origpath.endsWith("/")) {
                     this.htaccessMain('');
                     return;
                 }
-                const filerequested = WSC.utils.htaccessFileRequested((this.request.path+'.html').split('/').pop(), this.app.opts.showIndex);
+                const filerequested = WSC.utils.htaccessFileRequested((this.request.path+'.html').split('/').pop(), this.opts.showIndex);
                 this.htaccessMain(filerequested);
                 return;
             }
@@ -793,7 +793,7 @@ class DirectoryEntryHandler {
                     this.htaccessMain('');
                     return;
                 }
-                const filerequested = WSC.utils.htaccessFileRequested((this.request.path+'.htm').split('/').pop(), this.app.opts.showIndex);
+                const filerequested = WSC.utils.htaccessFileRequested((this.request.path+'.htm').split('/').pop(), this.opts.showIndex);
                 this.htaccessMain(filerequested);
                 return;
             }
@@ -806,7 +806,7 @@ class DirectoryEntryHandler {
             this.finish();
             return;
         }
-        const filerequested = WSC.utils.htaccessFileRequested(this.request.origpath.split('/').pop(), this.app.opts.showIndex);
+        const filerequested = WSC.utils.htaccessFileRequested(this.request.origpath.split('/').pop(), this.opts.showIndex);
         this.htaccessMain(filerequested);
     }
     renderFileContents(entry) {
@@ -920,7 +920,7 @@ class DirectoryEntryHandler {
         this.setHeader('content-type','application/json; charset=utf-8');
         let results = [];
         for (let i=0; i<origResults.length; i++) {
-            if (! origResults[i].hidden || (this.app.opts.hiddenDotFiles && this.app.opts.hiddenDotFilesDirectoryListing)) {
+            if (! origResults[i].hidden || (this.opts.hiddenDotFiles && this.opts.hiddenDotFilesDirectoryListing)) {
                 results.push(origResults[i]);
             }
         }
@@ -942,7 +942,7 @@ class DirectoryEntryHandler {
         results.sort(this.entriesSortFunc);
         for (let i=0; i<results.length; i++) {
             const name = results[i].name.htmlEscape();
-            if (!results[i].hidden || (this.app.opts.hiddenDotFiles && this.opts.hiddenDotFilesDirectoryListing)) {
+            if (!results[i].hidden || (this.opts.hiddenDotFiles && this.opts.hiddenDotFilesDirectoryListing)) {
                 if (results[i].isDirectory) {
                     html.push('<li class="directory"><a href="' + name + '/?static=1">' + name + '</a></li>');
                 } else {
@@ -958,7 +958,7 @@ class DirectoryEntryHandler {
             html.push('<script>onHasParentDirectory();</script>');
         }
         for (let i=0; i<results.length; i++) {
-            if (! results[i].hidden || (this.app.opts.hiddenDotFiles && this.app.opts.hiddenDotFilesDirectoryListing)) {
+            if (! results[i].hidden || (this.opts.hiddenDotFiles && this.opts.hiddenDotFilesDirectoryListing)) {
                 const rawname = results[i].name.replaceAll('\\', '\\\\').replaceAll('"', '\\"');
                 const name = encodeURIComponent(results[i].name).replaceAll('\\', '\\\\').replaceAll('"', '\\"');
                 const isdirectory = results[i].isDirectory;
@@ -987,7 +987,7 @@ class DirectoryEntryHandler {
             html.push('<script>onHasParentDirectory();</script>');
         }
         for (let i=0; i<results.length; i++) {
-            if (! results[i].hidden || (this.app.opts.hiddenDotFiles && this.app.opts.hiddenDotFilesDirectoryListing)) {
+            if (! results[i].hidden || (this.opts.hiddenDotFiles && this.opts.hiddenDotFilesDirectoryListing)) {
                 const rawname = results[i].name.replaceAll('\\', '\\\\').replaceAll('"', '\\"');
                 const name = encodeURIComponent(results[i].name).replaceAll('\\', '\\\\').replaceAll('"', '\\"');
                 const isdirectory = results[i].isDirectory;
@@ -1016,7 +1016,7 @@ class DirectoryEntryHandler {
                 this.renderDirectoryListingStaticJs(results);
             } else if (this.request.arguments && ['1','true'].includes(this.request.arguments.js)) {
                 this.renderDirectoryListingTemplate(results);
-            } else if (this.app.opts.staticDirectoryListing) {
+            } else if (this.opts.staticDirectoryListing) {
                 this.renderDirectoryListing(results);
             } else {
                 this.renderDirectoryListingStaticJs(results);
