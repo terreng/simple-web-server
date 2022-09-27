@@ -24,7 +24,12 @@ var path = global.path;
 global.pipeline = pipeline;
 
 global.bookmarks = require('./bookmarks.js');
+global.plugins = require('./plugin.js');
+global.bookmarks = require('./bookmarks.js');
 global.WSC = require("./WSC.js");
+
+global.plugin = plugins.getInstalledPlugins();
+//console.log(global.plugin);
 
 console = function(old_console) {
     var new_console = {
@@ -168,8 +173,8 @@ app.on('ready', function() {
     if (config.tray) {
         global.tray = new Tray(path.join(__dirname, "images/icon.ico"))
         const contextMenu = Menu.buildFromTemplate([
-          { label: 'Show', click:  function(){ if (mainWindow) {mainWindow.show()} } },
-          { label: 'Exit', click:  function(){ quit() } }
+            { label: 'Show', click:  function(){ if (mainWindow) {mainWindow.show()} } },
+            { label: 'Exit', click:  function(){ quit() } }
         ])
         global.tray.setToolTip('Simple Web Server')
         global.tray.setContextMenu(contextMenu)
@@ -186,7 +191,7 @@ app.on('ready', function() {
     }
 
     if (mainWindow == null) {
-    createWindow();
+        createWindow();
     }
     console.log("\n"+((new Date()).toLocaleString()+"\n"));
     startServers();
@@ -275,7 +280,6 @@ setInterval(function() {
 }, 5000) //every 5 seconds
 
 function createWindow() {
-
     mainWindow = new BrowserWindow({
         backgroundColor: '#ffffff',//TODO: adjust based on dark mode
         width: 420,
@@ -300,7 +304,7 @@ function createWindow() {
     mainWindow.loadFile('index.html');
 
     //mainWindow.webContents.openDevTools();
-    
+
     mainWindow.webContents.on('did-finish-load', function() {
         mainWindow.webContentsLoaded = true;
         lastIps = getIPs()
@@ -326,7 +330,6 @@ function createWindow() {
     mainWindow.on('closed', function () {
         mainWindow = null
     });
-
 }
 
 function updateServerStates() {
@@ -345,51 +348,48 @@ function updateServerStates() {
 var running_servers = [];
 
 function startServers() {
-
     if (running_servers.length > 0) {
+        var closed_servers = 0;
+        var need_close_servers = running_servers.length;
 
-    var closed_servers = 0;
-    var need_close_servers = running_servers.length;
-
-    for (var i = 0; i < running_servers.length; i++) {
-
-        var found_matching_config = false;
-        for (var e = 0; e < (config.servers || []).length; e++) {
-            if (configsEqual(config.servers[e], running_servers[i].config)) {
-                found_matching_config = true;
+        for (var i = 0; i < running_servers.length; i++) {
+            var found_matching_config = false;
+            for (var e = 0; e < (config.servers || []).length; e++) {
+                if (configsEqual(config.servers[e], running_servers[i].config)) {
+                    found_matching_config = true;
+                }
             }
-        }
 
-        if (found_matching_config) {
-            need_close_servers--;
-        } else {
-            running_servers[i].deleted = true;
-            console.log("["+(new Date()).toLocaleString()+'] Killing server on port ' + running_servers[i].config.port);
-            if (running_servers[i].server) {
-                running_servers[i].server.destroy(function() {
+            if (found_matching_config) {
+                need_close_servers--;
+            } else {
+                running_servers[i].deleted = true;
+                console.log("["+(new Date()).toLocaleString()+'] Killing server on port ' + running_servers[i].config.port);
+                if (running_servers[i].server) {
+                    running_servers[i].server.destroy(function() {
+                        closed_servers++;
+                        checkServersClosed();
+                    });
+                } else {
                     closed_servers++;
                     checkServersClosed();
-                });
-            } else {
-                closed_servers++;
-                checkServersClosed();
-            }
-        }
-    }
-
-    function checkServersClosed() {
-        for (var i = running_servers.length-1; i > -1; i--) {
-            if (running_servers[i].deleted) {
-                running_servers.splice(i, 1);
+                }
             }
         }
 
-        if (closed_servers == need_close_servers) {
-            createServers()
-        }
-    }
+        function checkServersClosed() {
+            for (var i = running_servers.length-1; i > -1; i--) {
+                if (running_servers[i].deleted) {
+                    running_servers.splice(i, 1);
+                }
+            }
 
-    checkServersClosed()
+            if (closed_servers == need_close_servers) {
+                createServers()
+            }
+        }
+
+        checkServersClosed()
 
     } else {
         createServers()
@@ -408,20 +408,22 @@ function startServers() {
                 }
             }
             if (serverconfig.enabled && !found_already_running) {
-                var this_server = {"config":serverconfig,"state":"starting"};
+                var this_server = {"config":serverconfig,"state":"starting","server":null,"plugin":null};
 
                 var hostname = serverconfig.localnetwork ? (serverconfig.ipv6 ? '::' : '0.0.0.0') : (serverconfig.ipv6 ? '::1' : '127.0.0.1');
+                let server;
                 try {
-                if (serverconfig.https) {
-                    if (!serverconfig.httpsKey || !serverconfig.httpsCert) {
-                        var crypto = WSC.createCrypto();
-                        var server = https.createServer({key: crypto.privateKey, cert: crypto.cert});
+                    if (serverconfig.https) {
+                        if (!serverconfig.httpsKey || !serverconfig.httpsCert) {
+                            console.log('Creating temp crypto');
+                            const crypto = WSC.createCrypto();
+                            server = https.createServer({key: crypto.privateKey, cert: crypto.cert});
+                        } else {
+                            server = https.createServer({key:  ('-----BEGIN RSA PRIVATE KEY-----'+serverconfig.httpsKey.split('-----BEGIN RSA PRIVATE KEY-----').pop().split('-----END RSA PRIVATE KEY-----')[0].replace(/ /g, '\r\n')+'-----END RSA PRIVATE KEY-----'), cert: ('-----BEGIN CERTIFICATE-----'+serverconfig.httpsCert.split('-----BEGIN CERTIFICATE-----').pop().split('-----END CERTIFICATE-----')[0].replace(/ /g, '\r\n')+'-----END CERTIFICATE-----')});
+                        }
                     } else {
-                        var server = https.createServer({key:  ('-----BEGIN RSA PRIVATE KEY-----'+config.servers[i].httpsKey.split('-----BEGIN RSA PRIVATE KEY-----').pop().split('-----END RSA PRIVATE KEY-----')[0].replace(/ /g, '\r\n')+'-----END RSA PRIVATE KEY-----'), cert: ('-----BEGIN CERTIFICATE-----'+config.servers[i].httpsCert.split('-----BEGIN CERTIFICATE-----').pop().split('-----END CERTIFICATE-----')[0].replace(/ /g, '\r\n')+'-----END CERTIFICATE-----')});
+                        var server = http.createServer();
                     }
-                } else {
-                    var server = http.createServer();
-                }
                 } catch(err) {
                     console.error(err);
                     this_server.state = "error";
@@ -430,26 +432,43 @@ function startServers() {
                     return;
                 }
                 this_server.server = server;
-                /*
-                if (serverconfig.proxy) {
-                    server.on('connect', (req, clientSocket, head) => {
-                        console.log(req.socket.remoteAddress + ':', 'Request',req.method, req.url)
-                        const { port, hostname } = new URL(`http://${url}`)
-                        const serverSocket = net.connect(port || 443, hostname, () => {
-							console.log('a')
-                            clientSocket.write('HTTP/1.1 200 Connection Established\r\n' +
-                                               'Proxy-agent: Simple-Web-Server-Proxy\r\n' +
-                                               '\r\n')
-                            serverSocket.write(head)
-                            serverSocket.pipe(clientSocket)
-                            clientSocket.pipe(serverSocket)
-                        })
-                    })
+
+                try {
+                    this_server.FileSystem = new WSC.FileSystem(serverconfig.path);
+                } catch(e) {
+                    console.warn("Error setting up FileSystem for path "+serverconfig.path, e);
+                    this_server.state = "error";
+                    this_server.error_message = "FS error";
+                    running_servers.push(this_server);
+                    return;
                 }
-                */
-                var FileSystem = new WSC.FileSystem(serverconfig.path);
+                if (serverconfig.plugin) {
+                    try {
+                        this_server.plugin = plugins.registerPlugins(this_server);
+                        this_server.plugin.functions.onStart(server, serverconfig.plugin);
+                    } catch(e) {
+                        console.warn('Error setting up plugin', e);
+                        this_server.state = "error";
+                        this_server.error_message = "Error Regestering plugin";
+                        running_servers.push(this_server);
+                        return;
+                    }
+                }
+
                 server.on('request', function(req, res) {
-                    WSC.onRequest(serverconfig, req, res, FileSystem);
+                    if (serverconfig.plugin) {
+                        var prevented = false;
+                        try {
+                            this_server.plugin.functions.onRequest(req, res, function() {prevented = true}, serverconfig.plugin);
+                        } catch(e) {
+                            console.log('plugin error', e);
+                            res.statusCode = 500;
+                            res.end('plugin error');
+                            return;
+                        }
+                        if (prevented) return; //todo, also check if response has been written
+                    }
+                    WSC.onRequest(serverconfig, req, res, this_server.FileSystem);
                 });
                 server.on('clientError', function (err, socket) {
                     if (err.code === 'ECONNRESET' || !socket.writable) {
@@ -534,12 +553,12 @@ function checkForUpdates() {
                 console.log("["+(new Date()).toLocaleString()+"] Update check failed (status code "+res.statusCode+")");
             }
         })
-        
+
         req.on('error', function(error) {
             console.log("["+(new Date()).toLocaleString()+"] Update check failed");
             console.log(error)
         })
-        
+
         req.end();
     } else {
         last_update_check_skipped = true;
