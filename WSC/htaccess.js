@@ -53,7 +53,7 @@ module.exports = {
             return;
         }
         const html = [entry.text()];
-        for (var w=0; w<results.length; w++) {
+        for (let w=0; w<results.length; w++) {
             const rawname = results[w].name.replaceAll('\\', '\\\\').replaceAll('"', '\\"');
             const name = encodeURIComponent(results[w].name).replaceAll('\\', '\\\\').replaceAll('"', '\\"');
             const isdirectory = results[w].isDirectory;

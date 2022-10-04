@@ -58,7 +58,7 @@ module.exports = {
         }
         let split1 = curPath.split('/');
         let split2 = reqPath.split('/');
-        for (var w=0; w<split2.length; w++) {
+        for (let w=0; w<split2.length; w++) {
             if (['', '.'].includes(split2[w])) {
                 // . means current directory. Leave this here for spacing
             } else if (split2[w] === '..') {
@@ -85,7 +85,7 @@ module.exports = {
     isHidden: function(path) {
         //RegExp from https://stackoverflow.com/questions/18973655/how-to-ignore-hidden-files-in-fs-readdir-result/37030655#37030655
         const a = path.split('/');
-        for (var i=0; i<a.length; i++) {
+        for (let i=0; i<a.length; i++) {
             if ((/(^|\/)\.[^\/\.]/g).test(a[i])) return true;
         }
         return false;

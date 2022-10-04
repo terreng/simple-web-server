@@ -9,7 +9,7 @@ module.exports = function() {
     cert.validity.notBefore = new Date();
     cert.validity.notAfter = new Date();
     cert.validity.notAfter.setFullYear(cert.validity.notBefore.getFullYear() + 10);
-    var attrs = [{
+    let attrs = [{
         name: 'commonName',
         value: cn
     }, {

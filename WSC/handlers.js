@@ -538,7 +538,7 @@ class DirectoryEntryHandler {
         }
     }
     onEntryMain() {
-        if (this.opts.excludeDotHtml && this.request.path != '' && ! this.request.origpath.endsWith("/")) {
+        if (this.opts.excludeDotHtml && this.request.path !== '' && ! this.request.origpath.endsWith("/")) {
             let file = this.fs.getByPath(this.request.origpath+'.html');
             if (!file.error && file.isFile) {
                 this.setHeader('content-type','text/html; charset=utf-8');
@@ -757,7 +757,7 @@ class DirectoryEntryHandler {
             let validAuth = false;
             const authHeader = this.request.headers['authorization'];
             if (authHeader) {
-                if (authHeader.slice(0,6).toLowerCase() == 'basic ') {
+                if (authHeader.slice(0,6).toLowerCase() === 'basic ') {
                     const userpass = atob(authHeader.slice(6, authHeader.length)).split(':');
                     if (userpass[0] === authdata.username && userpass[1] === authdata.password) {
                         validAuth = true;
@@ -1091,7 +1091,7 @@ class DirectoryEntryHandler {
                                "text/vnd.wap.wml",
                                "application/javascript",
                                "application/rss+xml"]
-        if (type.split('chartset=').length != 1 && default_types.includes(type)) {
+        if (type.split('chartset=').length !== 1 && default_types.includes(type)) {
             type = type + '; charset=utf-8';
         }
         this.setHeader('content-type', type);

@@ -47,7 +47,7 @@ class getByPath {
                     err = {};
                     err.path = error.path.replace(/\\/g, '/').replace(/\/\//g, '/');
                     if (error.path.endsWith('/')) {
-                        var split = err.path.split('/');
+                        let split = err.path.split('/');
                         err.name = split[split.length-1];
                     } else {
                         err.name = err.path.split('/').pop();
@@ -181,7 +181,7 @@ class getByPath {
         }
         bookmarks.release(bm);
         let results = [];
-        for (var i=0; i<files.length; i++) {
+        for (let i=0; i<files.length; i++) {
             const file = new getByPath(this.origpath + '/' + files[i], null, this.fs);
             file.name = files[i];
             results.push(file.getFile());

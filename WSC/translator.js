@@ -41,7 +41,7 @@ module.exports = {
                             if (ct.startsWith('application/x-www-form-urlencoded')) {
                                 const charset_i = ct.indexOf('charset=');
                                 let charset;
-                                if (charset_i != -1) {
+                                if (charset_i !== -1) {
                                     charset = ct.slice(charset_i + 'charset='.length, ct.length);
                                     //console.log('using charset', charset);
                                 } else {
@@ -50,7 +50,7 @@ module.exports = {
                                 const bodydata = curRequest.body.toString(charset);
                                 let bodyparams = {};
                                 const items = bodydata.split('&');
-                                for (var i=0; i<items.length; i++) {
+                                for (let i=0; i<items.length; i++) {
                                     const kv = items[i].replaceAll(/\+/g, ' ').split('=');
                                     bodyparams[decodeURIComponent(kv[0])] = decodeURIComponent(kv[1]);
                                 }
@@ -80,13 +80,13 @@ module.exports = {
             consumedRequest: false,
             arguments: {}
         }
-        var idx = rv.uri.indexOf('?');
+        let idx = rv.uri.indexOf('?');
         if (idx !== -1) {
             rv.path = decodeURIComponent(rv.uri.slice(0,idx));
             const s = rv.uri.slice(idx+1);
             const parts = s.split('&');
 
-            for (var i=0; i<parts.length; i++) {
+            for (let i=0; i<parts.length; i++) {
                 const p = parts[i];
                 const idx2 = p.indexOf('=');
                 rv.arguments[decodeURIComponent(p.slice(0,idx2))] = decodeURIComponent(p.slice(idx2+1,s.length));

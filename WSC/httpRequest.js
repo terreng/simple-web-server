@@ -129,7 +129,7 @@ class httpRequest {
                         redirected: this.reDirected
                     }
                 }
-                if (typeof this.onload == 'function') this.onload(evt);
+                if (typeof this.onload === 'function') this.onload(evt);
             })
             
         }
@@ -154,7 +154,7 @@ class httpRequest {
 }
 
 function testHttpRequest() {
-    var request = new httpRequest()
+    let request = new httpRequest()
     request.onload = function(e) {
         console.log(e)
     }

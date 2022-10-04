@@ -1,13 +1,13 @@
 function registerPlugins(data) {
-    var config = data.config.plugin;
-    var functions = [];
-    for (var k in config) {
-        console.log(config[k], k);
+    let config = data.config.plugin;
+    let functions = [];
+    for (const k in config) {
+        //console.log(config[k], k);
         if (!config[k].enabled) continue;
         try {
-            var path = global.path.join(eApp.getPath('userData'), "plugins", k);
-            var fs = new WSC.FileSystem(path); //no point in catching it if we're just going to throw it again.
-            var manifest = JSON.parse(fs.getByPath('/plugin.json').text());
+            const path = global.path.join(eApp.getPath('userData'), "plugins", k);
+            const fs = new WSC.FileSystem(path); //no point in catching it if we're just going to throw it again.
+            const manifest = JSON.parse(fs.getByPath('/plugin.json').text());
             //addOptionsToUI(manifest.options, manifest.id);
             if (!path.endsWith('/')) path+='/';
             //console.log(path+manifest.script)
@@ -23,23 +23,18 @@ function registerPlugins(data) {
         manifest,
         functions: {
             onStart: function(s, settings) {
-                for (var i=0; i<functions.length; i++) {
-                    if (typeof functions[i][0].onStart == 'function') {
-                        functions[i][0].onStart(s, settings[functions[i][1]]);
-                    }
+                for (let i=0; i<functions.length; i++) {
+                    if (typeof functions[i][0].onStart !== 'function') continue;
+                    functions[i][0].onStart(s, settings[functions[i][1]]);
                 }
             },
-            onRequest: function(a, b, c, settings) {
-                var e = false;
-                var d = function() {e=true;}
-                for (var i=0; i<functions.length; i++) {
-                    if (typeof functions[i][0].onRequest == 'function') {
-                        functions[i][0].onRequest(a, b, settings[functions[i][1]], d);
-                        if (e) {
-                            c();
-                            break;
-                        }
-                    }
+            onRequest: function(req, res, pv, settings) {
+                let prevented = false;
+                let prvt = ()=>{prevented=true;}
+                for (let i=0; i<functions.length; i++) {
+                    if (typeof functions[i][0].onRequest !== 'function') continue;
+                    functions[i][0].onRequest(req, res, settings[functions[i][1]], prvt);
+                    if (prevented) pv();
                 }
             }
         }
@@ -47,62 +42,57 @@ function registerPlugins(data) {
 }
 //https://stackoverflow.com/questions/13786160/copy-folder-recursively-in-node-js
 function copyFileSync(source, target) {
-    var targetFile = target;
+    let targetFile = target;
     // If target is a directory, a new file with the same name will be created
     if (fs.existsSync(target)) {
         if (fs.lstatSync(target).isDirectory()) {
             targetFile = path.join(target, path.basename(source));
         }
     }
-    var bm = bookmarks.matchAndAccess(source);
+    const bm = bookmarks.matchAndAccess(source);
     fs.writeFileSync(targetFile, fs.readFileSync(source));
     bookmarks.release(bm);
 }
 
 function copyFolderRecursiveSync(source, targetFolder) {
     //console.log('copy', source, targetFolder);
-    var files = [];
     if (!fs.existsSync(targetFolder)) fs.mkdirSync(targetFolder);
-    if (fs.lstatSync(source).isDirectory()) {
-        files = fs.readdirSync(source);
-        for (var i=0; i<files.length; i++) {
-            var curSource = path.join(source, files[i]);
-            var bm = bookmarks.matchAndAccess(curSource);
-            if (fs.lstatSync(curSource).isDirectory()) {
-                copyFolderRecursiveSync(curSource, targetFolder);
-            } else {
-                copyFileSync(curSource, targetFolder);
-            }
-            bookmarks.release(bm);
+    if (!fs.lstatSync(source).isDirectory()) return;
+    let files = fs.readdirSync(source);
+    for (let i=0; i<files.length; i++) {
+        let curSource = path.join(source, files[i]);
+        const bm = bookmarks.matchAndAccess(curSource);
+        if (fs.lstatSync(curSource).isDirectory()) {
+            copyFolderRecursiveSync(curSource, targetFolder);
+        } else {
+            copyFileSync(curSource, targetFolder);
         }
+        bookmarks.release(bm);
     }
 }
 
 function deleteFolder(folder) {
-    if (fs.lstatSync(folder).isDirectory()) {
-        var files = fs.readdirSync(folder);
-        for (var i=0; i<files.length; i++) {
-            var curSource = path.join(folder, files[i]);
-            if (fs.lstatSync(curSource).isDirectory()) {
-                deleteFolder(curSource);
-            }
-            fs.unlinkSync(curSource);
-        }
-        fs.rmdirSync(folder);
+    if (!fs.lstatSync(folder).isDirectory()) return;
+    let files = fs.readdirSync(folder);
+    for (let i=0; i<files.length; i++) {
+        let curSource = path.join(folder, files[i]);
+        if (fs.lstatSync(curSource).isDirectory()) deleteFolder(curSource);
+        fs.unlinkSync(curSource);
     }
+    fs.rmdirSync(folder);
 }
 
 function getPluginInfo(id) {
-    var path = global.path.join(eApp.getPath('userData'), "plugins", id);
-    var fs = new WSC.FileSystem(path);
-    var manifest = JSON.parse(fs.getByPath('/plugin.json').text());
-    if (!manifest.id||!manifest.script||!manifest.name) throw new Error('not a valid plugin');
+    let path = global.path.join(eApp.getPath('userData'), "plugins", id);
+    let fs = new WSC.FileSystem(path);
+    let manifest = JSON.parse(fs.getByPath('/plugin.json').text());
+    if (!manifest.id||!manifest.script||!manifest.name) throw new Error('Not a valid plugin');
     return manifest;
 }
 
 function importPlugin(path) {
-    var fs = new WSC.FileSystem(path); //easiest way to verify entered directory is a directory
-    var manifest = JSON.parse(fs.getByPath('/plugin.json').text());
+    const fs = new WSC.FileSystem(path); //easiest way to verify entered directory is a directory
+    const manifest = JSON.parse(fs.getByPath('/plugin.json').text());
     if (!manifest.id||!manifest.script||!manifest.name) throw new Error('not a valid plugin');
     if (!global.fs.existsSync(global.path.join(eApp.getPath('userData'), "plugins"))) {
         global.fs.mkdirSync(global.path.join(eApp.getPath('userData'), "plugins"));
@@ -114,21 +104,20 @@ function importPlugin(path) {
 }
 
 function removePlugin(id) {
-    if (fs.existsSync(global.path.join(eApp.getPath('userData'), "plugins", id))) {
-        deleteFolder(path.join(eApp.getPath('userData'), "plugins", id));
-    }
+    if (!fs.existsSync(global.path.join(eApp.getPath('userData'), "plugins", id))) return;
+    deleteFolder(path.join(eApp.getPath('userData'), "plugins", id));
 }
 
 function getInstalledPlugins() {
-    var data = {};
-    var files;
+    let data = {};
+    let files = [];
     try {
         files = fs.readdirSync(global.path.join(eApp.getPath('userData'), "plugins"), {encoding: 'utf-8'});
     } catch(e) {
         console.warn(e);
         return data;
     }
-    for (var i=0; i<files.length; i++) {
+    for (let i=0; i<files.length; i++) {
         try {
             data[files[i]] = getPluginInfo(files[i]);
         } catch(e) {
@@ -151,6 +140,8 @@ function activate(id, config) {
 function deActivate(id, config) {
     if (config[id]) {
         config[id].enabled = false;
+    } else {
+        config[id] = {enabled:false};
     }
     return config;
 }
