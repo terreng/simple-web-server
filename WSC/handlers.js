@@ -162,7 +162,7 @@ class DirectoryEntryHandler {
             return;
         }
         global.ConnetionS[this.request.ip]++;
-        
+
         console.log("["+(new Date()).toLocaleString()+"]", this.request.ip + ':', 'Request',this.request.method, this.request.uri);
         const filename = this.request.path.split('/').pop();
         if (filename === this.htaccessName) {
@@ -190,7 +190,7 @@ class DirectoryEntryHandler {
         if (this.opts.spa && !this.request.uri.match(/.*\.[\d\w]+$/)) {
             this.rewrite_to = this.opts.rewriteTo || "/index.html";
         }
-        
+
         if (this[this.request.method.toLowerCase()]) {
             try {
                 const a = this[this.request.method.toLowerCase()]();
@@ -660,7 +660,7 @@ class DirectoryEntryHandler {
             this.finish();
             return;
         }
-        
+
         let filefound = false;
         let auth;
         let authdata;

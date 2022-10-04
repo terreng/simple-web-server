@@ -36,7 +36,7 @@ module.exports = {
         let path2Send = data.dir_to_send;
         let finalpath = WSC.utils.stripOffFile(this.request.origpath);
         path2Send = WSC.utils.relativePath(finalpath, path2Send);
-        
+
         const results = this.fs.getByPath(path2Send).getDirContents();
         if (results.error) {
             this.error('', ((results.error.code === 'EPERM')?403:500));
@@ -92,7 +92,7 @@ module.exports = {
         const finalpath = WSC.utils.stripOffFile(this.request.origpath);
         console.log(finalpath, vdataa);
         vdataa = WSC.utils.relativePath(finalpath, vdataa);
-        
+
         const file = this.fs.getByPath(vdataa);
         if (file && !file.error) {
             this.request.path = vdataa;

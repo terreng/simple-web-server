@@ -131,7 +131,7 @@ class httpRequest {
                 }
                 if (typeof this.onload === 'function') this.onload(evt);
             })
-            
+
         }
     }
     error(error) {
@@ -150,7 +150,7 @@ class httpRequest {
         this.handler = handler;
         this.savePath = savePath;
     }
-    
+
 }
 
 function testHttpRequest() {
@@ -160,7 +160,7 @@ function testHttpRequest() {
     }
     request.open('GET', 'http://www.google.com')
     request.send()
-    
+
 }
 
 module.exports = httpRequest

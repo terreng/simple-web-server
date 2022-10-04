@@ -24,7 +24,7 @@
     }
   ],
   "license": "MIT",
-  "homepage": "https://terreng.github.io/simple-web-server/",
+  "homepage": "https://simplewebserver.org",
   "bugs": "https://github.com/terreng/simple-web-server/issues",
   "scripts": {
     "start": "electron .",

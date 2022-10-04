@@ -515,7 +515,7 @@ function checkForUpdates() {
             console.log("["+(new Date()).toLocaleString()+"] Update check failed (status code "+res.statusCode+")");
             return;
         }
-        
+
         res.on('data', function(data) {
             let version_update;
             try {

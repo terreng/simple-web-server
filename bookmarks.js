@@ -4,7 +4,7 @@ function addToSecurityScopedBookmarks(filepath, bookmark) {
     if (bookmark && bookmark.length > 0) {
         mas_bookmarks[filepath] = {"bookmark": bookmark};
         try {
-        	fs.writeFileSync(path.join(app.getPath('userData'), "mas_bookmarks.json"), JSON.stringify(mas_bookmarks, null, 2));
+            fs.writeFileSync(path.join(app.getPath('userData'), "mas_bookmarks.json"), JSON.stringify(mas_bookmarks, null, 2));
         } catch(e) {
             console.error(e);
         }
