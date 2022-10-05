@@ -35,7 +35,7 @@ window.api.initipc((event, message) => {
         config = message.config;
         ip = message.ip;
         install_source = message.install_source;
-        if (config.background !== null && config.updates !== null) openMain();
+        if (![undefined, null].includes(config.background) && ![undefined, null].includes(config.updates)) openMain();
         else initWelcome();
         document.getElementById("stop_and_quit_button").style.display = config.background ? "block" : "none";
         if (config.darkmode) document.body.classList.add("darkmode");
@@ -90,7 +90,7 @@ function backToSettings() {
 
 let loaded_licenses = false;
 
-// This function isnt used anwhere...
+// This function isn't used anwhere...
 async function openLicenses() {
     navigate("licenses");
     document.querySelector("#licenses_container").scrollTop = 0;
@@ -205,16 +205,16 @@ function addServer(editindex) {
     last_gen_crypto_date = false;
 
     document.querySelector("#folder_path_error").style.display = "none";
-    if (editindex !== null) {
+    if (![undefined, null].includes(editindex)) {
         document.querySelector("#edit_server_title").innerText = "Edit Server";
         document.querySelector("#submit_button").innerText = "Save Changes";
     } else {
         document.querySelector("#edit_server_title").innerText = "Add Server";
         document.querySelector("#submit_button").innerText = "Create Server";
     }
-    activeeditindex = (editindex !== null ? editindex : false);
+    activeeditindex = (![undefined, null].includes(editindex) ? editindex : false);
 
-    if (editindex !== null) {
+    if (![undefined, null].includes(editindex)) {
         document.getElementById("server_container_status").style.display = "block";
         if (config.servers[editindex].enabled) {
             document.getElementById("edit_server_running").classList.add("checked");
@@ -229,34 +229,34 @@ function addServer(editindex) {
         updateCurrentPath();
         document.querySelector("#port").value = config.servers[editindex].port;
         portChange();
-        toggleCheckbox("localnetwork", config.servers[editindex].localnetwork !== null ? config.servers[editindex].localnetwork : false);
+        toggleCheckbox("localnetwork", ![undefined, null].includes(config.servers[editindex].localnetwork) ? config.servers[editindex].localnetwork : false);
 
-        toggleCheckbox("showIndex", config.servers[editindex].showIndex !== null ? config.servers[editindex].showIndex : true);
-        toggleCheckbox("spa", config.servers[editindex].spa !== null ? config.servers[editindex].spa : false);
+        toggleCheckbox("showIndex", ![undefined, null].includes(config.servers[editindex].showIndex) ? config.servers[editindex].showIndex : true);
+        toggleCheckbox("spa", ![undefined, null].includes(config.servers[editindex].spa) ? config.servers[editindex].spa : false);
         document.querySelector("#rewriteTo").value = config.servers[editindex].rewriteTo || "/index.html";
-        toggleCheckbox("directoryListing", config.servers[editindex].directoryListing !== null ? config.servers[editindex].directoryListing : true);
-        toggleCheckbox("excludeDotHtml", config.servers[editindex].excludeDotHtml !== null ? config.servers[editindex].excludeDotHtml : false);
+        toggleCheckbox("directoryListing", ![undefined, null].includes(config.servers[editindex].directoryListing) ? config.servers[editindex].directoryListing : true);
+        toggleCheckbox("excludeDotHtml", ![undefined, null].includes(config.servers[editindex].excludeDotHtml) ? config.servers[editindex].excludeDotHtml : false);
 
-        toggleCheckbox("ipv6", config.servers[editindex].ipv6 !== null ? config.servers[editindex].ipv6 : false);
+        toggleCheckbox("ipv6", ![undefined, null].includes(config.servers[editindex].ipv6) ? config.servers[editindex].ipv6 : false);
         document.querySelector("#cacheControl").value = config.servers[editindex].cacheControl || "";
-        toggleCheckbox("hiddenDotFiles", config.servers[editindex].hiddenDotFiles !== null ? config.servers[editindex].hiddenDotFiles : false);
-        toggleCheckbox("cors", config.servers[editindex].cors !== null ? config.servers[editindex].cors : false);
-        toggleCheckbox("upload", config.servers[editindex].upload !== null ? config.servers[editindex].upload : false);
-        toggleCheckbox("replace", config.servers[editindex].replace !== null ? config.servers[editindex].replace : false);
-        toggleCheckbox("delete", config.servers[editindex].delete !== null ? config.servers[editindex].delete : false);
-        toggleCheckbox("staticDirectoryListing", config.servers[editindex].staticDirectoryListing !== null ? config.servers[editindex].staticDirectoryListing : false);
-        toggleCheckbox("hiddenDotFilesDirectoryListing", config.servers[editindex].hiddenDotFilesDirectoryListing !== null ? config.servers[editindex].hiddenDotFilesDirectoryListing : true);
-        toggleCheckbox("htaccess", config.servers[editindex].htaccess !== null ? config.servers[editindex].htaccess : false);
+        toggleCheckbox("hiddenDotFiles", ![undefined, null].includes(config.servers[editindex].hiddenDotFiles) ? config.servers[editindex].hiddenDotFiles : false);
+        toggleCheckbox("cors", ![undefined, null].includes(config.servers[editindex].cors) ? config.servers[editindex].cors : false);
+        toggleCheckbox("upload", ![undefined, null].includes(config.servers[editindex].upload) ? config.servers[editindex].upload : false);
+        toggleCheckbox("replace", ![undefined, null].includes(config.servers[editindex].replace) ? config.servers[editindex].replace : false);
+        toggleCheckbox("delete", ![undefined, null].includes(config.servers[editindex].delete) ? config.servers[editindex].delete : false);
+        toggleCheckbox("staticDirectoryListing", ![undefined, null].includes(config.servers[editindex].staticDirectoryListing) ? config.servers[editindex].staticDirectoryListing : false);
+        toggleCheckbox("hiddenDotFilesDirectoryListing", ![undefined, null].includes(config.servers[editindex].hiddenDotFilesDirectoryListing) ? config.servers[editindex].hiddenDotFilesDirectoryListing : true);
+        toggleCheckbox("htaccess", ![undefined, null].includes(config.servers[editindex].htaccess) ? config.servers[editindex].htaccess : false);
 
         document.querySelector("#custom404").value = config.servers[editindex].custom404 || "";
         document.querySelector("#custom403").value = config.servers[editindex].custom403 || "";
         document.querySelector("#custom401").value = config.servers[editindex].custom401 || "";
         document.querySelector("#customErrorReplaceString").value = config.servers[editindex].customErrorReplaceString || "";
 
-        toggleCheckbox("https", config.servers[editindex].https !== null ? config.servers[editindex].https : false);
+        toggleCheckbox("https", ![undefined, null].includes(config.servers[editindex].https) ? config.servers[editindex].https : false);
         document.querySelector("#httpsCert").value = config.servers[editindex].httpsCert ? config.servers[editindex].httpsCert.split("\r").join("\\r").split("\n").join("\\n") : "";
         document.querySelector("#httpsKey").value = config.servers[editindex].httpsKey ? config.servers[editindex].httpsKey.split("\r").join("\\r").split("\n").join("\\n") : "";
-        toggleCheckbox("httpAuth", config.servers[editindex].httpAuth !== null ? config.servers[editindex].httpAuth : false);
+        toggleCheckbox("httpAuth", ![undefined, null].includes(config.servers[editindex].httpAuth) ? config.servers[editindex].httpAuth : false);
         document.querySelector("#httpAuthUsername").value = config.servers[editindex].httpAuthUsername || "";
         httpAuthUsernameChange();
         document.querySelector("#httpAuthPassword").value = config.servers[editindex].httpAuthPassword || "";
@@ -590,7 +590,7 @@ function hidePrompt() {
 
 function toggleCheckbox(element_or_id, toggled) {
     element_or_id = typeof element_or_id === "string" ? document.getElementById(element_or_id) : element_or_id;
-    toggled = toggled !== null ? toggled : !element_or_id.classList.contains("checked");
+    toggled = [undefined, null].includes(toggled) ? !element_or_id.classList.contains("checked") : toggled;
     if (toggled) {
         element_or_id.classList.add("checked");
         element_or_id.querySelector(".checkbox i").innerText = "check_box";

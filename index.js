@@ -127,7 +127,7 @@ function getIPs() {
     return ips;
 }
 
-let mainWindow;
+let mainWindow = null;
 let config = {};
 
 if (!process.mas && !app.requestSingleInstanceLock()) app.quit();

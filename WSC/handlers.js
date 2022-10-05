@@ -933,6 +933,25 @@ class DirectoryEntryHandler {
             }
         }), null, 2));
     }
+    renderDirectoryListing(results) {
+        let html = ['<html>'];
+        html.push('<style>li.directory {background:#aab}</style>');
+        html.push('<a href="../?static=1">parent</a>');
+        html.push('<ul>');
+        results.sort(this.entriesSortFunc);
+        for (let i=0; i<results.length; i++) {
+            if (results[i].hidden && !(this.app.opts.hiddenDotFiles && this.app.opts.hiddenDotFilesDirectoryListing)) continue;
+            const name = results[i].name.htmlEscape();
+            if (results[i].isDirectory) {
+                html.push('<li class="directory"><a href="' + name + '/?static=1">' + name + '</a></li>');
+            } else {
+                html.push('<li><a href="' + name + '?static=1">' + name + '</a></li>');
+            }
+        }
+        html.push('</ul></html>');
+        this.setHeader('content-type','text/html; charset=utf-8');
+        this.write(html.join('\n'));
+    }
     renderDirectoryListingStaticJs(results) {
         if (! WSC.static_template_data) {
             return this.renderDirectoryListing(results);
@@ -941,13 +960,12 @@ class DirectoryEntryHandler {
         html.push('<noscript><style>li.directory {background:#aab}</style><a href="../?static=1">parent</a><ul>');
         results.sort(this.entriesSortFunc);
         for (let i=0; i<results.length; i++) {
+            if (results[i].hidden && !(this.app.opts.hiddenDotFiles && this.app.opts.hiddenDotFilesDirectoryListing)) continue;
             const name = results[i].name.htmlEscape();
-            if (!results[i].hidden || (this.opts.hiddenDotFiles && this.opts.hiddenDotFilesDirectoryListing)) {
-                if (results[i].isDirectory) {
-                    html.push('<li class="directory"><a href="' + name + '/?static=1">' + name + '</a></li>');
-                } else {
-                    html.push('<li><a href="' + name + '?static=1">' + name + '</a></li>');
-                }
+            if (results[i].isDirectory) {
+                html.push('<li class="directory"><a href="' + name + '/?static=1">' + name + '</a></li>');
+            } else {
+                html.push('<li><a href="' + name + '?static=1">' + name + '</a></li>');
             }
         }
         html.push('</ul></noscript>');
