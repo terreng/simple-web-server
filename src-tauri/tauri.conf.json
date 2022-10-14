@@ -4,7 +4,8 @@
     "beforeBuildCommand": "",
     "beforeDevCommand": "",
     "devPath": "http://127.0.0.1:8765/index.html",
-    "distDir": "../.."
+    "distDir": "../..",
+    "withGlobalTauri": true
   },
   "package": {
     "productName": "Simple Web Server",

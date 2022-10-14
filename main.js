@@ -10,103 +10,112 @@ let lang;
 let languages;
 var language;
 
-window.api.initipc((event, message) => {
-    if (message.type === "init") {
-        lang = message.lang;
-        languages = message.languages;
-        language = message.language;
+invoke('init').then(function(message) {
+    lang = message.lang;
+    languages = message.languages;
+    language = message.language;
 
-        document.body.innerHTML = document.body.innerHTML.replace(/{lang\.([\w.]+?)}/g, function(match) {if (!lang[match.substring(6, match.length-1)]) {console.warn("Couldn't find lang string: "+match.substring(6, match.length-1))}; return lang[match.substring(6, match.length-1)]});
+    document.body.innerHTML = document.body.innerHTML.replace(/{lang\.([\w.]+?)}/g, function(match) {if (!lang[match.substring(6, match.length-1)]) {console.warn("Couldn't find lang string: "+match.substring(6, match.length-1))}; return lang[match.substring(6, match.length-1)]});
 
-        document.getElementById("language").innerHTML = Array.from(Object.entries(languages)).map(function(a) {return '<option value="'+a[0]+'">'+a[1]+'</option>'}).join("");
-        document.getElementById("language").value = language;
+    document.getElementById("language").innerHTML = Array.from(Object.entries(languages)).map(function(a) {return '<option value="'+a[0]+'">'+a[1]+'</option>'}).join("");
+    document.getElementById("language").value = language;
 
-        document.documentElement.setAttribute("lang", language);
+    document.documentElement.setAttribute("lang", language);
 
-        running_states = {
-            "stopped": {
-                "text": lang.state_stopped,
-                "list_color": "var(--status-gray)",
-                "edit_color": "var(--text-primary)"
-            },
-            "starting": {
-                "text": lang.state_starting,
-                "list_color": "var(--status-gray)",
-                "edit_color": "var(--text-primary)"
-            },
-            "running": {
-                "text":  lang.state_running,
-                "list_color": "var(--status-green)",
-                "edit_color": "var(--status-green)"
-            },
-            "error": {
-                "text": lang.state_error,
-                "list_color": "var(--status-red)",
-                "edit_color": "var(--status-red)"
-            },
-            "unknown": {
-                "text": lang.state_starting,
-                "list_color": "var(--status-gray)",
-                "edit_color": "var(--text-primary)"
-            },
-        }
+    running_states = {
+        "stopped": {
+            "text": lang.state_stopped,
+            "list_color": "var(--status-gray)",
+            "edit_color": "var(--text-primary)"
+        },
+        "starting": {
+            "text": lang.state_starting,
+            "list_color": "var(--status-gray)",
+            "edit_color": "var(--text-primary)"
+        },
+        "running": {
+            "text":  lang.state_running,
+            "list_color": "var(--status-green)",
+            "edit_color": "var(--status-green)"
+        },
+        "error": {
+            "text": lang.state_error,
+            "list_color": "var(--status-red)",
+            "edit_color": "var(--status-red)"
+        },
+        "unknown": {
+            "text": lang.state_starting,
+            "list_color": "var(--status-gray)",
+            "edit_color": "var(--text-primary)"
+        },
+    }
 
-        config = message.config;
-        ip = message.ip;
-        install_source = message.install_source;
-        plugins = message.plugins;
-        platform = message.platform;
-        document.getElementById("version_number").innerText = message.version;
-        if (config.background != null && config.updates != null) openMain();
-        else initWelcome();
-        document.getElementById("stop_and_quit_button").style.display = config.background ? "block" : "none";
-        document.body.style.visibility = "visible";
-        refreshPluginList();
-        if (platform == "darwin" || platform == "win32") {
-            if (platform == "darwin") {
-                document.querySelector("#tray").setAttribute("aria-label", lang.setting_tray_macos);
-                document.querySelector("#tray > .label").firstChild.textContent = lang.setting_tray_macos+" ";
-            } else {
-                document.querySelector("#tray").setAttribute("aria-label", lang.setting_tray_windows);
-                document.querySelector("#tray > .label").firstChild.textContent = lang.setting_tray_windows+" ";
-            }
+    config = message.config;
+    ip = message.ip;
+    install_source = message.install_source;
+    plugins = message.plugins;
+    platform = message.platform;
+    document.getElementById("version_number").innerText = message.version;
+    if (config.background != null && config.updates != null) openMain();
+    else initWelcome();
+    document.getElementById("stop_and_quit_button").style.display = config.background ? "block" : "none";
+    document.body.style.visibility = "visible";
+    refreshPluginList();
+    if (platform == "darwin" || platform == "win32") {
+        if (platform == "darwin") {
+            document.querySelector("#tray").setAttribute("aria-label", lang.setting_tray_macos);
+            document.querySelector("#tray > .label").firstChild.textContent = lang.setting_tray_macos+" ";
         } else {
-            document.querySelector("#tray").style.display = "none";
+            document.querySelector("#tray").setAttribute("aria-label", lang.setting_tray_windows);
+            document.querySelector("#tray > .label").firstChild.textContent = lang.setting_tray_windows+" ";
         }
-    } else if (message.type === "state") {
-        server_states = message.server_states;
-        updateRunningStates();
-    } else if (message.type === "update") {
-        ignore_update = message.version;
-        if (message.ignored !== true) {
-            document.getElementById("update_banner").style.display = "block";
-            document.getElementById("update_banner").href = message.url;
-            document.getElementById("update_banner_text").innerText = message.text || lang.update_available;
-            if (message.attributes.indexOf("high_priority") > -1) {
-                document.getElementById("update_banner").classList.add("high_priority");
-            } else {
-                document.getElementById("update_banner").classList.remove("high_priority");
-            }
+    } else {
+        document.querySelector("#tray").style.display = "none";
+    }
+})
+
+listen('state', function(event) {
+    server_states = event.payload.server_states;
+    updateRunningStates();
+})
+
+listen('update', function(event) {
+    let message = event.payload;
+    ignore_update = message.version;
+    if (message.ignored !== true) {
+        document.getElementById("update_banner").style.display = "block";
+        document.getElementById("update_banner").href = message.url;
+        document.getElementById("update_banner_text").innerText = message.text || lang.update_available;
+        if (message.attributes.indexOf("high_priority") > -1) {
+            document.getElementById("update_banner").classList.add("high_priority");
+        } else {
+            document.getElementById("update_banner").classList.remove("high_priority");
         }
-        document.getElementById("update_notice").style.display = "";
-        document.getElementById("update_notice").querySelector("a").href = message.url;
-    } else if (message.type === "ipchange") {
-        ip = message.ip;
-        updateOnIpChange();
-    } else if (message.type == "pluginschange") {
-        plugins = message.plugins;
-        refreshPluginList();
-        if (document.getElementById("server_container").style.display === "block") {
-            location.reload();
-        }
-    } else if (message.type === "reload") {
+    }
+    document.getElementById("update_notice").style.display = "";
+    document.getElementById("update_notice").querySelector("a").href = message.url;
+})
+
+listen('ipchange', function(event) {
+    ip = event.payload.ip;
+    updateOnIpChange();
+})
+
+listen('pluginschange', function(event) {
+    plugins = event.payload.plugins;
+    refreshPluginList();
+    if (document.getElementById("server_container").style.display === "block") {
         location.reload();
     }
-});
+})
+
+listen('reload', function(event) {
+    location.reload();
+})
 
 function ignoreUpdate() {
     config.ignore_update = ignore_update;
-    window.api.saveconfig(config);
+    invoke("saveconfig", { "config": config });
     document.getElementById("update_banner").style.display = "none";
 }
 
@@ -253,7 +262,7 @@ function reorderDragEnd() {
             config.servers.splice(dragging_index, 1);
             config.servers.splice(last_hover_index, 0, temp);
 
-            window.api.saveconfig(config);
+            invoke("saveconfig", { "config": config });
 
             renderServerList();
         });
@@ -604,7 +613,7 @@ function submitAddServer() {
     }
     navigate("main");
     renderServerList();
-    window.api.saveconfig(config);
+    invoke("saveconfig", { "config": config });
 }
 
 let pend_delete_server_id = false;
@@ -613,7 +622,7 @@ function confirmDeleteServer() {
     config.servers.splice(pend_delete_server_id, 1);
     navigate("main");
     renderServerList();
-    window.api.saveconfig(config);
+    invoke("saveconfig", { "config": config });
     hidePrompt();
 }
 
@@ -640,7 +649,7 @@ function toggleServer(index,inedit) {
         }
     }
     updateRunningStates();
-    window.api.saveconfig(config);
+    invoke("saveconfig", { "config": config });
 }
 
 function toggleEditServerRunning() {
@@ -662,7 +671,7 @@ function toggleRunInBk() {
         config.background = true;
     }
     document.getElementById("stop_and_quit_button").style.display = config.background ? "block" : "none";
-    window.api.saveconfig(config);
+    invoke("saveconfig", { "config": config });
 }
 
 function toggleUpdates() {
@@ -682,7 +691,7 @@ function toggleUpdates() {
         config.updates = true
         delete config.ignore_update;
     }
-    window.api.saveconfig(config);
+    invoke("saveconfig", { "config": config });
 }
 
 function toggleTray() {
@@ -695,17 +704,17 @@ function toggleTray() {
         document.querySelector("#tray").setAttribute("aria-checked", "true");
         config.tray = true
     }
-    window.api.saveconfig(config);
+    invoke("saveconfig", { "config": config });
 }
 
 function themeChange() {
     config.theme = document.querySelector("#theme").value;
-    window.api.saveconfig(config);
+    invoke("saveconfig", { "config": config });
 }
 
 function changeLang() {
     config.language = document.querySelector("#language").value;
-    window.api.saveconfig(config, true);
+    invoke("saveconfig", { "config": config, reload: true });
 }
 
 function portValid() {
@@ -936,7 +945,7 @@ function initWelcome() {
     config.background = false;
     config.updates = true;
     config.theme = "system";
-    window.api.saveconfig(config);
+    invoke("saveconfig", { "config": config });
     navigate("welcome");
     if (install_source === "macappstore") {
         document.querySelector("#updates_welcome").style.display = "none";
@@ -1060,7 +1069,7 @@ function removePlugin(pluginid) {
                 }
             }
 
-            window.api.saveconfig(config);
+            invoke("saveconfig", { "config": config });
 
             hidePrompt();
         }],[lang.cancel,"",hidePrompt]])

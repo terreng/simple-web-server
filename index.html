@@ -5,6 +5,11 @@
         <meta http-equiv="Content-Security-Policy" content="default-src 'self' 'unsafe-inline'">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <link rel="stylesheet" href="style.css">
+        <script>
+            const invoke = window.__TAURI__.invoke;
+            const listen = window.__TAURI__.event.listen;
+            const emit = window.__TAURI__.event.emit;
+        </script>
     </head>
     <body style="visibility: hidden;" ondragenter="dragEnter(event)" ondragover="dragOver(event)" ondragleave="dragLeave(event)" ondrop="dragDrop(event)">
 

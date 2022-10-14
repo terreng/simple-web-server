@@ -1,10 +1,10 @@
 [package]
 name = "app"
-version = "0.1.0"
-description = "A Tauri App"
-authors = ["you"]
-license = ""
-repository = ""
+version = "2.0.0"
+description = "Simple Web Server"
+authors = ["Simple Web Server Team"]
+license = "MIT License"
+repository = "https://github.com/terreng/simple-web-server"
 default-run = "app"
 edition = "2021"
 rust-version = "1.57"
