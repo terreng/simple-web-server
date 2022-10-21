@@ -940,7 +940,7 @@ class DirectoryEntryHandler {
         html.push('<ul>');
         results.sort(this.entriesSortFunc);
         for (let i=0; i<results.length; i++) {
-            if (results[i].hidden && !(this.app.opts.hiddenDotFiles && this.app.opts.hiddenDotFilesDirectoryListing)) continue;
+            if (results[i].hidden && !(this.opts.hiddenDotFiles && this.opts.hiddenDotFilesDirectoryListing)) continue;
             const name = results[i].name.htmlEscape();
             if (results[i].isDirectory) {
                 html.push('<li class="directory"><a href="' + name + '/?static=1">' + name + '</a></li>');
@@ -960,7 +960,7 @@ class DirectoryEntryHandler {
         html.push('<noscript><style>li.directory {background:#aab}</style><a href="../?static=1">parent</a><ul>');
         results.sort(this.entriesSortFunc);
         for (let i=0; i<results.length; i++) {
-            if (results[i].hidden && !(this.app.opts.hiddenDotFiles && this.app.opts.hiddenDotFilesDirectoryListing)) continue;
+            if (results[i].hidden && !(this.opts.hiddenDotFiles && this.opts.hiddenDotFilesDirectoryListing)) continue;
             const name = results[i].name.htmlEscape();
             if (results[i].isDirectory) {
                 html.push('<li class="directory"><a href="' + name + '/?static=1">' + name + '</a></li>');

@@ -61,7 +61,7 @@ module.exports = {
             const filesize = results[w].size;
             const filesizestr = WSC.utils.humanFileSize(results[w].size);
             const modifiedstr = WSC.utils.lastModifiedStr(results[w].modificationTime);
-            if (!results[w].hidden || (this.app.opts.hiddenDotFiles && this.app.opts.hiddenDotFilesDirectoryListing)) {
+            if (!results[w].hidden || (this.opts.hiddenDotFiles && this.opts.hiddenDotFilesDirectoryListing)) {
                 html.push('<script>addRow("'+rawname+'","'+name+'",'+isdirectory+',"'+filesize+'","'+filesizestr+'","'+modified+'","'+modifiedstr+'");</script>');
             }
         }
