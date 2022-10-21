@@ -6,27 +6,27 @@ Simple Web Server does not have support for .htaccess files. Instead, we support
 
 All Htaccess features are built to have 100% compatibility with changes in settings
 ## Currently supported
-301 - Moved Permanently. Tells the server that when chosen file is requested to move to a different directory or file. The browser will cache this
-302 - Found. Tells the server that when chosen file is requested to move to a different directory or file. Not cached by the browser
-307 - Temporary Redirect. Tells the server that when chosen file is requested to move to a different directory or file. Not cached by the browser.
-401 - Unauthorized. The page will require login. For some reason, I cannot find how to clear the cache of the authorization header, which means that once you type it in, the browser will not ask for a login, unless you have multiple password protected pages with different passwords, The authentication header will change whenever you enter a different password.
-403 - blocks any request to the file
-denyDirectAccess - This will deny direct access to image/video/audio files. This option only works if https is enabled or if the user is on a localhost address.
-Render Directory Listing - Ignores the value of 404 instead of directory listing and renders the directory listing
-Deny deleting for a specific file or directory - Ignores value of delete option and will deny delete to requested file
-Allow deleting for certian file - Ignores value of delete option and will allow deleting requested file
-Deny uploading for a specific file or directory - Ignores value of PUT option and will deny put to requested file
-Allow uploading for certian file - Ignores value of PUT option and will allow deleting requested file.
-send directory contents - Will send the current directory at the end of the file. See the How To for a more advanced description
-additional header - Will set an additional header
-Versioning - relative file hosting
-serverSideJavaScript - Just what it sounds like
+301 - Moved Permanently. Tells the server that when chosen file is requested to move to a different directory or file. The browser will cache this<br>
+302 - Found. Tells the server that when chosen file is requested to move to a different directory or file. Not cached by the browser<br>
+307 - Temporary Redirect. Tells the server that when chosen file is requested to move to a different directory or file. Not cached by the browser.<br>
+401 - Unauthorized. The page will require login. For some reason, I cannot find how to clear the cache of the authorization header, which means that once you type it in, the browser will not ask for a login, unless you have multiple password protected pages with different passwords, The <br>authentication header will change whenever you enter a different password.
+403 - blocks any request to the file<br>
+denyDirectAccess - This will deny direct access to image/video/audio files. This option only works if https is enabled or if the user is on a localhost address.<br>
+Render Directory Listing - Ignores the value of 404 instead of directory listing and renders the directory listing<br>
+Deny deleting for a specific file or directory - Ignores value of delete option and will deny delete to requested file<br>
+Allow deleting for certian file - Ignores value of delete option and will allow deleting requested file<br>
+Deny uploading for a specific file or directory - Ignores value of PUT option and will deny put to requested file<br>
+Allow uploading for certian file - Ignores value of PUT option and will allow deleting requested file.<br>
+send directory contents - Will send the current directory at the end of the file. See the How To for a more advanced description<br>
+additional header - Will set an additional header<br>
+Versioning - relative file hosting<br>
+serverSideJavaScript - Just what it sounds like<br>
 If you want more features - Make an issue!
 
 ## Making the file
-A .swshtaccess file is actually a javascript array, which means one problem with the file will cause it not to work - So be careful. No additional info can be put into the file
-Note - If you are trying to redirect to some index.html file and you have the option to automatically show index.html turned on, your path will go from '/somepath/index.html' to '/somepath/'
-Note - If you are trying to redirect to some .html file and you have the option to remove .html extension turned on, leave the .html extension. The web server will handle the request and forward it to have no .html extension
+A .swshtaccess file is actually a javascript array, which means one problem with the file will cause it not to work - So be careful. No additional info can be put into the file<br>
+Note - If you are trying to redirect to some index.html file and you have the option to automatically show index.html turned on, your path will go from '/somepath/index.html' to '/somepath/'<br>
+Note - If you are trying to redirect to some .html file and you have the option to remove .html extension turned on, leave the .html extension. The web server will handle the request and forward it to have no .html extension<br>
 
 Note - when selecting the file to scan for, if you are trying to edit some index.html (or index.htm, or index.xhtml, or index.xhtm) Put the file name in place of request path. example: `"request_path": "index.html",`. Security will scan any way to get the the file
 
@@ -34,7 +34,7 @@ Note - when selecting the file to scan, if the file is some .html and you have t
 
 Note - To set more than 1 ruleset per file, see instruction at bottom of the page
 
-Note - 401 (unauthorized) username and passwords are CASE SENSITIVE!!
+Note - 401 (unauthorized) username and passwords are CASE SENSITIVE!!<br>
 Note - .swshtaccess file MUST be in the same directory as the file you want to change. The file does not need to exist (Mainly for 301, 302, and 307).
 
 ::: Important Note

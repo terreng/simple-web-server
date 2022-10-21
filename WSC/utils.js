@@ -1,10 +1,10 @@
-String.prototype.htmlEscape = function() {
-    return this.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;");
-}
 if (!String.prototype.replaceAll) {
     String.prototype.replaceAll = function(a, b) {
         return this.split(a).join(b);
     }
+}
+String.prototype.htmlEscape = function() {
+    return this.replaceAll(/&/g, "&amp;").replaceAll(/</g, "&lt;").replaceAll(/>/g, "&gt;").replaceAll(/"/g, "&quot;").replaceAll(/'/g, "&#039;");
 }
 
 module.exports = {
@@ -15,130 +15,79 @@ module.exports = {
         //from https://stackoverflow.com/questions/10420352/converting-file-size-in-bytes-to-human-readable-string/10420404
         const thresh = 1024;
         if (Math.abs(bytes) < thresh) {
-          return bytes + ' B';
+            return bytes + ' B';
         }
         const units = ['KiB', 'MiB', 'GiB', 'TiB', 'PiB', 'EiB', 'ZiB', 'YiB'];
         let u = -1;
         const r = 10;
         do {
-          bytes /= thresh;
-          ++u;
+            bytes /= thresh;
+            ++u;
         } while (Math.round(Math.abs(bytes) * r) / r >= thresh && u < units.length - 1);
         return bytes.toFixed(1) + ' ' + units[u];
     },
     lastModified: function(modificationTime) {
-        if (! modificationTime) {
-            return 0
-        }
-        var lastModifiedMonth = modificationTime.getMonth() + 1
-        var lastModifiedDay = modificationTime.getDate()
-        var lastModifiedYear = modificationTime.getFullYear().toString().substring(2, 4)
-        var lastModifiedHours = modificationTime.getHours()
-        var lastModifiedMinutes = modificationTime.getMinutes()
-        var lastModifiedSeconds = modificationTime.getSeconds()
-        var lastModified = lastModifiedMonth+
-                           lastModifiedDay+
-                           lastModifiedYear+
-                           lastModifiedHours+
-                           lastModifiedMinutes+
-                           lastModifiedSeconds
-        return lastModified
+        if (! modificationTime) return 0;
+        const lastModifiedMonth = modificationTime.getMonth() + 1;
+        const lastModifiedDay = modificationTime.getDate();
+        const lastModifiedYear = modificationTime.getFullYear().toString().substring(2, 4);
+        const lastModifiedHours = modificationTime.getHours();
+        const lastModifiedMinutes = modificationTime.getMinutes();
+        const lastModifiedSeconds = modificationTime.getSeconds();
+        const lastModified = lastModifiedMonth+
+              lastModifiedDay+
+              lastModifiedYear+
+              lastModifiedHours+
+              lastModifiedMinutes+
+              lastModifiedSeconds;
+        return lastModified;
     },
-    lastModifiedStr: function(modificationTime) {
-        if (! modificationTime) {
-            return ''
-        }
-        var lastModifiedMonth = modificationTime.getMonth() + 1
-        var lastModifiedDay = modificationTime.getDate()
-        var lastModifiedYear = modificationTime.getFullYear().toString().substring(2, 4)
-        var lastModifiedHours = modificationTime.getHours()
-        var lastModifiedMinutes = modificationTime.getMinutes()
-        var lastModifiedSeconds = modificationTime.getSeconds()
-        if (lastModifiedSeconds.toString().length != 2) {
-            var lastModifiedSeconds = '0' + lastModifiedSeconds
-        }
-        if (lastModifiedMinutes.toString().length != 2) {
-            var lastModifiedMinutes = '0' + lastModifiedMinutes
-        }
-        if (lastModifiedDay.toString().length != 2) {
-            var lastModifiedDay = '0' + lastModifiedDay
-        }
-        if (lastModifiedHours >= 12) {
-            var lastModifiedAmPm = 'PM'
-            if (lastModifiedHours > 12) {
-                var lastModifiedHours = lastModifiedHours - 12
-            }
-        } else {
-            var lastModifiedAmPm = 'AM'
-        }
-        var lastModifiedStr = lastModifiedMonth+'/'+
-                              lastModifiedDay+'/'+
-                              lastModifiedYear+', '+
-                              lastModifiedHours+':'+
-                              lastModifiedMinutes+':'+
-                              lastModifiedSeconds +' '+
-                              lastModifiedAmPm
-        return lastModifiedStr
+    lastModifiedStr: function(date) {
+        if (!date) return '';
+        return date.toLocaleString();
     },
-    htaccessFileRequested: function(filerequested, index) {
-        if (index) {
-            if (filerequested === 'index.html' ||
-                filerequested === 'index.htm' ||
-                filerequested === 'index' ||
-                filerequested === 'index.xhtm' ||
-                filerequested === 'index.xhtml' ||
-                filerequested === '') {
-                return 'index'
-            } else {
-                return filerequested
-            }
-        } else {
-            if (filerequested === 'index.html' ||
-                filerequested === 'index.htm' ||
-                filerequested === 'index' ||
-                filerequested === 'index.xhtm' ||
-                filerequested === 'index.xhtml') {
-                return 'index'
-            } else {
-                return filerequested
-            }
-        }
+    htaccessFileRequested: function(file, index) {
+        let pathArr = ['index.html', 'index.htm', 'index', 'index.xhtm', 'index.xhtml'];
+        if (index) pathArr.push('');
+        return pathArr.includes(file) ? 'index' : file;
     },
-    relativePath: function(reqPath, curPath) {
-        var endWSlash = false
+    relativePath: function(curPath, reqPath) {
+        let endWSlash = false;
         if (reqPath.endsWith('/')) {
-            var endWSlash = true
+            endWSlash = true;
         }
-        var split1 = curPath.split('/')
-        var split2 = reqPath.split('/')
-        for (var w=0; w<split2.length; w++) {
-            if (split2[w] == '' || split2[w] == '.') {
+        let split1 = curPath.split('/');
+        let split2 = reqPath.split('/');
+        for (let w=0; w<split2.length; w++) {
+            if (['', '.'].includes(split2[w])) {
                 // . means current directory. Leave this here for spacing
-            } else if (split2[w] == '..') {
+            } else if (split2[w] === '..') {
                 if (split1.length > 0) {
-                    var split1 = WSC.utils.stripOffFile(split1.join('/')).split('/')
+                    split1 = WSC.utils.stripOffFile(split1.join('/')).split('/');
                 }
             } else {
-                split1.push(split2[w])
+                split1.push(split2[w]);
             }
         }
-        var newPath = split1.join('/').replace(/\/\//g, '/')
+        let newPath = split1.join('/').replace(/\/\//g, '/');
         if (! newPath.startsWith('/')) {
-            var newPath = '/' + newPath
+            newPath = '/' + newPath;
         }
-        if (endWSlash && ! newPath.endsWith('/')) {
-            var newPath = newPath + '/'
+        if (endWSlash && !newPath.endsWith('/')) {
+            newPath = newPath + '/';
         }
-        return newPath
+        return newPath;
     },
     stripOffFile: function(origpath) {
-        var fullrequestpath = origpath
-        var finpath = fullrequestpath.split('/').pop()
-        var finalpath = fullrequestpath.substring(0, fullrequestpath.length - finpath.length)
-        if (origpath == '/') {
-            return '/'
-        } else {
-            return finalpath
+        if (origpath === '/') return '/';
+        return origpath.substring(0, origpath.length - origpath.split('/').pop().length);
+    },
+    isHidden: function(path) {
+        //RegExp from https://stackoverflow.com/questions/18973655/how-to-ignore-hidden-files-in-fs-readdir-result/37030655#37030655
+        const a = path.split('/');
+        for (let i=0; i<a.length; i++) {
+            if ((/(^|\/)\.[^\/\.]/g).test(a[i])) return true;
         }
+        return false;
     }
 }
