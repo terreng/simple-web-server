@@ -2,6 +2,12 @@
 	all(not(debug_assertions), target_os = "windows"),
 	windows_subsystem = "windows"
 )]
+#[cfg(target_os = "macos")]
+static PLATFORM: &str = "macos";
+#[cfg(target_os = "linux")]
+static PLATFORM: &str = "linux";
+#[cfg(target_os = "windows")]
+static PLATFORM: &str = "windows";
 use serde_json::{Value};
 use serde_json::json;
 use std::fs::File;
@@ -13,9 +19,15 @@ use std::path::Path;
 const VERSION : i32 = 1001004;
 const INSTALL_SOURCE : &str = "website";
 
+fn savepath() -> String {
+	let config_directory : String = dirs::config_dir().unwrap().display().to_string();
+	let program_subdirectory : &str = if PLATFORM == "macos" {"/Simple Web Server/"} else {"\\Simple Web Server\\"};
+	return config_directory + program_subdirectory;
+}
+
 fn main() {
 	tauri::Builder::default()
-		.invoke_handler(tauri::generate_handler![init])
+		.invoke_handler(tauri::generate_handler![init, saveconfig])
 		.run(tauri::generate_context!())
 		.expect("error while running tauri application");
 }
@@ -23,8 +35,8 @@ fn main() {
 #[tauri::command]
 fn init() -> Value {
 	let mut config : Value = json!({});
-	if Path::new("config.json").exists() {
-		let file = File::open("config.json").expect("Unable to open");
+	if Path::new(&(savepath() + "config.json")).exists() {
+		let file = File::open(savepath() + "config.json").expect("Unable to open");
 		let reader = BufReader::new(file);
 		config = serde_json::from_reader(reader).expect("Unable to read JSON");
 	}
@@ -38,7 +50,7 @@ fn init() -> Value {
 #[tauri::command]
 fn saveconfig(config: Value) {
 	let data = config.to_string();
-    let f = File::create("config.json").expect("Unable to create file");
+    let f = File::create(savepath() + "config.json").expect("Unable to create file");
     let mut f = BufWriter::new(f);
     f.write_all(data.as_bytes()).expect("Unable to write data");
 }
