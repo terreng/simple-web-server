@@ -28,8 +28,14 @@ fn savepath() -> String {
 fn main() {
 	tauri::Builder::default()
 		.invoke_handler(tauri::generate_handler![init, saveconfig, quit])
-		.run(tauri::generate_context!())
-		.expect("error while running tauri application");
+		.build(tauri::generate_context!())
+		.expect("error while building tauri application")
+		.run(|_app_handle, event| match event {
+			tauri::RunEvent::ExitRequested { api, .. } => {
+				api.prevent_exit();
+			}
+			_ => {}
+		});
 }
 
 #[tauri::command]
