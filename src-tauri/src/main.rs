@@ -27,7 +27,7 @@ fn savepath() -> String {
 
 fn main() {
 	tauri::Builder::default()
-		.invoke_handler(tauri::generate_handler![init, saveconfig])
+		.invoke_handler(tauri::generate_handler![init, saveconfig, quit])
 		.run(tauri::generate_context!())
 		.expect("error while running tauri application");
 }
@@ -53,4 +53,9 @@ fn saveconfig(config: Value) {
     let f = File::create(savepath() + "config.json").expect("Unable to create file");
     let mut f = BufWriter::new(f);
     f.write_all(data.as_bytes()).expect("Unable to write data");
+}
+
+#[tauri::command]
+fn quit(handle: tauri::AppHandle) {
+	handle.exit(0);
 }

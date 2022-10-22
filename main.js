@@ -791,10 +791,21 @@ function updateCurrentPath() {
 }
 
 function chooseFolder() {
-    window.api.showPicker(current_path).then(function(chosen_path) {
-        if (chosen_path && chosen_path.length > 0) current_path = chosen_path[0];
-        updateCurrentPath(); 
-    })
+    var dialog_options = {
+        directory: true,
+        multiple: false
+    };
+
+    if (current_path) {
+        dialog_options.defaultPath = current_path;
+    }
+
+    dialog.open(dialog_options).then(function(selected) {
+        if (selected) {
+            current_path = selected;
+            updateCurrentPath(); 
+        }
+    });
 }
 
 function htmlescape(str) {
