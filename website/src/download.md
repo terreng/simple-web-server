@@ -1,6 +1,6 @@
 # Download
 
-<ms-store-badge productid="9PC6682RJCDD" size="large" style="margin-right: 10px;"></ms-store-badge><a href="https://apps.apple.com/us/app/simple-web-server/id1625925255?mt=12&amp;itsct=apps_box_badge&amp;itscg=30200" target="_blank" rel="noopener"><img src="/appstorebadge.svg" alt="Download on the Mac App Store" style="border-radius:13px;height: 60px;"></a>
+<ms-store-badge productid="9PC6682RJCDD" style="margin-right: 10px;"></ms-store-badge><a href="https://apps.apple.com/us/app/simple-web-server/id1625925255?mt=12&amp;itsct=apps_box_badge&amp;itscg=30200" target="_blank" rel="noopener"><img src="/appstorebadge.svg" alt="Download on the Mac App Store" style="border-radius:13px;height: 60px;"></a>
 
 Current version: **1.1.4** | [Older versions and release notes](https://github.com/terreng/simple-web-server/releases)
 
