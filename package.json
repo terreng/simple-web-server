@@ -131,7 +131,7 @@
     }
   },
   "devDependencies": {
-    "electron": "^19.0.3",
+    "electron": "^19.0.11",
     "dotenv": "^16.0.1",
     "electron-notarize": "^1.2.1",
     "electron-osx-sign": "^0.6.0",
