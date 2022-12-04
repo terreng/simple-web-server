@@ -1,3 +1,7 @@
+// When reading a directory, cache the directory contents.
+// This is a performance thing.
+let lastDirReadCache = null;
+
 class getByPath {
     fs;
     origpath;
@@ -80,18 +84,25 @@ class getByPath {
         }
         this.name = folder.split('/').pop();
         folder = WSC.utils.stripOffFile(folder);
-        bm = bookmarks.matchAndAccess(folder);
         let files;
-        try {
-            files = fs.readdirSync(folder, {encoding: 'utf-8'});
-        } catch(e) {
-            console.warn('Error reading directory "'+folder+'"', e);
-            this.callback({error: 'Path Not Found'});
-            this.callback = null;
+
+        if (lastDirReadCache && lastDirReadCache.folder === folder) {
+            files = lastDirReadCache.files;
+        } else {
+            bm = bookmarks.matchAndAccess(folder);
+            try {
+                files = fs.readdirSync(folder, {encoding: 'utf-8'});
+            } catch(e) {
+                console.warn('Error reading directory "'+folder+'"', e);
+                this.callback({error: 'Path Not Found'});
+                this.callback = null;
+                bookmarks.release(bm);
+                return {error: 'Path Not Found'};
+            }
+            lastDirReadCache = {folder, files};
             bookmarks.release(bm);
-            return {error: 'Path Not Found'};
         }
-        bookmarks.release(bm);
+
         if (files.includes(this.name)) {
             this.callback(this);
             this.callback = null;
@@ -186,6 +197,7 @@ class getByPath {
             file.name = files[i];
             results.push(file.getFile());
         }
+        lastDirReadCache = null;
         cb(results);
         return results;
     }
@@ -216,7 +228,9 @@ class FileSystem {
     getByPath(path, cb) {
         path = path.replace(/\/\//g, '/').replace(/\\/g, '/');
         const entry = new getByPath(path, cb, this);
-        return entry.getFile();
+        let rv = entry.getFile();
+        lastDirReadCache = null;
+        return rv;
     }
     writeFile(path, data, cb, allowOverWrite) {
         if (!Buffer.isBuffer(data)) {
