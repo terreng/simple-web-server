@@ -228,7 +228,9 @@ class FileSystem {
     getByPath(path, cb) {
         path = path.replace(/\/\//g, '/').replace(/\\/g, '/');
         const entry = new getByPath(path, cb, this);
-        return entry.getFile();
+        let rv = entry.getFile();
+        lastDirReadCache = null;
+        return rv;
     }
     writeFile(path, data, cb, allowOverWrite) {
         if (!Buffer.isBuffer(data)) {
