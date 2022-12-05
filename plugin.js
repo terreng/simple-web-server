@@ -1,13 +1,16 @@
+const JSZip = require("jszip");
+
 function registerPlugins(data) {
     let config = data.config.plugin;
     let functions = [];
+    let manifest;
     for (const k in config) {
         //console.log(config[k], k);
         if (!config[k].enabled) continue;
         try {
-            const path = global.path.join(eApp.getPath('userData'), "plugins", k);
+            let path = global.path.join(eApp.getPath('userData'), "plugins", k);
             const fs = new WSC.FileSystem(path); //no point in catching it if we're just going to throw it again.
-            const manifest = JSON.parse(fs.getByPath('/plugin.json').text());
+            manifest = JSON.parse(fs.getByPath('/plugin.json').text());
             //addOptionsToUI(manifest.options, manifest.id);
             if (!path.endsWith('/')) path+='/';
             //console.log(path+manifest.script)
@@ -90,17 +93,54 @@ function getPluginInfo(id) {
     return manifest;
 }
 
+function getZipFiles(zip) {
+    let rv = [];
+    for (const file in zip.files) rv.push(file);
+    return rv;
+}
+
+async function copyFolderRecursiveSyncFromZip(zip, targetFolder) {
+    console.log('copy', targetFolder);
+    if (!fs.existsSync(targetFolder)) fs.mkdirSync(targetFolder);
+    let files = getZipFiles(zip);
+    for (let i=0; i<files.length; i++) {
+        let fileName = path.join(targetFolder, files[i]);
+        try {
+            if (!fs.existsSync(path.dirname(fileName))) {
+                fs.mkdirSync(path.dirname(fileName), {recursive:true});
+            }
+        } catch(e) {
+            fs.mkdirSync(path.dirname(fileName), {recursive:true});
+        }
+        fs.writeFileSync(fileName, await zip.files[files[i]].async("nodebuffer"));
+    }
+}
+
 function importPlugin(path) {
-    const fs = new WSC.FileSystem(path); //easiest way to verify entered directory is a directory
-    const manifest = JSON.parse(fs.getByPath('/plugin.json').text());
-    if (!manifest.id||!manifest.script||!manifest.name) throw new Error('not a valid plugin');
     if (!global.fs.existsSync(global.path.join(eApp.getPath('userData'), "plugins"))) {
         global.fs.mkdirSync(global.path.join(eApp.getPath('userData'), "plugins"));
     }
-    if (global.fs.existsSync(global.path.join(eApp.getPath('userData'), "plugins", manifest.id))) {
-        deleteFolder(global.path.join(eApp.getPath('userData'), "plugins", manifest.id));
+    let fs;
+    try {
+        fs = new WSC.FileSystem(path);
+        const manifest = JSON.parse(fs.getByPath('/plugin.json').text());
+        if (!manifest.id||!manifest.script||!manifest.name) throw new Error('not a valid plugin');
+        if (global.fs.existsSync(global.path.join(eApp.getPath('userData'), "plugins", manifest.id))) {
+            deleteFolder(global.path.join(eApp.getPath('userData'), "plugins", manifest.id));
+        }
+        copyFolderRecursiveSync(path, global.path.join(eApp.getPath('userData'), "plugins", manifest.id));
+    } catch(e) {
+        const bm = bookmarks.matchAndAccess(path);
+        JSZip.loadAsync(global.fs.readFileSync(path)).then(async zip => {
+            const manifest = JSON.parse(await zip.file('plugin.json').async("string"));
+            if (!manifest.id||!manifest.script||!manifest.name) throw new Error('not a valid plugin');
+            if (global.fs.existsSync(global.path.join(eApp.getPath('userData'), "plugins", manifest.id))) {
+                deleteFolder(global.path.join(eApp.getPath('userData'), "plugins", manifest.id));
+            }
+            copyFolderRecursiveSyncFromZip(zip, global.path.join(eApp.getPath('userData'), "plugins", manifest.id));
+            bookmarks.release(bm);
+        });
     }
-    copyFolderRecursiveSync(path, global.path.join(eApp.getPath('userData'), "plugins", manifest.id));
 }
 
 function removePlugin(id) {
