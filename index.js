@@ -271,7 +271,7 @@ setInterval(function() {
 
 function createWindow() {
     mainWindow = new BrowserWindow({
-        backgroundColor: '#ffffff',//TODO: adjust based on dark mode
+        backgroundColor: nativeTheme.shouldUseDarkColors ? '#202020' : '#ffffff',//TODO: adjust based on dark mode
         width: 420,
         minWidth: 280,
         height: 700,
