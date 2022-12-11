@@ -67,7 +67,7 @@ Automatically rewrite all paths that don't exist to a single page. For Single Pa
 ### Rewrite to (for SPAs)
 
 - Name: `rewriteTo`
-- Type: `string`
+- Type: string
 - Default: `/index.html`
 
 If the Single page rewrite option is enabled, specify what file to rewrite to. For Single Page Applications.
@@ -101,7 +101,7 @@ Listen over IPV6 instead of the default, which is IPV4. This will change the web
 ### Cache-Control header value
 
 - Name: `cacheControl`
-- Type: `string`
+- Type: string
 - Default: -
 
 Optionally specify a custom `Cache-Control` HTTP header value. [Learn more about the Cache-Control header.](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Cache-Control)
