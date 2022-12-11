@@ -46,9 +46,13 @@
                 <div class="label">Check for updates</div>
             </div>
 
-            <div class="switch_option" id="darkmode" style="display: none;" onclick="toggleDarkMode()">
-                <div class="switch"></div>
-                <div class="label">Dark theme</div>
+            <div class="input_option">
+                <div class="label">Appearance</div>
+                <select id="theme" oninput="themeChange()">
+                    <option value="system">Automatic (System)</option>
+                    <option value="light">Light</option>
+                    <option value="dark">Dark</option>
+                </select>
             </div>
 
             <div style="
@@ -74,7 +78,7 @@
                 <div style="
                     text-align: center;
                     padding-bottom: 10px;
-                ">Version 1.1.4&nbsp; • &nbsp;<a href="javascript:openLicenses()" style="
+                ">Version 1.2.0&nbsp; • &nbsp;<a href="javascript:openLicenses()" style="
                     color: var(--text-primary);
                     text-decoration: none;
                 ">MIT License</a></div>

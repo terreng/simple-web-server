@@ -4,27 +4,27 @@ let server_states = [];
 let running_states = {
     "stopped": {
         "text": "Stopped",
-        "list_color": "gray",
+        "list_color": "var(--status-gray)",
         "edit_color": "var(--text-primary)"
     },
     "starting": {
         "text": "Starting...",
-        "list_color": "gray",
+        "list_color": "var(--status-gray)",
         "edit_color": "var(--text-primary)"
     },
     "running": {
         "text": "Running",
-        "list_color": "green",
-        "edit_color": "green"
+        "list_color": "var(--status-green)",
+        "edit_color": "var(--status-green)"
     },
     "error": {
         "text": "Error",
-        "list_color": "red",
-        "edit_color": "red"
+        "list_color": "var(--status-red)",
+        "edit_color": "var(--status-red)"
     },
     "unknown": {
         "text": "Starting...",
-        "list_color": "gray",
+        "list_color": "var(--status-gray)",
         "edit_color": "var(--text-primary)"
     },
 }
@@ -38,7 +38,6 @@ window.api.initipc((event, message) => {
         if (config.background != null && config.updates != null) openMain();
         else initWelcome();
         document.getElementById("stop_and_quit_button").style.display = config.background ? "block" : "none";
-        if (config.darkmode) document.body.classList.add("darkmode");
         document.body.style.visibility = "visible";
     } else if (message.type === "state") {
         server_states = message.server_states;
@@ -186,11 +185,7 @@ function openSettings(dont_reset_scroll) {
     if (install_source === "macappstore") {
         document.querySelector("#updates").style.display = "none";
     }
-    if (config.darkmode) {
-        document.querySelector("#darkmode").classList.add("checked");
-    } else {
-        document.querySelector("#darkmode").classList.remove("checked");
-    }
+    document.querySelector("#theme").value = config.theme || "system";
     if (dont_reset_scroll !== true) {
         document.querySelector("#settings_container").scrollTop = 0;
     }
@@ -474,16 +469,8 @@ function toggleUpdates() {
     window.api.saveconfig(config);
 }
 
-function toggleDarkMode() {
-    if (config.darkmode) {
-        document.querySelector("#darkmode").classList.remove("checked");
-        config.darkmode = false;
-        document.body.classList.remove("darkmode");
-    } else {
-        document.querySelector("#darkmode").classList.add("checked");
-        config.darkmode = true
-        document.body.classList.add("darkmode");
-    }
+function themeChange() {
+    config.theme = document.querySelector("#theme").value;
     window.api.saveconfig(config);
 }
 
@@ -536,7 +523,7 @@ function updateCurrentPath() {
     if (current_path) {
         document.querySelector("#path > div > span").innerText = current_path;
     } else {
-        document.querySelector("#path > div > span").innerHTML = '<span style="color: #757575;">Choose folder</span>';
+        document.querySelector("#path > div > span").innerHTML = '<span style="color: var(--text-secondary);">Choose folder</span>';
     }
     document.querySelector("#folder_path_error").style.display = "none";
 }

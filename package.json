@@ -1,7 +1,7 @@
 {
   "name": "simple-web-server",
   "productName": "Simple Web Server",
-  "version": "1.1.4",
+  "version": "1.2.0",
   "main": "index.js",
   "description": "Create a local web server in just a few clicks with an easy to use interface. A continuation of Web Server for Chrome, built with Electron.",
   "author": {
@@ -75,6 +75,8 @@
       "./plugin.js",
       "./images/logo.png",
       "./images/icon.ico",
+      "./images/menu-down.svg",
+      "./images/menu-down-dark.svg",
       "./fonts/**",
       "./WSC/**"
     ],

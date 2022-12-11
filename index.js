@@ -1,6 +1,6 @@
 const version = 1001004;
 const install_source = "website"; //"website" | "microsoftstore" | "macappstore"
-const {app, BrowserWindow, ipcMain, Menu, Tray, dialog, shell} = require('electron');
+const {app, BrowserWindow, ipcMain, Menu, Tray, dialog, shell, nativeTheme} = require('electron');
 const {networkInterfaces} = require('os');
 global.hostOS = require('os').platform();
 global.eApp = app;
@@ -184,6 +184,8 @@ app.on('ready', function() {
         })
     }
 
+    nativeTheme.themeSource = config.theme || "system";
+
     if (mainWindow === null) createWindow();
     console.log("\n"+((new Date()).toLocaleString()+"\n"));
     startServers();
@@ -217,6 +219,8 @@ ipcMain.on('saveconfig', function(event, arg1) {
     if (config.updates === false || install_source === "macappstore") {
         last_update_check_skipped = true;
     }
+
+    nativeTheme.themeSource = config.theme || "system";
     startServers();
 })
 
