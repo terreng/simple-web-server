@@ -54,6 +54,8 @@ window.api.initipc((event, message) => {
     } else if (message.type === "ipchange") {
         ip = message.ip;
         updateOnIpChange();
+    } else if (message.type === "reload") {
+        location.reload();
     }
 });
 

@@ -154,6 +154,27 @@ app.on('ready', function() {
         if (global.pendingSave) console.saveLogs();
     }
 
+    fs.watch(path.join(app.getPath('userData'), "config.json"), function(eventType, filename) {
+        let new_config;
+        try {
+            new_config = fs.readFileSync(path.join(app.getPath('userData'), "config.json"), "utf8");
+        } catch(error) {
+            new_config = "{}";
+        }
+        try {
+            new_config = JSON.parse(new_config);
+        } catch(error) {
+            dialog.showErrorBox("Failed to parse config.json", "Something went wrong while parsing config.json. The file is improperly formatted.");
+            app.quit();
+        }
+
+        if (JSON.stringify(new_config) !== JSON.stringify(config)) {
+            config = new_config;
+            configChanged();
+            mainWindow.webContents.send('message', {"type": "reload"});
+        }
+    });
+
     // This is always running - This needs to be checked
     if (process.mas || true) {
         try {
@@ -208,12 +229,16 @@ let isQuitting = false;
 ipcMain.on('quit', quit)
 
 ipcMain.on('saveconfig', function(event, arg1) {
+    config = arg1;
     try {
         fs.writeFileSync(path.join(app.getPath('userData'), "config.json"), JSON.stringify(arg1, null, 2));
     } catch(e) {
         console.warn(e);
     }
-    config = arg1;
+    configChanged();
+})
+
+function configChanged() {
     if (config.updates === true && install_source !== "macappstore" && last_update_check_skipped === true) checkForUpdates();
 
     if (config.updates === false || install_source === "macappstore") {
@@ -222,7 +247,7 @@ ipcMain.on('saveconfig', function(event, arg1) {
 
     nativeTheme.themeSource = config.theme || "system";
     startServers();
-})
+}
 
 ipcMain.handle('showPicker', async (event, arg) => {
     const result = await dialog.showOpenDialog(mainWindow, {
