@@ -267,7 +267,7 @@ body {
     padding: 0px;
     height: 80px;
     border-bottom: 1px solid var(--line);
-    transition: 0.1s background-color;
+    transition: 0.1s background-color, 0.2s transform, 0.2s box-shadow;
     cursor: pointer;
 }
 
@@ -279,8 +279,24 @@ body {
     background-color: var(--active);
 }
 
-.server.enabled {
+.server.in_drag {
+    box-shadow: 0 2px 12px 0px rgb(0 0 0 / 40%);
+    background-color: var(--elevated);
+    position: absolute;
+    z-index: 1;
+    left: 0;
+    right: 0;
+}
 
+.server.in_drag_ending {
+    box-shadow: none;
+    background-color: var(--background);
+}
+
+.server_placeholder {
+    height: 81px;
+    /* border-bottom: 1px solid var(--line); */
+    width: 100%;
 }
 
 .server > div:nth-child(1) {

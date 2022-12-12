@@ -103,12 +103,101 @@ async function openLicenses() {
 function renderServerList() {
     let pendhtml = "";
     for (let i=0; i<(config.servers || []).length; i++) {
-        pendhtml += '<div class="server '+(config.servers[i].enabled ? "checked" : "")+'" id="server_'+i+'"><div onclick="toggleServer('+i+')"><div class="switch"></div></div><div onclick="addServer('+i+')"><div><span>'+htmlescape(config.servers[i].path)+'</span></div><div><span class="server_status" style="color: '+running_states[getServerStatus(config.servers[i]).state].list_color+';">'+running_states[getServerStatus(config.servers[i]).state].text+'</span> &bull; Port '+String(config.servers[i].port)+(config.servers[i].ipv6 ? ' &bull; IPv6' : '')+(config.servers[i].localnetwork ? ' &bull; LAN' : '')+(config.servers[i].https ? ' &bull; HTTPS' : '')+'</div></div></div>'
+        pendhtml += '<div class="server '+(config.servers[i].enabled ? "checked" : "")+'" id="server_'+i+'" onmousedown="reorderDragStart(event, '+i+')" ontouchstart="reorderDragStart(event, '+i+')"><div onclick="toggleServer('+i+')"><div class="switch"></div></div><div onclick="if(!dragging){addServer('+i+')}"><div><span>'+htmlescape(config.servers[i].path)+'</span></div><div><span class="server_status" style="color: '+running_states[getServerStatus(config.servers[i]).state].list_color+';">'+running_states[getServerStatus(config.servers[i]).state].text+'</span> &bull; Port '+String(config.servers[i].port)+(config.servers[i].ipv6 ? ' &bull; IPv6' : '')+(config.servers[i].localnetwork ? ' &bull; LAN' : '')+(config.servers[i].https ? ' &bull; HTTPS' : '')+'</div></div></div>'
     }
     if (pendhtml === "") {
         pendhtml = '<div style="color: var(--fullscreen_placeholder);text-align: center;position: absolute;top: 48%;width: 100%;transform: translateY(-50%);"><i class="material-icons" style="font-size: 70px;">dns</i><div style="font-size: 18px;padding-top: 20px;">You haven\'t created any servers yet</div></div>';
     }
     document.getElementById("servers_list").innerHTML = pendhtml;
+}
+
+var drag_y_start;
+var dragging = false;
+var dragging_index;
+var last_hover_index;
+
+function reorderDragStart(event, index) {
+
+    drag_y_start = (event.pageY || event.targetTouches[0].pageY);
+    dragging_index = index;
+
+    document.documentElement.addEventListener('touchmove', reorderDragMove);
+    document.documentElement.addEventListener('mousemove', reorderDragMove);
+    document.documentElement.addEventListener('touchend', reorderDragEnd);
+    document.documentElement.addEventListener('touchcancel', reorderDragEnd);
+    document.documentElement.addEventListener('mouseup', reorderDragEnd);
+
+}
+
+function reorderDragMove(event) {
+
+    let drag_y = (event.pageY || event.targetTouches[0].pageY);
+    let offset = drag_y-drag_y_start;
+
+    if (!dragging && Math.abs(offset) > 1) {
+        dragging = true;
+        document.querySelector("#server_"+dragging_index).classList.add("in_drag");
+        document.querySelector("#server_"+dragging_index).insertAdjacentHTML("afterend", '<div class="server_placeholder"></div>');
+        document.body.style.pointerEvents = "none";
+        document.body.style.overflowAnchor = "none";
+        document.querySelector("#main_container").style.overflowY = "hidden";
+    }
+
+    if (dragging) {
+        let top = ((81*dragging_index)+offset);
+        document.querySelector("#server_"+dragging_index).style.top = (top < 0 ? top/3 : (top > ((config.servers || []).length-1)*81 ? ((config.servers || []).length-1)*81 + (top-(((config.servers || []).length-1)*81))/3 : top))+"px";
+
+        let hover_index_offset = Math.floor((offset + 40)/81);
+        last_hover_index = Math.max(0, Math.min((config.servers || []).length-1, dragging_index + hover_index_offset));
+
+        for (let i=0; i<(config.servers || []).length; i++) {
+            if (i >= last_hover_index && dragging_index > i) {
+                document.querySelector("#server_"+i).style.transform = "translateY(81px)";
+            } else if (i <= last_hover_index && dragging_index < i) {
+                document.querySelector("#server_"+i).style.transform = "translateY(-81px)";
+            } else {
+                document.querySelector("#server_"+i).style.transform = "translateY(0px)";
+            }
+        }
+
+    }
+
+}
+
+function reorderDragEnd() {
+
+    document.documentElement.removeEventListener('touchmove', reorderDragMove);
+    document.documentElement.removeEventListener('mousemove', reorderDragMove);
+    document.documentElement.removeEventListener('touchend', reorderDragEnd);
+    document.documentElement.removeEventListener('touchcancel', reorderDragEnd);
+    document.documentElement.removeEventListener('mouseup', reorderDragEnd);
+
+    if (dragging) {
+        dragging = false;
+
+        let new_top = last_hover_index*81;
+        let old_top = Number(document.querySelector("#server_"+dragging_index).style.top.split("px")[0]);
+
+        document.querySelector("#server_"+dragging_index).style.transform = "translateY("+(new_top-old_top)+"px)";
+        document.querySelector("#server_"+dragging_index).classList.add("in_drag_ending");
+
+        document.querySelector("#server_"+dragging_index).addEventListener('transitionend', () => {
+            document.querySelector("#server_"+dragging_index).classList.remove("in_drag");
+            document.querySelector("#server_"+dragging_index).classList.remove("in_drag_ending");
+            document.querySelector(".server_placeholder").outerHTML = "";
+            document.body.style.pointerEvents = "";
+            document.body.style.overflowAnchor = "";
+            document.querySelector("#main_container").style.overflowY = "";
+
+            var temp = config.servers[dragging_index];
+            config.servers.splice(dragging_index, 1);
+            config.servers.splice(last_hover_index, 0, temp);
+
+            window.api.saveconfig(config);
+
+            renderServerList();
+        });
+    }
 }
 
 function getServerStatus(local_config) {
