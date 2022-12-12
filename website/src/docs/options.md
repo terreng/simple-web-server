@@ -32,7 +32,7 @@ Port that the local web server is accessible on. Access the website at `http://l
 - Type: `true/false`
 - Default: `false`
 
-Makes the web server accessible over LAN to other computers on the network. Access it from another computer using the host computer's local IP address and the specified port. The LAN IP address is displayed in the app under web server URLs.
+Makes the web server accessible over LAN (local area network) to other computers on the network. Access it from another computer using the host computer's local IP address and the specified port. The LAN IP address is displayed in the app under web server URLs.
 
 Enabling this option requires local network access. On Windows and macOS you may see a firewall permission prompt when enabling this option. You must allow access in order for the web server to work over LAN.
 
@@ -62,7 +62,7 @@ When no file path is specified, automatically serve `index.html` (if it exists).
 - Type: `true/false`
 - Default: `false`
 
-Automatically rewrite all paths that don't exist to a single page. For Single Page Applications.
+Automatically rewrite all paths that don't exist to a single page. For [Single Page Applications](https://developer.mozilla.org/en-US/docs/Glossary/SPA).
 
 ### Rewrite to (for SPAs)
 
@@ -160,9 +160,9 @@ Disables JavaScript enhancement of the directory listing page.
 - Type: `true/false`
 - Default: `true`
 
-If hidden/dot files are enabled, determines if they will additionally be shown in the directory listing. This includes `.swshtaccess` files.
+If hidden/dot files are enabled, determines if they will be shown in the directory listing. This includes `.swshtaccess` files.
 
-### Enable .swshtaccess configuration files
+### Enable .swshtaccess configuration files <Badge type="tip" text="Unfinished / May change" vertical="top" />
 
 - Name: `htaccess`
 - Type: `true/false`
