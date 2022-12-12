@@ -87,6 +87,7 @@ body {
     --text-primary: #1b1b1b;
     --text-secondary: #808080;
     --icons: #424242;
+    --help-icons: #757575;
     --line: #c3c3c3;
     --button: #d09608;
     --button-text: #ad7d06;
@@ -143,6 +144,7 @@ body {
         --text-primary: #f3f3f3;
         --text-secondary: #9f9f9f;
         --icons: #cdcdcd;
+        --help-icons: #b2b2b2;
         --line: #595959;
         --button: #d09608;
         --button-text: #e7a70b;
@@ -913,4 +915,25 @@ body {
 #update_banner > div:nth-child(2) i {
     font-size: 32px;
     color: var(--icons);
+}
+
+.help_icon {
+    cursor: pointer;
+    opacity: 0;
+    transition: 0.2s opacity;
+}
+
+.help_icon > i {
+    color: var(--help-icons);
+}
+
+.help_icon > i {
+    vertical-align: bottom;
+    height: 20px;
+    font-size: 24px;
+    transform: translateY(-3px);
+}
+
+.input_option:hover .help_icon, .checkbox_option:hover .help_icon {
+    opacity: 1;
 }
