@@ -2,9 +2,7 @@
 
 All server options and app settings are stored in one file, `config.json`. It's possible to manually edit this file to access options that aren't accessible from the user interface.
 
-:::warning
-Currently, the app only reads from config.json once, at startup. Any changes you make to config.json while the app is running won't have any effect, and may be overwritten. You should close the app while manually editing config.json, and reopen it once you are done.
-:::
+Changes made to this file while the program is running will take effect immediately. Changes will reload the UI, which may cause you to lose unsaved changes.
 
 :::warning
 If you download the app from the Mac App Store, then web servers may stop working if you change the `path` option directly from config.json. This is because the app only has permission to read from directories that have been selected using the open dialog in the app.

@@ -171,7 +171,9 @@ app.on('ready', function() {
         if (JSON.stringify(new_config) !== JSON.stringify(config)) {
             config = new_config;
             configChanged();
-            mainWindow.webContents.send('message', {"type": "reload"});
+            if (mainWindow && mainWindow.webContentsLoaded) {
+                mainWindow.webContents.send('message', {"type": "reload"});
+            }
         }
     });
 
