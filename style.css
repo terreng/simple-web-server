@@ -112,6 +112,7 @@ body {
     --shadow: rgba(0, 0, 0, 0.3);
     --fullscreen_placeholder: gray;
     --link: #0067dc;
+    --link-primary: #ad7d06;
     --update-banner-background: #c5e1a5;
     --update-banner-shadow: #4e5d3c73;
     --update-banner-background-high: #ffe082;
@@ -169,6 +170,7 @@ body {
         --shadow: rgba(0, 0, 0, 0.3);
         --fullscreen_placeholder: #a5a5a5;
         --link: #3191ff;
+        --link-primary: #e7a70b;
         --update-banner-background: #567137;
         --update-banner-shadow: #4e5d3c73;
         --update-banner-background-high: #95781e;
@@ -568,7 +570,8 @@ body {
 }
 
 #prompt_text a {
-    color: var(--link);
+    color: var(--link-primary);
+    font-weight: 500;
 }
 
 .switch {
@@ -945,6 +948,6 @@ body {
     margin-left: 1px;
 }
 
-.input_option:hover .help_icon, .checkbox_option:hover .help_icon {
+.input_option:hover .help_icon, .checkbox_option:hover .help_icon, .help_icon:focus {
     opacity: 1;
 }
