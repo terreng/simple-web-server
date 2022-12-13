@@ -267,6 +267,10 @@ ipcMain.handle('generateCrypto', () => {
     return WSC.createCrypto();
 });
 
+ipcMain.handle('openExternal', (event, arg) => {
+    shell.openExternal(arg.url);
+});
+
 app.on('activate', () => {
     if (!process.mas && !app.hasSingleInstanceLock()) return;
     if (mainWindow === null) {

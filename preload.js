@@ -8,7 +8,10 @@ contextBridge.exposeInMainWorld('api', {
     initipc: ipcMessageEvent => {
         ipcRenderer.on('message', ipcMessageEvent);
     },
-    openExternal: url => shell.openExternal(url),
+    openExternal: url => {
+        console.log(url)
+        ipcRenderer.invoke('openExternal', {"url": url});
+    },
     quit: () => ipcRenderer.send("quit"),
     showPicker: current_path => {
         return ipcRenderer.invoke('showPicker', {"current_path": current_path});
@@ -18,5 +21,5 @@ contextBridge.exposeInMainWorld('api', {
     },
     generateCrypto: () => {
         return ipcRenderer.invoke('generateCrypto');
-    },
+    }
 })
