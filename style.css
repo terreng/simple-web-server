@@ -567,6 +567,10 @@ body {
     padding-bottom: 18px;
 }
 
+#prompt_text a {
+    color: var(--link);
+}
+
 .switch {
     position: relative;
     display: block;
@@ -925,6 +929,12 @@ body {
 
 .help_icon > i {
     color: var(--help-icons);
+    opacity: 1;
+    transition: 0.05s opacity;
+}
+
+.help_icon > i:active {
+    opacity: 0.85;
 }
 
 .help_icon > i {
@@ -932,6 +942,7 @@ body {
     height: 20px;
     font-size: 24px;
     transform: translateY(-3px);
+    margin-left: 1px;
 }
 
 .input_option:hover .help_icon, .checkbox_option:hover .help_icon {

@@ -66,6 +66,7 @@
       "./index.html",
       "./LICENSE",
       "./main.js",
+      "./help_text.js",
       "./mime.js",
       "./open_source_licenses.txt",
       "./preload.js",

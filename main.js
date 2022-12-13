@@ -751,3 +751,10 @@ function initWelcome() {
 function initContinue() {
     openMain();
 }
+
+function helpInfo(event, id) {
+    event.preventDefault();
+    event.stopPropagation();
+
+    showPrompt(help_text[id][0], help_text[id][1].replace(/<a href="(.+)">/g, function(a, b) {return '<a href="'+b+'" target="_blank" onclick="window.api.openExternal(this.href);event.preventDefault()">'}), [["Done","",hidePrompt]]);
+}
