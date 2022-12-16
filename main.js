@@ -741,6 +741,7 @@ function generateCrypto() {
 function initWelcome() {
     config.background = false;
     config.updates = true;
+    config.theme = "system";
     window.api.saveconfig(config);
     navigate("welcome");
     if (install_source === "macappstore") {

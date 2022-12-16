@@ -70,7 +70,7 @@ Automatically rewrite all paths that don't exist to a single page. For [Single P
 - Type: string
 - Default: `/index.html`
 
-If the Single page rewrite option is enabled, specify what file to rewrite to. For Single Page Applications.
+If the Single page rewrite option is enabled, specify what file to rewrite to. For [Single Page Applications](https://developer.mozilla.org/en-US/docs/Glossary/SPA).
 
 ### Show directory listing
 

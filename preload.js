@@ -9,7 +9,6 @@ contextBridge.exposeInMainWorld('api', {
         ipcRenderer.on('message', ipcMessageEvent);
     },
     openExternal: url => {
-        console.log(url)
         ipcRenderer.invoke('openExternal', {"url": url});
     },
     quit: () => ipcRenderer.send("quit"),

@@ -124,6 +124,7 @@ body {
     --status-gray: gray;
     --status-green: green;
     --status-red: red;
+    --inline-code-background: #e2e2e2;
     background: var(--background);
     color: var(--text-primary);
     user-select: none;
@@ -182,6 +183,7 @@ body {
         --status-gray: #9f9f9f;
         --status-green: #0dcd0d;
         --status-red: #ff6060;
+        --inline-code-background: #4a4a4a;
         color-scheme: dark;
     }
 
@@ -561,12 +563,14 @@ body {
     font-size: 22px;
     font-weight: 500;
     padding-top: 1px;
+    user-select: text;
 }
 
 #prompt_text {
     font-size: 18px;
     padding-top: 12px;
     padding-bottom: 18px;
+    user-select: text;
 }
 
 #prompt_text a {
@@ -948,6 +952,16 @@ body {
     margin-left: 1px;
 }
 
-.input_option:hover .help_icon, .checkbox_option:hover .help_icon, .help_icon:focus {
+.input_option:hover .help_icon, .checkbox_option:hover .help_icon, .switch_option:hover .help_icon, .help_icon:focus {
     opacity: 1;
+}
+
+code {
+    background: var(--inline-code-background);
+    border-radius: 5px;
+    padding-left: 2px;
+    padding-right: 2px;
+    font-size: 17px;
+    padding-top: 1px;
+    padding-bottom: 1px;
 }

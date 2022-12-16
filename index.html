@@ -38,16 +38,16 @@
 
             <div class="switch_option" id="background" onclick="toggleRunInBk()">
                 <div class="switch"></div>
-                <div class="label">Keep running when closed</div>
+                <div class="label">Keep running when closed <a href="#" class="help_icon" onclick="helpInfo(event, 'background')"><i class="material-icons">help_outline</i></a></div>
             </div>
 
             <div class="switch_option" id="updates" onclick="toggleUpdates()">
                 <div class="switch"></div>
-                <div class="label">Check for updates</div>
+                <div class="label">Check for updates <a href="#" class="help_icon" onclick="helpInfo(event, 'updates')"><i class="material-icons">help_outline</i></a></div>
             </div>
 
             <div class="input_option">
-                <div class="label">Appearance</div>
+                <div class="label">Appearance <a href="#" class="help_icon" onclick="helpInfo(event, 'theme')"><i class="material-icons">help_outline</i></a></div>
                 <select id="theme" oninput="themeChange()">
                     <option value="system">Automatic (System)</option>
                     <option value="light">Light</option>
@@ -170,18 +170,18 @@
                     <div class="checkbox">
                         <i class="material-icons">check_box_outline_blank</i>
                     </div>
-                    <div class="label">Automatically show index.html</div>
+                    <div class="label">Automatically show index.html <a href="#" class="help_icon" onclick="helpInfo(event, 'showIndex')"><i class="material-icons">help_outline</i></a></div>
                 </div>
 
                 <div class="checkbox_option" id="spa" onclick="toggleCheckbox(this)">
                     <div class="checkbox">
                         <i class="material-icons">check_box_outline_blank</i>
                     </div>
-                    <div class="label">Single page rewrite (for SPAs)</div>
+                    <div class="label">Single page rewrite (for SPAs) <a href="#" class="help_icon" onclick="helpInfo(event, 'spa')"><i class="material-icons">help_outline</i></a></div>
                 </div>
 
                 <div class="input_option">
-                    <div class="label">Rewrite to (for SPAs)</div>
+                    <div class="label">Rewrite to (for SPAs) <a href="#" class="help_icon" onclick="helpInfo(event, 'rewriteTo')"><i class="material-icons">help_outline</i></a></div>
                     <input type="text" id="rewriteTo" placeholder="/index.html" style="width: 100%;">
                 </div>
 
@@ -189,14 +189,14 @@
                     <div class="checkbox">
                         <i class="material-icons">check_box_outline_blank</i>
                     </div>
-                    <div class="label">Show directory listing</div>
+                    <div class="label">Show directory listing <a href="#" class="help_icon" onclick="helpInfo(event, 'directoryListing')"><i class="material-icons">help_outline</i></a></div>
                 </div>
 
                 <div class="checkbox_option" id="excludeDotHtml" onclick="toggleCheckbox(this)">
                     <div class="checkbox">
                         <i class="material-icons">check_box_outline_blank</i>
                     </div>
-                    <div class="label">Exclude .html extension</div>
+                    <div class="label">Exclude .html extension <a href="#" class="help_icon" onclick="helpInfo(event, 'excludeDotHtml')"><i class="material-icons">help_outline</i></a></div>
                 </div>
 
                 </div>
@@ -215,11 +215,11 @@
                     <div class="checkbox">
                         <i class="material-icons">check_box_outline_blank</i>
                     </div>
-                    <div class="label">Listen on IPV6</div>
+                    <div class="label">Listen on IPV6 <a href="#" class="help_icon" onclick="helpInfo(event, 'ipv6')"><i class="material-icons">help_outline</i></a></div>
                 </div>
 
                 <div class="input_option">
-                    <div class="label">Cache-Control header value</div>
+                    <div class="label">Cache-Control header value <a href="#" class="help_icon" onclick="helpInfo(event, 'cacheControl')"><i class="material-icons">help_outline</i></a></div>
                     <input type="text" id="cacheControl" placeholder="" style="width: 100%;">
                 </div>
 
@@ -227,56 +227,56 @@
                     <div class="checkbox">
                         <i class="material-icons">check_box_outline_blank</i>
                     </div>
-                    <div class="label">Set CORS headers</div>
+                    <div class="label">Set CORS headers <a href="#" class="help_icon" onclick="helpInfo(event, 'cors')"><i class="material-icons">help_outline</i></a></div>
                 </div>
 
                 <div class="checkbox_option" id="hiddenDotFiles" onclick="toggleCheckbox(this)">
                     <div class="checkbox">
                         <i class="material-icons">check_box_outline_blank</i>
                     </div>
-                    <div class="label">Serve hidden/dot files</div>
+                    <div class="label">Serve hidden/dot files <a href="#" class="help_icon" onclick="helpInfo(event, 'hiddenDotFiles')"><i class="material-icons">help_outline</i></a></div>
                 </div>
 
                 <div class="checkbox_option" id="upload" onclick="toggleCheckbox(this)">
                     <div class="checkbox">
                         <i class="material-icons">check_box_outline_blank</i>
                     </div>
-                    <div class="label">Allow file upload</div>
+                    <div class="label">Allow file upload <a href="#" class="help_icon" onclick="helpInfo(event, 'upload')"><i class="material-icons">help_outline</i></a></div>
                 </div>
 
                 <div class="checkbox_option" id="replace" onclick="toggleCheckbox(this)">
                     <div class="checkbox">
                         <i class="material-icons">check_box_outline_blank</i>
                     </div>
-                    <div class="label">Allow replacing files</div>
+                    <div class="label">Allow replacing files <a href="#" class="help_icon" onclick="helpInfo(event, 'replace')"><i class="material-icons">help_outline</i></a></div>
                 </div>
 
                 <div class="checkbox_option" id="delete" onclick="toggleCheckbox(this)">
                     <div class="checkbox">
                         <i class="material-icons">check_box_outline_blank</i>
                     </div>
-                    <div class="label">Allow deleting files</div>
+                    <div class="label">Allow deleting files <a href="#" class="help_icon" onclick="helpInfo(event, 'delete')"><i class="material-icons">help_outline</i></a></div>
                 </div>
 
                 <div class="checkbox_option" id="staticDirectoryListing" onclick="toggleCheckbox(this)">
                     <div class="checkbox">
                         <i class="material-icons">check_box_outline_blank</i>
                     </div>
-                    <div class="label">Always use static directory listing</div>
+                    <div class="label">Always use static directory listing <a href="#" class="help_icon" onclick="helpInfo(event, 'staticDirectoryListing')"><i class="material-icons">help_outline</i></a></div>
                 </div>
 
                 <div class="checkbox_option" id="hiddenDotFilesDirectoryListing" onclick="toggleCheckbox(this)">
                     <div class="checkbox">
                         <i class="material-icons">check_box_outline_blank</i>
                     </div>
-                    <div class="label">Show hidden/dot files in directory listing</div>
+                    <div class="label">Show hidden/dot files in directory listing <a href="#" class="help_icon" onclick="helpInfo(event, 'hiddenDotFilesDirectoryListing')"><i class="material-icons">help_outline</i></a></div>
                 </div>
 
                 <div class="checkbox_option" id="htaccess" onclick="toggleCheckbox(this)">
                     <div class="checkbox">
                         <i class="material-icons">check_box_outline_blank</i>
                     </div>
-                    <div class="label">Enable .swshtaccess configuration files</div>
+                    <div class="label">Enable .swshtaccess configuration files <a href="#" class="help_icon" onclick="helpInfo(event, 'htaccess')"><i class="material-icons">help_outline</i></a></div>
                 </div>
 
                 </div>
@@ -292,22 +292,22 @@
                 <div class="settings_section_inner">
 
                 <div class="input_option">
-                    <div class="label">Custom 404 page file path</div>
+                    <div class="label">Custom 404 page file path <a href="#" class="help_icon" onclick="helpInfo(event, 'custom404')"><i class="material-icons">help_outline</i></a></div>
                     <input type="text" id="custom404" placeholder="/404.html" style="width: 100%;">
                 </div>
 
                 <div class="input_option">
-                    <div class="label">Custom 403 page file path</div>
+                    <div class="label">Custom 403 page file path <a href="#" class="help_icon" onclick="helpInfo(event, 'custom403')"><i class="material-icons">help_outline</i></a></div>
                     <input type="text" id="custom403" placeholder="/403.html" style="width: 100%;">
                 </div>
 
                 <div class="input_option">
-                    <div class="label">Custom 401 page file path</div>
+                    <div class="label">Custom 401 page file path <a href="#" class="help_icon" onclick="helpInfo(event, 'custom401')"><i class="material-icons">help_outline</i></a></div>
                     <input type="text" id="custom401" placeholder="/401.html" style="width: 100%;">
                 </div>
 
                 <div class="input_option">
-                    <div class="label">Custom error path variable</div>
+                    <div class="label">Custom error path variable <a href="#" class="help_icon" onclick="helpInfo(event, 'customErrorReplaceString')"><i class="material-icons">help_outline</i></a></div>
                     <input type="text" id="customErrorReplaceString" placeholder="{{PATH}}" style="width: 100%;">
                 </div>
 
@@ -327,16 +327,16 @@
                     <div class="checkbox">
                         <i class="material-icons">check_box_outline_blank</i>
                     </div>
-                    <div class="label">Use HTTPS</div>
+                    <div class="label">Use HTTPS <a href="#" class="help_icon" onclick="helpInfo(event, 'https')"><i class="material-icons">help_outline</i></a></div>
                 </div>
 
                 <div class="input_option">
-                    <div class="label">SSL/TLS cerificate</div>
+                    <div class="label">SSL/TLS cerificate <a href="#" class="help_icon" onclick="helpInfo(event, 'httpsCert')"><i class="material-icons">help_outline</i></a></div>
                     <input type="text" id="httpsCert" placeholder="" style="width: 100%;">
                 </div>
 
                 <div class="input_option">
-                    <div class="label">SSL/TLS private key</div>
+                    <div class="label">SSL/TLS private key <a href="#" class="help_icon" onclick="helpInfo(event, 'httpsKey')"><i class="material-icons">help_outline</i></a></div>
                     <input type="text" id="httpsKey" placeholder="" style="width: 100%;">
                 </div>
 
@@ -348,23 +348,23 @@
                     <div class="checkbox">
                         <i class="material-icons">check_box_outline_blank</i>
                     </div>
-                    <div class="label">Enable HTTP Basic authentication</div>
+                    <div class="label">Enable HTTP Basic authentication <a href="#" class="help_icon" onclick="helpInfo(event, 'httpAuth')"><i class="material-icons">help_outline</i></a></div>
                 </div>
 
                 <div class="input_option">
-                    <div class="label">HTTP Basic auth username</div>
+                    <div class="label">HTTP Basic auth username <a href="#" class="help_icon" onclick="helpInfo(event, 'httpAuthPassword')"><i class="material-icons">help_outline</i></a></div>
                     <input type="text" id="httpAuthUsername" placeholder="" oninput="httpAuthUsernameChange();reevaluateSectionHeights();" style="width: 100%;">
                 </div>
 
                 <div class="input_error">Username cannot contain ":"</div>
 
                 <div class="input_option">
-                    <div class="label">HTTP Basic auth password</div>
+                    <div class="label">HTTP Basic auth password <a href="#" class="help_icon" onclick="helpInfo(event, 'httpAuthPassword')"><i class="material-icons">help_outline</i></a></div>
                     <input type="text" id="httpAuthPassword" placeholder="" style="width: 100%;">
                 </div>
 
                 <div class="input_option">
-                    <div class="label">Maximum connections per IP address</div>
+                    <div class="label">Maximum connections per IP address <a href="#" class="help_icon" onclick="helpInfo(event, 'ipThrottling')"><i class="material-icons">help_outline</i></a></div>
                     <input type="number" id="ipThrottling" placeholder="10" oninput="ipLimitChange();reevaluateSectionHeights()" style="width: 100px;">
                 </div>
     
@@ -417,12 +417,12 @@
 
                 <div class="switch_option" id="background_welcome" onclick="toggleRunInBk()">
                     <div class="switch"></div>
-                    <div class="label">Keep running when closed</div>
+                    <div class="label">Keep running when closed <a href="#" class="help_icon" onclick="helpInfo(event, 'background')"><i class="material-icons">help_outline</i></a></div>
                 </div>
 
                 <div class="switch_option checked" id="updates_welcome" onclick="toggleUpdates()">
                     <div class="switch"></div>
-                    <div class="label">Check for updates</div>
+                    <div class="label">Check for updates <a href="#" class="help_icon" onclick="helpInfo(event, 'updates')"><i class="material-icons">help_outline</i></a></div>
                 </div>
 
                 </div>
