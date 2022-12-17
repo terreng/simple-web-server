@@ -74,6 +74,13 @@ function navigate(screen) {
             document.getElementById(screens[i]+"_actions").style.display = (screens[i] === screen ? "block" : "none");
         }
     }
+    // if (screen == "server") {
+    //     dragHandler = function(path) {
+    //         console.log(path);
+    //     }
+    // } else {
+    //     delete dragHandler;
+    // }
 }
 
 function openMain() {
@@ -758,4 +765,45 @@ function helpInfo(event, id) {
     event.stopPropagation();
 
     showPrompt(help_text[id][0], help_text[id][1].replace(/<a href="(.+)">/g, function(a, b) {return '<a href="'+b+'" target="_blank" onclick="window.api.openExternal(this.href);event.preventDefault()">'}), [["Done","",hidePrompt]]);
+}
+
+// TODO: Implement drag and drop for setting the folder directory or installing a plugin. I don't know how to make this work with security scoped bookmarks on macOS.
+var outstanding_drag_enter_events = 0;
+var dragHandler = undefined;
+
+function dragEnter(event) {
+    if (dragHandler) {
+        event.preventDefault();
+        outstanding_drag_enter_events++;
+        dragStarted();
+    }
+}
+
+function dragLeave(event) {
+    event.preventDefault();
+    outstanding_drag_enter_events = Math.max(0, outstanding_drag_enter_events - 1);
+    if (outstanding_drag_enter_events == 0) {
+        dragEnded();
+    }
+}
+
+function dragOver(event) {
+    event.preventDefault();
+}
+
+function dragStarted() {
+    document.querySelector("#drop_zone").classList.add("drag_hovering");
+}
+
+function dragEnded() {
+    document.querySelector("#drop_zone").classList.remove("drag_hovering");
+}
+
+function dragDrop(event) {
+    event.preventDefault();
+    outstanding_drag_enter_events = 0;
+    dragEnded();
+    if (dragHandler && event.dataTransfer.files && event.dataTransfer.files[0]) {
+        dragHandler(event.dataTransfer.files[0].path);
+    }
 }

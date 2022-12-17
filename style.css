@@ -965,3 +965,20 @@ code {
     padding-top: 1px;
     padding-bottom: 1px;
 }
+
+#drop_zone {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: #d09608;
+    opacity: 0;
+    z-index: 1000;
+    pointer-events: none;
+    transition: 0.2s opacity;
+}
+
+#drop_zone.drag_hovering {
+    opacity: 0.25;
+}

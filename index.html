@@ -5,7 +5,7 @@
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <link rel="stylesheet" href="style.css">
     </head>
-    <body style="visibility: hidden;">
+    <body style="visibility: hidden;" ondragenter="dragEnter(event)" ondragover="dragOver(event)" ondragleave="dragLeave(event)" ondrop="dragDrop(event)">
 
         <!--Main server list-->
         <div class="top_title" id="main_title">
@@ -445,6 +445,8 @@
             <div id="prompt_text"></div>
             <div id="prompt_actions"></div>
         </div>
+
+        <div id="drop_zone"></div>
 
         <script src="main.js"></script>
         <script src="help_text.js"></script>
