@@ -1,3 +1,4 @@
+<!doctype html>
 <html lang="en">
     <head>
         <meta charset="utf-8">
@@ -182,7 +183,7 @@
 
                 <div class="input_option">
                     <div class="label">Rewrite to (for SPAs) <a href="#" class="help_icon" onclick="helpInfo(event, 'rewriteTo')"><i class="material-icons">help_outline</i></a></div>
-                    <input type="text" id="rewriteTo" placeholder="/index.html" style="width: 100%;">
+                    <input type="text" id="rewriteTo" placeholder="/index.html">
                 </div>
 
                 <div class="checkbox_option" id="directoryListing" onclick="toggleCheckbox(this)">
@@ -220,7 +221,7 @@
 
                 <div class="input_option">
                     <div class="label">Cache-Control header value <a href="#" class="help_icon" onclick="helpInfo(event, 'cacheControl')"><i class="material-icons">help_outline</i></a></div>
-                    <input type="text" id="cacheControl" placeholder="" style="width: 100%;">
+                    <input type="text" id="cacheControl" placeholder="">
                 </div>
 
                 <div class="checkbox_option" id="cors" onclick="toggleCheckbox(this)">
@@ -293,22 +294,22 @@
 
                 <div class="input_option">
                     <div class="label">Custom 404 page file path <a href="#" class="help_icon" onclick="helpInfo(event, 'custom404')"><i class="material-icons">help_outline</i></a></div>
-                    <input type="text" id="custom404" placeholder="/404.html" style="width: 100%;">
+                    <input type="text" id="custom404" placeholder="/404.html">
                 </div>
 
                 <div class="input_option">
                     <div class="label">Custom 403 page file path <a href="#" class="help_icon" onclick="helpInfo(event, 'custom403')"><i class="material-icons">help_outline</i></a></div>
-                    <input type="text" id="custom403" placeholder="/403.html" style="width: 100%;">
+                    <input type="text" id="custom403" placeholder="/403.html">
                 </div>
 
                 <div class="input_option">
                     <div class="label">Custom 401 page file path <a href="#" class="help_icon" onclick="helpInfo(event, 'custom401')"><i class="material-icons">help_outline</i></a></div>
-                    <input type="text" id="custom401" placeholder="/401.html" style="width: 100%;">
+                    <input type="text" id="custom401" placeholder="/401.html">
                 </div>
 
                 <div class="input_option">
                     <div class="label">Custom error path variable <a href="#" class="help_icon" onclick="helpInfo(event, 'customErrorReplaceString')"><i class="material-icons">help_outline</i></a></div>
-                    <input type="text" id="customErrorReplaceString" placeholder="{{PATH}}" style="width: 100%;">
+                    <input type="text" id="customErrorReplaceString" placeholder="{{PATH}}">
                 </div>
 
                 </div>
@@ -332,12 +333,12 @@
 
                 <div class="input_option">
                     <div class="label">SSL/TLS cerificate <a href="#" class="help_icon" onclick="helpInfo(event, 'httpsCert')"><i class="material-icons">help_outline</i></a></div>
-                    <input type="text" id="httpsCert" placeholder="" style="width: 100%;">
+                    <input type="text" id="httpsCert" placeholder="">
                 </div>
 
                 <div class="input_option">
                     <div class="label">SSL/TLS private key <a href="#" class="help_icon" onclick="helpInfo(event, 'httpsKey')"><i class="material-icons">help_outline</i></a></div>
-                    <input type="text" id="httpsKey" placeholder="" style="width: 100%;">
+                    <input type="text" id="httpsKey" placeholder="">
                 </div>
 
                 <div style="padding: 8px 12px;overflow: hidden;">
@@ -353,14 +354,14 @@
 
                 <div class="input_option">
                     <div class="label">HTTP Basic auth username <a href="#" class="help_icon" onclick="helpInfo(event, 'httpAuthPassword')"><i class="material-icons">help_outline</i></a></div>
-                    <input type="text" id="httpAuthUsername" placeholder="" oninput="httpAuthUsernameChange();reevaluateSectionHeights();" style="width: 100%;">
+                    <input type="text" id="httpAuthUsername" placeholder="" oninput="httpAuthUsernameChange();reevaluateSectionHeights();">
                 </div>
 
                 <div class="input_error">Username cannot contain ":"</div>
 
                 <div class="input_option">
                     <div class="label">HTTP Basic auth password <a href="#" class="help_icon" onclick="helpInfo(event, 'httpAuthPassword')"><i class="material-icons">help_outline</i></a></div>
-                    <input type="text" id="httpAuthPassword" placeholder="" style="width: 100%;">
+                    <input type="text" id="httpAuthPassword" placeholder="">
                 </div>
 
                 <div class="input_option">

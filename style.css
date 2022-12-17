@@ -455,7 +455,7 @@ body {
 .input_option input {
     font-size: 20px;
     padding: 6px 8px;
-    width: 200px;
+    width: calc(100% - 20px);
     -webkit-appearance: none;
     border-radius: 7px;
     border: 2px solid var(--input-outline-blur);
