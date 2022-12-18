@@ -112,10 +112,10 @@ async function openLicenses() {
 function renderServerList() {
     let pendhtml = "";
     for (let i=0; i<(config.servers || []).length; i++) {
-        pendhtml += '<div class="server '+(config.servers[i].enabled ? "checked" : "")+'" id="server_'+i+'" onmousedown="reorderDragStart(event, '+i+')" ontouchstart="reorderDragStart(event, '+i+')"><div tabindex="0" onclick="toggleServer('+i+')"><div class="switch"></div></div><div tabindex="0" onclick="if(!dragging){addServer('+i+')}"><div><span>'+htmlescape(config.servers[i].path)+'</span></div><div><span class="server_status" style="color: '+running_states[getServerStatus(config.servers[i]).state].list_color+';">'+running_states[getServerStatus(config.servers[i]).state].text+'</span> &bull; Port '+String(config.servers[i].port)+(config.servers[i].ipv6 ? ' &bull; IPv6' : '')+(config.servers[i].localnetwork ? ' &bull; LAN' : '')+(config.servers[i].https ? ' &bull; HTTPS' : '')+'</div></div></div>'
+        pendhtml += '<div class="server '+(config.servers[i].enabled ? "checked" : "")+'" id="server_'+i+'" onmousedown="reorderDragStart(event, '+i+')" ontouchstart="reorderDragStart(event, '+i+')"><div tabindex="0" onclick="toggleServer('+i+')" role="switch" aria-label="Enabled"><div class="switch"></div></div><div tabindex="0" onclick="if(!dragging){addServer('+i+')}"><div><span>'+htmlescape(config.servers[i].path)+'</span></div><div><span class="server_status" style="color: '+running_states[getServerStatus(config.servers[i]).state].list_color+';">'+running_states[getServerStatus(config.servers[i]).state].text+'</span> &bull; Port '+String(config.servers[i].port)+(config.servers[i].ipv6 ? ' &bull; IPv6' : '')+(config.servers[i].localnetwork ? ' &bull; LAN' : '')+(config.servers[i].https ? ' &bull; HTTPS' : '')+'</div></div></div>'
     }
     if (pendhtml === "") {
-        pendhtml = '<div style="color: var(--fullscreen_placeholder);text-align: center;position: absolute;top: 48%;width: 100%;transform: translateY(-50%);"><i class="material-icons" style="font-size: 70px;">dns</i><div style="font-size: 18px;padding-top: 20px;">You haven\'t created any servers yet</div></div>';
+        pendhtml = '<div style="color: var(--fullscreen_placeholder);text-align: center;position: absolute;top: 48%;width: 100%;transform: translateY(-50%);"><i class="material-icons" aria-hidden="true" style="font-size: 70px;">dns</i><div style="font-size: 18px;padding-top: 20px;">You haven\'t created any servers yet</div></div>';
     }
     document.getElementById("servers_list").innerHTML = pendhtml;
 }
@@ -272,13 +272,17 @@ function openSettings(dont_reset_scroll) {
     navigate("settings");
     if (config.background) {
         document.querySelector("#background").classList.add("checked");
+        document.querySelector("#background").setAttribute("aria-checked", "true");
     } else {
         document.querySelector("#background").classList.remove("checked");
+        document.querySelector("#background").setAttribute("aria-checked", "false");
     }
     if (config.updates === true) {
         document.querySelector("#updates").classList.add("checked");
+        document.querySelector("#updates").setAttribute("aria-checked", "true");
     } else {
         document.querySelector("#updates").classList.remove("checked");
+        document.querySelector("#updates").setAttribute("aria-checked", "false");
     }
     if (install_source === "macappstore") {
         document.querySelector("#updates").style.display = "none";
@@ -301,9 +305,11 @@ function addServer(editindex) {
     if (editindex != null) {
         document.querySelector("#edit_server_title").innerText = "Edit Server";
         document.querySelector("#submit_button").innerText = "Save Changes";
+        document.querySelector("#submit_button").setAttribute("aria-label", "Save Changes");
     } else {
         document.querySelector("#edit_server_title").innerText = "Add Server";
         document.querySelector("#submit_button").innerText = "Create Server";
+        document.querySelector("#submit_button").setAttribute("aria-label", "Create Server");
     }
     activeeditindex = (editindex != null ? editindex : false);
 
@@ -311,8 +317,10 @@ function addServer(editindex) {
         document.getElementById("server_container_status").style.display = "block";
         if (config.servers[editindex].enabled) {
             document.getElementById("edit_server_running").classList.add("checked");
+            document.getElementById("edit_server_running").setAttribute("aria-checked", "true");
         } else {
             document.getElementById("edit_server_running").classList.remove("checked");
+            document.getElementById("edit_server_running").setAttribute("aria-checked", "false");
         }
         document.getElementById("edit_server_running").querySelector(".label").innerHTML = running_states[getServerStatus(config.servers[editindex]).state].text;
         document.getElementById("edit_server_running").querySelector(".label").style.color = running_states[getServerStatus(config.servers[editindex]).state].edit_color;
@@ -358,6 +366,7 @@ function addServer(editindex) {
 
         document.querySelector("#delete_server_option").style.display = "block";
         document.querySelector("#submit_button").innerText = "Save Changes";
+        document.querySelector("#submit_button").setAttribute("aria-label", "Save Changes");
     } else {
         document.getElementById("server_container_status").style.display = "none";
 
@@ -407,6 +416,7 @@ function addServer(editindex) {
 
         document.querySelector("#delete_server_option").style.display = "none";
         document.querySelector("#submit_button").innerText = "Create Server";
+        document.querySelector("#submit_button").setAttribute("aria-label", "Create Server");
     }
 
     navigate("server");
@@ -528,8 +538,18 @@ function toggleServer(index,inedit) {
     config.servers[index].enabled = !config.servers[index].enabled;
     if (config.servers[index].enabled) {
         document.getElementById(inedit ? "edit_server_running" : "server_"+index).classList.add("checked")
+        if (inedit) {
+            document.getElementById("edit_server_running").setAttribute("aria-checked", "true");
+        } else {
+            document.getElementById("server_"+index).querySelector('[role="switch"]').setAttribute("aria-checked", "true");
+        }
     } else {
         document.getElementById(inedit ? "edit_server_running" : "server_"+index).classList.remove("checked")
+        if (inedit) {
+            document.getElementById("edit_server_running").setAttribute("aria-checked", "false");
+        } else {
+            document.getElementById("server_"+index).querySelector('[role="switch"]').setAttribute("aria-checked", "false");
+        }
     }
     updateRunningStates();
     window.api.saveconfig(config);
@@ -542,11 +562,15 @@ function toggleEditServerRunning() {
 function toggleRunInBk() {
     if (config.background) {
         document.querySelector("#background").classList.remove("checked");
+        document.querySelector("#background").setAttribute("aria-checked", "false");
         document.querySelector("#background_welcome").classList.remove("checked");
+        document.querySelector("#background_welcome").setAttribute("aria-checked", "false");
         config.background = false;
     } else {
         document.querySelector("#background").classList.add("checked");
+        document.querySelector("#background").setAttribute("aria-checked", "true");
         document.querySelector("#background_welcome").classList.add("checked");
+        document.querySelector("#background_welcome").setAttribute("aria-checked", "true");
         config.background = true;
     }
     document.getElementById("stop_and_quit_button").style.display = config.background ? "block" : "none";
@@ -556,12 +580,16 @@ function toggleRunInBk() {
 function toggleUpdates() {
     if (config.updates === true) {
         document.querySelector("#updates").classList.remove("checked");
+        document.querySelector("#updates").setAttribute("aria-checked", "false");
         document.querySelector("#updates_welcome").classList.remove("checked");
+        document.querySelector("#updates_welcome").setAttribute("aria-checked", "false");
         config.updates = false;
         document.getElementById("update_banner").style.display = "none";
     } else {
         document.querySelector("#updates").classList.add("checked");
+        document.querySelector("#background").setAttribute("aria-checked", "true");
         document.querySelector("#updates_welcome").classList.add("checked");
+        document.querySelector("#background_welcome").setAttribute("aria-checked", "true");
         config.updates = true
     }
     window.api.saveconfig(config);
@@ -620,8 +648,10 @@ function httpAuthUsernameChange() {
 function updateCurrentPath() {
     if (current_path) {
         document.querySelector("#path > div > span").innerText = current_path;
+        document.querySelector("#path > div > span").parentElement.setAttribute("aria-label", current_path+", Choose folder");
     } else {
         document.querySelector("#path > div > span").innerHTML = '<span style="color: var(--text-secondary);">Choose folder</span>';
+        document.querySelector("#path > div > span").parentElement.setAttribute("aria-label", "Choose folder");
     }
     document.querySelector("#folder_path_error").style.display = "none";
 }
@@ -658,7 +688,7 @@ function showPrompt(title, content, buttons) {
 
     if (buttons) {
         document.getElementById("prompt_actions").style.display = "block";
-        document.getElementById("prompt_actions").innerHTML = buttons.map(a=>{return '<div tabindex="0" class="button ' + a[1] + '" style="margin-left: 10px;" onclick="' + (typeof a[2] === "string" ? a[2] : "") + '"><span>' + a[0] + '</span></div>'}).join("");;
+        document.getElementById("prompt_actions").innerHTML = buttons.map(a=>{return '<div tabindex="0" role="button" aria-label="'+a[0]+'" class="button ' + a[1] + '" style="margin-left: 10px;" onclick="' + (typeof a[2] === "string" ? a[2] : "") + '"><span>' + a[0] + '</span></div>'}).join("");;
         for (let i=0; i<buttons.length; i++) {
             if (typeof buttons[i][2] !== "function") continue;
             document.getElementById("prompt_actions").children[i].onclick = buttons[i][2];
@@ -696,9 +726,11 @@ function toggleCheckbox(element_or_id, toggled) {
     toggled = toggled == null ? !element_or_id.classList.contains("checked") : toggled;
     if (toggled) {
         element_or_id.classList.add("checked");
+        element_or_id.setAttribute("aria-checked", "true");
         element_or_id.querySelector(".checkbox i").innerText = "check_box";
     } else {
         element_or_id.classList.remove("checked");
+        element_or_id.setAttribute("aria-checked", "false");
         element_or_id.querySelector(".checkbox i").innerText = "check_box_outline_blank";
     }
 }
