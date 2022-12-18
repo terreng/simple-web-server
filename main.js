@@ -807,3 +807,11 @@ function dragDrop(event) {
         dragHandler(event.dataTransfer.files[0].path);
     }
 }
+
+function addPlugin() {
+    window.api.showPickerForPlugin().then(function(chosen_path) {
+        if (chosen_path && chosen_path.length > 0) {
+            console.log(chosen_path[0]);
+        }
+    })
+}

@@ -15,6 +15,9 @@ contextBridge.exposeInMainWorld('api', {
     showPicker: current_path => {
         return ipcRenderer.invoke('showPicker', {"current_path": current_path});
     },
+    showPickerForPlugin: () => {
+        return ipcRenderer.invoke('showPickerForPlugin');
+    },
     saveconfig: saveconfig => {
         ipcRenderer.send("saveconfig", saveconfig);
     },

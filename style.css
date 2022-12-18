@@ -440,6 +440,13 @@ body {
     cursor: pointer;
 }
 
+.free_label {
+    padding: 7px 12px;
+    font-size: 18px;
+    padding-bottom: 6px;
+    padding-top: 8px;
+}
+
 .input_option {
     padding: 7px 12px;
     font-size: 19px;
@@ -952,7 +959,7 @@ body {
     margin-left: 1px;
 }
 
-.input_option:hover .help_icon, .checkbox_option:hover .help_icon, .switch_option:hover .help_icon, .help_icon:focus {
+.input_option:hover .help_icon, .checkbox_option:hover .help_icon, .switch_option:hover .help_icon, .free_label:hover .help_icon, .help_icon:focus {
     opacity: 1;
 }
 

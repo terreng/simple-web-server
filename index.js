@@ -263,6 +263,15 @@ ipcMain.handle('showPicker', async (event, arg) => {
     return result.filePaths;
 });
 
+ipcMain.handle('showPickerForPlugin', async (event, arg) => {
+    const result = await dialog.showOpenDialog(mainWindow, {
+        defaultPath: undefined,
+        filters: [ { name: "ZIP Files", extensions: ['zip'] } ],
+        properties: ['openFile', 'openDirectory', 'createDirectory']
+    });
+    return result.filePaths;
+});
+
 ipcMain.handle('generateCrypto', () => {
     return WSC.createCrypto();
 });
