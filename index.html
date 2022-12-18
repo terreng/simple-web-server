@@ -11,7 +11,7 @@
         <!--Main server list-->
         <div class="top_title" id="main_title">
             <div class="title_text">Simple Web Server</div>
-            <div class="title_icon" onclick="openSettings()"><i class="material-icons">settings</i></div>
+            <div class="title_icon" onclick="openSettings()" tabindex="0"><i class="material-icons">settings</i></div>
         </div>
 
         <div class="container" id="main_container">
@@ -24,25 +24,25 @@
         </div>
 
         <div class="button_row" id="main_actions">
-            <div class="button left" id="stop_and_quit_button" onclick="window.api.quit()">Stop & Quit</div>
-            <div class="button primary" onclick="addServer()">New Server</div>
+            <div tabindex="0" class="button left" id="stop_and_quit_button" onclick="window.api.quit()">Stop & Quit</div>
+            <div tabindex="0" class="button primary" onclick="addServer()">New Server</div>
         </div>
 
         <!--Global settings-->
         <div class="top_title" id="settings_title">
-            <div class="title_icon" onclick="backToMain()"><i class="material-icons">arrow_back</i></div>
+            <div class="title_icon" onclick="backToMain()" tabindex="0"><i class="material-icons">arrow_back</i></div>
             <div class="title_text">Settings</div>
         </div>
 
         <div class="container full_container" id="settings_container">
             <div style="padding-top: 8px;"></div>
 
-            <div class="switch_option" id="background" onclick="toggleRunInBk()">
+            <div class="switch_option" id="background" onclick="toggleRunInBk()" tabindex="0">
                 <div class="switch"></div>
                 <div class="label">Keep running when closed <a href="#" class="help_icon" onclick="helpInfo(event, 'background')"><i class="material-icons">help_outline</i></a></div>
             </div>
 
-            <div class="switch_option" id="updates" onclick="toggleUpdates()">
+            <div class="switch_option" id="updates" onclick="toggleUpdates()" tabindex="0">
                 <div class="switch"></div>
                 <div class="label">Check for updates <a href="#" class="help_icon" onclick="helpInfo(event, 'updates')"><i class="material-icons">help_outline</i></a></div>
             </div>
@@ -63,7 +63,7 @@
             <div id="plugins_list"></div>
 
             <div style="padding: 8px 12px;overflow: hidden;">
-                <div class="button left" onclick="addPlugin()">Add Plugin</div>
+                <div tabindex="0" class="button left" onclick="addPlugin()">Add Plugin</div>
             </div>
 
             <div style="
@@ -103,7 +103,7 @@
 
         <!--Open Source Licenses-->
         <div class="top_title" id="licenses_title">
-            <div class="title_icon" onclick="backToSettings()"><i class="material-icons">arrow_back</i></div>
+            <div tabindex="0" class="title_icon" onclick="backToSettings()"><i class="material-icons">arrow_back</i></div>
             <div class="title_text">Open Source Licenses</div>
         </div>
 
@@ -119,7 +119,7 @@
 
         <!--Edit server-->
         <div class="top_title" id="server_title">
-            <div class="title_icon" onclick="backToMain()"><i class="material-icons">arrow_back</i></div>
+            <div tabindex="0" class="title_icon" onclick="backToMain()"><i class="material-icons">arrow_back</i></div>
             <div class="title_text" id="edit_server_title">Edit Server</div>
         </div>
 
@@ -129,7 +129,7 @@
 
             <div style="padding-top: 6px;"></div>
 
-            <div class="switch_option" id="edit_server_running" onclick="toggleEditServerRunning()">
+            <div tabindex="0" class="switch_option" id="edit_server_running" onclick="toggleEditServerRunning()">
                 <div class="switch"></div>
                 <div class="label"></div>
             </div>
@@ -143,7 +143,7 @@
 
             <div class="input_option filepicker_input_option">
                 <div class="label" id="folder_path_label">Folder path <a href="#" class="help_icon" onclick="helpInfo(event, 'path')"><i class="material-icons">help_outline</i></a></div>
-                <div onclick="chooseFolder();">
+                <div tabindex="0" onclick="chooseFolder();">
                     <div id="path" placeholder="Choose folder"><div><span></span></div></div>
                     <div class="button right"><i class="material-icons">folder_open</i></div>
                 </div>
@@ -159,7 +159,7 @@
             <div class="input_error">Enter a number between 1 and 65535</div>
             <div class="input_error">Port is already in use</div>
 
-            <div class="checkbox_option" id="localnetwork" onclick="toggleCheckbox(this)">
+            <div tabindex="0" class="checkbox_option" id="localnetwork" onclick="toggleCheckbox(this)">
                 <div class="checkbox">
                     <i class="material-icons">check_box_outline_blank</i>
                 </div>
@@ -168,23 +168,23 @@
 
             <div style="padding-top: 6px;"></div>
 
-            <div class="settings_section_header first_section" onclick="toggleSection(this)">
+            <div tabindex="0" class="settings_section_header first_section" onclick="toggleSection(this)">
                 <div><i class="material-icons">tune</i></div>
                 <div>Basic Rules</div>
                 <div><i class="material-icons">expand_more</i></div>
             </div>
 
-            <div class="settings_section">
+            <div class="settings_section" inert>
                 <div class="settings_section_inner">
 
-                <div class="checkbox_option" id="showIndex" onclick="toggleCheckbox(this)">
+                <div tabindex="0" class="checkbox_option" id="showIndex" onclick="toggleCheckbox(this)">
                     <div class="checkbox">
                         <i class="material-icons">check_box_outline_blank</i>
                     </div>
                     <div class="label">Automatically show index.html <a href="#" class="help_icon" onclick="helpInfo(event, 'showIndex')"><i class="material-icons">help_outline</i></a></div>
                 </div>
 
-                <div class="checkbox_option" id="spa" onclick="toggleCheckbox(this)">
+                <div tabindex="0" class="checkbox_option" id="spa" onclick="toggleCheckbox(this)">
                     <div class="checkbox">
                         <i class="material-icons">check_box_outline_blank</i>
                     </div>
@@ -196,14 +196,14 @@
                     <input type="text" id="rewriteTo" placeholder="/index.html">
                 </div>
 
-                <div class="checkbox_option" id="directoryListing" onclick="toggleCheckbox(this)">
+                <div tabindex="0" class="checkbox_option" id="directoryListing" onclick="toggleCheckbox(this)">
                     <div class="checkbox">
                         <i class="material-icons">check_box_outline_blank</i>
                     </div>
                     <div class="label">Show directory listing <a href="#" class="help_icon" onclick="helpInfo(event, 'directoryListing')"><i class="material-icons">help_outline</i></a></div>
                 </div>
 
-                <div class="checkbox_option" id="excludeDotHtml" onclick="toggleCheckbox(this)">
+                <div tabindex="0" class="checkbox_option" id="excludeDotHtml" onclick="toggleCheckbox(this)">
                     <div class="checkbox">
                         <i class="material-icons">check_box_outline_blank</i>
                     </div>
@@ -213,16 +213,16 @@
                 </div>
             </div>
 
-            <div class="settings_section_header" onclick="toggleSection(this)">
+            <div tabindex="0" class="settings_section_header" onclick="toggleSection(this)">
                 <div><i class="material-icons">rule</i></div>
                 <div>Advanced Rules</div>
                 <div><i class="material-icons">expand_more</i></div>
             </div>
 
-            <div class="settings_section">
+            <div class="settings_section" inert>
                 <div class="settings_section_inner">
 
-                <div class="checkbox_option" id="ipv6" onclick="toggleCheckbox(this)">
+                <div tabindex="0" class="checkbox_option" id="ipv6" onclick="toggleCheckbox(this)">
                     <div class="checkbox">
                         <i class="material-icons">check_box_outline_blank</i>
                     </div>
@@ -234,56 +234,56 @@
                     <input type="text" id="cacheControl" placeholder="">
                 </div>
 
-                <div class="checkbox_option" id="cors" onclick="toggleCheckbox(this)">
+                <div tabindex="0" class="checkbox_option" id="cors" onclick="toggleCheckbox(this)">
                     <div class="checkbox">
                         <i class="material-icons">check_box_outline_blank</i>
                     </div>
                     <div class="label">Set CORS headers <a href="#" class="help_icon" onclick="helpInfo(event, 'cors')"><i class="material-icons">help_outline</i></a></div>
                 </div>
 
-                <div class="checkbox_option" id="hiddenDotFiles" onclick="toggleCheckbox(this)">
+                <div tabindex="0" class="checkbox_option" id="hiddenDotFiles" onclick="toggleCheckbox(this)">
                     <div class="checkbox">
                         <i class="material-icons">check_box_outline_blank</i>
                     </div>
                     <div class="label">Serve hidden/dot files <a href="#" class="help_icon" onclick="helpInfo(event, 'hiddenDotFiles')"><i class="material-icons">help_outline</i></a></div>
                 </div>
 
-                <div class="checkbox_option" id="upload" onclick="toggleCheckbox(this)">
+                <div tabindex="0" class="checkbox_option" id="upload" onclick="toggleCheckbox(this)">
                     <div class="checkbox">
                         <i class="material-icons">check_box_outline_blank</i>
                     </div>
                     <div class="label">Allow file upload <a href="#" class="help_icon" onclick="helpInfo(event, 'upload')"><i class="material-icons">help_outline</i></a></div>
                 </div>
 
-                <div class="checkbox_option" id="replace" onclick="toggleCheckbox(this)">
+                <div tabindex="0" class="checkbox_option" id="replace" onclick="toggleCheckbox(this)">
                     <div class="checkbox">
                         <i class="material-icons">check_box_outline_blank</i>
                     </div>
                     <div class="label">Allow replacing files <a href="#" class="help_icon" onclick="helpInfo(event, 'replace')"><i class="material-icons">help_outline</i></a></div>
                 </div>
 
-                <div class="checkbox_option" id="delete" onclick="toggleCheckbox(this)">
+                <div tabindex="0" class="checkbox_option" id="delete" onclick="toggleCheckbox(this)">
                     <div class="checkbox">
                         <i class="material-icons">check_box_outline_blank</i>
                     </div>
                     <div class="label">Allow deleting files <a href="#" class="help_icon" onclick="helpInfo(event, 'delete')"><i class="material-icons">help_outline</i></a></div>
                 </div>
 
-                <div class="checkbox_option" id="staticDirectoryListing" onclick="toggleCheckbox(this)">
+                <div tabindex="0" class="checkbox_option" id="staticDirectoryListing" onclick="toggleCheckbox(this)">
                     <div class="checkbox">
                         <i class="material-icons">check_box_outline_blank</i>
                     </div>
                     <div class="label">Always use static directory listing <a href="#" class="help_icon" onclick="helpInfo(event, 'staticDirectoryListing')"><i class="material-icons">help_outline</i></a></div>
                 </div>
 
-                <div class="checkbox_option" id="hiddenDotFilesDirectoryListing" onclick="toggleCheckbox(this)">
+                <div tabindex="0" class="checkbox_option" id="hiddenDotFilesDirectoryListing" onclick="toggleCheckbox(this)">
                     <div class="checkbox">
                         <i class="material-icons">check_box_outline_blank</i>
                     </div>
                     <div class="label">Show hidden/dot files in directory listing <a href="#" class="help_icon" onclick="helpInfo(event, 'hiddenDotFilesDirectoryListing')"><i class="material-icons">help_outline</i></a></div>
                 </div>
 
-                <div class="checkbox_option" id="htaccess" onclick="toggleCheckbox(this)">
+                <div tabindex="0" class="checkbox_option" id="htaccess" onclick="toggleCheckbox(this)">
                     <div class="checkbox">
                         <i class="material-icons">check_box_outline_blank</i>
                     </div>
@@ -293,13 +293,13 @@
                 </div>
             </div>
 
-            <div class="settings_section_header" onclick="toggleSection(this)">
+            <div tabindex="0" class="settings_section_header" onclick="toggleSection(this)">
                 <div><i class="material-icons">report</i></div>
                 <div>Error Pages</div>
                 <div><i class="material-icons">expand_more</i></div>
             </div>
 
-            <div class="settings_section">
+            <div class="settings_section" inert>
                 <div class="settings_section_inner">
 
                 <div class="input_option">
@@ -325,16 +325,16 @@
                 </div>
             </div>
 
-            <div class="settings_section_header" id="security_section" onclick="toggleSection(this)">
+            <div tabindex="0" class="settings_section_header" id="security_section" onclick="toggleSection(this)">
                 <div><i class="material-icons">security</i></div>
                 <div>Security</div>
                 <div><i class="material-icons">expand_more</i></div>
             </div>
 
-            <div class="settings_section">
+            <div class="settings_section" inert>
                 <div class="settings_section_inner">
 
-                <div class="checkbox_option" id="https" onclick="toggleCheckbox(this)">
+                <div tabindex="0" class="checkbox_option" id="https" onclick="toggleCheckbox(this)">
                     <div class="checkbox">
                         <i class="material-icons">check_box_outline_blank</i>
                     </div>
@@ -352,10 +352,10 @@
                 </div>
 
                 <div style="padding: 8px 12px;overflow: hidden;">
-                    <div class="button left" onclick="generateCrypto()" id="generate_crypto">Generate dummy cert</div>
+                    <div tabindex="0" class="button left" onclick="generateCrypto()" id="generate_crypto">Generate dummy cert</div>
                 </div>
 
-                <div class="checkbox_option" id="httpAuth" onclick="toggleCheckbox(this)">
+                <div tabindex="0" class="checkbox_option" id="httpAuth" onclick="toggleCheckbox(this)">
                     <div class="checkbox">
                         <i class="material-icons">check_box_outline_blank</i>
                     </div>
@@ -384,13 +384,13 @@
                 </div>
             </div>
 
-            <div style="padding: 13px 10px;overflow: hidden;" id="delete_server_option"><div class="button left destructive" onclick="deleteServer()" id="delete_server">Delete Server</div></div>
+            <div style="padding: 13px 10px;overflow: hidden;" id="delete_server_option"><div tabindex="0" class="button left destructive" onclick="deleteServer()" id="delete_server">Delete Server</div></div>
 
         </div>
 
         <div class="button_row" id="server_actions">
-            <div class="button left" onclick="cancelAddServer()">Cancel</div>
-            <div class="button primary" onclick="submitAddServer()" id="submit_button">Save Changes</div>
+            <div tabindex="0" class="button left" onclick="cancelAddServer()">Cancel</div>
+            <div tabindex="0" class="button primary" onclick="submitAddServer()" id="submit_button">Save Changes</div>
         </div>
 
         <!--Welcome screen-->
@@ -426,19 +426,19 @@
                     margin: 0 auto;
                 ">
 
-                <div class="switch_option" id="background_welcome" onclick="toggleRunInBk()">
+                <div tabindex="0" class="switch_option" id="background_welcome" onclick="toggleRunInBk()">
                     <div class="switch"></div>
                     <div class="label">Keep running when closed <a href="#" class="help_icon" onclick="helpInfo(event, 'background')"><i class="material-icons">help_outline</i></a></div>
                 </div>
 
-                <div class="switch_option checked" id="updates_welcome" onclick="toggleUpdates()">
+                <div tabindex="0" class="switch_option checked" id="updates_welcome" onclick="toggleUpdates()">
                     <div class="switch"></div>
                     <div class="label">Check for updates <a href="#" class="help_icon" onclick="helpInfo(event, 'updates')"><i class="material-icons">help_outline</i></a></div>
                 </div>
 
                 </div>
 
-                <div style="overflow: hidden;"><div class="button primary" onclick="initContinue()" style="
+                <div tabindex="0" style="overflow: hidden;"><div class="button primary" onclick="initContinue()" style="
                     float: left;
                     transform: translateX(-50%);
                     margin-left: 50%;
@@ -451,11 +451,13 @@
 
         <div id="prompt_bk" onclick="hidePrompt()"></div>
 
-        <div id="prompt" class="prompt_hide">
-            <div id="prompt_title"></div>
-            <div id="prompt_text"></div>
-            <div id="prompt_actions"></div>
-        </div>
+        <dialog id="prompt" class="prompt_hide" onclose="promptClose()">
+            <div id="prompt_content">
+                <div id="prompt_title"></div>
+                <div id="prompt_text"></div>
+                <div id="prompt_actions"></div>
+            </div>
+        </dialog>
 
         <div id="drop_zone"></div>
 

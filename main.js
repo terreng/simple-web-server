@@ -112,7 +112,7 @@ async function openLicenses() {
 function renderServerList() {
     let pendhtml = "";
     for (let i=0; i<(config.servers || []).length; i++) {
-        pendhtml += '<div class="server '+(config.servers[i].enabled ? "checked" : "")+'" id="server_'+i+'" onmousedown="reorderDragStart(event, '+i+')" ontouchstart="reorderDragStart(event, '+i+')"><div onclick="toggleServer('+i+')"><div class="switch"></div></div><div onclick="if(!dragging){addServer('+i+')}"><div><span>'+htmlescape(config.servers[i].path)+'</span></div><div><span class="server_status" style="color: '+running_states[getServerStatus(config.servers[i]).state].list_color+';">'+running_states[getServerStatus(config.servers[i]).state].text+'</span> &bull; Port '+String(config.servers[i].port)+(config.servers[i].ipv6 ? ' &bull; IPv6' : '')+(config.servers[i].localnetwork ? ' &bull; LAN' : '')+(config.servers[i].https ? ' &bull; HTTPS' : '')+'</div></div></div>'
+        pendhtml += '<div class="server '+(config.servers[i].enabled ? "checked" : "")+'" id="server_'+i+'" onmousedown="reorderDragStart(event, '+i+')" ontouchstart="reorderDragStart(event, '+i+')"><div tabindex="0" onclick="toggleServer('+i+')"><div class="switch"></div></div><div tabindex="0" onclick="if(!dragging){addServer('+i+')}"><div><span>'+htmlescape(config.servers[i].path)+'</span></div><div><span class="server_status" style="color: '+running_states[getServerStatus(config.servers[i]).state].list_color+';">'+running_states[getServerStatus(config.servers[i]).state].text+'</span> &bull; Port '+String(config.servers[i].port)+(config.servers[i].ipv6 ? ' &bull; IPv6' : '')+(config.servers[i].localnetwork ? ' &bull; LAN' : '')+(config.servers[i].https ? ' &bull; HTTPS' : '')+'</div></div></div>'
     }
     if (pendhtml === "") {
         pendhtml = '<div style="color: var(--fullscreen_placeholder);text-align: center;position: absolute;top: 48%;width: 100%;transform: translateY(-50%);"><i class="material-icons" style="font-size: 70px;">dns</i><div style="font-size: 18px;padding-top: 20px;">You haven\'t created any servers yet</div></div>';
@@ -644,6 +644,7 @@ function htmlescape(str) {
 function showPrompt(title, content, buttons) {
     document.getElementById("prompt_bk").style.pointerEvents = "";
     document.getElementById("prompt").classList.add("prompt_show");
+    document.getElementById("prompt").showModal();
     document.getElementById("prompt").classList.remove("prompt_hide");
     document.getElementById("prompt_bk").classList.add("active");
 
@@ -657,7 +658,7 @@ function showPrompt(title, content, buttons) {
 
     if (buttons) {
         document.getElementById("prompt_actions").style.display = "block";
-        document.getElementById("prompt_actions").innerHTML = buttons.map(a=>{return '<div class="button ' + a[1] + '" style="margin-left: 10px;" onclick="' + (typeof a[2] === "string" ? a[2] : "") + '"><span>' + a[0] + '</span></div>'}).join("");;
+        document.getElementById("prompt_actions").innerHTML = buttons.map(a=>{return '<div tabindex="0" class="button ' + a[1] + '" style="margin-left: 10px;" onclick="' + (typeof a[2] === "string" ? a[2] : "") + '"><span>' + a[0] + '</span></div>'}).join("");;
         for (let i=0; i<buttons.length; i++) {
             if (typeof buttons[i][2] !== "function") continue;
             document.getElementById("prompt_actions").children[i].onclick = buttons[i][2];
@@ -667,10 +668,27 @@ function showPrompt(title, content, buttons) {
     }
 }
 
+window.onclick = function(event) {
+    if (event.target == document.getElementById("prompt")) {
+        hidePrompt();
+    }
+}
+
+function promptClose() {
+    document.getElementById("prompt").classList.add("prompt_hide");
+    document.getElementById("prompt").classList.remove("prompt_show");
+    document.getElementById("prompt_bk").classList.remove("active");
+}
+
 function hidePrompt() {
     document.getElementById("prompt").classList.add("prompt_hide");
     document.getElementById("prompt").classList.remove("prompt_show");
     document.getElementById("prompt_bk").classList.remove("active");
+    setTimeout(function() {
+        if (document.getElementById("prompt").classList.contains("prompt_hide")) {
+            document.getElementById("prompt").close();
+        }
+    }, 200);
 }
 
 function toggleCheckbox(element_or_id, toggled) {
@@ -701,10 +719,12 @@ function resetAllSections() {
 
 function toggleSection(element) {
     if (element.classList.contains("section_visible")) {
+        element.nextElementSibling.setAttribute("inert", "");
         element.classList.remove("section_visible");
         element.nextElementSibling.style.height = "";
         element.nextElementSibling.classList.remove("section_content_visible");
     } else {
+        element.nextElementSibling.removeAttribute("inert");
         element.classList.add("section_visible");
         element.nextElementSibling.style.height = element.nextElementSibling.children[0].clientHeight+"px";
         element.nextElementSibling.classList.add("section_content_visible");
@@ -815,3 +835,10 @@ function addPlugin() {
         }
     })
 }
+
+window.addEventListener("keypress", function(event) {
+    if (event.key === "Enter") {
+        event.preventDefault();
+        document.activeElement.click();
+    }
+});

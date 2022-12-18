@@ -62,7 +62,6 @@ select {
     -webkit-appearance: none;
     border-radius: 7px;
     border: 2px solid var(--input-outline-blur);
-    outline: none;
     transition: 0.1s border;
     width: 100%;
     background: url(images/menu-down.svg) calc(100% - 6px) / 30px no-repeat var(--input-background);
@@ -377,6 +376,7 @@ body {
     /* box-shadow: 0px 1px 3px 0px var(--shadow); */
     cursor: pointer;
     transition: background-color 0.1s, box-shadow 0.1s, border-color 0.1s;
+    user-select: none;
 }
 
 .button:hover {
@@ -513,7 +513,7 @@ body {
 #prompt {
     position: fixed;
     z-index: 20;
-    width: 85%;
+    width: calc(85% + 24px);
     max-width: 400px;
     background-color: var(--elevated);
     top: 50%;
@@ -524,7 +524,14 @@ body {
     color: var(--text-primary);
     transition: pointer-events 0.25s, visibility 0.25s;
     overflow: hidden;
+    margin: unset;
+    border: unset;
+    padding: 0px;
+}
+
+#prompt_content {
     padding: 12px;
+    overflow: hidden;
 }
 
 @keyframes prompt_show {
