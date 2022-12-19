@@ -440,8 +440,8 @@ function createServers() {
     updateServerStates();
 }
 
-function startServers() {
-    if (running_servers.length <= 0) {
+function startServers(force_restart_indexes) {
+    if (running_servers.length == 0) {
         createServers();
         return;
     }
@@ -456,7 +456,7 @@ function startServers() {
             }
         }
 
-        if (found_matching_config) {
+        if (found_matching_config && (force_restart_indexes || []).indexOf(i) == -1) {
             need_close_servers--;
         } else {
             running_servers[i].deleted = true;
@@ -494,6 +494,21 @@ function configsEqual(config1, config2) {
         return true;
     }
     return false;
+}
+
+function restartServersWithPlugins(pluginids) {
+    var server_indexes = [];
+    for (let i=0; i<running_servers.length; i++) {
+        if (running_servers[i].plugins) {
+            for (let e=0; e<pluginids.length; e++) {
+                if (running_servers[i].plugins[pluginids[e]] && running_servers[i].plugins[pluginids[e]].enabled) {
+                    server_indexes.push(i);
+                    break;
+                }
+            }
+        }
+    }
+    startServers(server_indexes);
 }
 
 let update_info;
