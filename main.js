@@ -422,6 +422,8 @@ function addServer(editindex) {
         document.querySelector("#submit_button").setAttribute("aria-label", "Create Server");
     }
 
+    renderPluginOptions();
+
     navigate("server");
     document.getElementById("server_container").scrollTop = 0;
 }
@@ -908,4 +910,15 @@ function removePlugin(pluginid) {
             hidePrompt();
         }],["Cancel","",hidePrompt]])
     }
+}
+
+function renderPluginOptions() {
+    let pendhtml = "";
+
+    for (let i=0; i<Object.keys(plugins).length; i++) {
+        let manifest = plugins[Object.keys(plugins)[i]];
+        pendhtml += '<div tabindex="0" class="settings_section_header plugin_section" onclick="toggleSection(this)" role="button" aria-label="'+htmlescape(manifest.name)+'"><div><i class="material-icons" aria-hidden="true">check_box_outline_blank</i></div><div>'+htmlescape(manifest.name)+'</div><div><i class="material-icons" aria-hidden="true">expand_more</i></div></div><div class="settings_section" inert><div class="settings_section_inner"></div></div>';
+    }
+
+    document.querySelector("#plugin_options").innerHTML = pendhtml;
 }

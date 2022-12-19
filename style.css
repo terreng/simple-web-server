@@ -711,11 +711,12 @@ body {
 }
 
 .settings_section_header {
-    padding: 16px 11px;
+    padding: 10px 11px;
     overflow: hidden;
     transition: 0.1s background-color;
     cursor: pointer;
     border-bottom: 1px solid var(--line);
+    padding-left: 5px;
 }
 
 .settings_section_header.section_visible > div:nth-child(3) i {
@@ -734,6 +735,29 @@ body {
     float: left;
     width: 28px;
     height: 28px;
+    padding: 6px;
+}
+
+.settings_section_header.plugin_section > div:nth-child(1) {
+    transition: 0.1s background-color;
+    border-radius: 32px;
+    cursor: pointer;
+}
+
+.settings_section_header.plugin_section > div:nth-child(1):hover {
+    background-color: var(--icon-hover);
+}
+
+.settings_section_header.plugin_section > div:nth-child(1):active {
+    background-color: var(--icon-active);
+}
+
+.settings_section_header.plugin_section > div:nth-child(1).checked:hover {
+    background-color: var(--button-hover);
+}
+
+.settings_section_header.plugin_section > div:nth-child(1).checked:active {
+    background-color: var(--button-active);
 }
 
 .settings_section_header > div:nth-child(1) i {
@@ -744,17 +768,20 @@ body {
 .settings_section_header > div:nth-child(2) {
     font-size: 19px;
     float: left;
-    padding-left: 11px;
+    padding-left: 5px;
     line-height: 28px;
-    padding-right: 10px;
+    padding-right: 4px;
     width: calc(100% - 21px - 28px - 28px);
     font-weight: 500;
+    padding-top: 6px;
+    padding-bottom: 6px;
 }
 
 .settings_section_header > div:nth-child(3) {
     float: left;
     width: 28px;
     height: 28px;
+    padding: 6px 0px;
 }
 
 .settings_section_header > div:nth-child(3) i {
