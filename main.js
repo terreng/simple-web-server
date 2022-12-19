@@ -29,16 +29,19 @@ let running_states = {
     },
 }
 let install_source;
+let plugins;
 
 window.api.initipc((event, message) => {
     if (message.type === "init") {
         config = message.config;
         ip = message.ip;
         install_source = message.install_source;
+        plugins = message.plugins;
         if (config.background != null && config.updates != null) openMain();
         else initWelcome();
         document.getElementById("stop_and_quit_button").style.display = config.background ? "block" : "none";
         document.body.style.visibility = "visible";
+        refreshPluginList();
     } else if (message.type === "state") {
         server_states = message.server_states;
         updateRunningStates();
@@ -863,7 +866,21 @@ function dragDrop(event) {
 function addPlugin() {
     window.api.showPickerForPlugin().then(function(chosen_path) {
         if (chosen_path && chosen_path.length > 0) {
-            console.log(chosen_path[0]);
+
+            window.api.checkPlugin(chosen_path[0]).then(function(manifest) {
+                if (manifest) {
+                    showPrompt("Add \""+htmlescape(manifest.name.substring(0,32))+"\" plugin?", "Only install this plugin if you know and trust the developer.<br><br>Plugins aren't sandboxed, and run with the same permissions as the app.", [["Confirm","destructive",function() {
+                        if (window.api.addPlugin(chosen_path[0])) {
+                            hidePrompt();
+                        } else {
+                            showPrompt("Failed to install plugin", "We couldn't find a valid <code>plugin.json</code> file in the directory or ZIP file you selected.", [["Done","",hidePrompt]]);
+                        }
+                    }],["Cancel","",hidePrompt]]);
+                } else {
+                    showPrompt("Invalid plugin", "We couldn't find a valid <code>plugin.json</code> file in the directory or ZIP file you selected.", [["Done","",hidePrompt]]);
+                }
+            })
+
         }
     })
 }
@@ -874,3 +891,21 @@ window.addEventListener("keypress", function(event) {
         document.activeElement.click();
     }
 });
+
+function refreshPluginList() {
+    if (Object.keys(plugins).length > 0) {
+        document.querySelector("#plugins_list").innerHTML = Object.values(plugins).map(function(a) {return '<div><div><div>'+a.name+'</div><div>'+a.id+'</div></div><div onclick="removePlugin(\''+a.id+'\')" tabindex="0" aria-label="Remove plugin" role="button"><i class="material-icons" aria-hidden="true">delete</i></div></div>'}).join("");
+        document.querySelector("#plugins_list").style.display = "block";
+    } else {
+        document.querySelector("#plugins_list").style.display = "none";
+    }
+}
+
+function removePlugin(pluginid) {
+    if (plugins[pluginid]) {
+        showPrompt("Remove \""+htmlescape(plugins[pluginid].name.substring(0,32))+"\" plugin?", "All server options for this plugin will be cleared. If you want to update the plugin without resetting server options, just add the plugin again instead of removing it first.", [["Confirm","destructive",function() {
+            window.api.removePlugin(pluginid);
+            hidePrompt();
+        }],["Cancel","",hidePrompt]])
+    }
+}

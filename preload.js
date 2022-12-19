@@ -18,6 +18,15 @@ contextBridge.exposeInMainWorld('api', {
     showPickerForPlugin: () => {
         return ipcRenderer.invoke('showPickerForPlugin');
     },
+    addPlugin: path => {
+        return ipcRenderer.invoke('addPlugin', {"path": path});
+    },
+    checkPlugin: path => {
+        return ipcRenderer.invoke('checkPlugin', {"path": path});
+    },
+    removePlugin: pluginid => {
+        return ipcRenderer.invoke('removePlugin', {"id": pluginid});
+    },
     saveconfig: saveconfig => {
         ipcRenderer.send("saveconfig", saveconfig);
     },

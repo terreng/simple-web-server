@@ -89,7 +89,7 @@ function getPluginInfo(id) {
     let path = global.path.join(eApp.getPath('userData'), "plugins", id);
     let fs = new WSC.FileSystem(path);
     let manifest = JSON.parse(fs.getByPath('/plugin.json').text());
-    if (!manifest.id||!manifest.script||!manifest.name) throw new Error('Not a valid plugin');
+    if (!validatePluginManifest(manifest)) throw new Error('Not a valid plugin');
     return manifest;
 }
 
@@ -124,7 +124,7 @@ function importPlugin(path) {
     try {
         fs = new WSC.FileSystem(path);
         const manifest = JSON.parse(fs.getByPath('/plugin.json').text());
-        if (!manifest.id||!manifest.script||!manifest.name) throw new Error('not a valid plugin');
+        if (!validatePluginManifest(manifest)) throw new Error('not a valid plugin');
         if (global.fs.existsSync(global.path.join(eApp.getPath('userData'), "plugins", manifest.id))) {
             deleteFolder(global.path.join(eApp.getPath('userData'), "plugins", manifest.id));
         }
@@ -133,13 +133,39 @@ function importPlugin(path) {
         const bm = bookmarks.matchAndAccess(path);
         JSZip.loadAsync(global.fs.readFileSync(path)).then(async zip => {
             const manifest = JSON.parse(await zip.file('plugin.json').async("string"));
-            if (!manifest.id||!manifest.script||!manifest.name) throw new Error('not a valid plugin');
+            if (!validatePluginManifest(manifest)) throw new Error('not a valid plugin');
             if (global.fs.existsSync(global.path.join(eApp.getPath('userData'), "plugins", manifest.id))) {
                 deleteFolder(global.path.join(eApp.getPath('userData'), "plugins", manifest.id));
             }
             copyFolderRecursiveSyncFromZip(zip, global.path.join(eApp.getPath('userData'), "plugins", manifest.id));
             bookmarks.release(bm);
         });
+    }
+}
+
+function getPluginManifestFromPath(path) {
+    let fs;
+    try {
+        fs = new WSC.FileSystem(path);
+        const manifest = JSON.parse(fs.getByPath('/plugin.json').text());
+        if (!validatePluginManifest(manifest)) throw new Error('not a valid plugin');
+        return manifest;
+    } catch(e) {
+        const bm = bookmarks.matchAndAccess(path);
+        JSZip.loadAsync(global.fs.readFileSync(path)).then(async zip => {
+            const manifest = JSON.parse(await zip.file('plugin.json').async("string"));
+            if (!validatePluginManifest(manifest)) throw new Error('not a valid plugin');
+            bookmarks.release(bm);
+            return manifest;
+        });
+    }
+}
+
+function validatePluginManifest(manifest) {
+    if (manifest.id && manifest.id.match(/^[A-Za-z0-9\-_]+$/) && manifest.script && manifest.name) {
+        return true;
+    } else {
+        return false;
     }
 }
 
@@ -186,4 +212,4 @@ function deActivate(id, config) {
     return config;
 }
 
-module.exports = {registerPlugins, importPlugin, removePlugin, getInstalledPlugins, activate, deActivate};
+module.exports = {registerPlugins, importPlugin, getPluginManifestFromPath, removePlugin, getInstalledPlugins, activate, deActivate};

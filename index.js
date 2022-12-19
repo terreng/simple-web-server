@@ -338,7 +338,7 @@ function createWindow() {
     mainWindow.webContents.on('did-finish-load', () => {
         mainWindow.webContentsLoaded = true;
         lastIps = getIPs();
-        mainWindow.webContents.send('message', {"type": "init", "config": config, ip: lastIps, install_source: install_source});
+        mainWindow.webContents.send('message', {"type": "init", "config": config, ip: lastIps, install_source: install_source, plugins: plugin});
         if (update_info) {
             mainWindow.webContents.send('message', {"type": "update", "url": update_info.url, "text": update_info.text, "attributes": update_info.attributes});
         }
@@ -604,3 +604,25 @@ function checkForUpdates() {
 
     req.end();
 }
+
+ipcMain.handle('addPlugin', (event, arg) => {
+    try {
+        plugins.importPlugin(arg.path);
+        return true;
+    } catch(e) {
+        return false;
+    }
+});
+
+ipcMain.handle('checkPlugin', (event, arg) => {
+    try {
+        return plugins.getPluginManifestFromPath(arg.path);
+    } catch(e) {
+        console.error(e);
+        return false;
+    }
+});
+
+ipcMain.handle('removePlugin', (event, arg) => {
+    plugins.removePlugin(arg.id);
+});

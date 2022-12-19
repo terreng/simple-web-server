@@ -978,6 +978,7 @@ code {
     font-size: 17px;
     padding-top: 1px;
     padding-bottom: 1px;
+    font-family: 'Roboto Mono';
 }
 
 #drop_zone {
@@ -995,4 +996,57 @@ code {
 
 #drop_zone.drag_hovering {
     opacity: 0.25;
+}
+
+#plugins_list {
+    margin: 0px 12px;
+    border-top: 1px solid var(--line);
+}
+
+#plugins_list > div {
+    border-bottom: 1px solid var(--line);
+    overflow: hidden;
+}
+
+#plugins_list > div > div:nth-child(1) {
+    float: left;
+    width: calc(100% - 32px - 14px);
+}
+
+#plugins_list > div > div:nth-child(1) > div:nth-child(1) {
+    font-size: 20px;
+    padding-bottom: 1px;
+    color: var(--text-primary);
+    padding-top: 5px;
+}
+
+#plugins_list > div > div:nth-child(1) > div:nth-child(2) {
+    font-size: 18px;
+    font-family: 'Roboto Mono';
+    color: var(--text-secondary);
+    user-select: text;
+}
+
+#plugins_list > div > div:nth-child(2) {
+    width: 32px;
+    height: 32px;
+    padding: 7px;
+    margin: 7px 0px;
+    float: left;
+    transition: 0.1s background-color;
+    border-radius: 32px;
+    cursor: pointer;
+}
+
+#plugins_list > div > div:nth-child(2):hover {
+    background-color: var(--icon-hover);
+}
+
+#plugins_list > div > div:nth-child(2):active {
+    background-color: var(--icon-active);
+}
+
+#plugins_list > div > div:nth-child(2) i {
+    font-size: 32px;
+    color: var(--icons);
 }
