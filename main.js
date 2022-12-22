@@ -917,8 +917,24 @@ function renderPluginOptions() {
 
     for (let i=0; i<Object.keys(plugins).length; i++) {
         let manifest = plugins[Object.keys(plugins)[i]];
-        pendhtml += '<div tabindex="0" class="settings_section_header plugin_section" onclick="toggleSection(this)" role="button" aria-label="'+htmlescape(manifest.name)+'"><div><i class="material-icons" aria-hidden="true">check_box_outline_blank</i></div><div>'+htmlescape(manifest.name)+'</div><div><i class="material-icons" aria-hidden="true">expand_more</i></div></div><div class="settings_section" inert><div class="settings_section_inner"></div></div>';
+        pendhtml += '<div tabindex="0" class="settings_section_header plugin_section'+(manifest.enabled ? " plugin_enabled" : "")+'" onclick="toggleSection(this)" role="button" aria-label="'+htmlescape(manifest.name)+'"><div role="checkbox" tabindex="0" aria-label="Enabled" aria-checked="'+(manifest.enabled ? "true" : "false")+'" onclick="togglePlugin(event, this)"><i class="material-icons" aria-hidden="true">'+(manifest.enabled ? "check_box" : "check_box_outline_blank")+'</i></div><div>'+htmlescape(manifest.name)+'</div><div><i class="material-icons" aria-hidden="true">expand_more</i></div></div><div class="settings_section" inert><div class="settings_section_inner"></div></div>';
     }
 
     document.querySelector("#plugin_options").innerHTML = pendhtml;
+}
+
+function togglePlugin(event, element) {
+    event.preventDefault();
+    event.stopPropagation();
+
+    let section = element.closest(".settings_section_header");
+    if (section.classList.contains("plugin_enabled")) {
+        section.classList.remove("plugin_enabled");
+        section.setAttribute("aria-checked", "false");
+        section.querySelector("div > i").innerText = "check_box_outline_blank";
+    } else {
+        section.classList.add("plugin_enabled");
+        section.setAttribute("aria-checked", "true");
+        section.querySelector("div > i").innerText = "check_box";
+    }
 }

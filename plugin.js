@@ -162,8 +162,48 @@ function getPluginManifestFromPath(path) {
 }
 
 function validatePluginManifest(manifest) {
-    if (manifest.id && manifest.id.match(/^[A-Za-z0-9\-_]+$/) && manifest.script && manifest.name) {
-        return true;
+    if (manifest && typeof manifest == "object" && typeof manifest.id == "string" && manifest.id.match(/^[A-Za-z0-9\-_]+$/) && typeof manifest.script == "string" && typeof manifest.name == "string" && manifest.name.length <= 64) {
+        if (typeof manifest.options == "object") {
+            if (Array.isArray(manifest.options)) {
+
+                function validateOption(option) {
+                    if (option && typeof option == "object" && typeof option.id == "string" && option.id.match(/^[A-Za-z0-9\-_]+$/) && typeof option.name == "string" && option.name.length <= 512) {
+                        if (option.type == "bool") {
+                            return typeof option.default == "boolean";
+                        } else if (option.type == "string") {
+                            return typeof option.default == "string";
+                        } else if (option.type == "number") {
+                            return typeof option.default == "number" && (typeof option.min == "number" || typeof option.min == "undefined") && (typeof option.max == "number" || typeof option.max == "undefined");
+                        } else if (option.type == "select") {
+
+                            if (typeof option.choices == "object" && Array.isArray(option.choices) && option.choices.length > 0) {
+
+                                function validateChoice(choice) {
+                                    return choice && typeof choice == "object" && typeof choice.id == "string" && choice.id.match(/^[A-Za-z0-9\-_]+$/) && typeof choice.name == "string" && choice.name.length <= 512;
+                                }
+
+                                return option.choices.every(validateChoice) && typeof option.default == "string" && option.choices.map(a => a.id).indexOf(option.default) > -1 && option.choices.map(a => a.id).filter((item, i, ar) => ar.indexOf(item) === i).length == option.choices.length;
+
+                            } else {
+                                return false;
+                            }
+
+                        } else {
+                            return false;
+                        }
+                    } else {
+                        return false;
+                    }
+                }
+
+                return manifest.options.every(validateOption) && manifest.options.map(a => a.id).filter((item, i, ar) => ar.indexOf(item) === i).length == manifest.options.length;
+
+            } else {
+                return false;
+            }
+        } else {
+            return true;
+        }
     } else {
         return false;
     }
