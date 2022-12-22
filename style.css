@@ -719,15 +719,19 @@ body {
     padding-left: 5px;
 }
 
+.settings_section_header.plugin_nooptions {
+    cursor: unset;
+}
+
 .settings_section_header.section_visible > div:nth-child(3) i {
     transform: rotate(180deg);
 }
 
-.settings_section_header:not(.plugin_section):hover, .settings_section_header.plugin_section:not(:has(div:nth-child(1):hover)):not(:has(div:nth-child(1):active)):hover {
+.settings_section_header:not(.plugin_section):hover, .settings_section_header.plugin_section:not(.plugin_nooptions):not(:has(div:nth-child(1):hover)):not(:has(div:nth-child(1):active)):hover {
     background-color: var(--hover);
 }
 
-.settings_section_header:not(.plugin_section):active, .settings_section_header.plugin_section:not(:has(div:nth-child(1):hover)):not(:has(div:nth-child(1):active)):active {
+.settings_section_header:not(.plugin_section):active, .settings_section_header.plugin_section:not(.plugin_nooptions):not(:has(div:nth-child(1):hover)):not(:has(div:nth-child(1):active)):active {
     background-color: var(--active);
 }
 
@@ -802,6 +806,10 @@ body {
 
 .settings_section_inner {
     padding: 6px 0px;
+}
+
+.settings_section_inner[inert] {
+    opacity: 0.5;
 }
 
 .section_content_visible.settings_section {
