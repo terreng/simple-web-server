@@ -509,6 +509,9 @@ function submitAddServer() {
         "httpAuthPassword": document.querySelector("#httpAuthPassword").value,
         "ipThrottling": Number(document.querySelector("#ipThrottling").value),
     };
+
+    server_object.plugins = savePluginOptions();
+
     if (activeeditindex !== false) {
         for (let i=0; i<Object.keys(server_object).length; i++) {
             config.servers[activeeditindex][Object.keys(server_object)[i]] = server_object[Object.keys(server_object)[i]];
@@ -935,7 +938,7 @@ function renderPluginOptions(server_config) {
         }
 
         if (option.type == "bool") {
-            return '<div tabindex="0" class="checkbox_option" id="plugin.'+pluginid+'.'+option.id+'" onclick="toggleCheckbox(this)" role="checkbox" aria-label="'+urlescape(option.name)+'" aria-checked="'+(option_value ? "true" : "false")+'"><div class="checkbox'+(option_value ? " checked" : "")+'"><i class="material-icons" aria-hidden="true">'+(option_value ? "check_box" : "check_box_outline_blank")+'</i></div><div class="label">'+htmlescape(option.name)+(option.description ? ' <a href="#" class="help_icon" aria-label="Help" onclick="helpInfo(event, \'plugin.'+pluginid+'.'+option.id+'\')"><i class="material-icons" aria-hidden="true">help_outline</i></a>' : '')+'</div></div>';
+            return '<div tabindex="0" class="checkbox_option'+(option_value ? " checked" : "")+'" id="plugin.'+pluginid+'.'+option.id+'" onclick="toggleCheckbox(this)" role="checkbox" aria-label="'+urlescape(option.name)+'" aria-checked="'+(option_value ? "true" : "false")+'"><div class="checkbox"><i class="material-icons" aria-hidden="true">'+(option_value ? "check_box" : "check_box_outline_blank")+'</i></div><div class="label">'+htmlescape(option.name)+(option.description ? ' <a href="#" class="help_icon" aria-label="Help" onclick="helpInfo(event, \'plugin.'+pluginid+'.'+option.id+'\')"><i class="material-icons" aria-hidden="true">help_outline</i></a>' : '')+'</div></div>';
         } else if (option.type == "string") {
             return '<div class="input_option"><div class="label">'+htmlescape(option.name)+(option.description ? ' <a href="#" class="help_icon" aria-label="Help" onclick="helpInfo(event, \'plugin.'+pluginid+'.'+option.id+'\')"><i class="material-icons" aria-hidden="true">help_outline</i></a>' : '')+'</div><input type="text" id="plugin.'+pluginid+'.'+option.id+'" placeholder="" value="'+urlescape(option_value)+'" aria-label="'+urlescape(option.name)+'"></div>';
         } else if (option.type == "number") {
@@ -949,7 +952,7 @@ function renderPluginOptions(server_config) {
         let manifest = plugins[Object.keys(plugins)[i]];
         let plugin_options = (server_config && server_config.plugins && server_config.plugins[manifest.id]) ? server_config.plugins[manifest.id] : {};
 
-        pendhtml += '<div tabindex="0" class="settings_section_header plugin_section'+(plugin_options.enabled ? " plugin_enabled" : "")+((manifest.options && manifest.options.length > 0) ? "" : " plugin_nooptions")+'" onclick="toggleSection(this)" role="button" aria-label="'+urlescape(manifest.name)+'"><div role="checkbox" tabindex="0" aria-label="Enabled" aria-checked="'+(plugin_options.enabled ? "true" : "false")+'" onclick="togglePlugin(event, this)"><i class="material-icons" aria-hidden="true">'+(plugin_options.enabled ? "check_box" : "check_box_outline_blank")+'</i></div><div>'+htmlescape(manifest.name)+'</div>'+((manifest.options && manifest.options.length > 0) ? '<div><i class="material-icons" aria-hidden="true">expand_more</i></div>' : '')+'</div><div class="settings_section" inert><div class="settings_section_inner"'+(plugin_options.enabled ? "" : " inert")+'>'+manifest.options.map(option => drawOption(manifest.id, option, plugin_options)).join("")+'</div></div>';
+        pendhtml += '<div tabindex="0" class="settings_section_header plugin_section'+(plugin_options.enabled ? " plugin_enabled" : "")+((manifest.options && manifest.options.length > 0) ? "" : " plugin_nooptions")+'" onclick="toggleSection(this)" id="plugin.'+manifest.id+'" role="button" aria-label="'+urlescape(manifest.name)+'"><div role="checkbox" tabindex="0" aria-label="Enabled" aria-checked="'+(plugin_options.enabled ? "true" : "false")+'" onclick="togglePlugin(event, this)"><i class="material-icons" aria-hidden="true">'+(plugin_options.enabled ? "check_box" : "check_box_outline_blank")+'</i></div><div>'+htmlescape(manifest.name)+'</div>'+((manifest.options && manifest.options.length > 0) ? '<div><i class="material-icons" aria-hidden="true">expand_more</i></div>' : '')+'</div><div class="settings_section" inert><div class="settings_section_inner"'+(plugin_options.enabled ? "" : " inert")+'>'+manifest.options.map(option => drawOption(manifest.id, option, plugin_options)).join("")+'</div></div>';
     }
 
     document.querySelector("#plugin_options").innerHTML = pendhtml;
@@ -971,4 +974,34 @@ function togglePlugin(event, element) {
         section.querySelector("div > i").innerText = "check_box";
         section.nextElementSibling.querySelector(".settings_section_inner").removeAttribute("inert");
     }
+}
+
+function savePluginOptions() {
+
+    var plugin_options = {};
+
+    for (let i=0; i<Object.keys(plugins).length; i++) {
+        let manifest = plugins[Object.keys(plugins)[i]];
+
+        plugin_options[manifest.id] = {
+            "enabled": document.querySelector("#plugin\\."+manifest.id).classList.contains("plugin_enabled")
+        }
+
+        for (let e=0; e<manifest.options.length; e++) {
+            let option = manifest.options[e];
+            
+            if (option.type == "bool") {
+                plugin_options[manifest.id][option.id] = document.querySelector("#plugin\\."+manifest.id+"\\."+option.id).classList.contains("checked");
+            } else if (option.type == "string") {
+                plugin_options[manifest.id][option.id] = document.querySelector("#plugin\\."+manifest.id+"\\."+option.id).value;
+            } else if (option.type == "number") {
+                plugin_options[manifest.id][option.id] = Number(document.querySelector("#plugin\\."+manifest.id+"\\."+option.id).value);
+            } else if (option.type == "select") {
+                plugin_options[manifest.id][option.id] = document.querySelector("#plugin\\."+manifest.id+"\\."+option.id).value;
+            }
+        }
+    }
+
+    return plugin_options;
+
 }
