@@ -89,7 +89,7 @@ function getPluginInfo(id) {
     let path = global.path.join(eApp.getPath('userData'), "plugins", id);
     let fs = new WSC.FileSystem(path);
     let manifest = JSON.parse(fs.getByPath('/plugin.json').text());
-    if (!validatePluginManifest(manifest)) throw new Error('Not a valid plugin');
+    if (!(validatePluginManifest(manifest) && manifest.id == id)) throw new Error('Not a valid plugin');
     return manifest;
 }
 
@@ -234,22 +234,4 @@ function getInstalledPlugins() {
     return data;
 }
 
-function activate(id, config) {
-    if (config[id]) {
-        config[id].enabled = true;
-    } else {
-        config[id] = {enabled:true};
-    }
-    return config;
-}
-
-function deActivate(id, config) {
-    if (config[id]) {
-        config[id].enabled = false;
-    } else {
-        config[id] = {enabled:false};
-    }
-    return config;
-}
-
-module.exports = {registerPlugins, importPlugin, getPluginManifestFromPath, removePlugin, getInstalledPlugins, activate, deActivate};
+module.exports = {registerPlugins, importPlugin, getPluginManifestFromPath, removePlugin, getInstalledPlugins};
