@@ -920,6 +920,19 @@ function removePlugin(pluginid) {
     if (plugins[pluginid]) {
         showPrompt("Remove \""+htmlescape(plugins[pluginid].name.substring(0,32))+"\" plugin?", "All server options for this plugin will be cleared. If you want to update the plugin without resetting server options, just add the plugin again instead of removing it first.", [["Confirm","destructive",function() {
             window.api.removePlugin(pluginid);
+
+            // Remove plugin options from all servers
+            for (let i=0; i<(config.servers || []).length; i++) { 
+                if (config.servers[i].plugins && config.servers[i].plugins[pluginid]) {
+                    delete config.servers[i].plugins[pluginid];
+                }
+                if (config.servers[i].plugins && Object.keys(config.servers[i].plugins).length == 0) {
+                    delete config.servers[i].plugins;
+                }
+            }
+            
+            window.api.saveconfig(config);
+
             hidePrompt();
         }],["Cancel","",hidePrompt]])
     }

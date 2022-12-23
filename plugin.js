@@ -168,7 +168,7 @@ function validatePluginManifest(manifest) {
             if (Array.isArray(manifest.options)) {
 
                 function validateOption(option) {
-                    if (option && typeof option == "object" && typeof option.id == "string" && option.id.match(/^[A-Za-z0-9\-_]+$/) && typeof option.name == "string" && option.name.length <= 512 && (typeof option.description == "undefined" || typeof option.description == "string")) {
+                    if (option && typeof option == "object" && typeof option.id == "string" && option.id.match(/^[A-Za-z0-9\-_]+$/) && option.id !== "enabled" && typeof option.name == "string" && option.name.length <= 512 && (typeof option.description == "undefined" || typeof option.description == "string")) {
                         if (option.type == "bool") {
                             return typeof option.default == "boolean";
                         } else if (option.type == "string") {
