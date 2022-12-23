@@ -401,7 +401,7 @@ function createServer(serverconfig) {
         } catch(err) {
             console.error(err);
             this_server.state = "error";
-            this_server.error_message = (serverconfig.https ? "There is probably something wrong with your HTTPS certificate and key.\n" : "") + err.message;
+            this_server.error_message = (serverconfig.https ? "There might be something wrong with your HTTPS certificate and key.\n" : "") + err.message;
             running_servers.push(this_server);
             return;
         }
@@ -412,7 +412,7 @@ function createServer(serverconfig) {
         } catch(e) {
             console.warn("Error setting up FileSystem for path "+serverconfig.path, e);
             this_server.state = "error";
-            this_server.error_message = "File system error.\n" + e.message;
+            this_server.error_message = "FILESYSTEMERROR-" + e.message;
             running_servers.push(this_server);
             return;
         }
@@ -423,7 +423,7 @@ function createServer(serverconfig) {
             } catch(e) {
                 console.warn('Error setting up plugins', e);
                 this_server.state = "error";
-                this_server.error_message = "Error starting plugins.\n" + e.message;
+                this_server.error_message = "PLUGINERROR-" + e.message;
                 running_servers.push(this_server);
                 return;
             }
@@ -504,7 +504,7 @@ function startServers(force_restart_indexes) {
         } else {
             running_servers[i].deleted = true;
             console.log("["+(new Date()).toLocaleString()+'] Killing server on port ' + running_servers[i].config.port);
-            if (running_servers[i].server) {
+            if (running_servers[i].server && running_servers[i].server.destroy) {
                 running_servers[i].server.destroy(() => {
                     closed_servers++;
                     checkServersClosed();

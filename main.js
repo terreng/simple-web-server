@@ -237,10 +237,15 @@ function getServerStatusBox(local_config) {
         return '<div class="status_box"><div>Web server URL'+(url_list.length === 1 ? '' : 's')+'</div><div>'+url_list.map((a) => {return '<a href="'+a+'" target="_blank" onclick="window.api.openExternal(this.href);event.preventDefault()">'+a+'</a>'}).join('<div style="padding-top: 6px;"></div>')+"</div></div>";
 
     } else if (getServerStatus(local_config).state === "error") {
-        if (getServerStatus(local_config).error_message.indexOf("EADDRINUSE") > -1) {
+        let error_message = getServerStatus(local_config).error_message;
+        if (error_message.indexOf("EADDRINUSE") > -1) {
             return '<div class="status_box error_status_box"><div>Port in use</div><div>Web server failed to start because port '+local_config.port+' is already in use by another program.</div></div>';
+        } else if (error_message.indexOf("FILESYSTEMERROR-") == 0) {
+            return '<div class="status_box error_status_box"><div>File system error</div><div>'+htmlescape(error_message.substring("FILESYSTEMERROR-".length))+'</div></div>';
+        } else if (error_message.indexOf("PLUGINERROR-") == 0) {
+            return '<div class="status_box error_status_box"><div>Error starting plugins</div><div>'+htmlescape(error_message.substring("PLUGINERROR-".length))+'</div></div>';
         } else {
-            return '<div class="status_box error_status_box"><div>Error</div><div>'+htmlescape(getServerStatus(local_config).error_message)+'</div></div>';
+            return '<div class="status_box error_status_box"><div>Error</div><div>'+htmlescape(error_message)+'</div></div>';
         }
     } else return '';
 }
@@ -930,7 +935,7 @@ function removePlugin(pluginid) {
                     delete config.servers[i].plugins;
                 }
             }
-            
+
             window.api.saveconfig(config);
 
             hidePrompt();
