@@ -1,12 +1,11 @@
 const JSZip = require("jszip");
 
 function registerPlugins(data) {
-    let config = data.config.plugin;
     let functions = [];
     let manifest;
-    for (const k in config) {
+    for (const k in data.config.plugins) {
         //console.log(config[k], k);
-        if (!config[k].enabled) continue;
+        if (!data.config.plugins[k].enabled) continue;
         try {
             let path = global.path.join(eApp.getPath('userData'), "plugins", k);
             const fs = new WSC.FileSystem(path); //no point in catching it if we're just going to throw it again.
@@ -14,7 +13,9 @@ function registerPlugins(data) {
             //addOptionsToUI(manifest.options, manifest.id);
             if (!path.endsWith('/')) path+='/';
             //console.log(path+manifest.script)
-            functions.push([require(path+manifest.script), manifest.id]);
+            if (validatePluginManifest(manifest) && manifest.id == k) {
+                functions.push([require(path+manifest.script), manifest.id]);
+            }
             // note - server will need to restart to load changes in plugin
         } catch(e) {
             console.warn('error registering plugin', e);

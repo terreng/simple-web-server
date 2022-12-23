@@ -21,12 +21,11 @@ global.zlib = require('zlib');
 global.pipeline = require('stream').pipeline;
 
 global.bookmarks = require('./bookmarks.js');
-global.plugins = require('./plugin.js');
+global.plugin = require('./plugin.js');
 global.bookmarks = require('./bookmarks.js');
 global.WSC = require("./WSC.js");
 
-global.plugin = plugins.getInstalledPlugins();
-//console.log(global.plugin);
+global.plugins = plugin.getInstalledPlugins();
 
 console = function(old_console) {
     let new_console = {
@@ -338,7 +337,7 @@ function createWindow() {
     mainWindow.webContents.on('did-finish-load', () => {
         mainWindow.webContentsLoaded = true;
         lastIps = getIPs();
-        mainWindow.webContents.send('message', {"type": "init", "config": config, ip: lastIps, install_source: install_source, plugins: plugin});
+        mainWindow.webContents.send('message', {"type": "init", "config": config, ip: lastIps, install_source: install_source, plugins: plugins});
         if (update_info) {
             mainWindow.webContents.send('message', {"type": "update", "url": update_info.url, "text": update_info.text, "attributes": update_info.attributes});
         }
@@ -383,7 +382,7 @@ function createServer(serverconfig) {
         }
     }
     if (serverconfig.enabled && !found_already_running) {
-        let this_server = {"config":serverconfig,"state":"starting","server":null,"plugin":null};
+        let this_server = {"config":serverconfig,"state":"starting","server":null};
 
         const hostname = serverconfig.localnetwork ? (serverconfig.ipv6 ? '::' : '0.0.0.0') : (serverconfig.ipv6 ? '::1' : '127.0.0.1');
         let server;
@@ -417,24 +416,24 @@ function createServer(serverconfig) {
             running_servers.push(this_server);
             return;
         }
-        if (serverconfig.plugin) {
+        if (serverconfig.plugins) {
             try {
-                this_server.plugin = plugins.registerPlugins(this_server);
-                this_server.plugin.functions.onStart(server, serverconfig.plugin);
+                this_server.plugins = plugin.registerPlugins(this_server);
+                this_server.plugins.functions.onStart(server, serverconfig.plugins);
             } catch(e) {
-                console.warn('Error setting up plugin', e);
+                console.warn('Error setting up plugins', e);
                 this_server.state = "error";
-                this_server.error_message = "Error Regestering plugin";
+                this_server.error_message = "Error starting plugins.";
                 running_servers.push(this_server);
                 return;
             }
         }
 
         server.on('request', (req, res) => {
-            if (serverconfig.plugin) {
+            if (serverconfig.plugins) {
                 let prevented = false;
                 try {
-                    this_server.plugin.functions.onRequest(req, res, ()=>{prevented = true}, serverconfig.plugin);
+                    this_server.plugins.functions.onRequest(req, res, ()=>{prevented = true}, serverconfig.plugins);
                 } catch(e) {
                     console.log('Plugin error', e);
                     res.statusCode = 500;
@@ -607,7 +606,7 @@ function checkForUpdates() {
 
 ipcMain.handle('addPlugin', (event, arg) => {
     try {
-        plugins.importPlugin(arg.path);
+        plugin.importPlugin(arg.path);
         return true;
     } catch(e) {
         return false;
@@ -616,7 +615,7 @@ ipcMain.handle('addPlugin', (event, arg) => {
 
 ipcMain.handle('checkPlugin', (event, arg) => {
     try {
-        return plugins.getPluginManifestFromPath(arg.path);
+        return plugin.getPluginManifestFromPath(arg.path);
     } catch(e) {
         console.error(e);
         return false;
@@ -624,5 +623,5 @@ ipcMain.handle('checkPlugin', (event, arg) => {
 });
 
 ipcMain.handle('removePlugin', (event, arg) => {
-    plugins.removePlugin(arg.id);
+    plugin.removePlugin(arg.id);
 });
