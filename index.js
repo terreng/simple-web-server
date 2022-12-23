@@ -412,7 +412,7 @@ function createServer(serverconfig) {
         } catch(e) {
             console.warn("Error setting up FileSystem for path "+serverconfig.path, e);
             this_server.state = "error";
-            this_server.error_message = "FS error";
+            this_server.error_message = "File system error.\n" + e.message;
             running_servers.push(this_server);
             return;
         }
@@ -423,7 +423,7 @@ function createServer(serverconfig) {
             } catch(e) {
                 console.warn('Error setting up plugins', e);
                 this_server.state = "error";
-                this_server.error_message = "Error starting plugins.";
+                this_server.error_message = "Error starting plugins.\n" + e.message;
                 running_servers.push(this_server);
                 return;
             }

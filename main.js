@@ -422,7 +422,7 @@ function addServer(editindex) {
         document.querySelector("#submit_button").setAttribute("aria-label", "Create Server");
     }
 
-    renderPluginOptions();
+    renderPluginOptions(editindex != null ? config.servers[editindex] : null);
 
     navigate("server");
     document.getElementById("server_container").scrollTop = 0;
@@ -676,6 +676,14 @@ function htmlescape(str) {
     return str.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;");
 }
 
+function urlescape(str) {
+    if (str == undefined) {
+        return str;
+    }
+    str = String(str);
+    return str.replace(/"/g, "&quot;");
+}
+
 function showPrompt(title, content, buttons) {
     document.getElementById("prompt_bk").style.pointerEvents = "";
     document.getElementById("prompt").classList.add("prompt_show");
@@ -823,7 +831,7 @@ function helpInfo(event, id) {
     event.preventDefault();
     event.stopPropagation();
 
-    showPrompt(help_text[id][0], help_text[id][1].replace(/<a href="(.+)">/g, function(a, b) {return '<a href="'+b+'" target="_blank" onclick="window.api.openExternal(this.href);event.preventDefault()">'}), [["Done","",hidePrompt]]);
+    showPrompt((id.indexOf("plugin.") == 0 ? htmlescape(plugin_help_text[id.substring(7)][0]) : help_text[id][0]), (id.indexOf("plugin.") == 0 ? plugin_help_text[id.substring(7)][1] : help_text[id][1]).replace(/<a href="(.+)">/g, function(a, b) {return '<a href="'+b+'" target="_blank" onclick="window.api.openExternal(this.href);event.preventDefault()">'}), [["Done","",hidePrompt]]);
 }
 
 // TODO: Implement drag and drop for setting the folder directory or installing a plugin. I don't know how to make this work with security scoped bookmarks on macOS.
@@ -914,24 +922,34 @@ function removePlugin(pluginid) {
     }
 }
 
-function renderPluginOptions() {
+var plugin_help_text = {};
+
+function renderPluginOptions(server_config) {
     let pendhtml = "";
 
-    function drawOption(pluginid, option) {
+    function drawOption(pluginid, option, plugin_options) {
+        let option_value = plugin_options[option.id] != null ? ((typeof plugin_options[option.id] == typeof option.default) ? plugin_options[option.id] : option.default) : option.default;
+
+        if (option.description) {
+            plugin_help_text[pluginid+'.'+option.id] = [option.name, option.description];
+        }
+
         if (option.type == "bool") {
-            return '<div tabindex="0" class="checkbox_option" id="plugin.'+pluginid+'.'+option.id+'" onclick="toggleCheckbox(this)" role="checkbox" aria-label="'+htmlescape(option.name)+'" aria-checked="'+(option.default ? "true" : "false")+'"><div class="checkbox'+(option.default ? " checked" : "")+'"><i class="material-icons" aria-hidden="true">'+(option.default ? "check_box" : "check_box_outline_blank")+'</i></div><div class="label">'+htmlescape(option.name)+(option.description ? ' <a href="#" class="help_icon" aria-label="Help" onclick="helpInfo(event, \'plugin.'+pluginid+'.'+option.id+'\')"><i class="material-icons" aria-hidden="true">help_outline</i></a>' : '')+'</div></div>';
+            return '<div tabindex="0" class="checkbox_option" id="plugin.'+pluginid+'.'+option.id+'" onclick="toggleCheckbox(this)" role="checkbox" aria-label="'+urlescape(option.name)+'" aria-checked="'+(option_value ? "true" : "false")+'"><div class="checkbox'+(option_value ? " checked" : "")+'"><i class="material-icons" aria-hidden="true">'+(option_value ? "check_box" : "check_box_outline_blank")+'</i></div><div class="label">'+htmlescape(option.name)+(option.description ? ' <a href="#" class="help_icon" aria-label="Help" onclick="helpInfo(event, \'plugin.'+pluginid+'.'+option.id+'\')"><i class="material-icons" aria-hidden="true">help_outline</i></a>' : '')+'</div></div>';
         } else if (option.type == "string") {
-
+            return '<div class="input_option"><div class="label">'+htmlescape(option.name)+(option.description ? ' <a href="#" class="help_icon" aria-label="Help" onclick="helpInfo(event, \'plugin.'+pluginid+'.'+option.id+'\')"><i class="material-icons" aria-hidden="true">help_outline</i></a>' : '')+'</div><input type="text" id="plugin.'+pluginid+'.'+option.id+'" placeholder="" value="'+urlescape(option_value)+'" aria-label="'+urlescape(option.name)+'"></div>';
         } else if (option.type == "number") {
-
+            return '<div class="input_option"><div class="label">'+htmlescape(option.name)+(option.description ? ' <a href="#" class="help_icon" aria-label="Help" onclick="helpInfo(event, \'plugin.'+pluginid+'.'+option.id+'\')"><i class="material-icons" aria-hidden="true">help_outline</i></a>' : '')+'</div><input type="number" id="plugin.'+pluginid+'.'+option.id+'" placeholder="" style="width: 100px;" '+(option.min != null ? 'min="'+option.min+'" ' : '')+''+(option.max != null ? 'max="'+option.max+'" ' : '')+'value="'+String(option_value || 0)+'" aria-label="'+urlescape(option.name)+'"></div>';
         } else if (option.type == "select") {
-
+            return '<div class="input_option"><div class="label">'+htmlescape(option.name)+(option.description ? ' <a href="#" class="help_icon" aria-label="Help" onclick="helpInfo(event, \'plugin.'+pluginid+'.'+option.id+'\')"><i class="material-icons" aria-hidden="true">help_outline</i></a>' : '')+'</div><select id="plugin.'+pluginid+'.'+option.id+'" aria-label="'+urlescape(option.name)+'">'+option.choices.map(a => '<option value="'+a.id+'"'+(option_value == a.id ? ' selected' : '')+'>'+htmlescape(a.name)+'</option>').join("")+'</select></div>';
         }
     }
 
     for (let i=0; i<Object.keys(plugins).length; i++) {
         let manifest = plugins[Object.keys(plugins)[i]];
-        pendhtml += '<div tabindex="0" class="settings_section_header plugin_section'+(manifest.enabled ? " plugin_enabled" : "")+((manifest.options && manifest.options.length > 0) ? "" : " plugin_nooptions")+'" onclick="toggleSection(this)" role="button" aria-label="'+htmlescape(manifest.name)+'"><div role="checkbox" tabindex="0" aria-label="Enabled" aria-checked="'+(manifest.enabled ? "true" : "false")+'" onclick="togglePlugin(event, this)"><i class="material-icons" aria-hidden="true">'+(manifest.enabled ? "check_box" : "check_box_outline_blank")+'</i></div><div>'+htmlescape(manifest.name)+'</div>'+((manifest.options && manifest.options.length > 0) ? '<div><i class="material-icons" aria-hidden="true">expand_more</i></div>' : '')+'</div><div class="settings_section" inert><div class="settings_section_inner"'+(manifest.enabled ? "" : " inert")+'>'+manifest.options.map(option => drawOption(manifest.id, option)).join("")+'</div></div>';
+        let plugin_options = (server_config && server_config.plugins && server_config.plugins[manifest.id]) ? server_config.plugins[manifest.id] : {};
+
+        pendhtml += '<div tabindex="0" class="settings_section_header plugin_section'+(plugin_options.enabled ? " plugin_enabled" : "")+((manifest.options && manifest.options.length > 0) ? "" : " plugin_nooptions")+'" onclick="toggleSection(this)" role="button" aria-label="'+urlescape(manifest.name)+'"><div role="checkbox" tabindex="0" aria-label="Enabled" aria-checked="'+(plugin_options.enabled ? "true" : "false")+'" onclick="togglePlugin(event, this)"><i class="material-icons" aria-hidden="true">'+(plugin_options.enabled ? "check_box" : "check_box_outline_blank")+'</i></div><div>'+htmlescape(manifest.name)+'</div>'+((manifest.options && manifest.options.length > 0) ? '<div><i class="material-icons" aria-hidden="true">expand_more</i></div>' : '')+'</div><div class="settings_section" inert><div class="settings_section_inner"'+(plugin_options.enabled ? "" : " inert")+'>'+manifest.options.map(option => drawOption(manifest.id, option, plugin_options)).join("")+'</div></div>';
     }
 
     document.querySelector("#plugin_options").innerHTML = pendhtml;
