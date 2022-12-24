@@ -1,6 +1,10 @@
 # Introduction to plugins
 
-Plugins allow you to further modify your web servers beyond the options that are available in the app. After installing a plugin, you must specifically enable it for each server you want to use it with.
+Plugins allow you to further modify your web servers beyond the options that are available in the app. 
+
+To install a plugin in the app, go to Settings > Add Plugin and choose a directory or ZIP file.
+
+After installing a plugin, you must specifically enable it for each server you want to use it with.
 
 :::danger
 Plugins aren't sandboxed, and run with the same permissions as the app. Only install plugins if you know and trust the developer.
@@ -67,7 +71,7 @@ module.exports = {onStart, onRequest};
 
 ### Step 3: Install the plugin
 
-To install a plugin from the app, go to Settings > Add Plugin and choose the directory your plugin files are located in. You can also install a plugin from a ZIP file.
+To install a plugin in the app, go to Settings > Add Plugin and choose the directory your plugin files are located in. You can also install a plugin from a ZIP file.
 
 Alternatively, you can manually install a plugin by adding it to the plugins directory:
 
