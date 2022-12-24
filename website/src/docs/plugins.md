@@ -45,7 +45,7 @@ Create a JavaScript file with a name that matches the value of the `script` opti
 
 The script can have two custom functions:
 - `onStart(server, options)`, which is called whenever the server starts and allows you to modify the server.
-- `onRequest(req, res, preventDefault, options)`, which is called with each request and allows you modify the response or handle the request however you want.
+- `onRequest(req, res, options, preventDefault)`, which is called with each request and allows you modify the response or handle the request however you want.
 
 See [Plugin script](/docs/plugin%20script.md) for a more details, including an explanation of the arguments to these functions.
 
@@ -56,7 +56,7 @@ function onStart(server, options) {
   // Do nothing
 }
 
-function onRequest(req, res, preventDefault, options) {
+function onRequest(req, res, options, preventDefault) {
   if (options.header == true) {
     res.setHeader('my-header', 'hello world');
   }
@@ -83,7 +83,7 @@ The name of the folder must match the id of the plugin.
 
 ### Step 4: Debug any issues
 
-If you see an error about the `plugin.json` file being invalid, then check to make sure that you've formatted it correctly. See [Plugin manifest file](/docs/plugin%20manifest%20file.md) for more help.
+If you see an error about the `plugin.json` file being invalid then check to make sure that you've formatted it correctly. See [Plugin manifest file](/docs/plugin%20manifest%20file.md) for more help.
 
 If you encounter an "Error starting plugins" error for a server, or if you receive a `Plugin error` error message in response to a web request, then check the logs for more error details. See [Viewing logs](logs.md).
 

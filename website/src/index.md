@@ -6,7 +6,7 @@ tagline: Create local web servers in just a few clicks with an easy to use inter
 actionText: Download →
 actionLink: /download/
 features:
-- title: Easy to customize
+- title: Easy to configure
   details: Change server options with just a few clicks.
 - title: Run multiple & in the background
   details: Run multiple web servers at the same time, even when the app is closed.

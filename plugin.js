@@ -29,7 +29,7 @@ function registerPlugins(data) {
             onStart: function(s, settings) {
                 for (let i=0; i<functions.length; i++) {
                     if (typeof functions[i][0].onStart !== 'function') continue;
-                    functions[i][0].onStart(s, settings[functions[i][1]]);
+                    functions[i][0].onStart(s, settings[functions[i][1]] || {});
                 }
             },
             onRequest: function(req, res, pv, settings) {
@@ -37,7 +37,7 @@ function registerPlugins(data) {
                 let prvt = ()=>{prevented=true;}
                 for (let i=0; i<functions.length; i++) {
                     if (typeof functions[i][0].onRequest !== 'function') continue;
-                    functions[i][0].onRequest(req, res, settings[functions[i][1]], prvt);
+                    functions[i][0].onRequest(req, res, settings[functions[i][1]] || {}, prvt);
                     if (prevented) pv();
                 }
             }
