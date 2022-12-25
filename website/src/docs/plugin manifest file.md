@@ -87,67 +87,67 @@ A list of configurable options for the plugin, which will be displayed in the ap
 
 Each option is an object in the array. What follows is a list of properties (keys) and the corresponding value you should provide for each option object:
 
-#### `id`
-- Required
-- Type: string, can only contain letters (uppercase or lowercase), numbers, `-`, and `_`, must be unique
-
-The id of the option. Each option must have a unique id.
-
-#### `name`
-- Required
-- Type: string, no more than 64 characters
-
-The name of the option.
-
-#### `description`
-- Optional
-- Type: string, HTML
-
-A description of what the option does. You can include HTML formatting, such as links. Make sure to escape `<` as `&lt;` and `>` as `&gt;`.
-
-#### `type`
-- Required
-- Type: string: `bool`, `string`, `number`, or `select`
-
-The type of option.
-
-- `bool`: checkbox (`true` or `false`)
-- `string`: textbox (string)
-- `number`: number input (number, integer)
-- `select`: dropdown (string, id of selected option)
-
-#### `default`
-- Required
-- Type: Depends on `type`:
-  - If `type` is `bool`, then this must be a boolean (either `true` or `false`).
-  - If `type` is `string`, then this must be a string. To make the textbox start blank, set this to the empty string (`""`).
-  - If `type` is `number`, then this must be a number.
-  - If `type` is `select`, then this must be a string (the id of one of the choices).
-
-The default value for the option.
-
-#### `min` and `max`
-- Optional. Only used if `type` is `number`.
-- Type: number
-
-The minimum or maximum value for the option. Not validated in any way.
-
-#### `choices`
-- Required if `type` is `select`.
-- Type: array of objects
-
-A list of choices for the option. Choices are shown in the order of the array.
-
-Each choice is an object in the array. What follows is a list of properties (keys) and the corresponding value you should provide for each choice object:
-
-##### `id`
-- Required
-- Type: string, can only contain letters (uppercase or lowercase), numbers, `-`, and `_`, cannot be `enabled`, must be unique
-
-The id of the option choice. Each choice must have a unique id.
-
-##### `name`
-- Required
-- Type: string, no more than 512 characters
-
-The name of the option choice.
+> #### `id`
+> - Required
+> - Type: string, can only contain letters (uppercase or lowercase), numbers, `-`, and `_`, must be unique
+> 
+> The id of the option. Each option must have a unique id.
+> 
+> #### `name`
+> - Required
+> - Type: string, no more than 64 characters
+> 
+> The name of the option.
+> 
+> #### `description`
+> - Optional
+> - Type: string, HTML
+> 
+> A description of what the option does. You can include HTML formatting, such as links. Make sure to escape `<` as `&lt;` and `>` as `&gt;`.
+> 
+> #### `type`
+> - Required
+> - Type: string: `bool`, `string`, `number`, or `select`
+> 
+> The type of option.
+> 
+> - `bool`: checkbox (`true` or `false`)
+> - `string`: textbox (string)
+> - `number`: number input (number, integer)
+> - `select`: dropdown (string, id of selected option)
+> 
+> #### `default`
+> - Required
+> - Type: Depends on `type`:
+>   - If `type` is `bool`, then this must be a boolean (either `true` or `false`).
+>   - If `type` is `string`, then this must be a string. To make the textbox start blank, set this to the empty string (`""`).
+>   - If `type` is `number`, then this must be a number.
+>   - If `type` is `select`, then this must be a string (the id of one of the choices).
+> 
+> The default value for the option.
+> 
+> #### `min` and `max`
+> - Optional. Only used if `type` is `number`.
+> - Type: number
+> 
+> The minimum or maximum value for the option. Not validated in any way.
+> 
+> #### `choices`
+> - Required if `type` is `select`.
+> - Type: array of objects
+> 
+> A list of choices for the option. Choices are shown in the order of the array.
+> 
+> Each choice is an object in the array. What follows is a list of properties (keys) and the corresponding value you should provide for each choice object:
+> 
+>> ##### `id`
+>> - Required
+>> - Type: string, can only contain letters (uppercase or lowercase), numbers, `-`, and `_`, cannot be `enabled`, must be unique
+>> 
+>> The id of the option choice. Each choice must have a unique id.
+>> 
+>> ##### `name`
+>> - Required
+>> - Type: string, no more than 512 characters
+>> 
+>> The name of the option choice.

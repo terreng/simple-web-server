@@ -487,7 +487,7 @@ function submitAddServer() {
     let server_object = {
         "enabled": activeeditindex !== false ? config.servers[activeeditindex].enabled : true,
         "path": current_path,
-        "port": Number(document.querySelector("#port").value),
+        "port": Math.floor(Number(document.querySelector("#port").value)),
         "localnetwork": isChecked("localnetwork"),
 
         "showIndex": isChecked("showIndex"),
@@ -518,7 +518,7 @@ function submitAddServer() {
         "httpAuth": isChecked("httpAuth"),
         "httpAuthUsername": document.querySelector("#httpAuthUsername").value,
         "httpAuthPassword": document.querySelector("#httpAuthPassword").value,
-        "ipThrottling": Number(document.querySelector("#ipThrottling").value),
+        "ipThrottling": Math.floor(Number(document.querySelector("#ipThrottling").value)),
     };
 
     server_object.plugins = savePluginOptions();
@@ -620,11 +620,11 @@ function themeChange() {
 }
 
 function portValid() {
-    return Number(document.querySelector("#port").value) >= 1 && Number(document.querySelector("#port").value) <= 65535;
+    return Math.floor(Number(document.querySelector("#port").value)) >= 1 && Math.floor(Number(document.querySelector("#port").value)) <= 65535;
 }
 
 function portUnique() {
-    return (config.servers || []).map(function(a) {return a.port}).indexOf(Number(document.querySelector("#port").value)) === -1 || (activeeditindex !== false && (config.servers || []).map(function(a) {return a.port}).indexOf(Number(document.querySelector("#port").value)) === activeeditindex);
+    return (config.servers || []).map(function(a) {return a.port}).indexOf(Math.floor(Number(document.querySelector("#port").value))) === -1 || (activeeditindex !== false && (config.servers || []).map(function(a) {return a.port}).indexOf(Math.floor(Number(document.querySelector("#port").value))) === activeeditindex);
 }
 
 function portChange() {
@@ -966,7 +966,7 @@ function renderPluginOptions(server_config) {
         } else if (option.type == "string") {
             return '<div class="input_option"><div class="label">'+htmlescape(option.name)+(option.description ? ' <a href="#" class="help_icon" aria-label="Help" onclick="helpInfo(event, \'plugin.'+pluginid+'.'+option.id+'\')"><i class="material-icons" aria-hidden="true">help_outline</i></a>' : '')+'</div><input type="text" id="plugin.'+pluginid+'.'+option.id+'" placeholder="" value="'+urlescape(option_value)+'" aria-label="'+urlescape(option.name)+'"></div>';
         } else if (option.type == "number") {
-            return '<div class="input_option"><div class="label">'+htmlescape(option.name)+(option.description ? ' <a href="#" class="help_icon" aria-label="Help" onclick="helpInfo(event, \'plugin.'+pluginid+'.'+option.id+'\')"><i class="material-icons" aria-hidden="true">help_outline</i></a>' : '')+'</div><input type="number" id="plugin.'+pluginid+'.'+option.id+'" placeholder="" style="width: 100px;" '+(option.min != null ? 'min="'+option.min+'" ' : '')+''+(option.max != null ? 'max="'+option.max+'" ' : '')+'value="'+String(option_value || 0)+'" aria-label="'+urlescape(option.name)+'"></div>';
+            return '<div class="input_option"><div class="label">'+htmlescape(option.name)+(option.description ? ' <a href="#" class="help_icon" aria-label="Help" onclick="helpInfo(event, \'plugin.'+pluginid+'.'+option.id+'\')"><i class="material-icons" aria-hidden="true">help_outline</i></a>' : '')+'</div><input type="number" step="1" id="plugin.'+pluginid+'.'+option.id+'" placeholder="" style="width: 100px;" '+(option.min != null ? 'min="'+option.min+'" ' : '')+''+(option.max != null ? 'max="'+option.max+'" ' : '')+'value="'+String(option_value || 0)+'" aria-label="'+urlescape(option.name)+'"></div>';
         } else if (option.type == "select") {
             return '<div class="input_option"><div class="label">'+htmlescape(option.name)+(option.description ? ' <a href="#" class="help_icon" aria-label="Help" onclick="helpInfo(event, \'plugin.'+pluginid+'.'+option.id+'\')"><i class="material-icons" aria-hidden="true">help_outline</i></a>' : '')+'</div><select id="plugin.'+pluginid+'.'+option.id+'" aria-label="'+urlescape(option.name)+'">'+option.choices.map(a => '<option value="'+a.id+'"'+(option_value == a.id ? ' selected' : '')+'>'+htmlescape(a.name)+'</option>').join("")+'</select></div>';
         }
@@ -1019,7 +1019,7 @@ function savePluginOptions() {
             } else if (option.type == "string") {
                 plugin_options[manifest.id][option.id] = document.querySelector("#plugin\\."+manifest.id+"\\."+option.id).value;
             } else if (option.type == "number") {
-                plugin_options[manifest.id][option.id] = Number(document.querySelector("#plugin\\."+manifest.id+"\\."+option.id).value);
+                plugin_options[manifest.id][option.id] = Math.floor(Number(document.querySelector("#plugin\\."+manifest.id+"\\."+option.id).value));
             } else if (option.type == "select") {
                 plugin_options[manifest.id][option.id] = document.querySelector("#plugin\\."+manifest.id+"\\."+option.id).value;
             }

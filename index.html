@@ -153,7 +153,7 @@
 
             <div class="input_option">
                 <div class="label">Port <a href="#" class="help_icon" aria-label="Help" onclick="helpInfo(event, 'port')"><i class="material-icons" aria-hidden="true">help_outline</i></a></div>
-                <input type="number" id="port" placeholder="8080" oninput="portChange()" style="width: 100px;" min="1" max="65535" aria-label="Port">
+                <input type="number" id="port" placeholder="8080" step="1" oninput="portChange()" style="width: 100px;" min="1" max="65535" aria-label="Port">
             </div>
 
             <div class="input_error">Enter a number between 1 and 65535</div>
@@ -363,7 +363,7 @@
                 </div>
 
                 <div class="input_option">
-                    <div class="label">HTTP Basic auth username <a href="#" class="help_icon" aria-label="Help" onclick="helpInfo(event, 'httpAuthPassword')"><i class="material-icons" aria-hidden="true">help_outline</i></a></div>
+                    <div class="label">HTTP Basic auth username <a href="#" class="help_icon" aria-label="Help" onclick="helpInfo(event, 'httpAuthUsername')"><i class="material-icons" aria-hidden="true">help_outline</i></a></div>
                     <input type="text" id="httpAuthUsername" placeholder="" oninput="httpAuthUsernameChange();reevaluateSectionHeights();" aria-label="HTTP Basic auth username">
                 </div>
 
@@ -376,7 +376,7 @@
 
                 <div class="input_option">
                     <div class="label">Maximum connections per IP address <a href="#" class="help_icon" aria-label="Help" onclick="helpInfo(event, 'ipThrottling')"><i class="material-icons" aria-hidden="true">help_outline</i></a></div>
-                    <input type="number" id="ipThrottling" placeholder="10" oninput="ipLimitChange();reevaluateSectionHeights()" style="width: 100px;" aria-label="Maximum connections per IP address">
+                    <input type="number" id="ipThrottling" placeholder="10" step="1" oninput="ipLimitChange();reevaluateSectionHeights()" style="width: 100px;" aria-label="Maximum connections per IP address">
                 </div>
     
                 <div class="input_error">Enter a number greater than or equal to 0</div>
