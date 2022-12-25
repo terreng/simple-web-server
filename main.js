@@ -30,6 +30,7 @@ let running_states = {
 }
 let install_source;
 let plugins;
+let platform;
 
 window.api.initipc((event, message) => {
     if (message.type === "init") {
@@ -37,6 +38,7 @@ window.api.initipc((event, message) => {
         ip = message.ip;
         install_source = message.install_source;
         plugins = message.plugins;
+        platform = message.platform;
         if (config.background != null && config.updates != null) openMain();
         else initWelcome();
         document.getElementById("stop_and_quit_button").style.display = config.background ? "block" : "none";
@@ -889,26 +891,39 @@ function dragDrop(event) {
     }
 }
 
-function addPlugin() {
-    window.api.showPickerForPlugin().then(function(chosen_path) {
-        if (chosen_path && chosen_path.length > 0) {
-
-            window.api.checkPlugin(chosen_path[0]).then(function(manifest) {
-                if (manifest) {
-                    showPrompt("Add \""+htmlescape(manifest.name.substring(0,32))+"\" plugin?", "Only install this plugin if you know and trust the developer.<br><br>Plugins aren't sandboxed, and run with the same permissions as the app.", [["Confirm","destructive",function() {
-                        if (window.api.addPlugin(chosen_path[0])) {
-                            hidePrompt();
-                        } else {
-                            showPrompt("Failed to install plugin", "We couldn't find a valid <code>plugin.json</code> file in the directory or ZIP file you selected.", [["Done","",hidePrompt]]);
-                        }
-                    }],["Cancel","",hidePrompt]]);
-                } else {
-                    showPrompt("Invalid plugin", "We couldn't find a valid <code>plugin.json</code> file in the directory or ZIP file you selected.", [["Done","",hidePrompt]]);
-                }
-            })
-
+function addPlugin(select_type) {
+    if (select_type) {
+        hidePrompt();
+        doShowPicker();
+    } else {
+        if (platform == "win32") {
+            showPrompt("Add Plugin", '<div style="padding: 8px 0px;overflow: hidden;"><div tabindex="0" class="button left" onclick="addPlugin(\'folder\')" role="button" aria-label="Choose folder">Choose folder</div></div><div style="padding: 8px 0px;overflow: hidden;padding-bottom: 0px;margin-bottom: -12px;"><div tabindex="0" class="button left" onclick="addPlugin(\'zip\')" role="button" aria-label="Choose ZIP file">Choose .zip file</div></div>', []);
+        } else {
+            doShowPicker();
         }
-    })
+    }
+
+    function doShowPicker() {
+        window.api.showPickerForPlugin(select_type).then(function(chosen_path) {
+            if (chosen_path && chosen_path.length > 0) {
+
+                window.api.checkPlugin(chosen_path[0]).then(function(manifest) {
+                    if (manifest) {
+                        showPrompt("Add \""+htmlescape(manifest.name.substring(0,32))+"\" plugin?", "Only install this plugin if you know and trust the developer.<br><br>Plugins aren't sandboxed, and run with the same permissions as the app.", [["Confirm","destructive",function() {
+                            if (window.api.addPlugin(chosen_path[0])) {
+                                hidePrompt();
+                            } else {
+                                showPrompt("Failed to install plugin", "We couldn't find a valid <code>plugin.json</code> file in the directory or ZIP file you selected.", [["Done","",hidePrompt]]);
+                            }
+                        }],["Cancel","",hidePrompt]]);
+                    } else {
+                        showPrompt("Invalid plugin", "We couldn't find a valid <code>plugin.json</code> file in the directory or ZIP file you selected.", [["Done","",hidePrompt]]);
+                    }
+                })
+
+            }
+        })
+    }
 }
 
 window.addEventListener("keypress", function(event) {

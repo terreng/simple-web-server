@@ -15,8 +15,8 @@ contextBridge.exposeInMainWorld('api', {
     showPicker: current_path => {
         return ipcRenderer.invoke('showPicker', {"current_path": current_path});
     },
-    showPickerForPlugin: () => {
-        return ipcRenderer.invoke('showPickerForPlugin');
+    showPickerForPlugin: select_type => {
+        return ipcRenderer.invoke('showPickerForPlugin', {"select_type": select_type});
     },
     addPlugin: path => {
         return ipcRenderer.invoke('addPlugin', {"path": path});

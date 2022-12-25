@@ -301,11 +301,25 @@ ipcMain.handle('showPicker', async (event, arg) => {
 });
 
 ipcMain.handle('showPickerForPlugin', async (event, arg) => {
-    const result = await dialog.showOpenDialog(mainWindow, {
-        defaultPath: undefined,
-        filters: [ { name: "ZIP Files", extensions: ['zip'] } ],
-        properties: ['openFile', 'openDirectory', 'createDirectory']
-    });
+    let result;
+    if (arg.select_type == "folder") {
+        result = await dialog.showOpenDialog(mainWindow, {
+            defaultPath: undefined,
+            properties: ['openDirectory', 'createDirectory']
+        });
+    } else if (arg.select_type == "zip") {
+        result = await dialog.showOpenDialog(mainWindow, {
+            defaultPath: undefined,
+            filters: [ { name: "ZIP Files", extensions: ['zip'] } ],
+            properties: ['openFile']
+        });
+    } else {
+        result = await dialog.showOpenDialog(mainWindow, {
+            defaultPath: undefined,
+            filters: [ { name: "ZIP Files", extensions: ['zip'] } ],
+            properties: ['openFile', 'openDirectory', 'createDirectory']
+        });
+    }
     return result.filePaths;
 });
 
@@ -375,7 +389,7 @@ function createWindow() {
     mainWindow.webContents.on('did-finish-load', () => {
         mainWindow.webContentsLoaded = true;
         lastIps = getIPs();
-        mainWindow.webContents.send('message', {"type": "init", "config": config, ip: lastIps, install_source: install_source, plugins: plugin.getInstalledPlugins()});
+        mainWindow.webContents.send('message', {"type": "init", "config": config, ip: lastIps, install_source: install_source, plugins: plugin.getInstalledPlugins(), platform: process.platform});
         if (update_info) {
             mainWindow.webContents.send('message', {"type": "update", "url": update_info.url, "text": update_info.text, "attributes": update_info.attributes});
         }
