@@ -138,6 +138,11 @@ let reload_plugin_ids = [];
 
 app.on('ready', function() {
     if (!process.mas && !app.hasSingleInstanceLock()) return;
+
+    if (!fs.existsSync(path.join(app.getPath('userData'), "config.json"))) {
+        fs.writeFileSync(path.join(app.getPath('userData'), "config.json"), JSON.stringify({}, null, 2));
+    }
+
     try {
         config = fs.readFileSync(path.join(app.getPath('userData'), "config.json"), "utf8");
     } catch(error) {
@@ -178,6 +183,10 @@ app.on('ready', function() {
         }
     });
 
+    if (!fs.existsSync(path.join(app.getPath('userData'), "plugins"))) {
+        fs.mkdirSync(path.join(app.getPath('userData'), "plugins"));
+    }
+
     fs.watch(path.join(app.getPath('userData'), "plugins/"), {recursive: true}, function(eventType, filename) {
         var pluginid = filename.split("/")[0].split("\\")[0];
         if (pluginid.match(/^[A-Za-z0-9\-_]+$/)) {
@@ -200,7 +209,7 @@ app.on('ready', function() {
                     mainWindow.webContents.send('message', {"type": "pluginschange", plugins: plugin.getInstalledPlugins()});
                 }
                 reload_plugins_timeout = undefined;
-            }, 100);
+            }, 200);
 
         }
     });
@@ -646,7 +655,7 @@ ipcMain.handle('addPlugin', (event, arg) => {
                     reload_plugins_timeout = undefined;
                     reload_plugin_ids = [];
                 }
-            }, 50);
+            }, 100);
         });
         return true;
     } catch(e) {
@@ -675,5 +684,5 @@ ipcMain.handle('removePlugin', (event, arg) => {
             reload_plugins_timeout = undefined;
             reload_plugin_ids = [];
         }
-    }, 50);
+    }, 100);
 });
