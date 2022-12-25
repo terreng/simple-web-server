@@ -57,6 +57,12 @@ window.api.initipc((event, message) => {
     } else if (message.type === "ipchange") {
         ip = message.ip;
         updateOnIpChange();
+    } else if (message.type == "pluginschange") {
+        plugins = message.plugins;
+        refreshPluginList();
+        if (document.getElementById("server_container").style.display === "block") {
+            location.reload();
+        }
     } else if (message.type === "reload") {
         location.reload();
     }

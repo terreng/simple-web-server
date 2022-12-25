@@ -35,7 +35,7 @@ See [Plugin manifest file](/docs/plugin%20manifest%20file.md) for a complete gui
     {
       "id": "header",
       "name": "Add custom header",
-      "description": "Enable this option to add a custom header to each response",
+      "description": "Enable this option to add a custom header to each response.",
       "type": "bool",
       "default": false
     }

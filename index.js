@@ -25,8 +25,6 @@ global.plugin = require('./plugin.js');
 global.bookmarks = require('./bookmarks.js');
 global.WSC = require("./WSC.js");
 
-global.plugins = plugin.getInstalledPlugins();
-
 console = function(old_console) {
     let new_console = {
         logs: [],
@@ -135,6 +133,9 @@ app.on('second-instance', function (event, commandLine, workingDirectory) {
     if (mainWindow) mainWindow.show();
 })
 
+let reload_plugins_timeout = undefined;
+let reload_plugin_ids = [];
+
 app.on('ready', function() {
     if (!process.mas && !app.hasSingleInstanceLock()) return;
     try {
@@ -168,11 +169,39 @@ app.on('ready', function() {
         }
 
         if (JSON.stringify(new_config) !== JSON.stringify(config)) {
+            console.log("["+(new Date()).toLocaleString()+"] config.json changed. Reloading UI.");
             config = new_config;
             configChanged();
             if (mainWindow && mainWindow.webContentsLoaded) {
                 mainWindow.webContents.send('message', {"type": "reload"});
             }
+        }
+    });
+
+    fs.watch(path.join(app.getPath('userData'), "plugins/"), {recursive: true}, function(eventType, filename) {
+        var pluginid = filename.split("/")[0].split("\\")[0];
+        if (pluginid.match(/^[A-Za-z0-9\-_]+$/)) {
+
+            if (reload_plugins_timeout) {
+                clearTimeout(reload_plugins_timeout);
+            }
+    
+            reload_plugin_ids.push(pluginid);
+    
+            reload_plugins_timeout = setTimeout(function() {
+                console.log("["+(new Date()).toLocaleString()+"] Plugins changed unexpectedly. Restarting affected servers and reloading UI if necessary.");
+
+                reload_plugin_ids = reload_plugin_ids.filter((item, i, ar) => ar.indexOf(item) === i);
+                for (let e=0; e<reload_plugin_ids.length; e++) {
+                    restartServersWithPlugins(reload_plugin_ids[e]);
+                }
+                reload_plugin_ids = [];
+                if (mainWindow && mainWindow.webContentsLoaded) {
+                    mainWindow.webContents.send('message', {"type": "pluginschange", plugins: plugin.getInstalledPlugins()});
+                }
+                reload_plugins_timeout = undefined;
+            }, 100);
+
         }
     });
 
@@ -323,7 +352,7 @@ function createWindow() {
             scrollBounce: false,
             nodeIntegration: false,
             contextIsolation: true,
-            enableRemoteModule: true,
+            enableRemoteModule: false,
             sandbox: true,
             preload: path.join(__dirname, "preload.js")
         }
@@ -337,7 +366,7 @@ function createWindow() {
     mainWindow.webContents.on('did-finish-load', () => {
         mainWindow.webContentsLoaded = true;
         lastIps = getIPs();
-        mainWindow.webContents.send('message', {"type": "init", "config": config, ip: lastIps, install_source: install_source, plugins: plugins});
+        mainWindow.webContents.send('message', {"type": "init", "config": config, ip: lastIps, install_source: install_source, plugins: plugin.getInstalledPlugins()});
         if (update_info) {
             mainWindow.webContents.send('message', {"type": "update", "url": update_info.url, "text": update_info.text, "attributes": update_info.attributes});
         }
@@ -590,7 +619,7 @@ function checkForUpdates() {
                 "text": version_update.banner_text,
                 "attributes": JSON.parse(version_update.attributes || '[]')
             }
-            if (mainWindow.webContentsLoaded) {
+            if (mainWindow && mainWindow.webContentsLoaded) {
                 mainWindow.webContents.send('message', {"type": "update", "url": update_info.url, "text": update_info.text, "attributes": update_info.attributes});
             }
         })
@@ -606,7 +635,19 @@ function checkForUpdates() {
 
 ipcMain.handle('addPlugin', (event, arg) => {
     try {
-        plugin.importPlugin(arg.path);
+        plugin.importPlugin(arg.path, function(id) {
+            restartServersWithPlugins(id);
+            if (mainWindow && mainWindow.webContentsLoaded) {
+                mainWindow.webContents.send('message', {"type": "pluginschange", plugins: plugin.getInstalledPlugins()});
+            }
+            setTimeout(function() {
+                if (reload_plugins_timeout && reload_plugin_ids.every(a => a == id)) {
+                    clearTimeout(reload_plugins_timeout);
+                    reload_plugins_timeout = undefined;
+                    reload_plugin_ids = [];
+                }
+            }, 50);
+        });
         return true;
     } catch(e) {
         return false;
@@ -624,4 +665,15 @@ ipcMain.handle('checkPlugin', (event, arg) => {
 
 ipcMain.handle('removePlugin', (event, arg) => {
     plugin.removePlugin(arg.id);
+    restartServersWithPlugins(arg.id);
+    if (mainWindow && mainWindow.webContentsLoaded) {
+        mainWindow.webContents.send('message', {"type": "pluginschange", plugins: plugin.getInstalledPlugins()});
+    }
+    setTimeout(function() {
+        if (reload_plugins_timeout && reload_plugin_ids.every(a => a == arg.id)) {
+            clearTimeout(reload_plugins_timeout);
+            reload_plugins_timeout = undefined;
+            reload_plugin_ids = [];
+        }
+    }, 50);
 });

@@ -117,7 +117,7 @@ async function copyFolderRecursiveSyncFromZip(zip, targetFolder) {
     }
 }
 
-function importPlugin(path) {
+function importPlugin(path, callback) {
     if (!global.fs.existsSync(global.path.join(eApp.getPath('userData'), "plugins"))) {
         global.fs.mkdirSync(global.path.join(eApp.getPath('userData'), "plugins"));
     }
@@ -130,6 +130,7 @@ function importPlugin(path) {
             deleteFolder(global.path.join(eApp.getPath('userData'), "plugins", manifest.id));
         }
         copyFolderRecursiveSync(path, global.path.join(eApp.getPath('userData'), "plugins", manifest.id));
+        callback(manifest.id);
     } catch(e) {
         const bm = bookmarks.matchAndAccess(path);
         JSZip.loadAsync(global.fs.readFileSync(path)).then(async zip => {
@@ -139,6 +140,7 @@ function importPlugin(path) {
                 deleteFolder(global.path.join(eApp.getPath('userData'), "plugins", manifest.id));
             }
             copyFolderRecursiveSyncFromZip(zip, global.path.join(eApp.getPath('userData'), "plugins", manifest.id));
+            callback(manifest.id);
             bookmarks.release(bm);
         });
     }

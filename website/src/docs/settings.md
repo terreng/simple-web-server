@@ -24,7 +24,7 @@ This option is not available if you download the app from the Mac App Store.
 ### Appearance
 
 - Name: `theme`
-- Type: string: `system`, `light` or `dark`
+- Type: string: `system`, `light`, or `dark`
 - Default: `system`
 
 Change appearance (light/dark theme). By default the app follows your system theme. Set to `light` or `dark` to override.

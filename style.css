@@ -1090,3 +1090,7 @@ code {
     font-size: 32px;
     color: var(--icons);
 }
+
+dialog::backdrop {
+    background: transparent;
+}
