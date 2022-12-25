@@ -2,13 +2,13 @@
 
 All server options and app settings are stored in one file, `config.json`. It's possible to manually edit this file to access options that aren't accessible from the user interface.
 
+Options are stored in JSON format. You can find the name (key) and type of value for each option on the [Server Options](options.md) and [App Settings](settings.md) pages.
+
 Changes made to this file while the program is running will take effect immediately. Changes will reload the app's user interface, which may cause you to lose unsaved changes.
 
 :::warning
 If you download the app from the Mac App Store, your web server may stop working if you change the `path` option directly from config.json. This is because the app only has permission to read from directories that have been selected using the open dialog in the app. To avoid this problem, only change the path from within the app.
 :::
-
-Options are stored in JSON format. You can find the name (key) and type of value for each option on the [Server Options](options.md) and [App Settings](settings.md) pages.
 
 Here's where to find the config.json file:
 

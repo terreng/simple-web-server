@@ -10,13 +10,11 @@ function registerPlugins(data) {
             let path = global.path.join(eApp.getPath('userData'), "plugins", k);
             const fs = new WSC.FileSystem(path); //no point in catching it if we're just going to throw it again.
             manifest = JSON.parse(fs.getByPath('/plugin.json').text());
-            //addOptionsToUI(manifest.options, manifest.id);
             if (!path.endsWith('/')) path+='/';
             //console.log(path+manifest.script)
             if (validatePluginManifest(manifest) && manifest.id == k) {
                 functions.push([require(path+manifest.script), manifest.id]);
             }
-            // note - server will need to restart to load changes in plugin
         } catch(e) {
             console.warn('error registering plugin', e);
         }

@@ -929,7 +929,7 @@ function refreshPluginList() {
 
 function removePlugin(pluginid) {
     if (plugins[pluginid]) {
-        showPrompt("Remove \""+htmlescape(plugins[pluginid].name.substring(0,32))+"\" plugin?", "All server options for this plugin will be cleared. If you want to update the plugin without resetting server options, just add the plugin again instead of removing it first.", [["Confirm","destructive",function() {
+        showPrompt("Remove \""+htmlescape(plugins[pluginid].name.substring(0,32))+"\" plugin?", "All server options for this plugin will be cleared. If you want to update the plugin without resetting server options, just add the new version of the plugin instead of removing it first.", [["Confirm","destructive",function() {
             window.api.removePlugin(pluginid);
 
             // Remove plugin options from all servers

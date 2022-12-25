@@ -7,7 +7,7 @@ To install a plugin in the app, go to Settings > Add Plugin and choose a directo
 After installing a plugin, you must specifically enable it for each server you want to use it with.
 
 :::danger
-Plugins aren't sandboxed, and run with the same permissions as the app. Only install plugins if you know and trust the developer.
+Plugins aren't sandboxed, and run with the same permissions as the app. Only install a plugin if you know and trust the developer.
 :::
 
 ## Community plugins
@@ -73,7 +73,7 @@ module.exports = {onStart, onRequest};
 
 To install a plugin in the app, go to Settings > Add Plugin and choose the directory your plugin files are located in. You can also install a plugin from a ZIP file.
 
-Alternatively, you can manually install a plugin by adding it to the plugins directory:
+Alternatively, you can manually install a plugin by adding it to the plugins directory. The name of the folder must match the id of the plugin.
 
 **Windows:** `C:\Users\[USERNAME]\AppData\Roaming\Simple Web Server\plugins\`
 
@@ -83,7 +83,9 @@ Alternatively, you can manually install a plugin by adding it to the plugins dir
 
 **Linux:** **TODO**
 
-The name of the folder must match the id of the plugin.
+:::tip
+Changes to installed plugins inside the plugins directory take effect immediately. During the development of a plugin, we recommend working with files directly inside of this directory so that you don't have to reinstall the plugin after every change.
+:::
 
 ### Step 4: Debug any issues
 
