@@ -16,7 +16,7 @@ const help_text = {
     "delete": ["Allow deleting files", 'Allows DELETE requests. Includes hidden/dot files if they are enabled.'],
     "staticDirectoryListing": ["Always use static directory listing", 'Disables JavaScript enhancement of the directory listing page.'],
     "hiddenDotFilesDirectoryListing": ["Show hidden/dot files in directory listing", 'If hidden/dot files are enabled, determines if they will additionally be shown in the directory listing. This includes <code>.swshtaccess</code> files.'],
-    "htaccess": ["Enable .swshtaccess configuration files", 'You can use <code>.swshtaccess</code> files to set additional rules on a per-directory basis. See <a href="https://simplewebserver.org/docs/swsaccess.html">Advanced configuration using .swshtaccess files</a>.'],
+    "htaccess": ["Enable .swshtaccess configuration files", 'You can use <code>.swshtaccess</code> files to set additional rules on a per-directory basis. See <a href="https://simplewebserver.org/docs/swsaccess.html">Advanced configuration using .swshtaccess files</a>.<br><br>This functionality is experimental and may change in future releases. Consider using <a href="https://simplewebserver.org/docs/plugins.html">plugins</a> instead.'],
     "custom404": ["Custom 404 page file path", 'File path to a custom 404 page. Will fallback to a generic 404 page if this value is empty or specified path is not valid.'],
     "custom403": ["Custom 403 page file path", 'File path to a custom 403 page. Will fallback to a generic 403 page if this value is empty or specified path is not valid.'],
     "custom401": ["Custom 401 page file path", 'File path to a custom 401 page. Will fallback to a generic 401 page if this value is empty or specified path is not valid.'],

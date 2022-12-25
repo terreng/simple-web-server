@@ -51,7 +51,7 @@ The script can have two custom functions:
 - `onStart(server, options)`, which is called whenever the server starts and allows you to modify the server.
 - `onRequest(req, res, options, preventDefault)`, which is called with each request and allows you modify the response or handle the request however you want.
 
-See [Plugin script](/docs/plugin%20script.md) for a more details, including an explanation of the arguments to these functions.
+See [Plugin script](/docs/plugin%20script.md) for a more details, including an explanation of the arguments to these functions, and example scripts for common use cases.
 
 **Example script file**
 
