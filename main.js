@@ -906,7 +906,6 @@ function addPlugin(select_type) {
     function doShowPicker() {
         window.api.showPickerForPlugin(select_type).then(function(chosen_path) {
             if (chosen_path && chosen_path.length > 0) {
-
                 window.api.checkPlugin(chosen_path[0]).then(function(manifest) {
                     if (manifest) {
                         showPrompt("Add \""+htmlescape(manifest.name.substring(0,32))+"\" plugin?", "Only install this plugin if you know and trust the developer.<br><br>Plugins aren't sandboxed, and run with the same permissions as the app.", [["Confirm","destructive",function() {

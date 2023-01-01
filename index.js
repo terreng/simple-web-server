@@ -187,6 +187,7 @@ app.on('ready', function() {
         fs.mkdirSync(path.join(app.getPath('userData'), "plugins"));
     }
 
+    // NOTE - On linux, which I use to develop, I get "The feature watch recursively is unavailable on the current platform, which is being used to run Node.js"
     fs.watch(path.join(app.getPath('userData'), "plugins/"), {recursive: true}, function(eventType, filename) {
         var pluginid = filename.split("/")[0].split("\\")[0];
         if (pluginid.match(/^[A-Za-z0-9\-_]+$/)) {
@@ -302,18 +303,19 @@ ipcMain.handle('showPicker', async (event, arg) => {
 
 ipcMain.handle('showPickerForPlugin', async (event, arg) => {
     let result;
-    if (arg.select_type == "folder") {
+    if (arg.select_type === "folder") {
         result = await dialog.showOpenDialog(mainWindow, {
             defaultPath: undefined,
             properties: ['openDirectory', 'createDirectory']
         });
-    } else if (arg.select_type == "zip") {
+    } else if (arg.select_type === "zip" || true) {
         result = await dialog.showOpenDialog(mainWindow, {
             defaultPath: undefined,
             filters: [ { name: "ZIP Files", extensions: ['zip'] } ],
             properties: ['openFile']
         });
     } else {
+        // This, on linux, does not allow me to select anything. Maybe we should have a seperate button to choose a directory
         result = await dialog.showOpenDialog(mainWindow, {
             defaultPath: undefined,
             filters: [ { name: "ZIP Files", extensions: ['zip'] } ],

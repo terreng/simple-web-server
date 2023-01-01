@@ -79,7 +79,9 @@ function deleteFolder(folder) {
     for (let i=0; i<files.length; i++) {
         let curSource = path.join(folder, files[i]);
         if (fs.lstatSync(curSource).isDirectory()) deleteFolder(curSource);
-        fs.unlinkSync(curSource);
+        try {
+            fs.unlinkSync(curSource);
+        } catch(e) {}
     }
     fs.rmdirSync(folder);
 }
@@ -92,18 +94,27 @@ function getPluginInfo(id) {
     return manifest;
 }
 
-function getZipFiles(zip) {
+function getZipFiles(zip, basePath) {
     let rv = [];
-    for (const file in zip.files) rv.push(file);
+    for (const file in zip.files) {
+        if (basePath !== '') {
+            if (!file.name.startsWith(basePath)) continue;
+        }
+        rv.push(file);
+    }
     return rv;
 }
 
-async function copyFolderRecursiveSyncFromZip(zip, targetFolder) {
+async function copyFolderRecursiveSyncFromZip(zip, targetFolder, basePath) {
     console.log('copy', targetFolder);
     if (!fs.existsSync(targetFolder)) fs.mkdirSync(targetFolder);
-    let files = getZipFiles(zip);
+    let files = getZipFiles(zip, basePath);
     for (let i=0; i<files.length; i++) {
-        let fileName = path.join(targetFolder, files[i]);
+        let name = files[i];
+        if (basePath !== '') {
+            name = name.replace(basePath, '');
+        }
+        let fileName = path.join(targetFolder, name);
         try {
             if (!fs.existsSync(path.dirname(fileName))) {
                 fs.mkdirSync(path.dirname(fileName), {recursive:true});
@@ -132,19 +143,24 @@ function importPlugin(path, callback) {
     } catch(e) {
         const bm = bookmarks.matchAndAccess(path);
         JSZip.loadAsync(global.fs.readFileSync(path)).then(async zip => {
-            const manifest = JSON.parse(await zip.file('plugin.json').async("string"));
-            if (!validatePluginManifest(manifest)) throw new Error('not a valid plugin');
+            let file = Object.keys(zip.files).filter(fileName => fileName.endsWith('plugin.json')&&!fileName.endsWith('.plugin.json'))[0];
+            const manifest = JSON.parse(await zip.files[file].async("string"));
+            if (!validatePluginManifest(manifest)) {
+                bookmarks.release(bm);
+                throw new Error('not a valid plugin');
+            }
             if (global.fs.existsSync(global.path.join(eApp.getPath('userData'), "plugins", manifest.id))) {
                 deleteFolder(global.path.join(eApp.getPath('userData'), "plugins", manifest.id));
             }
-            copyFolderRecursiveSyncFromZip(zip, global.path.join(eApp.getPath('userData'), "plugins", manifest.id));
-            callback(manifest.id);
+            let basePath = file.includes('/') ? file.substring(0, file.length-file.split('/').pop().length) : '';
+            await copyFolderRecursiveSyncFromZip(zip, global.path.join(eApp.getPath('userData'), "plugins", manifest.id), basePath);
             bookmarks.release(bm);
+            callback(manifest.id);
         });
     }
 }
 
-function getPluginManifestFromPath(path) {
+async function getPluginManifestFromPath(path) {
     let fs;
     try {
         fs = new WSC.FileSystem(path);
@@ -153,12 +169,12 @@ function getPluginManifestFromPath(path) {
         return manifest;
     } catch(e) {
         const bm = bookmarks.matchAndAccess(path);
-        JSZip.loadAsync(global.fs.readFileSync(path)).then(async zip => {
-            const manifest = JSON.parse(await zip.file('plugin.json').async("string"));
-            if (!validatePluginManifest(manifest)) throw new Error('not a valid plugin');
-            bookmarks.release(bm);
-            return manifest;
-        });
+        const zip = await JSZip.loadAsync(global.fs.readFileSync(path))
+        let file = Object.keys(zip.files).filter(fileName => fileName.endsWith('plugin.json')&&!fileName.endsWith('.plugin.json'))[0];
+        const manifest = JSON.parse(await zip.files[file].async("string"));
+        bookmarks.release(bm);
+        if (!validatePluginManifest(manifest)) throw new Error('not a valid plugin');
+        return manifest;
     }
 }
 
