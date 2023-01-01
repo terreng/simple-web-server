@@ -245,7 +245,8 @@ function getInstalledPlugins() {
         try {
             data[files[i]] = getPluginInfo(files[i]);
         } catch(e) {
-            console.warn('could not import plugin '+files[i], e);
+            if (e.message === 'Entered path is not directory') continue;
+            console.warn('Could not import plugin '+files[i], e);
             continue;
         };
     }
