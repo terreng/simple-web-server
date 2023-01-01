@@ -159,61 +159,71 @@ app.on('ready', function() {
         if (global.pendingSave) console.saveLogs();
     }
 
-    fs.watch(path.join(app.getPath('userData'), "config.json"), function(eventType, filename) {
-        let new_config;
-        try {
-            new_config = fs.readFileSync(path.join(app.getPath('userData'), "config.json"), "utf8");
-        } catch(error) {
-            new_config = "{}";
-        }
-        try {
-            new_config = JSON.parse(new_config);
-        } catch(error) {
-            dialog.showErrorBox("Failed to parse config.json", "Something went wrong while parsing config.json. The file is improperly formatted.");
-            app.quit();
-        }
-
-        if (JSON.stringify(new_config) !== JSON.stringify(config)) {
-            console.log("["+(new Date()).toLocaleString()+"] config.json changed. Reloading UI.");
-            config = new_config;
-            configChanged();
-            if (mainWindow && mainWindow.webContentsLoaded) {
-                mainWindow.webContents.send('message', {"type": "reload"});
+    try {
+        fs.watch(path.join(app.getPath('userData'), "config.json"), function(eventType, filename) {
+            let new_config;
+            try {
+                new_config = fs.readFileSync(path.join(app.getPath('userData'), "config.json"), "utf8");
+            } catch(error) {
+                new_config = "{}";
             }
-        }
-    });
+            try {
+                new_config = JSON.parse(new_config);
+            } catch(error) {
+                dialog.showErrorBox("Failed to parse config.json", "Something went wrong while parsing config.json. The file is improperly formatted.");
+                app.quit();
+            }
+
+            if (JSON.stringify(new_config) !== JSON.stringify(config)) {
+                console.log("["+(new Date()).toLocaleString()+"] config.json changed. Reloading UI.");
+                config = new_config;
+                configChanged();
+                if (mainWindow && mainWindow.webContentsLoaded) {
+                    mainWindow.webContents.send('message', {"type": "reload"});
+                }
+            }
+        });
+    } catch(e) {
+        console.log("fs.watch error or unsupported. App will not automatically update for changes to config.json.");
+        console.error(e);
+    }
 
     if (!fs.existsSync(path.join(app.getPath('userData'), "plugins"))) {
         fs.mkdirSync(path.join(app.getPath('userData'), "plugins"));
     }
 
-    // NOTE - On linux, which I use to develop, I get "The feature watch recursively is unavailable on the current platform, which is being used to run Node.js"
-    fs.watch(path.join(app.getPath('userData'), "plugins/"), {recursive: true}, function(eventType, filename) {
-        var pluginid = filename.split("/")[0].split("\\")[0];
-        if (pluginid.match(/^[A-Za-z0-9\-_]+$/)) {
+    try {
+        fs.watch(path.join(app.getPath('userData'), "plugins/"), {recursive: true}, function(eventType, filename) {
+            var pluginid = filename.split("/")[0].split("\\")[0];
+            if (pluginid.match(/^[A-Za-z0-9\-_]+$/)) {
 
-            if (reload_plugins_timeout) {
-                clearTimeout(reload_plugins_timeout);
+                if (reload_plugins_timeout) {
+                    clearTimeout(reload_plugins_timeout);
+                }
+        
+                reload_plugin_ids.push(pluginid);
+        
+                reload_plugins_timeout = setTimeout(function() {
+                    console.log("["+(new Date()).toLocaleString()+"] Plugins changed unexpectedly. Restarting affected servers and reloading UI if necessary.");
+
+                    reload_plugin_ids = reload_plugin_ids.filter((item, i, ar) => ar.indexOf(item) === i);
+                    for (let e=0; e<reload_plugin_ids.length; e++) {
+                        restartServersWithPlugins(reload_plugin_ids[e]);
+                    }
+                    reload_plugin_ids = [];
+                    if (mainWindow && mainWindow.webContentsLoaded) {
+                        mainWindow.webContents.send('message', {"type": "pluginschange", plugins: plugin.getInstalledPlugins()});
+                    }
+                    reload_plugins_timeout = undefined;
+                }, 200);
+
             }
-    
-            reload_plugin_ids.push(pluginid);
-    
-            reload_plugins_timeout = setTimeout(function() {
-                console.log("["+(new Date()).toLocaleString()+"] Plugins changed unexpectedly. Restarting affected servers and reloading UI if necessary.");
-
-                reload_plugin_ids = reload_plugin_ids.filter((item, i, ar) => ar.indexOf(item) === i);
-                for (let e=0; e<reload_plugin_ids.length; e++) {
-                    restartServersWithPlugins(reload_plugin_ids[e]);
-                }
-                reload_plugin_ids = [];
-                if (mainWindow && mainWindow.webContentsLoaded) {
-                    mainWindow.webContents.send('message', {"type": "pluginschange", plugins: plugin.getInstalledPlugins()});
-                }
-                reload_plugins_timeout = undefined;
-            }, 200);
-
-        }
-    });
+        });
+    } catch(e) {
+        console.log("fs.watch error or unsupported. App will not automatically update for changes to plugins.");
+        console.error(e);
+        //"The feature watch recursively is unavailable on the current platform, which is being used to run Node.js" on Linux
+    }
 
     // This is always running - This needs to be checked
     if (process.mas || true) {
