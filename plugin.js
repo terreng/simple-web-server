@@ -98,7 +98,7 @@ function getZipFiles(zip, basePath) {
     let rv = [];
     for (const file in zip.files) {
         if (basePath !== '') {
-            if (!file.name.startsWith(basePath)) continue;
+            if (!file.startsWith(basePath)) continue
         }
         rv.push(file);
     }
@@ -114,6 +114,7 @@ async function copyFolderRecursiveSyncFromZip(zip, targetFolder, basePath) {
         if (basePath !== '') {
             name = name.replace(basePath, '');
         }
+        if (name === '') continue;
         let fileName = path.join(targetFolder, name);
         try {
             if (!fs.existsSync(path.dirname(fileName))) {
