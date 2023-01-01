@@ -896,7 +896,7 @@ function addPlugin(select_type) {
         hidePrompt();
         doShowPicker();
     } else {
-        if (platform == "win32") {
+        if (platform !== "darwin") {
             showPrompt("Add Plugin", '<div style="padding: 8px 0px;overflow: hidden;"><div tabindex="0" class="button left" onclick="addPlugin(\'folder\')" role="button" aria-label="Choose folder">Choose folder</div></div><div style="padding: 8px 0px;overflow: hidden;padding-bottom: 0px;margin-bottom: -12px;"><div tabindex="0" class="button left" onclick="addPlugin(\'zip\')" role="button" aria-label="Choose ZIP file">Choose .zip file</div></div>', []);
         } else {
             doShowPicker();

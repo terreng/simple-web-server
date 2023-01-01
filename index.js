@@ -308,14 +308,13 @@ ipcMain.handle('showPickerForPlugin', async (event, arg) => {
             defaultPath: undefined,
             properties: ['openDirectory', 'createDirectory']
         });
-    } else if (arg.select_type === "zip" || true) {
+    } else if (arg.select_type === "zip") {
         result = await dialog.showOpenDialog(mainWindow, {
             defaultPath: undefined,
             filters: [ { name: "ZIP Files", extensions: ['zip'] } ],
             properties: ['openFile']
         });
     } else {
-        // This, on linux, does not allow me to select anything. Maybe we should have a seperate button to choose a directory
         result = await dialog.showOpenDialog(mainWindow, {
             defaultPath: undefined,
             filters: [ { name: "ZIP Files", extensions: ['zip'] } ],
