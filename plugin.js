@@ -65,9 +65,9 @@ function copyFolderRecursiveSync(source, targetFolder) {
         let curSource = path.join(source, files[i]);
         const bm = bookmarks.matchAndAccess(curSource);
         if (fs.lstatSync(curSource).isDirectory()) {
-            copyFolderRecursiveSync(curSource, targetFolder);
+            copyFolderRecursiveSync(curSource, path.join(targetFolder, files[i]));
         } else {
-            copyFileSync(curSource, targetFolder);
+            copyFileSync(curSource, path.join(targetFolder, files[i]));
         }
         bookmarks.release(bm);
     }
@@ -106,10 +106,12 @@ function getZipFiles(zip, basePath) {
 }
 
 async function copyFolderRecursiveSyncFromZip(zip, targetFolder, basePath) {
-    console.log('copy', targetFolder);
+    //console.log('copy', targetFolder);
     if (!fs.existsSync(targetFolder)) fs.mkdirSync(targetFolder);
     let files = getZipFiles(zip, basePath);
+    //console.log(basePath, files.length);
     for (let i=0; i<files.length; i++) {
+        if (zip.files[files[i]].dir) continue;
         let name = files[i];
         if (basePath !== '') {
             name = name.replace(basePath, '');
@@ -120,9 +122,7 @@ async function copyFolderRecursiveSyncFromZip(zip, targetFolder, basePath) {
             if (!fs.existsSync(path.dirname(fileName))) {
                 fs.mkdirSync(path.dirname(fileName), {recursive:true});
             }
-        } catch(e) {
-            fs.mkdirSync(path.dirname(fileName), {recursive:true});
-        }
+        } catch(e) {}
         fs.writeFileSync(fileName, await zip.files[files[i]].async("nodebuffer"));
     }
 }
