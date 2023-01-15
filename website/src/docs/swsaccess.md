@@ -2,6 +2,10 @@
 
 Simple Web Server does not have support for .htaccess files. Instead, we support custom .swshtaccess files, which offer a subset of the features of .htaccess files.
 
+:::warning
+This functionality is experimental and may change in future releases. Consider using [plugins](/docs/plugins.md) instead.
+:::
+
 ## How to
 
 All Htaccess features are built to have 100% compatibility with changes in settings

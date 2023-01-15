@@ -58,6 +58,15 @@ module.exports = {
           ]
         },
         {
+          title: 'Plugins',
+          collapsable: false,
+          children: [
+            'plugins',
+            'plugin manifest file',
+            'plugin script'
+          ]
+        },
+        {
           title: 'Advanced Guides',
           collapsable: false,
           children: [

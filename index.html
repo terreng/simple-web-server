@@ -1,3 +1,4 @@
+<!doctype html>
 <html lang="en">
     <head>
         <meta charset="utf-8">
@@ -5,50 +6,64 @@
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <link rel="stylesheet" href="style.css">
     </head>
-    <body style="visibility: hidden;">
+    <body style="visibility: hidden;" ondragenter="dragEnter(event)" ondragover="dragOver(event)" ondragleave="dragLeave(event)" ondrop="dragDrop(event)">
 
         <!--Main server list-->
         <div class="top_title" id="main_title">
             <div class="title_text">Simple Web Server</div>
-            <div class="title_icon" onclick="openSettings()"><i class="material-icons">settings</i></div>
+            <div class="title_icon" onclick="openSettings()" tabindex="0" aria-label="Settings" role="button"><i class="material-icons" aria-hidden="true">settings</i></div>
         </div>
 
         <div class="container" id="main_container">
             <a id="update_banner" target="_blank" onclick="window.api.openExternal(this.href);event.preventDefault()">
                 <div id="update_banner_text"></div>
-                <div><i class="material-icons">chevron_right</i></div>
+                <div aria-hidden="true"><i class="material-icons" aria-hidden="true">chevron_right</i></div>
             </a>
             <div id="servers_list">
             </div>
         </div>
 
         <div class="button_row" id="main_actions">
-            <div class="button left" id="stop_and_quit_button" onclick="window.api.quit()">Stop & Quit</div>
-            <div class="button primary" onclick="addServer()">New Server</div>
+            <div tabindex="0" class="button left" id="stop_and_quit_button" onclick="window.api.quit()" aria-label="Stop & Quit" role="button">Stop & Quit</div>
+            <div tabindex="0" class="button primary" onclick="addServer()" aria-label="New Server" role="button">New Server</div>
         </div>
 
         <!--Global settings-->
         <div class="top_title" id="settings_title">
-            <div class="title_icon" onclick="backToMain()"><i class="material-icons">arrow_back</i></div>
+            <div class="title_icon" onclick="backToMain()" tabindex="0" aria-label="Back" role="button"><i class="material-icons" aria-hidden="true">arrow_back</i></div>
             <div class="title_text">Settings</div>
         </div>
 
         <div class="container full_container" id="settings_container">
             <div style="padding-top: 8px;"></div>
 
-            <div class="switch_option" id="background" onclick="toggleRunInBk()">
+            <div class="switch_option" id="background" onclick="toggleRunInBk()" tabindex="0" role="switch" aria-label="Keep running when closed">
                 <div class="switch"></div>
-                <div class="label">Keep running when closed</div>
+                <div class="label">Keep running when closed <a href="#" class="help_icon" aria-label="Help" onclick="helpInfo(event, 'background')"><i class="material-icons" aria-hidden="true">help_outline</i></a></div>
             </div>
 
-            <div class="switch_option" id="updates" onclick="toggleUpdates()">
+            <div class="switch_option" id="updates" onclick="toggleUpdates()" tabindex="0" role="switch" aria-label="Check for updates">
                 <div class="switch"></div>
-                <div class="label">Check for updates</div>
+                <div class="label">Check for updates <a href="#" class="help_icon" aria-label="Help" onclick="helpInfo(event, 'updates')"><i class="material-icons" aria-hidden="true">help_outline</i></a></div>
             </div>
 
-            <div class="switch_option" id="darkmode" style="display: none;" onclick="toggleDarkMode()">
-                <div class="switch"></div>
-                <div class="label">Dark theme</div>
+            <div class="input_option">
+                <div class="label">Appearance <a href="#" class="help_icon" aria-label="Help" onclick="helpInfo(event, 'theme')"><i class="material-icons" aria-hidden="true">help_outline</i></a></div>
+                <select id="theme" oninput="themeChange()" aria-label="Appearance">
+                    <option value="system">Automatic (System)</option>
+                    <option value="light">Light</option>
+                    <option value="dark">Dark</option>
+                </select>
+            </div>
+
+            <div class="free_label">
+                <div class="label">Plugins <a href="#" class="help_icon" aria-label="Help" onclick="helpInfo(event, 'plugins')"><i class="material-icons" aria-hidden="true">help_outline</i></a></div>
+            </div>
+
+            <div id="plugins_list"></div>
+
+            <div style="padding: 8px 12px;overflow: hidden;">
+                <div tabindex="0" class="button left" onclick="addPlugin()" role="button" aria-label="Add Plugin">Add Plugin</div>
             </div>
 
             <div style="
@@ -74,21 +89,21 @@
                 <div style="
                     text-align: center;
                     padding-bottom: 10px;
-                ">Version 1.1.4&nbsp; • &nbsp;<a href="javascript:openLicenses()" style="
+                ">Version 1.2.0&nbsp; • &nbsp;<a href="javascript:openLicenses()" style="
                     color: var(--text-primary);
                     text-decoration: none;
                 ">MIT License</a></div>
 
-                <a href="https://simplewebserver.org/docs" target="_blank" onclick="window.api.openExternal(this.href);event.preventDefault()"><div class="link_icon_item"><div><span class="material-icons">public</span></div><div>Documentation</div></div></a>
+                <a href="https://simplewebserver.org/docs" target="_blank" onclick="window.api.openExternal(this.href);event.preventDefault()"><div class="link_icon_item"><div><span class="material-icons" aria-hidden="true">public</span></div><div>Documentation</div></div></a>
                 <a href="https://github.com/terreng/simple-web-server/issues" target="_blank" onclick="window.api.openExternal(this.href);event.preventDefault()"><div class="link_icon_item"><div><svg style="width:28px;height:28px;color:var(--icons)" viewBox="0 0 24 24"><path fill="currentColor" d="M12,2A10,10 0 0,0 2,12C2,16.42 4.87,20.17 8.84,21.5C9.34,21.58 9.5,21.27 9.5,21C9.5,20.77 9.5,20.14 9.5,19.31C6.73,19.91 6.14,17.97 6.14,17.97C5.68,16.81 5.03,16.5 5.03,16.5C4.12,15.88 5.1,15.9 5.1,15.9C6.1,15.97 6.63,16.93 6.63,16.93C7.5,18.45 8.97,18 9.54,17.76C9.63,17.11 9.89,16.67 10.17,16.42C7.95,16.17 5.62,15.31 5.62,11.5C5.62,10.39 6,9.5 6.65,8.79C6.55,8.54 6.2,7.5 6.75,6.15C6.75,6.15 7.59,5.88 9.5,7.17C10.29,6.95 11.15,6.84 12,6.84C12.85,6.84 13.71,6.95 14.5,7.17C16.41,5.88 17.25,6.15 17.25,6.15C17.8,7.5 17.45,8.54 17.35,8.79C18,9.5 18.38,10.39 18.38,11.5C18.38,15.32 16.04,16.16 13.81,16.41C14.17,16.72 14.5,17.33 14.5,18.26C14.5,19.6 14.5,20.68 14.5,21C14.5,21.27 14.66,21.59 15.17,21.5C19.14,20.16 22,16.42 22,12A10,10 0 0,0 12,2Z" /></svg></div><div>Issues & Suggestions</div></div></a>
-                <a href="javascript:openLicenses()"><div class="link_icon_item"><div><span class="material-icons">article</span></div><div>Open Source Licenses</div></div></a>
+                <a href="javascript:openLicenses()"><div class="link_icon_item"><div><span class="material-icons" aria-hidden="true">article</span></div><div>Open Source Licenses</div></div></a>
                 <div style="padding-top: 10px;"></div>
             </div>
         </div>
 
         <!--Open Source Licenses-->
         <div class="top_title" id="licenses_title">
-            <div class="title_icon" onclick="backToSettings()"><i class="material-icons">arrow_back</i></div>
+            <div tabindex="0" class="title_icon" onclick="backToSettings()" aria-label="Back" role="button"><i class="material-icons" aria-hidden="true">arrow_back</i></div>
             <div class="title_text">Open Source Licenses</div>
         </div>
 
@@ -104,7 +119,7 @@
 
         <!--Edit server-->
         <div class="top_title" id="server_title">
-            <div class="title_icon" onclick="backToMain()"><i class="material-icons">arrow_back</i></div>
+            <div role="button" aria-label="Back" tabindex="0" class="title_icon" onclick="backToMain()"><i class="material-icons" aria-hidden="true">arrow_back</i></div>
             <div class="title_text" id="edit_server_title">Edit Server</div>
         </div>
 
@@ -114,7 +129,7 @@
 
             <div style="padding-top: 6px;"></div>
 
-            <div class="switch_option" id="edit_server_running" onclick="toggleEditServerRunning()">
+            <div tabindex="0" class="switch_option" id="edit_server_running" onclick="toggleEditServerRunning()" role="switch">
                 <div class="switch"></div>
                 <div class="label"></div>
             </div>
@@ -127,241 +142,241 @@
             <div style="padding-top: 6px;"></div>
 
             <div class="input_option filepicker_input_option">
-                <div class="label" id="folder_path_label">Folder path</div>
-                <div onclick="chooseFolder();">
+                <div class="label" id="folder_path_label">Folder path <a href="#" class="help_icon" aria-label="Help" onclick="helpInfo(event, 'path')"><i class="material-icons" aria-hidden="true">help_outline</i></a></div>
+                <div tabindex="0" onclick="chooseFolder();" role="button">
                     <div id="path" placeholder="Choose folder"><div><span></span></div></div>
-                    <div class="button right"><i class="material-icons">folder_open</i></div>
+                    <div class="button right" aria-hidden="true"><i class="material-icons" aria-hidden="true">folder_open</i></div>
                 </div>
             </div>
 
             <div class="input_error" id="folder_path_error">Please choose folder path</div>
 
             <div class="input_option">
-                <div class="label">Port</div>
-                <input type="number" id="port" placeholder="8080" oninput="portChange()" style="width: 100px;">
+                <div class="label">Port <a href="#" class="help_icon" aria-label="Help" onclick="helpInfo(event, 'port')"><i class="material-icons" aria-hidden="true">help_outline</i></a></div>
+                <input type="number" id="port" placeholder="8080" step="1" oninput="portChange()" style="width: 100px;" min="1" max="65535" aria-label="Port">
             </div>
 
             <div class="input_error">Enter a number between 1 and 65535</div>
             <div class="input_error">Port is already in use</div>
 
-            <div class="checkbox_option" id="localnetwork" onclick="toggleCheckbox(this)">
+            <div tabindex="0" class="checkbox_option" id="localnetwork" onclick="toggleCheckbox(this)" role="checkbox" aria-label="Accessible on local network">
                 <div class="checkbox">
-                    <i class="material-icons">check_box_outline_blank</i>
+                    <i class="material-icons" aria-hidden="true">check_box_outline_blank</i>
                 </div>
-                <div class="label">Accessible on local network</div>
+                <div class="label">Accessible on local network <a href="#" class="help_icon" aria-label="Help" onclick="helpInfo(event, 'localnetwork')"><i class="material-icons" aria-hidden="true">help_outline</i></a></div>
             </div>
 
             <div style="padding-top: 6px;"></div>
 
-            <div class="settings_section_header first_section" onclick="toggleSection(this)">
-                <div><i class="material-icons">tune</i></div>
+            <div tabindex="0" class="settings_section_header first_section" onclick="toggleSection(this)" role="button" aria-label="Basic Rules">
+                <div><i class="material-icons" aria-hidden="true">tune</i></div>
                 <div>Basic Rules</div>
-                <div><i class="material-icons">expand_more</i></div>
+                <div><i class="material-icons" aria-hidden="true">expand_more</i></div>
             </div>
 
-            <div class="settings_section">
+            <div class="settings_section" inert>
                 <div class="settings_section_inner">
 
-                <div class="checkbox_option" id="showIndex" onclick="toggleCheckbox(this)">
+                <div tabindex="0" class="checkbox_option" id="showIndex" onclick="toggleCheckbox(this)" role="checkbox" aria-label="Automatically show index.html">
                     <div class="checkbox">
-                        <i class="material-icons">check_box_outline_blank</i>
+                        <i class="material-icons" aria-hidden="true">check_box_outline_blank</i>
                     </div>
-                    <div class="label">Automatically show index.html</div>
+                    <div class="label">Automatically show index.html <a href="#" class="help_icon" aria-label="Help" onclick="helpInfo(event, 'showIndex')"><i class="material-icons" aria-hidden="true">help_outline</i></a></div>
                 </div>
 
-                <div class="checkbox_option" id="spa" onclick="toggleCheckbox(this)">
+                <div tabindex="0" class="checkbox_option" id="spa" onclick="toggleCheckbox(this)" role="checkbox" aria-label="Single page rewrite (for SPAs)">
                     <div class="checkbox">
-                        <i class="material-icons">check_box_outline_blank</i>
+                        <i class="material-icons" aria-hidden="true">check_box_outline_blank</i>
                     </div>
-                    <div class="label">Single page rewrite (for SPAs)</div>
+                    <div class="label">Single page rewrite (for SPAs) <a href="#" class="help_icon" aria-label="Help" onclick="helpInfo(event, 'spa')"><i class="material-icons" aria-hidden="true">help_outline</i></a></div>
                 </div>
 
                 <div class="input_option">
-                    <div class="label">Rewrite to (for SPAs)</div>
-                    <input type="text" id="rewriteTo" placeholder="/index.html" style="width: 100%;">
+                    <div class="label">Rewrite to (for SPAs) <a href="#" class="help_icon" aria-label="Help" onclick="helpInfo(event, 'rewriteTo')"><i class="material-icons" aria-hidden="true">help_outline</i></a></div>
+                    <input type="text" id="rewriteTo" placeholder="/index.html" aria-label="Rewrite to (for SPAs)">
                 </div>
 
-                <div class="checkbox_option" id="directoryListing" onclick="toggleCheckbox(this)">
+                <div tabindex="0" class="checkbox_option" id="directoryListing" onclick="toggleCheckbox(this)" role="checkbox" aria-label="Show directory listing">
                     <div class="checkbox">
-                        <i class="material-icons">check_box_outline_blank</i>
+                        <i class="material-icons" aria-hidden="true">check_box_outline_blank</i>
                     </div>
-                    <div class="label">Show directory listing</div>
+                    <div class="label">Show directory listing <a href="#" class="help_icon" aria-label="Help" onclick="helpInfo(event, 'directoryListing')"><i class="material-icons" aria-hidden="true">help_outline</i></a></div>
                 </div>
 
-                <div class="checkbox_option" id="excludeDotHtml" onclick="toggleCheckbox(this)">
+                <div tabindex="0" class="checkbox_option" id="excludeDotHtml" onclick="toggleCheckbox(this)" role="checkbox" aria-label="Exclude .html extension">
                     <div class="checkbox">
-                        <i class="material-icons">check_box_outline_blank</i>
+                        <i class="material-icons" aria-hidden="true">check_box_outline_blank</i>
                     </div>
-                    <div class="label">Exclude .html extension</div>
+                    <div class="label">Exclude .html extension <a href="#" class="help_icon" aria-label="Help" onclick="helpInfo(event, 'excludeDotHtml')"><i class="material-icons" aria-hidden="true">help_outline</i></a></div>
                 </div>
 
                 </div>
             </div>
 
-            <div class="settings_section_header" onclick="toggleSection(this)">
-                <div><i class="material-icons">rule</i></div>
+            <div tabindex="0" class="settings_section_header" onclick="toggleSection(this)" role="button" aria-label="Advanced Rules">
+                <div><i class="material-icons" aria-hidden="true">rule</i></div>
                 <div>Advanced Rules</div>
-                <div><i class="material-icons">expand_more</i></div>
+                <div><i class="material-icons" aria-hidden="true">expand_more</i></div>
             </div>
 
-            <div class="settings_section">
+            <div class="settings_section" inert>
                 <div class="settings_section_inner">
 
-                <div class="checkbox_option" id="ipv6" onclick="toggleCheckbox(this)">
+                <div tabindex="0" class="checkbox_option" id="ipv6" onclick="toggleCheckbox(this)" role="checkbox" aria-label="Listen on IPV6">
                     <div class="checkbox">
-                        <i class="material-icons">check_box_outline_blank</i>
+                        <i class="material-icons" aria-hidden="true">check_box_outline_blank</i>
                     </div>
-                    <div class="label">Listen on IPV6</div>
+                    <div class="label">Listen on IPV6 <a href="#" class="help_icon" aria-label="Help" onclick="helpInfo(event, 'ipv6')"><i class="material-icons" aria-hidden="true">help_outline</i></a></div>
                 </div>
 
                 <div class="input_option">
-                    <div class="label">Cache-Control header value</div>
-                    <input type="text" id="cacheControl" placeholder="" style="width: 100%;">
+                    <div class="label">Cache-Control header value <a href="#" class="help_icon" aria-label="Help" onclick="helpInfo(event, 'cacheControl')"><i class="material-icons" aria-hidden="true">help_outline</i></a></div>
+                    <input type="text" id="cacheControl" placeholder="" aria-label="Cache-Control header value">
                 </div>
 
-                <div class="checkbox_option" id="cors" onclick="toggleCheckbox(this)">
+                <div tabindex="0" class="checkbox_option" id="cors" onclick="toggleCheckbox(this)" role="checkbox" aria-label="Set CORS headers">
                     <div class="checkbox">
-                        <i class="material-icons">check_box_outline_blank</i>
+                        <i class="material-icons" aria-hidden="true">check_box_outline_blank</i>
                     </div>
-                    <div class="label">Set CORS headers</div>
+                    <div class="label">Set CORS headers <a href="#" class="help_icon" aria-label="Help" onclick="helpInfo(event, 'cors')"><i class="material-icons" aria-hidden="true">help_outline</i></a></div>
                 </div>
 
-                <div class="checkbox_option" id="hiddenDotFiles" onclick="toggleCheckbox(this)">
+                <div tabindex="0" class="checkbox_option" id="hiddenDotFiles" onclick="toggleCheckbox(this)" role="checkbox" aria-label="Serve hidden/dot files">
                     <div class="checkbox">
-                        <i class="material-icons">check_box_outline_blank</i>
+                        <i class="material-icons" aria-hidden="true">check_box_outline_blank</i>
                     </div>
-                    <div class="label">Serve hidden/dot files</div>
+                    <div class="label">Serve hidden/dot files <a href="#" class="help_icon" aria-label="Help" onclick="helpInfo(event, 'hiddenDotFiles')"><i class="material-icons" aria-hidden="true">help_outline</i></a></div>
                 </div>
 
-                <div class="checkbox_option" id="upload" onclick="toggleCheckbox(this)">
+                <div tabindex="0" class="checkbox_option" id="upload" onclick="toggleCheckbox(this)" role="checkbox" aria-label="Allow file upload">
                     <div class="checkbox">
-                        <i class="material-icons">check_box_outline_blank</i>
+                        <i class="material-icons" aria-hidden="true">check_box_outline_blank</i>
                     </div>
-                    <div class="label">Allow file upload</div>
+                    <div class="label">Allow file upload <a href="#" class="help_icon" aria-label="Help" onclick="helpInfo(event, 'upload')"><i class="material-icons" aria-hidden="true">help_outline</i></a></div>
                 </div>
 
-                <div class="checkbox_option" id="replace" onclick="toggleCheckbox(this)">
+                <div tabindex="0" class="checkbox_option" id="replace" onclick="toggleCheckbox(this)" role="checkbox" aria-label="Allow replacing files">
                     <div class="checkbox">
-                        <i class="material-icons">check_box_outline_blank</i>
+                        <i class="material-icons" aria-hidden="true">check_box_outline_blank</i>
                     </div>
-                    <div class="label">Allow replacing files</div>
+                    <div class="label">Allow replacing files <a href="#" class="help_icon" aria-label="Help" onclick="helpInfo(event, 'replace')"><i class="material-icons" aria-hidden="true">help_outline</i></a></div>
                 </div>
 
-                <div class="checkbox_option" id="delete" onclick="toggleCheckbox(this)">
+                <div tabindex="0" class="checkbox_option" id="delete" onclick="toggleCheckbox(this)" role="checkbox" aria-label="Allow deleting files">
                     <div class="checkbox">
-                        <i class="material-icons">check_box_outline_blank</i>
+                        <i class="material-icons" aria-hidden="true">check_box_outline_blank</i>
                     </div>
-                    <div class="label">Allow deleting files</div>
+                    <div class="label">Allow deleting files <a href="#" class="help_icon" aria-label="Help" onclick="helpInfo(event, 'delete')"><i class="material-icons" aria-hidden="true">help_outline</i></a></div>
                 </div>
 
-                <div class="checkbox_option" id="staticDirectoryListing" onclick="toggleCheckbox(this)">
+                <div tabindex="0" class="checkbox_option" id="staticDirectoryListing" onclick="toggleCheckbox(this)" role="checkbox" aria-label="Always use static directory listing">
                     <div class="checkbox">
-                        <i class="material-icons">check_box_outline_blank</i>
+                        <i class="material-icons" aria-hidden="true">check_box_outline_blank</i>
                     </div>
-                    <div class="label">Always use static directory listing</div>
+                    <div class="label">Always use static directory listing <a href="#" class="help_icon" aria-label="Help" onclick="helpInfo(event, 'staticDirectoryListing')"><i class="material-icons" aria-hidden="true">help_outline</i></a></div>
                 </div>
 
-                <div class="checkbox_option" id="hiddenDotFilesDirectoryListing" onclick="toggleCheckbox(this)">
+                <div tabindex="0" class="checkbox_option" id="hiddenDotFilesDirectoryListing" onclick="toggleCheckbox(this)" role="checkbox" aria-label="Show hidden/dot files in directory listing">
                     <div class="checkbox">
-                        <i class="material-icons">check_box_outline_blank</i>
+                        <i class="material-icons" aria-hidden="true">check_box_outline_blank</i>
                     </div>
-                    <div class="label">Show hidden/dot files in directory listing</div>
+                    <div class="label">Show hidden/dot files in directory listing <a href="#" class="help_icon" aria-label="Help" onclick="helpInfo(event, 'hiddenDotFilesDirectoryListing')"><i class="material-icons" aria-hidden="true">help_outline</i></a></div>
                 </div>
 
-                <div class="checkbox_option" id="htaccess" onclick="toggleCheckbox(this)">
+                <div tabindex="0" class="checkbox_option" id="htaccess" onclick="toggleCheckbox(this)" role="checkbox" aria-label="Enable .swshtaccess configuration files">
                     <div class="checkbox">
-                        <i class="material-icons">check_box_outline_blank</i>
+                        <i class="material-icons" aria-hidden="true">check_box_outline_blank</i>
                     </div>
-                    <div class="label">Enable .swshtaccess configuration files</div>
+                    <div class="label">Enable .swshtaccess configuration files <a href="#" class="help_icon" aria-label="Help" onclick="helpInfo(event, 'htaccess')"><i class="material-icons" aria-hidden="true">help_outline</i></a></div>
                 </div>
 
                 </div>
             </div>
 
-            <div class="settings_section_header" onclick="toggleSection(this)">
-                <div><i class="material-icons">report</i></div>
+            <div tabindex="0" class="settings_section_header" onclick="toggleSection(this)" role="button" aria-label="Error Pages">
+                <div><i class="material-icons" aria-hidden="true">report</i></div>
                 <div>Error Pages</div>
-                <div><i class="material-icons">expand_more</i></div>
+                <div><i class="material-icons" aria-hidden="true">expand_more</i></div>
             </div>
 
-            <div class="settings_section">
+            <div class="settings_section" inert>
                 <div class="settings_section_inner">
 
                 <div class="input_option">
-                    <div class="label">Custom 404 page file path</div>
-                    <input type="text" id="custom404" placeholder="/404.html" style="width: 100%;">
+                    <div class="label">Custom 404 page file path <a href="#" class="help_icon" aria-label="Help" onclick="helpInfo(event, 'custom404')"><i class="material-icons" aria-hidden="true">help_outline</i></a></div>
+                    <input type="text" id="custom404" placeholder="/404.html" aria-label="Custom 404 page file path">
                 </div>
 
                 <div class="input_option">
-                    <div class="label">Custom 403 page file path</div>
-                    <input type="text" id="custom403" placeholder="/403.html" style="width: 100%;">
+                    <div class="label">Custom 403 page file path <a href="#" class="help_icon" aria-label="Help" onclick="helpInfo(event, 'custom403')"><i class="material-icons" aria-hidden="true">help_outline</i></a></div>
+                    <input type="text" id="custom403" placeholder="/403.html" aria-label="Custom 403 page file path">
                 </div>
 
                 <div class="input_option">
-                    <div class="label">Custom 401 page file path</div>
-                    <input type="text" id="custom401" placeholder="/401.html" style="width: 100%;">
+                    <div class="label">Custom 401 page file path <a href="#" class="help_icon" aria-label="Help" onclick="helpInfo(event, 'custom401')"><i class="material-icons" aria-hidden="true">help_outline</i></a></div>
+                    <input type="text" id="custom401" placeholder="/401.html" aria-label="Custom 401 page file path">
                 </div>
 
                 <div class="input_option">
-                    <div class="label">Custom error path variable</div>
-                    <input type="text" id="customErrorReplaceString" placeholder="{{PATH}}" style="width: 100%;">
+                    <div class="label">Custom error path variable <a href="#" class="help_icon" aria-label="Help" onclick="helpInfo(event, 'customErrorReplaceString')"><i class="material-icons" aria-hidden="true">help_outline</i></a></div>
+                    <input type="text" id="customErrorReplaceString" placeholder="{{PATH}}" aria-label="Custom error path variable">
                 </div>
 
                 </div>
             </div>
 
-            <div class="settings_section_header" id="security_section" onclick="toggleSection(this)">
-                <div><i class="material-icons">security</i></div>
+            <div tabindex="0" class="settings_section_header" id="security_section" onclick="toggleSection(this)" role="button" aria-label="Security">
+                <div><i class="material-icons" aria-hidden="true">security</i></div>
                 <div>Security</div>
-                <div><i class="material-icons">expand_more</i></div>
+                <div><i class="material-icons" aria-hidden="true">expand_more</i></div>
             </div>
 
-            <div class="settings_section">
+            <div class="settings_section" inert>
                 <div class="settings_section_inner">
 
-                <div class="checkbox_option" id="https" onclick="toggleCheckbox(this)">
+                <div tabindex="0" class="checkbox_option" id="https" onclick="toggleCheckbox(this)" role="checkbox" aria-label="Use HTTPS">
                     <div class="checkbox">
-                        <i class="material-icons">check_box_outline_blank</i>
+                        <i class="material-icons" aria-hidden="true">check_box_outline_blank</i>
                     </div>
-                    <div class="label">Use HTTPS</div>
+                    <div class="label">Use HTTPS <a href="#" class="help_icon" aria-label="Help" onclick="helpInfo(event, 'https')"><i class="material-icons" aria-hidden="true">help_outline</i></a></div>
                 </div>
 
                 <div class="input_option">
-                    <div class="label">SSL/TLS cerificate</div>
-                    <input type="text" id="httpsCert" placeholder="" style="width: 100%;">
+                    <div class="label">SSL/TLS cerificate <a href="#" class="help_icon" aria-label="Help" onclick="helpInfo(event, 'httpsCert')"><i class="material-icons" aria-hidden="true">help_outline</i></a></div>
+                    <input type="text" id="httpsCert" placeholder="" aria-label="SSL/TLS cerificate">
                 </div>
 
                 <div class="input_option">
-                    <div class="label">SSL/TLS private key</div>
-                    <input type="text" id="httpsKey" placeholder="" style="width: 100%;">
+                    <div class="label">SSL/TLS private key <a href="#" class="help_icon" aria-label="Help" onclick="helpInfo(event, 'httpsKey')"><i class="material-icons" aria-hidden="true">help_outline</i></a></div>
+                    <input type="text" id="httpsKey" placeholder="" aria-label="SSL/TLS private key">
                 </div>
 
                 <div style="padding: 8px 12px;overflow: hidden;">
-                    <div class="button left" onclick="generateCrypto()" id="generate_crypto">Generate dummy cert</div>
+                    <div tabindex="0" class="button left" onclick="generateCrypto()" id="generate_crypto" role="button" aria-label="Generate dummy cert">Generate dummy cert</div>
                 </div>
 
-                <div class="checkbox_option" id="httpAuth" onclick="toggleCheckbox(this)">
+                <div tabindex="0" class="checkbox_option" id="httpAuth" onclick="toggleCheckbox(this)" role="checkbox" aria-label="Enable HTTP Basic authentication">
                     <div class="checkbox">
-                        <i class="material-icons">check_box_outline_blank</i>
+                        <i class="material-icons" aria-hidden="true">check_box_outline_blank</i>
                     </div>
-                    <div class="label">Enable HTTP Basic authentication</div>
+                    <div class="label">Enable HTTP Basic authentication <a href="#" class="help_icon" aria-label="Help" onclick="helpInfo(event, 'httpAuth')"><i class="material-icons" aria-hidden="true">help_outline</i></a></div>
                 </div>
 
                 <div class="input_option">
-                    <div class="label">HTTP Basic auth username</div>
-                    <input type="text" id="httpAuthUsername" placeholder="" oninput="httpAuthUsernameChange();reevaluateSectionHeights();" style="width: 100%;">
+                    <div class="label">HTTP Basic auth username <a href="#" class="help_icon" aria-label="Help" onclick="helpInfo(event, 'httpAuthUsername')"><i class="material-icons" aria-hidden="true">help_outline</i></a></div>
+                    <input type="text" id="httpAuthUsername" placeholder="" oninput="httpAuthUsernameChange();reevaluateSectionHeights();" aria-label="HTTP Basic auth username">
                 </div>
 
                 <div class="input_error">Username cannot contain ":"</div>
 
                 <div class="input_option">
-                    <div class="label">HTTP Basic auth password</div>
-                    <input type="text" id="httpAuthPassword" placeholder="" style="width: 100%;">
+                    <div class="label">HTTP Basic auth password <a href="#" class="help_icon" aria-label="Help" onclick="helpInfo(event, 'httpAuthPassword')"><i class="material-icons" aria-hidden="true">help_outline</i></a></div>
+                    <input type="text" id="httpAuthPassword" placeholder="" aria-label="HTTP Basic auth password">
                 </div>
 
                 <div class="input_option">
-                    <div class="label">Maximum connections per IP address</div>
-                    <input type="number" id="ipThrottling" placeholder="10" oninput="ipLimitChange();reevaluateSectionHeights()" style="width: 100px;">
+                    <div class="label">Maximum connections per IP address <a href="#" class="help_icon" aria-label="Help" onclick="helpInfo(event, 'ipThrottling')"><i class="material-icons" aria-hidden="true">help_outline</i></a></div>
+                    <input type="number" id="ipThrottling" placeholder="10" step="1" oninput="ipLimitChange();reevaluateSectionHeights()" style="width: 100px;" aria-label="Maximum connections per IP address">
                 </div>
     
                 <div class="input_error">Enter a number greater than or equal to 0</div>
@@ -369,13 +384,15 @@
                 </div>
             </div>
 
-            <div style="padding: 13px 10px;overflow: hidden;" id="delete_server_option"><div class="button left destructive" onclick="deleteServer()" id="delete_server">Delete Server</div></div>
+            <div id="plugin_options"></div>
+
+            <div style="padding: 13px 10px;overflow: hidden;" id="delete_server_option"><div tabindex="0" class="button left destructive" onclick="deleteServer()" id="delete_server" role="button" aria-label="Delete Server">Delete Server</div></div>
 
         </div>
 
         <div class="button_row" id="server_actions">
-            <div class="button left" onclick="cancelAddServer()">Cancel</div>
-            <div class="button primary" onclick="submitAddServer()" id="submit_button">Save Changes</div>
+            <div tabindex="0" class="button left" onclick="cancelAddServer()" role="button" aria-label="Cancel">Cancel</div>
+            <div tabindex="0" class="button primary" onclick="submitAddServer()" id="submit_button" role="button" aria-label="Save Changes">Save Changes</div>
         </div>
 
         <!--Welcome screen-->
@@ -411,19 +428,19 @@
                     margin: 0 auto;
                 ">
 
-                <div class="switch_option" id="background_welcome" onclick="toggleRunInBk()">
+                <div tabindex="0" class="switch_option" id="background_welcome" onclick="toggleRunInBk()" role="switch" aria-label="Keep running when closed">
                     <div class="switch"></div>
-                    <div class="label">Keep running when closed</div>
+                    <div class="label">Keep running when closed <a href="#" class="help_icon" aria-label="Help" onclick="helpInfo(event, 'background')"><i class="material-icons" aria-hidden="true">help_outline</i></a></div>
                 </div>
 
-                <div class="switch_option checked" id="updates_welcome" onclick="toggleUpdates()">
+                <div tabindex="0" class="switch_option checked" id="updates_welcome" onclick="toggleUpdates()" role="switch" aria-label="Check for updates">
                     <div class="switch"></div>
-                    <div class="label">Check for updates</div>
+                    <div class="label">Check for updates <a href="#" class="help_icon" aria-label="Help" onclick="helpInfo(event, 'updates')"><i class="material-icons" aria-hidden="true">help_outline</i></a></div>
                 </div>
 
                 </div>
 
-                <div style="overflow: hidden;"><div class="button primary" onclick="initContinue()" style="
+                <div style="overflow: hidden;"><div class="button primary" tabindex="0" onclick="initContinue()" role="button" aria-label="Get Started" style="
                     float: left;
                     transform: translateX(-50%);
                     margin-left: 50%;
@@ -436,12 +453,17 @@
 
         <div id="prompt_bk" onclick="hidePrompt()"></div>
 
-        <div id="prompt" class="prompt_hide">
-            <div id="prompt_title"></div>
-            <div id="prompt_text"></div>
-            <div id="prompt_actions"></div>
-        </div>
+        <dialog id="prompt" class="prompt_hide" onclose="promptClose()">
+            <div id="prompt_content">
+                <div id="prompt_title"></div>
+                <div id="prompt_text"></div>
+                <div id="prompt_actions"></div>
+            </div>
+        </dialog>
+
+        <div id="drop_zone"></div>
 
         <script src="main.js"></script>
+        <script src="help_text.js"></script>
     </body>
 </html>

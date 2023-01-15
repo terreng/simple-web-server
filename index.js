@@ -1,7 +1,8 @@
-const version = 1001004;
+const version = 1002000;
 const install_source = "website"; //"website" | "microsoftstore" | "macappstore"
-const {app, BrowserWindow, ipcMain, Menu, Tray, dialog, shell} = require('electron');
+const {app, BrowserWindow, ipcMain, Menu, Tray, dialog, shell, nativeTheme} = require('electron');
 const {networkInterfaces} = require('os');
+const chokidar = require('chokidar');
 global.hostOS = require('os').platform();
 global.eApp = app;
 
@@ -21,12 +22,9 @@ global.zlib = require('zlib');
 global.pipeline = require('stream').pipeline;
 
 global.bookmarks = require('./bookmarks.js');
-global.plugins = require('./plugin.js');
+global.plugin = require('./plugin.js');
 global.bookmarks = require('./bookmarks.js');
 global.WSC = require("./WSC.js");
-
-global.plugin = plugins.getInstalledPlugins();
-//console.log(global.plugin);
 
 console = function(old_console) {
     let new_console = {
@@ -136,8 +134,16 @@ app.on('second-instance', function (event, commandLine, workingDirectory) {
     if (mainWindow) mainWindow.show();
 })
 
+let reload_plugins_timeout = undefined;
+let reload_plugin_ids = [];
+
 app.on('ready', function() {
     if (!process.mas && !app.hasSingleInstanceLock()) return;
+
+    if (!fs.existsSync(path.join(app.getPath('userData'), "config.json"))) {
+        fs.writeFileSync(path.join(app.getPath('userData'), "config.json"), JSON.stringify({}, null, 2));
+    }
+
     try {
         config = fs.readFileSync(path.join(app.getPath('userData'), "config.json"), "utf8");
     } catch(error) {
@@ -152,6 +158,86 @@ app.on('ready', function() {
     if (config.log === true) {
         global.savingLogs = false;
         if (global.pendingSave) console.saveLogs();
+    }
+
+    try {
+        chokidar.watch(path.join(app.getPath('userData'), "config.json"), {
+            ignored: /(^|[\/\\])\../, // ignore dotfiles
+            ignoreInitial: true,
+            awaitWriteFinish: {
+                stabilityThreshold: 500,
+                pollInterval: 100
+            }
+        }).on('change', (filepath) => {
+            let new_config;
+            try {
+                new_config = fs.readFileSync(path.join(app.getPath('userData'), "config.json"), "utf8");
+            } catch(error) {
+                new_config = "{}";
+            }
+            try {
+                new_config = JSON.parse(new_config);
+            } catch(error) {
+                dialog.showErrorBox("Failed to parse config.json", "Something went wrong while parsing config.json. The file is improperly formatted.");
+                app.quit();
+            }
+
+            if (JSON.stringify(new_config) !== JSON.stringify(config)) {
+                console.log("["+(new Date()).toLocaleString()+"] config.json changed. Reloading UI.");
+                config = new_config;
+                configChanged();
+                if (mainWindow && mainWindow.webContentsLoaded) {
+                    mainWindow.webContents.send('message', {"type": "reload"});
+                }
+            }
+        });
+    } catch(e) {
+        console.log("chokidar error or unsupported. App will not automatically update for changes to config.json.");
+        console.error(e);
+    }
+
+    if (!fs.existsSync(path.join(app.getPath('userData'), "plugins"))) {
+        fs.mkdirSync(path.join(app.getPath('userData'), "plugins"));
+    }
+
+    try {
+        var plugin_dir = path.join(app.getPath('userData'), "plugins/");
+        chokidar.watch(plugin_dir, {
+            ignored: /(^|[\/\\])\../, // ignore dotfiles
+            ignoreInitial: true,
+            awaitWriteFinish: {
+                stabilityThreshold: 500,
+                pollInterval: 100
+            }
+        }).on('all', (event, filepath) => {
+            var pluginid = filepath.split(plugin_dir)[1].split("/")[0].split("\\")[0];
+            if (pluginid.match(/^[A-Za-z0-9\-_]+$/)) {
+
+                if (reload_plugins_timeout) {
+                    clearTimeout(reload_plugins_timeout);
+                }
+        
+                reload_plugin_ids.push(pluginid);
+        
+                reload_plugins_timeout = setTimeout(function() {
+                    console.log("["+(new Date()).toLocaleString()+"] Plugins changed unexpectedly. Restarting affected servers and reloading UI if necessary.");
+
+                    reload_plugin_ids = reload_plugin_ids.filter((item, i, ar) => ar.indexOf(item) === i);
+                    for (let e=0; e<reload_plugin_ids.length; e++) {
+                        restartServersWithPlugins(reload_plugin_ids[e]);
+                    }
+                    reload_plugin_ids = [];
+                    if (mainWindow && mainWindow.webContentsLoaded) {
+                        mainWindow.webContents.send('message', {"type": "pluginschange", plugins: plugin.getInstalledPlugins()});
+                    }
+                    reload_plugins_timeout = undefined;
+                }, 200);
+
+            }
+        })
+    } catch(e) {
+        console.log("chokidar error or unsupported. App will not automatically update for changes to plugins.");
+        console.error(e);
     }
 
     // This is always running - This needs to be checked
@@ -184,6 +270,8 @@ app.on('ready', function() {
         })
     }
 
+    nativeTheme.themeSource = config.theme || "system";
+
     if (mainWindow === null) createWindow();
     console.log("\n"+((new Date()).toLocaleString()+"\n"));
     startServers();
@@ -206,19 +294,25 @@ let isQuitting = false;
 ipcMain.on('quit', quit)
 
 ipcMain.on('saveconfig', function(event, arg1) {
+    config = arg1;
     try {
         fs.writeFileSync(path.join(app.getPath('userData'), "config.json"), JSON.stringify(arg1, null, 2));
     } catch(e) {
         console.warn(e);
     }
-    config = arg1;
+    configChanged();
+})
+
+function configChanged() {
     if (config.updates === true && install_source !== "macappstore" && last_update_check_skipped === true) checkForUpdates();
 
     if (config.updates === false || install_source === "macappstore") {
         last_update_check_skipped = true;
     }
+
+    nativeTheme.themeSource = config.theme || "system";
     startServers();
-})
+}
 
 ipcMain.handle('showPicker', async (event, arg) => {
     const result = await dialog.showOpenDialog(mainWindow, {
@@ -232,8 +326,35 @@ ipcMain.handle('showPicker', async (event, arg) => {
     return result.filePaths;
 });
 
+ipcMain.handle('showPickerForPlugin', async (event, arg) => {
+    let result;
+    if (arg.select_type === "folder") {
+        result = await dialog.showOpenDialog(mainWindow, {
+            defaultPath: undefined,
+            properties: ['openDirectory', 'createDirectory']
+        });
+    } else if (arg.select_type === "zip") {
+        result = await dialog.showOpenDialog(mainWindow, {
+            defaultPath: undefined,
+            filters: [ { name: "ZIP Files", extensions: ['zip'] } ],
+            properties: ['openFile']
+        });
+    } else {
+        result = await dialog.showOpenDialog(mainWindow, {
+            defaultPath: undefined,
+            filters: [ { name: "ZIP Files", extensions: ['zip'] } ],
+            properties: ['openFile', 'openDirectory', 'createDirectory']
+        });
+    }
+    return result.filePaths;
+});
+
 ipcMain.handle('generateCrypto', () => {
     return WSC.createCrypto();
+});
+
+ipcMain.handle('openExternal', (event, arg) => {
+    shell.openExternal(arg.url);
 });
 
 app.on('activate', () => {
@@ -267,7 +388,7 @@ setInterval(function() {
 
 function createWindow() {
     mainWindow = new BrowserWindow({
-        backgroundColor: '#ffffff',//TODO: adjust based on dark mode
+        backgroundColor: nativeTheme.shouldUseDarkColors ? '#202020' : '#ffffff',
         width: 420,
         minWidth: 280,
         height: 700,
@@ -280,7 +401,7 @@ function createWindow() {
             scrollBounce: false,
             nodeIntegration: false,
             contextIsolation: true,
-            enableRemoteModule: true,
+            enableRemoteModule: false,
             sandbox: true,
             preload: path.join(__dirname, "preload.js")
         }
@@ -294,7 +415,7 @@ function createWindow() {
     mainWindow.webContents.on('did-finish-load', () => {
         mainWindow.webContentsLoaded = true;
         lastIps = getIPs();
-        mainWindow.webContents.send('message', {"type": "init", "config": config, ip: lastIps, install_source: install_source});
+        mainWindow.webContents.send('message', {"type": "init", "config": config, ip: lastIps, install_source: install_source, plugins: plugin.getInstalledPlugins(), platform: process.platform});
         if (update_info) {
             mainWindow.webContents.send('message', {"type": "update", "url": update_info.url, "text": update_info.text, "attributes": update_info.attributes});
         }
@@ -339,7 +460,7 @@ function createServer(serverconfig) {
         }
     }
     if (serverconfig.enabled && !found_already_running) {
-        let this_server = {"config":serverconfig,"state":"starting","server":null,"plugin":null};
+        let this_server = {"config":serverconfig,"state":"starting","server":null};
 
         const hostname = serverconfig.localnetwork ? (serverconfig.ipv6 ? '::' : '0.0.0.0') : (serverconfig.ipv6 ? '::1' : '127.0.0.1');
         let server;
@@ -358,7 +479,7 @@ function createServer(serverconfig) {
         } catch(err) {
             console.error(err);
             this_server.state = "error";
-            this_server.error_message = (serverconfig.https ? "There is probably something wrong with your HTTPS certificate and key.\n" : "") + err.message;
+            this_server.error_message = (serverconfig.https ? "There might be something wrong with your HTTPS certificate and key.\n" : "") + err.message;
             running_servers.push(this_server);
             return;
         }
@@ -369,28 +490,28 @@ function createServer(serverconfig) {
         } catch(e) {
             console.warn("Error setting up FileSystem for path "+serverconfig.path, e);
             this_server.state = "error";
-            this_server.error_message = "FS error";
+            this_server.error_message = "FILESYSTEMERROR-" + e.message;
             running_servers.push(this_server);
             return;
         }
-        if (serverconfig.plugin) {
+        if (serverconfig.plugins) {
             try {
-                this_server.plugin = plugins.registerPlugins(this_server);
-                this_server.plugin.functions.onStart(server, serverconfig.plugin);
+                this_server.plugins = plugin.registerPlugins(this_server);
+                this_server.plugins.functions.onStart(server, serverconfig.plugins);
             } catch(e) {
-                console.warn('Error setting up plugin', e);
+                console.warn('Error setting up plugins', e);
                 this_server.state = "error";
-                this_server.error_message = "Error Regestering plugin";
+                this_server.error_message = "PLUGINERROR-" + e.message;
                 running_servers.push(this_server);
                 return;
             }
         }
 
         server.on('request', (req, res) => {
-            if (serverconfig.plugin) {
+            if (serverconfig.plugins) {
                 let prevented = false;
                 try {
-                    this_server.plugin.functions.onRequest(req, res, ()=>{prevented = true}, serverconfig.plugin);
+                    this_server.plugins.functions.onRequest(req, res, ()=>{prevented = true}, serverconfig.plugins);
                 } catch(e) {
                     console.log('Plugin error', e);
                     res.statusCode = 500;
@@ -461,7 +582,7 @@ function startServers(force_restart_indexes) {
         } else {
             running_servers[i].deleted = true;
             console.log("["+(new Date()).toLocaleString()+'] Killing server on port ' + running_servers[i].config.port);
-            if (running_servers[i].server) {
+            if (running_servers[i].server && running_servers[i].server.destroy) {
                 running_servers[i].server.destroy(() => {
                     closed_servers++;
                     checkServersClosed();
@@ -547,7 +668,7 @@ function checkForUpdates() {
                 "text": version_update.banner_text,
                 "attributes": JSON.parse(version_update.attributes || '[]')
             }
-            if (mainWindow.webContentsLoaded) {
+            if (mainWindow && mainWindow.webContentsLoaded) {
                 mainWindow.webContents.send('message', {"type": "update", "url": update_info.url, "text": update_info.text, "attributes": update_info.attributes});
             }
         })
@@ -560,3 +681,48 @@ function checkForUpdates() {
 
     req.end();
 }
+
+ipcMain.handle('addPlugin', (event, arg) => {
+    try {
+        plugin.importPlugin(arg.path, function(id) {
+            restartServersWithPlugins(id);
+            if (mainWindow && mainWindow.webContentsLoaded) {
+                mainWindow.webContents.send('message', {"type": "pluginschange", plugins: plugin.getInstalledPlugins()});
+            }
+            setTimeout(function() {
+                if (reload_plugins_timeout && reload_plugin_ids.every(a => a == id)) {
+                    clearTimeout(reload_plugins_timeout);
+                    reload_plugins_timeout = undefined;
+                    reload_plugin_ids = [];
+                }
+            }, 100);
+        });
+        return true;
+    } catch(e) {
+        return false;
+    }
+});
+
+ipcMain.handle('checkPlugin', (event, arg) => {
+    try {
+        return plugin.getPluginManifestFromPath(arg.path);
+    } catch(e) {
+        console.error(e);
+        return false;
+    }
+});
+
+ipcMain.handle('removePlugin', (event, arg) => {
+    plugin.removePlugin(arg.id);
+    restartServersWithPlugins(arg.id);
+    if (mainWindow && mainWindow.webContentsLoaded) {
+        mainWindow.webContents.send('message', {"type": "pluginschange", plugins: plugin.getInstalledPlugins()});
+    }
+    setTimeout(function() {
+        if (reload_plugins_timeout && reload_plugin_ids.every(a => a == arg.id)) {
+            clearTimeout(reload_plugins_timeout);
+            reload_plugins_timeout = undefined;
+            reload_plugin_ids = [];
+        }
+    }, 100);
+});
