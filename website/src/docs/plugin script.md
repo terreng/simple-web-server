@@ -1,5 +1,7 @@
 # Plugin script
 
+# This page is unfinished. See [issue #119](https://github.com/terreng/simple-web-server/issues/119)
+
 Make sure to cover:
 
 How to access plugin options (and mention that all options are optional and not validated at all. Types might not necessarily match what is specified in the manifest, and options could be undefined. No guarantees.)
