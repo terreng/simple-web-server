@@ -2,6 +2,7 @@ const version = 1001004;
 const install_source = "website"; //"website" | "microsoftstore" | "macappstore"
 const {app, BrowserWindow, ipcMain, Menu, Tray, dialog, shell, nativeTheme} = require('electron');
 const {networkInterfaces} = require('os');
+const chokidar = require('chokidar');
 global.hostOS = require('os').platform();
 global.eApp = app;
 
@@ -160,7 +161,10 @@ app.on('ready', function() {
     }
 
     try {
-        fs.watch(path.join(app.getPath('userData'), "config.json"), function(eventType, filename) {
+        chokidar.watch(path.join(app.getPath('userData'), "config.json"), {
+            ignored: /(^|[\/\\])\../, // ignore dotfiles
+            ignoreInitial: true
+        }).on('change', (filepath) => {
             let new_config;
             try {
                 new_config = fs.readFileSync(path.join(app.getPath('userData'), "config.json"), "utf8");
@@ -184,7 +188,7 @@ app.on('ready', function() {
             }
         });
     } catch(e) {
-        console.log("fs.watch error or unsupported. App will not automatically update for changes to config.json.");
+        console.log("chokidar error or unsupported. App will not automatically update for changes to config.json.");
         console.error(e);
     }
 
@@ -193,8 +197,12 @@ app.on('ready', function() {
     }
 
     try {
-        fs.watch(path.join(app.getPath('userData'), "plugins/"), {recursive: true}, function(eventType, filename) {
-            var pluginid = filename.split("/")[0].split("\\")[0];
+        var plugin_dir = path.join(app.getPath('userData'), "plugins/");
+        chokidar.watch(plugin_dir, {
+            ignored: /(^|[\/\\])\../, // ignore dotfiles
+            ignoreInitial: true
+        }).on('all', (event, filepath) => {
+            var pluginid = filepath.split(plugin_dir)[1].split("/")[0].split("\\")[0];
             if (pluginid.match(/^[A-Za-z0-9\-_]+$/)) {
 
                 if (reload_plugins_timeout) {
@@ -218,11 +226,10 @@ app.on('ready', function() {
                 }, 200);
 
             }
-        });
+        })
     } catch(e) {
-        console.log("fs.watch error or unsupported. App will not automatically update for changes to plugins.");
+        console.log("chokidar error or unsupported. App will not automatically update for changes to plugins.");
         console.error(e);
-        //"The feature watch recursively is unavailable on the current platform, which is being used to run Node.js" on Linux
     }
 
     // This is always running - This needs to be checked

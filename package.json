@@ -144,6 +144,7 @@
   },
   "dependencies": {
     "atob": "^2.1.2",
+    "chokidar": "^3.5.3",
     "http": "^0.0.1-security",
     "https": "^1.0.0",
     "jszip": "^3.10.1",
