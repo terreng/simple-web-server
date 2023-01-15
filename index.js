@@ -163,7 +163,11 @@ app.on('ready', function() {
     try {
         chokidar.watch(path.join(app.getPath('userData'), "config.json"), {
             ignored: /(^|[\/\\])\../, // ignore dotfiles
-            ignoreInitial: true
+            ignoreInitial: true,
+            awaitWriteFinish: {
+                stabilityThreshold: 500,
+                pollInterval: 100
+            }
         }).on('change', (filepath) => {
             let new_config;
             try {
@@ -200,7 +204,11 @@ app.on('ready', function() {
         var plugin_dir = path.join(app.getPath('userData'), "plugins/");
         chokidar.watch(plugin_dir, {
             ignored: /(^|[\/\\])\../, // ignore dotfiles
-            ignoreInitial: true
+            ignoreInitial: true,
+            awaitWriteFinish: {
+                stabilityThreshold: 500,
+                pollInterval: 100
+            }
         }).on('all', (event, filepath) => {
             var pluginid = filepath.split(plugin_dir)[1].split("/")[0].split("\\")[0];
             if (pluginid.match(/^[A-Za-z0-9\-_]+$/)) {
