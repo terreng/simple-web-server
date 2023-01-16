@@ -4,7 +4,7 @@ function addToSecurityScopedBookmarks(filepath, bookmark) {
     if (bookmark && bookmark.length > 0) {
         mas_bookmarks[filepath] = {"bookmark": bookmark};
         try {
-            fs.writeFileSync(path.join(app.getPath('userData'), "mas_bookmarks.json"), JSON.stringify(mas_bookmarks, null, 2));
+            fs.writeFileSync(path.join(global.eApp.getPath('userData'), "mas_bookmarks.json"), JSON.stringify(mas_bookmarks, null, 2));
         } catch(e) {
             console.error(e);
         }
@@ -39,7 +39,7 @@ function accessSecurityScopedBookmark(bookmark) {
     if (in_use_mas_bookmarks[bookmark]) {
         in_use_mas_bookmarks[bookmark].count++;
     } else {
-        const stopAccessing = app.startAccessingSecurityScopedResource(bookmark);
+        const stopAccessing = global.eApp.startAccessingSecurityScopedResource(bookmark);
         in_use_mas_bookmarks[bookmark] = {
             count: 1,
             stopAccessing: stopAccessing
