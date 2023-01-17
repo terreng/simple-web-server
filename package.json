@@ -55,7 +55,7 @@
     "make_all_windows_appx": "npm run make_windows_appx_x64 && npm run make_windows_appx_ia32 && npm run make_windows_appx_arm64"
   },
   "build": {
-    "buildVersion": "13",
+    "buildVersion": "18",
     "appId": "org.simplewebserver.simplewebserver",
     "productName": "Simple Web Server",
     "copyright": "MIT License",
@@ -99,7 +99,6 @@
     "mas": {
       "gatekeeperAssess": false,
       "hardenedRuntime": false,
-      "mergeASARs": false,
       "entitlements": "build/entitlements.mas.plist",
       "entitlementsInherit": "build/entitlements_inherit.mas.plist",
       "provisioningProfile": "build/mas_provisioning_profile.provisionprofile"
@@ -107,7 +106,6 @@
     "masDev": {
       "gatekeeperAssess": false,
       "hardenedRuntime": false,
-      "mergeASARs": false,
       "entitlements": "build/entitlements.mas.plist",
       "entitlementsInherit": "build/entitlements_inherit.mas.plist",
       "provisioningProfile": "build/development_provisioning_profile.provisionprofile"

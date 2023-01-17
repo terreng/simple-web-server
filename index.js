@@ -2,7 +2,8 @@ const version = 1002000;
 const install_source = "website"; //"website" | "microsoftstore" | "macappstore"
 const {app, BrowserWindow, ipcMain, Menu, Tray, dialog, shell, nativeTheme} = require('electron');
 const {networkInterfaces} = require('os');
-const chokidar = require('chokidar');
+var chokidar;
+if (!process.mas) {chokidar = require('chokidar')}
 global.hostOS = require('os').platform();
 global.eApp = app;
 
@@ -161,14 +162,24 @@ app.on('ready', function() {
     }
 
     try {
-        chokidar.watch(path.join(app.getPath('userData'), "config.json"), {
-            ignored: /(^|[\/\\])\../, // ignore dotfiles
-            ignoreInitial: true,
-            awaitWriteFinish: {
-                stabilityThreshold: 500,
-                pollInterval: 100
-            }
-        }).on('change', (filepath) => {
+        if (!process.mas) {
+            chokidar.watch(path.join(app.getPath('userData'), "config.json"), {
+                ignored: /(^|[\/\\])\../, // ignore dotfiles
+                ignoreInitial: true,
+                awaitWriteFinish: {
+                    stabilityThreshold: 500,
+                    pollInterval: 100
+                }
+            }).on('change', (filepath) => {
+                configFileChanged()
+            });
+        } else {
+            fs.watch(path.join(app.getPath('userData'), "config.json"), function(eventType, filename) {
+                configFileChanged()
+            });
+        }
+
+        function configFileChanged() {
             let new_config;
             try {
                 new_config = fs.readFileSync(path.join(app.getPath('userData'), "config.json"), "utf8");
@@ -190,9 +201,9 @@ app.on('ready', function() {
                     mainWindow.webContents.send('message', {"type": "reload"});
                 }
             }
-        });
+        }
     } catch(e) {
-        console.log("chokidar error or unsupported. App will not automatically update for changes to config.json.");
+        console.log("fs.watch or chokidar error or unsupported. App will not automatically update for changes to config.json.");
         console.error(e);
     }
 
@@ -202,15 +213,26 @@ app.on('ready', function() {
 
     try {
         var plugin_dir = path.join(app.getPath('userData'), "plugins/");
-        chokidar.watch(plugin_dir, {
-            ignored: /(^|[\/\\])\../, // ignore dotfiles
-            ignoreInitial: true,
-            awaitWriteFinish: {
-                stabilityThreshold: 500,
-                pollInterval: 100
-            }
-        }).on('all', (event, filepath) => {
-            var pluginid = filepath.split(plugin_dir)[1].split("/")[0].split("\\")[0];
+        if (!process.mas) {
+            chokidar.watch(plugin_dir, {
+                ignored: /(^|[\/\\])\../, // ignore dotfiles
+                ignoreInitial: true,
+                awaitWriteFinish: {
+                    stabilityThreshold: 500,
+                    pollInterval: 100
+                }
+            }).on('all', (event, filepath) => {
+                var pluginid = filepath.split(plugin_dir)[1].split("/")[0].split("\\")[0];
+                pluginsDirectoryChanged(pluginid)
+            })
+        } else {
+            fs.watch(plugin_dir, {recursive: true}, function(eventType, filename) {
+                var pluginid = filename.split("/")[0].split("\\")[0];
+                pluginsDirectoryChanged(pluginid)
+            })
+        }
+
+        function pluginsDirectoryChanged(pluginid) {
             if (pluginid.match(/^[A-Za-z0-9\-_]+$/)) {
 
                 if (reload_plugins_timeout) {
@@ -234,9 +256,9 @@ app.on('ready', function() {
                 }, 200);
 
             }
-        })
+        }
     } catch(e) {
-        console.log("chokidar error or unsupported. App will not automatically update for changes to plugins.");
+        console.log("fs.watch or chokidar error or unsupported. App will not automatically update for changes to plugins.");
         console.error(e);
     }
 
