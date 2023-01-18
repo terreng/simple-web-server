@@ -292,6 +292,34 @@ app.on('ready', function() {
         })
     }
 
+    if (process.platform === 'darwin') {
+        const menu = Menu.buildFromTemplate([
+            { role: 'appMenu' },
+            { role: 'fileMenu' },
+            { role: 'editMenu' },
+            { role: 'viewMenu' },
+            { role: 'windowMenu' },
+            {
+                role: 'help',
+                submenu: [
+                    {
+                        label: 'Documentation',
+                        click: async () => {
+                            await shell.openExternal('https://simplewebserver.org/docs')
+                        }
+                    },
+                    {
+                        label: 'Issues && Suggestions',
+                        click: async () => {
+                            await shell.openExternal('https://github.com/terreng/simple-web-server/issues')
+                        }
+                    }
+                ]
+            }
+        ])
+        Menu.setApplicationMenu(menu)
+    }
+
     nativeTheme.themeSource = config.theme || "system";
 
     if (mainWindow === null) createWindow();
