@@ -30,6 +30,6 @@ const help_text = {
     "ipThrottling": ["Maximum connections per IP address", 'Limits the number of incoming connections per IP address. Set to 0 for unlimited connections.'],
     "background": ["Keep running when closed", 'When enabled, the app will continue to run web servers in the background even when the window is closed. To stop the program while this option is enabled, click the "Stop & Quit" button.'],
     "updates": ["Check for updates", 'Periodically check if there is a new version of the app available. Updates are not automatically installed.'],
-    "theme": ["Appearance", 'Change appearance (light/dark theme). By default the app follows your system theme. Set to <code>light</code> or <code>dark</code> to override.'],
+    "theme": ["Appearance", 'Change appearance (light/dark theme). By default the app follows your system theme.'],
     "plugins": ["Plugins", 'Plugins allow you to further modify your web servers beyond the options that are available in the app. <a href="https://simplewebserver.org/docs/plugins.html">Learn more about plugins.</a><br><br>To install a plugin, click "Add Plugin" and then choose a directory or ZIP file. After installing a plugin, you must specifically enable it for each server you want to use it with.<br><br>Plugins aren\'t sandboxed, and run with the same permissions as the app. Only install a plugin if you know and trust the developer.']
 }
