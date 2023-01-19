@@ -24,7 +24,6 @@ global.pipeline = require('stream').pipeline;
 
 global.bookmarks = require('./bookmarks.js');
 global.plugin = require('./plugin.js');
-global.bookmarks = require('./bookmarks.js');
 global.WSC = require("./WSC.js");
 
 console = function(old_console) {
@@ -261,20 +260,8 @@ app.on('ready', function() {
         console.log("fs.watch or chokidar error or unsupported. App will not automatically update for changes to plugins.");
         console.error(e);
     }
-
-    // This is always running - This needs to be checked
-    if (process.mas || true) {
-        try {
-            bookmarks.bookmarks = fs.readFileSync(path.join(app.getPath('userData'), "mas_bookmarks.json"), "utf8");
-        } catch(error) {
-            bookmarks.bookmarks = "{}";
-        }
-        try {
-            bookmarks.bookmarks = JSON.parse(bookmarks.bookmarks);
-        } catch(e) {
-            bookmarks.bookmarks = {};
-        }
-    }
+    
+    bookmarks.init();
 
     if (config.tray) {
         global.tray = new Tray(path.join(__dirname, "images/icon.ico"))

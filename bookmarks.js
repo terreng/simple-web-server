@@ -1,5 +1,18 @@
 let mas_bookmarks = {};
 
+function initSecurityScopedBookmarks() {
+    try {
+        mas_bookmarks = fs.readFileSync(path.join(app.getPath('userData'), "mas_bookmarks.json"), "utf8");
+    } catch(error) {
+        mas_bookmarks = "{}";
+    }
+    try {
+        mas_bookmarks = JSON.parse(bookmarks.bookmarks);
+    } catch(e) {
+        mas_bookmarks = {};
+    }
+}
+
 function addToSecurityScopedBookmarks(filepath, bookmark) {
     if (bookmark && bookmark.length > 0) {
         mas_bookmarks[filepath] = {"bookmark": bookmark};
@@ -62,10 +75,10 @@ function releaseSecurityScopedBookmark(bookmark) {
 }
 
 module.exports = {
+    init: initSecurityScopedBookmarks,
     add: addToSecurityScopedBookmarks,
     match: matchSecurityScopedBookmark,
     matchAndAccess: matchAndAccessSecurityScopedBookmark,
     access: accessSecurityScopedBookmark,
-    release: releaseSecurityScopedBookmark,
-    bookmarks: mas_bookmarks
+    release: releaseSecurityScopedBookmark
 }
