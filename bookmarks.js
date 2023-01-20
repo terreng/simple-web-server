@@ -1,15 +1,17 @@
 let mas_bookmarks = {};
 
 function initSecurityScopedBookmarks() {
-    try {
-        mas_bookmarks = fs.readFileSync(path.join(app.getPath('userData'), "mas_bookmarks.json"), "utf8");
-    } catch(error) {
-        mas_bookmarks = "{}";
-    }
-    try {
-        mas_bookmarks = JSON.parse(bookmarks.bookmarks);
-    } catch(e) {
-        mas_bookmarks = {};
+    if (process.mas) {
+        try {
+            mas_bookmarks = fs.readFileSync(path.join(global.eApp.getPath('userData'), "mas_bookmarks.json"), "utf8");
+        } catch(error) {
+            mas_bookmarks = "{}";
+        }
+        try {
+            mas_bookmarks = JSON.parse(mas_bookmarks);
+        } catch(e) {
+            mas_bookmarks = {};
+        }
     }
 }
 
