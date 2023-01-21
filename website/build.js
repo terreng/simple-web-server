@@ -6,7 +6,22 @@ if (!fs.existsSync("src/.vuepress/dist/versions")){
 }
 var versions = JSON.parse(fs.readFileSync("versions.json", "utf8"));
 for (var i = 0; i < Object.keys(versions.versions).length; i++) {
-    fs.writeFileSync("src/.vuepress/dist/versions/"+Object.keys(versions.versions)[i]+".json", JSON.stringify((Number(Object.keys(versions.versions)[i]) < Number(versions.latest)) ? {"update": true, "version": versions.latest, "name": versions.versions[versions.latest].name, "download": versions.versions[versions.latest].download} : {"update": false}), "utf8");
+    var update_object = {"update": false};
+    if (Number(Object.keys(versions.versions)[i]) < Number(versions.latest)) {
+        update_object = {
+            "update": true,
+            "version": versions.latest,
+            "name": versions.versions[versions.latest].name,
+            "download": versions.versions[versions.latest].download
+        }
+        if (versions.versions[versions.latest].banner_text) {
+            update_object["banner_text"] = versions.versions[versions.latest].banner_text;
+        }
+        if (versions.versions[versions.latest].attributes) {
+            update_object["attributes"] = versions.versions[versions.latest].attributes;
+        }
+    }
+    fs.writeFileSync("src/.vuepress/dist/versions/"+Object.keys(versions.versions)[i]+".json", JSON.stringify(update_object, "utf8"));
 }
 /*
 var static_files = [
