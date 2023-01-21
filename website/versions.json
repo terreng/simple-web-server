@@ -1,9 +1,9 @@
 {
-    "latest": "1001004",
+    "latest": "1002000",
     "versions": {
         "1002000": {
             "name": "1.2.0",
-            "download": {"website": "https://simplewebserver.org/download", "microsoftstore": "https://simplewebserver.org/download", "macappstore": "https://simplewebserver.org/download"}
+            "download": {"website": "https://simplewebserver.org/download", "microsoftstore": "https://apps.microsoft.com/store/detail/simple-web-server/9PC6682RJCDD", "macappstore": "https://apps.apple.com/us/app/simple-web-server/id1625925255", "banner_text": "An updated version of Simple Web Server is available, featuring dark mode and other improvements and bug fixes."}
         },
         "1001004": {
             "name": "1.1.4",
