@@ -2,7 +2,7 @@
 home: true
 heroImage: https://raw.githubusercontent.com/terreng/simple-web-server/main/images/icon.png
 heroText: Simple Web Server
-tagline: Create local web servers in just a few clicks with an easy to use interface.
+tagline: Create local web servers in just a few clicks with an easy-to-use interface.
 actionText: Download →
 actionLink: /download/
 features:
