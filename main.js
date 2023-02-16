@@ -621,6 +621,11 @@ function themeChange() {
     window.api.saveconfig(config);
 }
 
+function langChange() {
+    config.language = document.querySelector("#language").value;
+    window.api.saveconfig(config, true);
+}
+
 function portValid() {
     return Math.floor(Number(document.querySelector("#port").value)) >= 1 && Math.floor(Number(document.querySelector("#port").value)) <= 65535;
 }

@@ -5,6 +5,7 @@
         <meta http-equiv="Content-Security-Policy" content="default-src 'self' 'unsafe-inline'">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <link rel="stylesheet" href="style.css">
+        <script type='application/javascript' charset="utf-8" src='lang.js'></script>
     </head>
     <body style="visibility: hidden;" ondragenter="dragEnter(event)" ondragover="dragOver(event)" ondragleave="dragLeave(event)" ondrop="dragDrop(event)">
 
@@ -25,7 +26,7 @@
 
         <div class="button_row" id="main_actions">
             <div tabindex="0" class="button left" id="stop_and_quit_button" onclick="window.api.quit()" aria-label="Stop & Quit" role="button">Stop & Quit</div>
-            <div tabindex="0" class="button primary" onclick="addServer()" aria-label="New Server" role="button">New Server</div>
+            <div tabindex="0" class="button primary" onclick="addServer()" aria-label="New Server" role="button">{lang.new_server}</div>
         </div>
 
         <!--Global settings-->
@@ -36,6 +37,11 @@
 
         <div class="container full_container" id="settings_container">
             <div style="padding-top: 8px;"></div>
+
+            <div class="input_option">
+                <div class="label">Language</div>
+                <select id="language" oninput="langChange()" aria-label="Language"></select>
+            </div>
 
             <div class="switch_option" id="background" onclick="toggleRunInBk()" tabindex="0" role="switch" aria-label="Keep running when closed">
                 <div class="switch"></div>
@@ -465,5 +471,20 @@
 
         <script src="main.js"></script>
         <script src="help_text.js"></script>
+        <script>
+            var language = navigator.userAgent.split("language:")[1];
+
+            if (lang[language] && Object.keys(lang[language])) {
+                for (var i = 0; i < Object.keys(lang[language]).length; i++) {
+                    lang["en"][Object.keys(lang[language])[i]] = lang[language][Object.keys(lang[language])[i]];
+                }
+            }
+            lang = lang["en"];
+
+            document.body.innerHTML = document.body.innerHTML.replace(/{lang\.([\w.]+?)}/g, function(match) {if (!lang[match.substring(6, match.length-1)]) {console.warn("Could't find lang string: "+match.substring(6, match.length-1))}; return lang[match.substring(6, match.length-1)]});
+
+            document.getElementById("language").innerHTML = Array.from(Object.entries(languages)).map(function(a) {return '<option value="'+a[0]+'">'+a[1]+'</option>'}).join("");
+            document.getElementById("language").value = language;
+        </script>
     </body>
 </html>
