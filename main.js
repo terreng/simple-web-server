@@ -3,27 +3,27 @@ let ip;
 let server_states = [];
 let running_states = {
     "stopped": {
-        "text": "Stopped",
+        "text": lang.state_stopped,
         "list_color": "var(--status-gray)",
         "edit_color": "var(--text-primary)"
     },
     "starting": {
-        "text": "Starting...",
+        "text": lang.state_starting,
         "list_color": "var(--status-gray)",
         "edit_color": "var(--text-primary)"
     },
     "running": {
-        "text": "Running",
+        "text":  lang.state_running,
         "list_color": "var(--status-green)",
         "edit_color": "var(--status-green)"
     },
     "error": {
-        "text": "Error",
+        "text": lang.state_error,
         "list_color": "var(--status-red)",
         "edit_color": "var(--status-red)"
     },
     "unknown": {
-        "text": "Starting...",
+        "text": lang.state_starting,
         "list_color": "var(--status-gray)",
         "edit_color": "var(--text-primary)"
     },
@@ -50,7 +50,7 @@ window.api.initipc((event, message) => {
     } else if (message.type === "update") {
         document.getElementById("update_banner").style.display = "block";
         document.getElementById("update_banner").href = message.url;
-        document.getElementById("update_banner_text").innerText = message.text || "An updated version of Simple Web Server is available";
+        document.getElementById("update_banner_text").innerText = message.text || lang.update_available;
         if (message.attributes.indexOf("high_priority") > -1) {
             document.getElementById("update_banner").classList.add("high_priority");
         } else {
@@ -123,10 +123,10 @@ async function openLicenses() {
 function renderServerList() {
     let pendhtml = "";
     for (let i=0; i<(config.servers || []).length; i++) {
-        pendhtml += '<div class="server '+(config.servers[i].enabled ? "checked" : "")+'" id="server_'+i+'" onmousedown="reorderDragStart(event, '+i+')" ontouchstart="reorderDragStart(event, '+i+')"><div tabindex="0" onclick="toggleServer('+i+')" role="switch" aria-label="Enabled"><div class="switch"></div></div><div tabindex="0" onclick="if(!dragging){addServer('+i+')}"><div><span>'+htmlescape(config.servers[i].path)+'</span></div><div><span class="server_status" style="color: '+running_states[getServerStatus(config.servers[i]).state].list_color+';">'+running_states[getServerStatus(config.servers[i]).state].text+'</span> &bull; Port '+String(config.servers[i].port)+(config.servers[i].ipv6 ? ' &bull; IPv6' : '')+(config.servers[i].localnetwork ? ' &bull; LAN' : '')+(config.servers[i].https ? ' &bull; HTTPS' : '')+'</div></div></div>'
+        pendhtml += '<div class="server '+(config.servers[i].enabled ? "checked" : "")+'" id="server_'+i+'" onmousedown="reorderDragStart(event, '+i+')" ontouchstart="reorderDragStart(event, '+i+')"><div tabindex="0" onclick="toggleServer('+i+')" role="switch" aria-label="'+lang.enabled_switch+'"><div class="switch"></div></div><div tabindex="0" onclick="if(!dragging){addServer('+i+')}"><div><span>'+htmlescape(config.servers[i].path)+'</span></div><div><span class="server_status" style="color: '+running_states[getServerStatus(config.servers[i]).state].list_color+';">'+running_states[getServerStatus(config.servers[i]).state].text+'</span> &bull; '+lang.option_port+' '+String(config.servers[i].port)+(config.servers[i].ipv6 ? ' &bull; '+lang.option_ipv6_abbreviation : '')+(config.servers[i].localnetwork ? ' &bull; '+lang.option_localnetwork_abbreviation : '')+(config.servers[i].https ? ' &bull; '+lang.option_https_abbreviation : '')+'</div></div></div>'
     }
     if (pendhtml === "") {
-        pendhtml = '<div style="color: var(--fullscreen_placeholder);text-align: center;position: absolute;top: 48%;width: 100%;transform: translateY(-50%);"><i class="material-icons" aria-hidden="true" style="font-size: 70px;">dns</i><div style="font-size: 18px;padding-top: 20px;">You haven\'t created any servers yet</div></div>';
+        pendhtml = '<div style="color: var(--fullscreen_placeholder);text-align: center;position: absolute;top: 48%;width: 100%;transform: translateY(-50%);"><i class="material-icons" aria-hidden="true" style="font-size: 70px;">dns</i><div style="font-size: 18px;padding-top: 20px;">'+lang.no_servers+'</div></div>';
     }
     document.getElementById("servers_list").innerHTML = pendhtml;
 }
@@ -247,13 +247,13 @@ function getServerStatusBox(local_config) {
     } else if (getServerStatus(local_config).state === "error") {
         let error_message = getServerStatus(local_config).error_message;
         if (error_message.indexOf("EADDRINUSE") > -1) {
-            return '<div class="status_box error_status_box"><div>Port in use</div><div>Web server failed to start because port '+local_config.port+' is already in use by another program.</div></div>';
+            return '<div class="status_box error_status_box"><div>'+lang.error_port_in_use+'</div><div>'+lang.error_port_in_use_description.replace("[PORT]", local_config.port)+'</div></div>';
         } else if (error_message.indexOf("FILESYSTEMERROR-") == 0) {
-            return '<div class="status_box error_status_box"><div>File system error</div><div>'+htmlescape(error_message.substring("FILESYSTEMERROR-".length))+'</div></div>';
+            return '<div class="status_box error_status_box"><div>'+lang.error_file_system+'</div><div>'+htmlescape(error_message.substring("FILESYSTEMERROR-".length))+'</div></div>';
         } else if (error_message.indexOf("PLUGINERROR-") == 0) {
-            return '<div class="status_box error_status_box"><div>Error starting plugins</div><div>'+htmlescape(error_message.substring("PLUGINERROR-".length))+'</div></div>';
+            return '<div class="status_box error_status_box"><div>'+lang.error_plugins+'</div><div>'+htmlescape(error_message.substring("PLUGINERROR-".length))+'</div></div>';
         } else {
-            return '<div class="status_box error_status_box"><div>Error</div><div>'+htmlescape(error_message)+'</div></div>';
+            return '<div class="status_box error_status_box"><div>'+lang.error_generic+'</div><div>'+htmlescape(error_message)+'</div></div>';
         }
     } else return '';
 }
@@ -319,13 +319,13 @@ function addServer(editindex) {
 
     document.querySelector("#folder_path_error").style.display = "none";
     if (editindex != null) {
-        document.querySelector("#edit_server_title").innerText = "Edit Server";
-        document.querySelector("#submit_button").innerText = "Save Changes";
-        document.querySelector("#submit_button").setAttribute("aria-label", "Save Changes");
+        document.querySelector("#edit_server_title").innerText = lang.edit_server;
+        document.querySelector("#submit_button").innerText = lang.save_changes;
+        document.querySelector("#submit_button").setAttribute("aria-label", lang.save_changes);
     } else {
-        document.querySelector("#edit_server_title").innerText = "Add Server";
-        document.querySelector("#submit_button").innerText = "Create Server";
-        document.querySelector("#submit_button").setAttribute("aria-label", "Create Server");
+        document.querySelector("#edit_server_title").innerText = lang.add_server;
+        document.querySelector("#submit_button").innerText = lang.create_server;
+        document.querySelector("#submit_button").setAttribute("aria-label", lang.create_server);
     }
     activeeditindex = (editindex != null ? editindex : false);
 
@@ -381,8 +381,8 @@ function addServer(editindex) {
         ipLimitChange();
 
         document.querySelector("#delete_server_option").style.display = "block";
-        document.querySelector("#submit_button").innerText = "Save Changes";
-        document.querySelector("#submit_button").setAttribute("aria-label", "Save Changes");
+        document.querySelector("#submit_button").innerText = lang.save_changes;
+        document.querySelector("#submit_button").setAttribute("aria-label", lang.save_changes);
     } else {
         document.getElementById("server_container_status").style.display = "none";
 
@@ -431,8 +431,8 @@ function addServer(editindex) {
         ipLimitChange();
 
         document.querySelector("#delete_server_option").style.display = "none";
-        document.querySelector("#submit_button").innerText = "Create Server";
-        document.querySelector("#submit_button").setAttribute("aria-label", "Create Server");
+        document.querySelector("#submit_button").innerText = lang.create_server;
+        document.querySelector("#submit_button").setAttribute("aria-label", lang.create_server);
     }
 
     renderPluginOptions(editindex != null ? config.servers[editindex] : null);
@@ -552,7 +552,7 @@ function confirmDeleteServer() {
 
 function deleteServer() {
     pend_delete_server_id = activeeditindex;
-    showPrompt("Delete server?", "This action cannot be undone.", [["Confirm","destructive",confirmDeleteServer],["Cancel","",hidePrompt]])
+    showPrompt(lang.delete_server_confirm, lang.delete_server_confirm_description, [[lang.prompt_confirm,"destructive",confirmDeleteServer],[lang.cancel,"",hidePrompt]])
 }
 
 function toggleServer(index,inedit) {
@@ -621,7 +621,7 @@ function themeChange() {
     window.api.saveconfig(config);
 }
 
-function langChange() {
+function changeLang() {
     config.language = document.querySelector("#language").value;
     window.api.saveconfig(config, true);
 }
@@ -674,10 +674,10 @@ function httpAuthUsernameChange() {
 function updateCurrentPath() {
     if (current_path) {
         document.querySelector("#path > div > span").innerText = current_path;
-        document.querySelector("#path > div > span").parentElement.setAttribute("aria-label", current_path+", Choose folder");
+        document.querySelector("#path > div > span").parentElement.setAttribute("aria-label", current_path+", "+lang.choose_folder);
     } else {
-        document.querySelector("#path > div > span").innerHTML = '<span style="color: var(--text-secondary);">Choose folder</span>';
-        document.querySelector("#path > div > span").parentElement.setAttribute("aria-label", "Choose folder");
+        document.querySelector("#path > div > span").innerHTML = '<span style="color: var(--text-secondary);">'+lang.choose_folder+'</span>';
+        document.querySelector("#path > div > span").parentElement.setAttribute("aria-label", lang.choose_folder);
     }
     document.querySelector("#folder_path_error").style.display = "none";
 }
@@ -818,11 +818,11 @@ function generateCrypto() {
         if (last_gen_crypto_date === start_gen_date) {
             document.getElementById("generate_crypto").classList.remove("disabled");
             if (document.getElementById("httpsCert").value.length > 0 || document.getElementById("httpsKey").value.length > 0) {
-                showPrompt("Overwrite certificate and private key?", "A certificate and private key already exist. This action will overwrite them.", [["Confirm","destructive",function() {
+                showPrompt(lang.generate_crypto_overwrite, lang.generate_crypto_overwrite_description, [[lang.prompt_confirm,"destructive",function() {
                     document.getElementById("httpsCert").value = crypto.cert.split("\r").join("\\r").split("\n").join("\\n");
                     document.getElementById("httpsKey").value = crypto.privateKey.split("\r").join("\\r").split("\n").join("\\n");
                     hidePrompt();
-                }],["Cancel","",function() {hidePrompt()}]])
+                }],[lang.cancel,"",function() {hidePrompt()}]])
             } else {
                 console.log(crypto.cert);
                 console.log(crypto.privateKey);
@@ -848,11 +848,11 @@ function initContinue() {
     openMain();
 }
 
-function helpInfo(event, id) {
+function helpInfo(event, id, type) {
     event.preventDefault();
     event.stopPropagation();
 
-    showPrompt((id.indexOf("plugin.") == 0 ? htmlescape(plugin_help_text[id.substring(7)][0]) : help_text[id][0]), (id.indexOf("plugin.") == 0 ? plugin_help_text[id.substring(7)][1] : help_text[id][1]).replace(/<a href="(.+)">/g, function(a, b) {return '<a href="'+b+'" target="_blank" onclick="window.api.openExternal(this.href);event.preventDefault()">'}), [["Done","",hidePrompt]]);
+    showPrompt((id.indexOf("plugin.") == 0 ? htmlescape(plugin_help_text[id.substring(7)][0]) : lang[type+"_"+id]), (id.indexOf("plugin.") == 0 ? plugin_help_text[id.substring(7)][1] : lang[type+"_"+id+"_description"]).replace(/<a href="(.+)">/g, function(a, b) {return '<a href="'+b+'" target="_blank" onclick="window.api.openExternal(this.href);event.preventDefault()">'}), [[lang.prompt_done,"",hidePrompt]]);
 }
 
 // TODO: Implement drag and drop for setting the folder directory or installing a plugin. I don't know how to make this work with security scoped bookmarks on macOS.
@@ -902,7 +902,7 @@ function addPlugin(select_type) {
         doShowPicker();
     } else {
         if (platform !== "darwin") {
-            showPrompt("Add Plugin", '<div style="padding: 8px 0px;overflow: hidden;"><div tabindex="0" class="button left" onclick="addPlugin(\'folder\')" role="button" aria-label="Choose folder">Choose folder</div></div><div style="padding: 8px 0px;overflow: hidden;padding-bottom: 0px;margin-bottom: -12px;"><div tabindex="0" class="button left" onclick="addPlugin(\'zip\')" role="button" aria-label="Choose ZIP file">Choose .zip file</div></div>', []);
+            showPrompt(lang.add_plugin, '<div style="padding: 8px 0px;overflow: hidden;"><div tabindex="0" class="button left" onclick="addPlugin(\'folder\')" role="button" aria-label="'+lang.plugin_choose_folder+'">'+lang.plugin_choose_folder+'</div></div><div style="padding: 8px 0px;overflow: hidden;padding-bottom: 0px;margin-bottom: -12px;"><div tabindex="0" class="button left" onclick="addPlugin(\'zip\')" role="button" aria-label="'+lang.plugin_choose_zip+'">'+lang.plugin_choose_zip+'</div></div>', []);
         } else {
             doShowPicker();
         }
@@ -913,15 +913,15 @@ function addPlugin(select_type) {
             if (chosen_path && chosen_path.length > 0) {
                 window.api.checkPlugin(chosen_path[0]).then(function(manifest) {
                     if (manifest) {
-                        showPrompt("Add \""+htmlescape(manifest.name.substring(0,32))+"\" plugin?", "Only install this plugin if you know and trust the developer.<br><br>Plugins aren't sandboxed, and run with the same permissions as the app.", [["Confirm","destructive",function() {
+                        showPrompt(lang.add_plugin_confirm.replace("[NAME]",htmlescape(manifest.name.substring(0,32))), lang.add_plugin_confirm_description, [[lang.prompt_confirm,"destructive",function() {
                             if (window.api.addPlugin(chosen_path[0])) {
                                 hidePrompt();
                             } else {
-                                showPrompt("Failed to install plugin", "We couldn't find a valid <code>plugin.json</code> file in the directory or ZIP file you selected.", [["Done","",hidePrompt]]);
+                                showPrompt(lang.add_plugin_failed, lang.add_plugin_failed_description, [[lang.prompt_done,"",hidePrompt]]);
                             }
-                        }],["Cancel","",hidePrompt]]);
+                        }],[lang.cancel,"",hidePrompt]]);
                     } else {
-                        showPrompt("Invalid plugin", "We couldn't find a valid <code>plugin.json</code> file in the directory or ZIP file you selected.", [["Done","",hidePrompt]]);
+                        showPrompt(lang.add_plugin_invalid, lang.add_plugin_failed_description, [[lang.prompt_done,"",hidePrompt]]);
                     }
                 })
 
@@ -939,7 +939,7 @@ window.addEventListener("keypress", function(event) {
 
 function refreshPluginList() {
     if (Object.keys(plugins).length > 0) {
-        document.querySelector("#plugins_list").innerHTML = Object.values(plugins).map(function(a) {return '<div><div><div>'+a.name+'</div><div>'+a.id+'</div></div><div onclick="removePlugin(\''+a.id+'\')" tabindex="0" aria-label="Remove plugin" role="button"><i class="material-icons" aria-hidden="true">delete</i></div></div>'}).join("");
+        document.querySelector("#plugins_list").innerHTML = Object.values(plugins).map(function(a) {return '<div><div><div>'+a.name+'</div><div>'+a.id+'</div></div><div onclick="removePlugin(\''+a.id+'\')" tabindex="0" aria-label="'+lang.remove_plugin+'" role="button"><i class="material-icons" aria-hidden="true">delete</i></div></div>'}).join("");
         document.querySelector("#plugins_list").style.display = "block";
     } else {
         document.querySelector("#plugins_list").style.display = "none";
@@ -948,7 +948,7 @@ function refreshPluginList() {
 
 function removePlugin(pluginid) {
     if (plugins[pluginid]) {
-        showPrompt("Remove \""+htmlescape(plugins[pluginid].name.substring(0,32))+"\" plugin?", "All server options for this plugin will be cleared. If you want to update the plugin without resetting server options, just add the new version of the plugin instead of removing it first.", [["Confirm","destructive",function() {
+        showPrompt(lang.remove_plugin_confirm.replace("[NAME]", htmlescape(plugins[pluginid].name.substring(0,32))), lang.remove_plugin_confirm_description, [[lang.prompt_confirm,"destructive",function() {
             window.api.removePlugin(pluginid);
 
             // Remove plugin options from all servers
@@ -964,7 +964,7 @@ function removePlugin(pluginid) {
             window.api.saveconfig(config);
 
             hidePrompt();
-        }],["Cancel","",hidePrompt]])
+        }],[lang.cancel,"",hidePrompt]])
     }
 }
 
@@ -981,13 +981,13 @@ function renderPluginOptions(server_config) {
         }
 
         if (option.type == "bool") {
-            return '<div tabindex="0" class="checkbox_option'+(option_value ? " checked" : "")+'" id="plugin.'+pluginid+'.'+option.id+'" onclick="toggleCheckbox(this)" role="checkbox" aria-label="'+urlescape(option.name)+'" aria-checked="'+(option_value ? "true" : "false")+'"><div class="checkbox"><i class="material-icons" aria-hidden="true">'+(option_value ? "check_box" : "check_box_outline_blank")+'</i></div><div class="label">'+htmlescape(option.name)+(option.description ? ' <a href="#" class="help_icon" aria-label="Help" onclick="helpInfo(event, \'plugin.'+pluginid+'.'+option.id+'\')"><i class="material-icons" aria-hidden="true">help_outline</i></a>' : '')+'</div></div>';
+            return '<div tabindex="0" class="checkbox_option'+(option_value ? " checked" : "")+'" id="plugin.'+pluginid+'.'+option.id+'" onclick="toggleCheckbox(this)" role="checkbox" aria-label="'+urlescape(option.name)+'" aria-checked="'+(option_value ? "true" : "false")+'"><div class="checkbox"><i class="material-icons" aria-hidden="true">'+(option_value ? "check_box" : "check_box_outline_blank")+'</i></div><div class="label">'+htmlescape(option.name)+(option.description ? ' <a href="#" class="help_icon" aria-label="'+lang.help+'" onclick="helpInfo(event, \'plugin.'+pluginid+'.'+option.id+'\', \'option\')"><i class="material-icons" aria-hidden="true">help_outline</i></a>' : '')+'</div></div>';
         } else if (option.type == "string") {
-            return '<div class="input_option"><div class="label">'+htmlescape(option.name)+(option.description ? ' <a href="#" class="help_icon" aria-label="Help" onclick="helpInfo(event, \'plugin.'+pluginid+'.'+option.id+'\')"><i class="material-icons" aria-hidden="true">help_outline</i></a>' : '')+'</div><input type="text" id="plugin.'+pluginid+'.'+option.id+'" placeholder="" value="'+urlescape(option_value)+'" aria-label="'+urlescape(option.name)+'"></div>';
+            return '<div class="input_option"><div class="label">'+htmlescape(option.name)+(option.description ? ' <a href="#" class="help_icon" aria-label="'+lang.help+'" onclick="helpInfo(event, \'plugin.'+pluginid+'.'+option.id+'\', \'option\')"><i class="material-icons" aria-hidden="true">help_outline</i></a>' : '')+'</div><input type="text" id="plugin.'+pluginid+'.'+option.id+'" placeholder="" value="'+urlescape(option_value)+'" aria-label="'+urlescape(option.name)+'"></div>';
         } else if (option.type == "number") {
-            return '<div class="input_option"><div class="label">'+htmlescape(option.name)+(option.description ? ' <a href="#" class="help_icon" aria-label="Help" onclick="helpInfo(event, \'plugin.'+pluginid+'.'+option.id+'\')"><i class="material-icons" aria-hidden="true">help_outline</i></a>' : '')+'</div><input type="number" step="1" id="plugin.'+pluginid+'.'+option.id+'" placeholder="" style="width: 100px;" '+(option.min != null ? 'min="'+option.min+'" ' : '')+''+(option.max != null ? 'max="'+option.max+'" ' : '')+'value="'+String(option_value || 0)+'" aria-label="'+urlescape(option.name)+'"></div>';
+            return '<div class="input_option"><div class="label">'+htmlescape(option.name)+(option.description ? ' <a href="#" class="help_icon" aria-label="'+lang.help+'" onclick="helpInfo(event, \'plugin.'+pluginid+'.'+option.id+'\', \'option\')"><i class="material-icons" aria-hidden="true">help_outline</i></a>' : '')+'</div><input type="number" step="1" id="plugin.'+pluginid+'.'+option.id+'" placeholder="" style="width: 100px;" '+(option.min != null ? 'min="'+option.min+'" ' : '')+''+(option.max != null ? 'max="'+option.max+'" ' : '')+'value="'+String(option_value || 0)+'" aria-label="'+urlescape(option.name)+'"></div>';
         } else if (option.type == "select") {
-            return '<div class="input_option"><div class="label">'+htmlescape(option.name)+(option.description ? ' <a href="#" class="help_icon" aria-label="Help" onclick="helpInfo(event, \'plugin.'+pluginid+'.'+option.id+'\')"><i class="material-icons" aria-hidden="true">help_outline</i></a>' : '')+'</div><select id="plugin.'+pluginid+'.'+option.id+'" aria-label="'+urlescape(option.name)+'">'+option.choices.map(a => '<option value="'+a.id+'"'+(option_value == a.id ? ' selected' : '')+'>'+htmlescape(a.name)+'</option>').join("")+'</select></div>';
+            return '<div class="input_option"><div class="label">'+htmlescape(option.name)+(option.description ? ' <a href="#" class="help_icon" aria-label="'+lang.help+'" onclick="helpInfo(event, \'plugin.'+pluginid+'.'+option.id+'\', \'option\')"><i class="material-icons" aria-hidden="true">help_outline</i></a>' : '')+'</div><select id="plugin.'+pluginid+'.'+option.id+'" aria-label="'+urlescape(option.name)+'">'+option.choices.map(a => '<option value="'+a.id+'"'+(option_value == a.id ? ' selected' : '')+'>'+htmlescape(a.name)+'</option>').join("")+'</select></div>';
         }
     }
 
@@ -995,7 +995,7 @@ function renderPluginOptions(server_config) {
         let manifest = plugins[Object.keys(plugins)[i]];
         let plugin_options = (server_config && server_config.plugins && server_config.plugins[manifest.id]) ? server_config.plugins[manifest.id] : {};
 
-        pendhtml += '<div tabindex="0" class="settings_section_header plugin_section'+(plugin_options.enabled ? " plugin_enabled" : "")+((manifest.options && manifest.options.length > 0) ? "" : " plugin_nooptions")+'" onclick="toggleSection(this)" id="plugin.'+manifest.id+'" role="button" aria-label="'+urlescape(manifest.name)+'"><div role="checkbox" tabindex="0" aria-label="Enabled" aria-checked="'+(plugin_options.enabled ? "true" : "false")+'" onclick="togglePlugin(event, this)"><i class="material-icons" aria-hidden="true">'+(plugin_options.enabled ? "check_box" : "check_box_outline_blank")+'</i></div><div>'+htmlescape(manifest.name)+'</div>'+((manifest.options && manifest.options.length > 0) ? '<div><i class="material-icons" aria-hidden="true">expand_more</i></div>' : '')+'</div><div class="settings_section" inert><div class="settings_section_inner"'+(plugin_options.enabled ? "" : " inert")+'>'+manifest.options.map(option => drawOption(manifest.id, option, plugin_options)).join("")+'</div></div>';
+        pendhtml += '<div tabindex="0" class="settings_section_header plugin_section'+(plugin_options.enabled ? " plugin_enabled" : "")+((manifest.options && manifest.options.length > 0) ? "" : " plugin_nooptions")+'" onclick="toggleSection(this)" id="plugin.'+manifest.id+'" role="button" aria-label="'+urlescape(manifest.name)+'"><div role="checkbox" tabindex="0" aria-label="'+lang.enabled_switch+'" aria-checked="'+(plugin_options.enabled ? "true" : "false")+'" onclick="togglePlugin(event, this)"><i class="material-icons" aria-hidden="true">'+(plugin_options.enabled ? "check_box" : "check_box_outline_blank")+'</i></div><div>'+htmlescape(manifest.name)+'</div>'+((manifest.options && manifest.options.length > 0) ? '<div><i class="material-icons" aria-hidden="true">expand_more</i></div>' : '')+'</div><div class="settings_section" inert><div class="settings_section_inner"'+(plugin_options.enabled ? "" : " inert")+'>'+manifest.options.map(option => drawOption(manifest.id, option, plugin_options)).join("")+'</div></div>';
     }
 
     document.querySelector("#plugin_options").innerHTML = pendhtml;
