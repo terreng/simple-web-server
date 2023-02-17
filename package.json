@@ -55,7 +55,7 @@
     "make_all_windows_appx": "npm run make_windows_appx_x64 && npm run make_windows_appx_ia32 && npm run make_windows_appx_arm64"
   },
   "build": {
-    "buildVersion": "21",
+    "buildVersion": "23",
     "appId": "org.simplewebserver.simplewebserver",
     "productName": "Simple Web Server",
     "copyright": "MIT License",
@@ -93,7 +93,8 @@
       "entitlementsInherit": "build/entitlements_inherit.mac.plist",
       "category": "public.app-category.developer-tools",
       "electronLanguages": [
-        "en"
+        "en",
+        "zh_CN"
       ]
     },
     "mas": {
@@ -101,7 +102,11 @@
       "hardenedRuntime": false,
       "entitlements": "build/entitlements.mas.plist",
       "entitlementsInherit": "build/entitlements_inherit.mas.plist",
-      "provisioningProfile": "build/mas_provisioning_profile.provisionprofile"
+      "provisioningProfile": "build/mas_provisioning_profile.provisionprofile",
+      "electronLanguages": [
+        "en",
+        "zh_CN"
+      ]
     },
     "masDev": {
       "gatekeeperAssess": false,
@@ -115,7 +120,8 @@
     },
     "win": {
       "icon": "images/icon.ico",
-      "publisherName": "Simple Web Server"
+      "publisherName": "Simple Web Server",
+      "languages": ["en-US", "zh-CN"]
     },
     "nsis": {
       "createDesktopShortcut": "always",
@@ -132,7 +138,8 @@
       "displayName": "Simple Web Server",
       "applicationId": "org.simplewebserver.simplewebserver",
       "identityName": "50257Terren.SimpleWebServer",
-      "publisher": "CN=823B8264-37A4-4589-B252-9E44611E01EB"
+      "publisher": "CN=823B8264-37A4-4589-B252-9E44611E01EB",
+      "languages": ["en-US", "zh-CN"]
     }
   },
   "devDependencies": {
