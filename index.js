@@ -1,4 +1,4 @@
-const version = 1002000;
+const version = 1002005;
 const install_source = "website"; //"website" | "microsoftstore" | "macappstore"
 const {app, BrowserWindow, ipcMain, Menu, Tray, dialog, shell, nativeTheme} = require('electron');
 const {networkInterfaces} = require('os');
@@ -25,6 +25,8 @@ global.pipeline = require('stream').pipeline;
 global.bookmarks = require('./bookmarks.js');
 global.plugin = require('./plugin.js');
 global.WSC = require("./WSC.js");
+
+require("./lang.js");
 
 console = function(old_console) {
     let new_console = {
@@ -331,13 +333,18 @@ let isQuitting = false;
 ipcMain.on('quit', quit)
 
 ipcMain.on('saveconfig', function(event, arg1) {
-    config = arg1;
+    config = arg1.config;
     try {
-        fs.writeFileSync(path.join(app.getPath('userData'), "config.json"), JSON.stringify(arg1, null, 2));
+        fs.writeFileSync(path.join(app.getPath('userData'), "config.json"), JSON.stringify(arg1.config, null, 2));
     } catch(e) {
         console.warn(e);
     }
     configChanged();
+
+    if (arg1.reload && mainWindow) {
+        mainWindow.webContents.setUserAgent(mainWindow.webContents.getUserAgent().split(" language:")[0] + " language:" + getLanguage());
+        mainWindow.reload();
+    }
 })
 
 function configChanged() {
@@ -422,6 +429,27 @@ setInterval(function() {
     }
 }, 10000) //every 10 seconds
 
+function getLanguage() {
+    var language = "en";
+
+    if (config.language && Object.keys(languages).indexOf(config.language) > -1) {
+        language = config.language;
+    } else {
+        var system_langs = app.getPreferredSystemLanguages();
+        for (var i = 0; i < system_langs.length; i++) {
+            if (system_langs[i].indexOf("en") == 0) {
+                language = "en";
+                break;
+            }
+            if (system_langs[i].indexOf("zh") == 0) {
+                language = "zh_CN";
+                break;
+            }
+        }
+    }
+
+    return language;
+}
 
 function createWindow() {
     mainWindow = new BrowserWindow({
@@ -444,6 +472,8 @@ function createWindow() {
         }
     });
     mainWindow.setMenuBarVisibility(false);
+
+    mainWindow.webContents.setUserAgent(mainWindow.webContents.getUserAgent() + " language:" + getLanguage());
 
     mainWindow.loadFile('index.html');
 

@@ -27,8 +27,8 @@ contextBridge.exposeInMainWorld('api', {
     removePlugin: pluginid => {
         return ipcRenderer.invoke('removePlugin', {"id": pluginid});
     },
-    saveconfig: saveconfig => {
-        ipcRenderer.send("saveconfig", saveconfig);
+    saveconfig: (config, reload) => {
+        ipcRenderer.send("saveconfig", {"config": config, "reload": reload});
     },
     generateCrypto: () => {
         return ipcRenderer.invoke('generateCrypto');

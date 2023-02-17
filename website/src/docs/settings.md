@@ -4,6 +4,18 @@
 
 Option names correspond to the option key in config.json. See [Editing config.json](config%20file.md).
 
+### Language
+
+- Name: `language`
+- Type: string, `en` or `zh_CN`
+
+Supported languages:
+- `en`: English
+- `zh_CN`: Simplified Chinese (简体中文)
+- [Help us translate](https://github.com/terreng/simple-web-server/issues/124)
+
+If the `language` option is missing or invalid, the app will automatically detect the system language.
+
 ### Keep running when closed
 
 - Name: `background`
