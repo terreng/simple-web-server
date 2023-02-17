@@ -102,11 +102,7 @@
       "hardenedRuntime": false,
       "entitlements": "build/entitlements.mas.plist",
       "entitlementsInherit": "build/entitlements_inherit.mas.plist",
-      "provisioningProfile": "build/mas_provisioning_profile.provisionprofile",
-      "electronLanguages": [
-        "en",
-        "zh_CN"
-      ]
+      "provisioningProfile": "build/mas_provisioning_profile.provisionprofile"
     },
     "masDev": {
       "gatekeeperAssess": false,
@@ -120,8 +116,7 @@
     },
     "win": {
       "icon": "images/icon.ico",
-      "publisherName": "Simple Web Server",
-      "languages": ["en-US", "zh-CN"]
+      "publisherName": "Simple Web Server"
     },
     "nsis": {
       "createDesktopShortcut": "always",
