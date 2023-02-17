@@ -14,7 +14,28 @@ module.exports = {
     ['meta', { name: 'keywords', content: 'Simple Web Server,web server,Web Server for Chrome,local web server' }],
     ['script', { type: 'module', src: '/ms-store-badge.bundled.js' }]
   ],
+  locales: {
+    '/': {
+      lang: 'en-US',
+      title: 'Simple Web Server',
+      description: 'Create local web servers in just a few clicks with an easy-to-use interface.'
+    },
+    '/zh-CN/': {
+      lang: 'zh-CN',
+      description: '简单易用! 只需几次点击就可以部署本地 Web 服务器。'
+    }
+  },
   themeConfig: {
+    locales: {
+      '/': {
+        label: 'English',
+        selectText: 'Language'
+      },
+      '/zh-CN/': {
+        label: '简体中文',
+        selectText: '语言'
+      }
+    },
     sidebarDepth: 3,
     repo: '',
     editLinks: false,
