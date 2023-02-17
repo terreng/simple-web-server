@@ -133,7 +133,8 @@ lang = {
         "error_generic": "Error",
         "version": "Version",
         "documentation": "Documentation",
-        "issues_and_suggestions": "Issues & Suggestions"
+        "issues_and_suggestions": "Issues & Suggestions",
+        "web_server_url": "Web server URL"
     },
     "zh_CN": {
         "settings": "设置",

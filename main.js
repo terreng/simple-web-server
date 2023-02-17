@@ -242,7 +242,7 @@ function getServerStatusBox(local_config) {
             }
         }
 
-        return '<div class="status_box"><div>Web server URL'+(url_list.length === 1 ? '' : 's')+'</div><div>'+url_list.map((a) => {return '<a href="'+a+'" target="_blank" onclick="window.api.openExternal(this.href);event.preventDefault()">'+a+'</a>'}).join('<div style="padding-top: 6px;"></div>')+"</div></div>";
+        return '<div class="status_box"><div>'+lang.web_server_url+(url_list.length === 1 ? '' : 's')+'</div><div>'+url_list.map((a) => {return '<a href="'+a+'" target="_blank" onclick="window.api.openExternal(this.href);event.preventDefault()">'+a+'</a>'}).join('<div style="padding-top: 6px;"></div>')+"</div></div>";
 
     } else if (getServerStatus(local_config).state === "error") {
         let error_message = getServerStatus(local_config).error_message;
