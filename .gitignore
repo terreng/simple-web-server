@@ -11,3 +11,4 @@ build/.env
 .env
 build/development_provisioning_profile.provisionprofile
 build/mas_provisioning_profile.provisionprofile
+website/src/.vuepress/test.js
