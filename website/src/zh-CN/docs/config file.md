@@ -1,26 +1,26 @@
-# Editing config.json
+# 编辑 config.json
 
-All server options and app settings are stored in one file, `config.json`. It's possible to manually edit this file to access options that aren't accessible from the user interface.
+所有服务器选项和应用程序设置都存储在这个文件中, `config.json`. 可以手动编辑此文件以更改无法从用户界面访问的选项。
 
-Options are stored in JSON format. You can find the name (key) and type of value for each option on the [Server Options](options.md) and [App Settings](settings.md) pages.
+选项以JSON格式存储。您可以在[Server Options](options.md)和[App Settings](settings.md)页面上找到每个选项的名称（key）和值类型。
 
-Changes made to this file while the program is running will take effect immediately. Changes will reload the app's user interface, which may cause you to lose unsaved changes.
+程序运行时对此文件所做的更改将立即生效。更改将重新加载应用程序的用户界面，这可能会导致您丢失用户界面未保存的更改。
 
 :::warning
-If you download the app from the Mac App Store, your web server may stop working if you change the `path` option directly from config.json. This is because the app only has permission to read from directories that have been selected using the open dialog in the app. To avoid this problem, only change the path from within the app.
+如果您从Mac AppStore下载使用该程序，您直接从config.json更改`path`选项，Web服务器可能会停止工作。这是因为该程序只有读取使用应用程序中的打开对话框选择的目录的权限。要避免此问题，请仅在应用程序内更改路径。
 :::
 
-Here's where to find the config.json file:
+以下是config.json文件的位置:
 
 **Windows:** `C:\Users\[USERNAME]\AppData\Roaming\Simple Web Server\config.json`
 
-**macOS (Direct download):** `/Users/[USERNAME]/Library/Application Support/Simple Web Server/config.json`
+**macOS (直接下载):** `/Users/[USERNAME]/Library/Application Support/Simple Web Server/config.json`
 
 **macOS (App Store):** `/Users/[USERNAME]/Library/Containers/org.simplewebserver.simplewebserver/Data/Library/Application Support/Simple Web Server/config.json`
 
 **Linux:** **TODO**
 
-Here's what the config file might look like:
+下面是配置文件的样子:
 
 ```json
 {

@@ -1,37 +1,37 @@
-# Coming from Web Server for Chrome?
+# 来自Chrome的Web Server?
 
-Simple Web Server is a continuation of Web Server for Chrome, and was created because Chrome Apps are going away. It's designed to be familiar for users coming from Web Server for Chrome.
+Simple Web Server是Web Server for Chrome的延续，它的诞生是因为Chrome应用程序正在消失。它的设计让来自Web Server for Chrome用户感到熟悉。
 
 <figure>
   <img src='/images/web_server_for_chrome_options_vs_simple_web_server_options_figure.jpeg'>
-  <figcaption>Server options in Web Server for Chrome (left) compared to Simple Web Server (right).</figcaption>
+  <figcaption>Web Server for Chrome 中的服务器选项(左) 相比 Simple Web Server (右).</figcaption>
 </figure>
 
-Simple Web Server has many new features and capabilities for users coming from Web Server for Chrome.
-- You can now run multiple local web servers at the same time
-- Simple Web Server has many more server configuration options
+Simple Web Server为来自Web Server for Chrome的用户提供了许多新特性和功能。
+- 您现在可以同时运行多个本地网络服务器
+- Simple Web Server有更多的服务器配置选项
 
-Please note that some features from Web Server for Chrome have been removed in favor of alternative solutions. Here is a list of removed options:
+请注意，Web Server for Chrome的一些功能已被移除，取而代之的是其他解决方案。以下是已删除选项的列表：
 
 <table>
     <tr>
-        <td><b>Option</b></td>
-        <td><b>Alternative solution</b></td>
+        <td><b>选项</b></td>
+        <td><b>替代解决方案</b></td>
     </tr>
     <tr>
-        <td>Start on login</td>
-        <td>Use the option in your operating system instead. See <a href="https://support.microsoft.com/en-us/windows/add-an-app-to-run-automatically-at-startup-in-windows-10-150da165-dcd9-7230-517b-cf3c295d89dd" target="_blank">Add an app to run automatically at startup in Windows 10</a> or <a href="https://support.apple.com/guide/mac-help/open-items-automatically-when-you-log-in-mh15189/mac" target="_blank">Open items automatically when you log in on Mac</a>.</td>
+        <td>开机自启动</td>
+        <td>请改用操作系统中的实现。参见 <a href="https://support.microsoft.com/zh-CN/windows/add-an-app-to-run-automatically-at-startup-in-windows-10-150da165-dcd9-7230-517b-cf3c295d89dd" target="_blank">在 Windows 10 中添加在启动时自动运行的应用</a> 或者 <a href="https://support.apple.com/zh-cn/guide/mac-help/mh15189/mac" target="_blank">在 Mac 上登录时自动打开项目</a>.</td>
     </tr>
     <tr>
-        <td>Accessible on internet</td>
-        <td>To make a web server accessible on the internet, you must first enable the <a href="/docs/options.html#accessible-on-local-network">Accessible on local network</a> option, and then <i>port forward</i> the server's port through your router so that anyone on the internet can access it. Search online for a guide on how to set up port forwarding for your specific router, or <a href="https://www.wikihow.com/Set-Up-Port-Forwarding-on-a-Router" target="_blank">see this wikiHow guide</a>. Once you have set up port forwarding, and adjusted firewall settings if necessary, you will be able to access the web server at your public IP address and the specified port.</td>
+        <td>可通过互联网访问</td>
+        <td>要在Internet上访问Web服务器，必须首先启用 <a href="/zh-CN/docs/options.html#accessible-on-local-network">可通过局域网访问</a> 选项, 然后<i>通过路由器转发</i>服务器的端口，以便互联网上的任何人都可以访问它。 在线搜索有关如何为特定路由器设置端口转发的指南， 或者 <a href="https://www.wikihow.com/Set-Up-Port-Forwarding-on-a-Router" target="_blank">查看此WikiHow指南</a>. 一旦设置了端口转发，并根据需要调整了防火墙设置，您将能够通过IP地址和指定的端口访问Web服务器。</td>
     </tr>
     <tr>
-        <td>Prevent computer from sleeping</td>
-        <td>Use the option in your operating system instead. See <a href="https://support.microsoft.com/en-us/windows/how-to-adjust-power-and-sleep-settings-in-windows-26f623b5-4fcc-4194-863d-b824e5ea7679" target="_blank">How to adjust power and sleep settings in Windows</a> or <a href="https://support.apple.com/guide/mac-help/set-sleep-and-wake-settings-mchle41a6ccd/mac" target="_blank">Set sleep and wake settings for your Mac</a>.</td>
+        <td>防止计算机休眠</td>
+        <td>请改用操作系统中的选项。参见 <a href="https://support.microsoft.com/zh-CN/windows/how-to-adjust-power-and-sleep-settings-in-windows-26f623b5-4fcc-4194-863d-b824e5ea7679" target="_blank">如何在屏幕中调整电源和睡眠Windows</a> or <a href="https://support.apple.com/zh-cn/guide/mac-help/mchle41a6ccd/mac" target="_blank">设定 Mac 的睡眠和唤醒设置</a>.</td>
     </tr>
     <tr>
-        <td>Custom mod-rewrite Regexp</td>
-        <td><b>Not supported.</b> Simple Web Server provides a simple checkbox option to enable a single page rewrite to a specified file, but does not provide an option to specify a custom regular expression. This option was omitted because we are not aware of any use cases for this feature. If you want to see this feature added in a future release, please <a href="https://github.com/terreng/simple-web-server/issues/88" target="_blank">comment on issue #88</a> and share your use case.</td>
+        <td>自定义 mod-rewrite Regexp</td>
+        <td><b>不支持。</b> Simple Web Server提供了一个简单的复选框选项，用于启用对指定文件的单页重写，但不提供指定自定义正则表达式的选项。这个选项被省略了，因为我们不知道这个特性的任何用例。如果您希望在以后的版本中添加这个特性,请 <a href="https://github.com/terreng/simple-web-server/issues/88" target="_blank">提交 issue #88</a> 并分享您的用例。</td>
     </tr>
 </table>
