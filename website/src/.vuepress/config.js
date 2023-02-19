@@ -29,11 +29,121 @@ module.exports = {
     locales: {
       '/': {
         label: 'English',
-        selectText: 'Language'
+        selectText: 'Language',
+        nav: [
+          {
+            text: 'Download',
+            link: '/download.html',
+          },
+          {
+            text: 'Documentation',
+            link: '/docs/options.html'
+          },
+          {
+            text: 'GitHub',
+            link: 'https://github.com/terreng/simple-web-server'
+          }
+        ],
+        sidebar: {
+          '/docs/': [
+            {
+              title: 'Configuration',
+              collapsable: false,
+              children: [
+                'options',
+                'settings',
+              ]
+            },
+            {
+              title: 'Guides',
+              collapsable: false,
+              children: [
+                'config file',
+                'https',
+                'logs',
+                'build',
+                'wsc'
+              ]
+            },
+            {
+              title: 'Plugins',
+              collapsable: false,
+              children: [
+                'plugins',
+                'plugin manifest file',
+                'plugin script'
+              ]
+            },
+            {
+              title: 'Advanced Guides',
+              collapsable: false,
+              children: [
+                'swsaccess',
+                'custom scripts',
+                'custom request handler',
+              ]
+            }
+          ]
+        }
       },
       '/zh-CN/': {
         label: '简体中文',
-        selectText: '语言'
+        selectText: '语言',
+        nav: [
+          {
+            text: '下载',
+            link: '/zh-CN/download.html',
+          },
+          {
+            text: '文档',
+            link: '/zh-CN/docs/options.html'
+          },
+          {
+            text: 'GitHub',
+            link: 'https://github.com/terreng/simple-web-server'
+          }
+        ],
+        sidebar: {
+          '/zh-CN/docs/': [
+            {
+              title: '配置',
+              collapsable: false,
+              children: [
+                'options',
+                'settings',
+              ]
+            },
+            {
+              title: '指南',
+              collapsable: false,
+              children: [
+                'config file',
+                'https',
+                'logs',
+                'build',
+                'wsc'
+              ]
+            },
+            {
+              title: '插件',
+              collapsable: false,
+              children: [
+                'plugins',
+                'plugin manifest file',
+                'plugin script'
+              ]
+            },
+            {
+              title: '高级指南',
+              collapsable: false,
+              children: [
+                'swsaccess',
+                'custom scripts',
+                'custom request handler',
+              ]
+            }
+          ],
+        }
       }
     },
     sidebarDepth: 3,
@@ -43,61 +153,6 @@ module.exports = {
     docsDir: '',
     editLinkText: '',
     lastUpdated: false,
-    nav: [
-      {
-        text: 'Download',
-        link: '/download.html',
-      },
-      {
-        text: 'Documentation',
-        link: '/docs/options.html'
-      },
-      {
-        text: 'GitHub',
-        link: 'https://github.com/terreng/simple-web-server'
-      }
-    ],
-    sidebar: {
-      '/docs/': [
-        {
-          title: 'Configuration',
-          collapsable: false,
-          children: [
-            'options',
-            'settings',
-          ]
-        },
-        {
-          title: 'Guides',
-          collapsable: false,
-          children: [
-            'config file',
-            'https',
-            'logs',
-            'build',
-            'wsc'
-          ]
-        },
-        {
-          title: 'Plugins',
-          collapsable: false,
-          children: [
-            'plugins',
-            'plugin manifest file',
-            'plugin script'
-          ]
-        },
-        {
-          title: 'Advanced Guides',
-          collapsable: false,
-          children: [
-            'swsaccess',
-            'custom scripts',
-            'custom request handler',
-          ]
-        }
-      ],
-    }
   },
   plugins: [
     '@vuepress/plugin-back-to-top',
