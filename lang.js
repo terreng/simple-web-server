@@ -265,6 +265,7 @@ lang = {
         "error_generic": "错误",
         "version": "版本",
         "documentation": "文档",
-        "issues_and_suggestions": "疑问与建议"
+        "issues_and_suggestions": "疑问与建议",
+        "web_server_url": "Web server URL"
     }
 }
