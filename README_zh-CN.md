@@ -1,12 +1,12 @@
-# :+1: Simple Web Server :+1:
+# Simple Web Server
 
-[:arrow_down_small:下载](https://simplewebserver.org/zh-CN/download/) &bull; [:memo:文档](https://simplewebserver.org/zh-CN/docs/options.html) &bull; [:hammer:从源码构建](https://simplewebserver.org/zh-CN/docs/build.html)
+[下载](https://simplewebserver.org/zh-CN/download/) &bull; [文档](https://simplewebserver.org/zh-CN/docs/options.html) &bull; [从源码构建](https://simplewebserver.org/zh-CN/docs/build.html)
 
 
 
-:sparkling_heart:简单易用! 只需几次点击就可以部署本地 Web 服务器。:kiss:
+简单易用! 只需几次点击就可以部署本地 Web 服务器
 
-:tulip:优点:
+优点:
 - 配置超简单
 - 同时运行多个服务器
 - 支持单页应用程序(SPA)
