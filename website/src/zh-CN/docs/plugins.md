@@ -1,30 +1,30 @@
-# Introduction to plugins
+# 插件介绍
 
-Plugins allow you to further modify your web servers beyond the options that are available in the app. 
+插件允许您进一步修改应用程序中可用选项，进一步修改Web服务器。
 
-To install a plugin in the app, go to Settings > Add Plugin and choose a directory or ZIP file.
+要安装插件，请点击 "添加插件" 然后选择目录或ZIP文件。
 
-After installing a plugin, you must specifically enable it for each server you want to use it with.
+安装插件后，须为需要的服务专门启用它。
 
 :::danger
-Plugins aren't sandboxed, and run with the same permissions as the app. Only install a plugin if you know and trust the developer.
+插件没有隔离，并且以与应用程序相同的权限运行。您只有在了解并信任开发人员的情况下才安装插件"。
 :::
 
-## Community plugins
+## 社区插件
 
-- [Web Proxy](https://github.com/ethanaobrien/web-proxy) by [@ethanaobrien](https://github.com/ethanaobrien) (Co-creator of Simple Web Server)
+- [Web Proxy](https://github.com/ethanaobrien/web-proxy) by [@ethanaobrien](https://github.com/ethanaobrien) (Simple Web Server 的联合开发者)
 
-Have you made a plugin that you want to share? [Open an issue on GitHub](https://github.com/terreng/simple-web-server/issues) to request that we add it to this list.
+想分享你的插件吗？[在GitHub上提交Issuse](https://github.com/terreng/simple-web-server/issues)请求我们将其添加到此列表中。
 
-## Creating a plugin
+## 创建插件
 
-### Step 1: Create a plugin manifest file
+### 步骤 1: 创建插件清单文件
 
-To get started, create a new folder for your plugin. In the folder, create a new file called `plugin.json`. Use this file to specify the name of your plugin, a unique id, any configurable options, and the name of the script file it runs.
+首先，为你的插件创建一个新的文件夹。在文件夹中，创建一个名为 `plugin.json`的新文件。使用此文件可以指定插件的名称、唯一标识、任何可配置选项以及它运行的脚本文件的名称。
 
-See [Plugin manifest file](/docs/plugin%20manifest%20file.md) for a complete guide on this file.
+参见 [插件清单文件](/docs/plugin%20manifest%20file.md) 有关此文件的完整指南。
 
-**Example plugin.json file**
+**plugin.json文件示例**
 
 ```json
 {
@@ -43,17 +43,17 @@ See [Plugin manifest file](/docs/plugin%20manifest%20file.md) for a complete gui
 }
 ```
 
-### Step 2: Create a plugin script
+### 步骤 2: 创建插件脚本
 
-Create a JavaScript file with a name that matches the value of the `script` option in your `plugin.json` file, such as `script.js`.
+创建一个JavaScript文件，其名称与`plugin.json`文件中`script` 项的值相匹配，例如`script.js`。
 
-The script can have two custom functions:
-- `onStart(server, options)`, which is called whenever the server starts and allows you to modify the server.
-- `onRequest(req, res, options, preventDefault)`, which is called with each request and allows you modify the response or handle the request however you want.
+该脚本可以有两个自定义函数:
+- `onStart(server, options)`，它在服务器启动时调用，允许您修改服务器.
+- `onRequest(req, res, options, preventDefault)`，它随每个请求一起调用，并允许您修改响应或根据需要处理请求。
 
-See [Plugin script](/docs/plugin%20script.md) for a more details, including an explanation of the arguments to these functions, and example scripts for common use cases.
+参见 [插件脚本](/zh-CN/docs/plugin%20script.md) 有更多详细信息，包括对这些函数的参数的解释，以及常见用例的示例脚本。
 
-**Example script file**
+**示例脚本文件**
 
 ```javascript
 function onStart(server, options) {
@@ -69,28 +69,28 @@ function onRequest(req, res, options, preventDefault) {
 module.exports = {onStart, onRequest};
 ```
 
-### Step 3: Install the plugin
+### 步骤 3: 安装插件
 
-To install a plugin in the app, go to Settings > Add Plugin and choose the directory your plugin files are located in. You can also install a plugin from a ZIP file.
+要在应用程序中安装插件，请转到"设置">"添加插件"，然后选择插件文件所在的目录。您也可以从ZIP文件安装插件。
 
-Alternatively, you can manually install a plugin by adding it to the plugins directory. The name of the folder must match the id of the plugin.
+或者，您可以通过将插件复制到插件目录来手动安装插件。文件夹的名称必须与插件的id匹配。
 
 **Windows:** `C:\Users\[USERNAME]\AppData\Roaming\Simple Web Server\plugins\`
 
-**macOS (Direct download):** `/Users/[USERNAME]/Library/Application Support/Simple Web Server/plugins/`
+**macOS (直接下载):** `/Users/[USERNAME]/Library/Application Support/Simple Web Server/plugins/`
 
 **macOS (App Store):** `/Users/[USERNAME]/Library/Containers/org.simplewebserver.simplewebserver/Data/Library/Application Support/Simple Web Server/plugins/`
 
 **Linux:** **TODO**
 
 :::tip
-Changes to installed plugins inside the plugins directory take effect immediately. During the development of a plugin, we recommend working with files directly inside of this directory so that you don't have to reinstall the plugin after every change.
+对插件目录中已安装插件的更改将立即生效。在开发插件的过程中，我们建议直接修改此目录中的文件，这样您就不必在每次更改后重新安装插件。
 :::
 
-### Step 4: Debug any issues
+### 步骤 4: 调试任何问题
 
-If you see an error about the `plugin.json` file being invalid then check to make sure that you've formatted it correctly. See [Plugin manifest file](/docs/plugin%20manifest%20file.md) for more help.
+如果您看到 `plugin.json` 文件无效的错误，请检是否正确格式化。参见 [插件清单文件](/docs/plugin%20manifest%20file.md) 获取帮助。
 
-If you encounter an "Error starting plugins" error for a server, or if you receive a `Plugin error` error message in response to a web request, then check the logs for more error details. See [Viewing logs](logs.md).
+如果您在服务器上遇到"Error starting plugins"错误，或者在响应Web请求时收到`Plugin error`错误消息，请查看日志以了解更多错误详细信息。参见 [查看日志](logs.md)。
 
-If your plugin isn't working and you aren't sure why, consider adding `console.log` statements to your code to help debug. See [Viewing logs](logs.md).
+如果您的插件不工作，并且您不确定原因，请考虑在代码中添加`console.log`语句以帮助调试。参见 [查看日志](logs.md)。

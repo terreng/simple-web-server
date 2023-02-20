@@ -1,6 +1,6 @@
-# Plugin script
+# 插件脚本
 
-# This page is unfinished. See [issue #119](https://github.com/terreng/simple-web-server/issues/119)
+# 此页未完成。 See [issue #119](https://github.com/terreng/simple-web-server/issues/119)
 
 Make sure to cover:
 

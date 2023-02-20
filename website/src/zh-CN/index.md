@@ -13,11 +13,11 @@ features:
 - title: 单页应用程序(SPA)
   details: 一键启用SPA的重写模式。不用担心细节实现!
 ---
-<div class="coming_from_wsc_banner"><a href="/docs/wsc.html">Coming from Web Server for Chrome? →</a></div>
+<div class="coming_from_wsc_banner"><a href="/docs/wsc.html">来自Chrome的Web Server? →</a></div>
 <img src="/images/screenshots.jpeg" style="width: 100%">
 
 <div class="home_footer">
-    <div>Made with ❤️ by <a href="https://github.com/terreng" target="_blank">@terreng</a> and <a href="https://github.com/ethanaobrien" target="_blank">@ethanaobrien</a>.</div>
-    <div>A continuation of <a href="https://chrome.google.com/webstore/detail/web-server-for-chrome/ofhbbkphhbklhfoeikjpcbhemlocgigb" target="_blank">Web Server for Chrome</a> by <a href="https://github.com/kzahel" target="_blank">@kzahel</a>.</div>
-    <div>中文简体翻译 by <a href="https://github.com/antnesswcm" target="_blank">@antnesswcm</a>.</div>
+    <div>❤️ 由 <a href="https://github.com/terreng" target="_blank">@terreng</a> 和 <a href="https://github.com/ethanaobrien" target="_blank">@ethanaobrien</a>联合开发.</div>
+    <div>延续 <a href="https://github.com/kzahel" target="_blank">@kzahel</a> 的 <a href="https://chrome.google.com/webstore/detail/web-server-for-chrome/ofhbbkphhbklhfoeikjpcbhemlocgigb" target="_blank">Web Server for Chrome</a>.</div>
+    <div>中文简体 由<a href="https://github.com/antnesswcm" target="_blank">@antnesswcm</a>翻译.</div>
 </div>

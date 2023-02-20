@@ -1,50 +1,50 @@
-# App Settings
+# 应用设置
 
-## App Settings
+## 应用设置
 
-Option names correspond to the option key in config.json. See [Editing config.json](config%20file.md).
+选项名称对应于config.json中选项的键。请参见 [编辑 config.json](config%20file.md).
 
-### Language
+### 语言
 
-- Name: `language`
-- Type: string, `en` or `zh_CN`
+- 名称: `language`
+- 类型: string, `en` or `zh_CN`
 
-Supported languages:
+支持的语言:
 - `en`: English
 - `zh_CN`: Simplified Chinese (简体中文)
-- [Help us translate](https://github.com/terreng/simple-web-server/issues/124)
+- [帮助我们翻译](https://github.com/terreng/simple-web-server/issues/124)
 
-If the `language` option is missing or invalid, the app will automatically detect the system language.
+如果`language`选项缺失或无效，应用程序将自动检测系统语言。
 
-### Keep running when closed
+### 保持后台运行
 
-- Name: `background`
-- Type: `true/false`
-- Default: `false`
+- 名称: `background`
+- 类型: `true/false`
+- 默认值: `false`
 
-When enabled, the app will continue to run web servers in the background even when the window is closed. To stop the program while this option is enabled, click the "Stop & Quit" button.
+启用后，即使窗口关闭，应用程序也将继续在后台运行Web服务器。要在启用此选项时停止程序，请单击"停止并退出"按钮。
 
-### Check for updates
+### 检查更新
 
-- Name: `updates`
-- Type: `true/false`
+- 名称: `updates`
+- 类型: `true/false`
 
-Periodically check if there is a new version of the app available. Updates are not automatically installed.
+定期检查是否有新版本可用。不会自动安装更新。
 
-This option is not available if you download the app from the Mac App Store.
+如果您从Mac AppStore下载应用程序，则此选项不可用。
 
-### Appearance
+### 外观
 
-- Name: `theme`
-- Type: string: `system`, `light`, or `dark`
-- Default: `system`
+- 名称: `theme`
+- 类型: string: `system`, `light`, or `dark`
+- 默认值: `system`
 
-Change appearance (light/dark theme). By default the app follows your system theme. Set to `light` or `dark` to override.
+更改外观(浅/深色主题)。默认跟随系统主题。可以设置为 `light`(浅色)或`dark`(深色)。
 
-### Local logging <Badge type="tip" text="Hidden" vertical="top" />
+### 日志记录 <Badge type="tip" text="隐藏的" vertical="top" />
 
-- Name: `log`
-- Type: `true/false`
-- Default: `false`
+- 名称: `log`
+- 类型: `true/false`
+- 默认值: `false`
 
-Set this option to `true` to enable logging of all requests and any errors to a local log file. See [Viewing logs](/docs/logs.md). This option is not accessible from the app. See [Editing config.json](/docs/config%20file.md).
+将此选项设置为`true`，以便将所有请求和任何错误记录到本地日志文件中。参见 [查看日志](/docs/logs.md). 该选项无法在应用程序看见。参见 [编辑 config.json](/docs/config%20file.md).

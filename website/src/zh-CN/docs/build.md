@@ -1,13 +1,13 @@
-# Building from source
+# 从源码构建
 
-Simple Web Server is build using [Electron](https://www.electronjs.org/).
+构建 Simple Web Server 需要 [Electron](https://www.electronjs.org/zh/).
 
-If not already installed, install [git](https://git-scm.com/downloads) and [Node.js](https://nodejs.org/en/download/) (which will also install npm).
+如果尚未安装*Git*和*Node.js*, 请安装 [Git](https://git-scm.com/downloads) 和 [Node.js](https://nodejs.org/en/download/) (它将附带安装npm).
 
-Download the source code from GitHub.
+从[GitHub](https://github.com/terreng/simple-web-server)下载源代码。
 
-Run `npm install` in the main directory to download dependencies.
+在主目录中运行 `npm install` 下载依赖项。
 
-To compile and run: `npm start`.
+编译并运行: `npm start`.
 
-To package for distribution: `npm run make`.
+打包分发: `npm run make`.

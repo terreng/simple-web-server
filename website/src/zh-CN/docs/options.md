@@ -206,8 +206,6 @@
 - 类型: path string
 - 默认值: -
 
-Optionally specify a custom string that will be looked for in your error pages and replaced with the current path. For example, if your custom 404 page included: <span v-pre>`The file at {{PATH}} does not exist`</span> and you set this option to <span v-pre>`{{PATH}}`</span>, when your custom page is served it would say `The file at /example.txt does not exist`.
-
 (可选)指定将在错误页面中查找并替换为当前路径的自定义字符串。 用例，您的自定义404页面内容中包含：`"位于{{PATH}}的文件不存在"`这样的字符串，并且您将此选项设置为`{{PATH}}`(默认)，则当您的自定义页面被提供时，它将显示`位于/example.txt的文件不不存在`。
 
 ## 安全

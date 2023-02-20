@@ -1,24 +1,24 @@
-# Viewing logs
+# 查看日志
 
-Simple Web Server can log all requests and any errors to a local log file, but this is disabled by default.
+Simple Web Server 可以将所有请求和任何错误记录到本地日志文件中，此功能默认关闭。
 
-To enable the log file, set the `log` setting to `true`. See [Editing config.json](/docs/config%20file.md).
+要启用日志记录，请将`log`设置设置为`true`。参见 [编辑 config.json](/docs/config%20file.md).
 
-You can always view logs while the app is running as described below, even if the log file is disabled.
+即使日志文件已禁用，您也可以在应用程序运行时查看日志，如下所述。
 
-## Log file location
+## 日志文件位置
 
-Here's where to find the local log file:
+在这里可以找到本地日志文件:
 
 **Windows:** `C:\Users\[USERNAME]\AppData\Roaming\Simple Web Server\server.log`
 
-**macOS (Direct download):** `/Users/[USERNAME]/Library/Application Support/Simple Web Server/server.log`
+**macOS (直接下载):** `/Users/[USERNAME]/Library/Application Support/Simple Web Server/server.log`
 
 **macOS (App Store):** `/Users/[USERNAME]/Library/Containers/org.simplewebserver.simplewebserver/Data/Library/Application Support/Simple Web Server/server.log`
 
 **Linux:** **TODO**
 
-Here's what the log file might look like:
+下面是日志文件的样子:
 
 ```
 [5/11/2022, 4:54:04 PM] Listening on http://127.0.0.1:1234
@@ -28,13 +28,13 @@ Here's what the log file might look like:
 ...
 ```
 
-## View in real time
+## 实时查看
 
-It's also possible to view the log in real time by opening DevTools in the Electron app. To open DevTools, press `CTRL + Shift + I` (or `command + option + I` on macOS). You may want to increase the width of the window.
+在Electron应用程序中打开DevTools也可以实时查看日志。 按下 `CTRL + Shift + I` 打开DevTools (或者按下 `command + option + I` 在macOS上). 您可能需要增加窗口的宽度。
 
-Once DevTools opens, simply switch to the "Console" tab to see logs.
+DevTools打开后，只需切换到"Console"选项卡即可查看日志。
 
 <figure>
   <img src='/images/devtools_logs.jpeg' style='width: 600px'>
-  <figcaption>Viewing logs in real time using DevTools</figcaption>
+  <figcaption>使用DevTools实时查看日志</figcaption>
 </figure>

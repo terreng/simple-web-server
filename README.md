@@ -1,6 +1,6 @@
 # Simple Web Server
 
-[Download](https://simplewebserver.org/download/) &bull; [Documentation](https://simplewebserver.org/docs/options.html) &bull; [Build from source](https://simplewebserver.org/docs/build.html)
+[Download](https://simplewebserver.org/download/) &bull; [Documentation](https://simplewebserver.org/docs/options.html) &bull; [Build from source](https://simplewebserver.org/docs/build.html) &bull; [Chinese (中文简介)](/README_zh-CN.md)
 
 Create local web servers in just a few clicks with an easy to use interface. Built with Electron.
 
