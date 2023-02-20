@@ -1,10 +1,10 @@
-# Plugin manifest file
+# 插件清单文件
 
-Every plugin has a manifest file, `plugin.json`. This file specifies things like the name of the plugin, a unique id, the configurable options it has, and the script it runs.
+每个插件都有一个清单文件`plugin.json`。该文件指定了插件的名称、唯一id、可配置选项以及运行的脚本。
 
-Options are stored in JSON format. Below is an example `plugin.json` file followed by a list of properties (keys) and the value you should provide for each.
+选项以JSON格式存储。下面是一个示例`plugin.json`文件，后面是属性（键）列表以及您为每个属性提供的值。
 
-## Example plugin.json file
+## plugin.json 文件示例
 
 ```json
 {
@@ -52,102 +52,102 @@ Options are stored in JSON format. Below is an example `plugin.json` file follow
 }
 ```
 
-Here's what the options for this example plugin look like in the app:
+这是该示例插件的选项在应用程序中的样子:
 
 <figure>
   <img src='/images/plugin_options.jpeg' style='width: 350px'>
-  <figcaption>Plugin options for a server. A checkbox, textbox, number input, and dropdown.</figcaption>
+  <figcaption>服务器的插件选项。复选框、文本框、数字输入和下拉列表。</figcaption>
 </figure>
 
-## Properties
+## 属性
 
 ### `id`
-- Required
-- Type: string, can only contain letters (uppercase or lowercase), numbers, `-`, and `_`
+- 必需的
+- 类型: `string`，只能包含字母（大写或小写）、数字、 `-`和`_`
 
-The unique id of the plugin. You should make sure this is unique. Installing a plugin with the same id as an already installed plugin will replace the existing plugin.
+插件的id。你应该确保这是唯一的。安装与已安装插件id相同的插件将替换现有插件。
 
 ### `name`
-- Required
-- Type: string, no more than 64 characters
+- 必需的
+- 类型: `string`，不超过64个字符
 
-The name of the plugin.
+插件的名称。
 
 ### `script`
-- Required
-- Type: string, file path
+- 必需的
+- 类型: `string`，文件路径
 
-The name of the plugin script file. See [Plugin script](plugin%20script.md).
+插件脚本文件的名称。 参见 [插件脚本](plugin%20script.md).
 
 ### `options`
-- Optional
-- Type: array of objects
+- 可选的
+- 类型: `array`数组
 
-A list of configurable options for the plugin, which will be displayed in the app. Options are shown in the order of the array.
+插件的可配置选项列表，将显示在应用程序中。选项按数组顺序显示。
 
-Each option is an object in the array. What follows is a list of properties (keys) and the corresponding value you should provide for each option object:
+每个选项都是数组中的一个对象。下面是每个选项对象的属性(键)和相应值的列表:
 
 > #### `id`
-> - Required
-> - Type: string, can only contain letters (uppercase or lowercase), numbers, `-`, and `_`, must be unique
+> - 必需的
+> - 类型: string, 只能包含字母（大写或小写）、数字、`-`和`_`，必须是唯一的
 > 
-> The id of the option. Each option must have a unique id.
+> 选项的ID。每个选项必须具有唯一的ID。
 > 
 > #### `name`
-> - Required
-> - Type: string, no more than 64 characters
+> - 必需的
+> - 类型: string, 不超过64个字符
 > 
-> The name of the option.
+> 选项的名称。
 > 
 > #### `description`
-> - Optional
-> - Type: string, HTML
+> - 可选的
+> - 类型: string, HTML
 > 
-> A description of what the option does. You can include HTML formatting, such as links. Make sure to escape `<` as `&lt;` and `>` as `&gt;`.
+> 选项作用的描述。可以包含HTML格式，例如链接。确保将`<`转义为`&lt;`;`>`转义为`&gt;`。
 > 
 > #### `type`
-> - Required
-> - Type: string: `bool`, `string`, `number`, or `select`
+> - 必需的
+> - 类型: string: `bool`, `string`, `number`, 或者 `select`
 > 
-> The type of option.
+> 选项的类型。
 > 
-> - `bool`: checkbox (`true` or `false`)
-> - `string`: textbox (string)
-> - `number`: number input (number, integer)
-> - `select`: dropdown (string, id of selected option)
+> - `bool`: 复选框 (`true` 或 `false`)
+> - `string`: 文本框 (string)
+> - `number`: 数字 输入 (number, 整数)
+> - `select`: 下拉列表 (string,选定选项的ID)
 > 
 > #### `default`
-> - Required
-> - Type: Depends on `type`:
->   - If `type` is `bool`, then this must be a boolean (either `true` or `false`).
->   - If `type` is `string`, then this must be a string. To make the textbox start blank, set this to the empty string (`""`).
->   - If `type` is `number`, then this must be a number.
->   - If `type` is `select`, then this must be a string (the id of one of the choices).
+> - 必需的
+> - 类型: 取决于 `type`:
+>   - 如果`type`是`bool`，那么它必须是布尔值（`true`或`false`）。
+>   - 如果`type`是 `string`，则必须是字符串。要使文本框开始为空，请将其设置为空字符串(`""`)。
+>   - 如果`type`是`number`，则这必须是一个数字。
+>   - 如果`type`是`select`，则必须是一个字符串（其中一个选项的id）。
 > 
-> The default value for the option.
+> 该选项的默认值。
 > 
-> #### `min` and `max`
-> - Optional. Only used if `type` is `number`.
-> - Type: number
+> #### `min` 和 `max`
+> - 可选的. 仅当 `type`为`number`时使用。
+> - 类型: `number`
 > 
-> The minimum or maximum value for the option. Not validated in any way.
+> 选项的最小值或最大值。未以任何方式验证。 没有以任何方式校验。
 > 
 > #### `choices`
 > - Required if `type` is `select`.
-> - Type: array of objects
+> - 类型: `array`数组
 > 
-> A list of choices for the option. Choices are shown in the order of the array.
+> 下拉列表的选项。选项按数组顺序显示。
 > 
-> Each choice is an object in the array. What follows is a list of properties (keys) and the corresponding value you should provide for each choice object:
+> 每个选项都是数组中的一个对象。下面是财产（键）列表以及您应该为每个选择对象提供的相应值:
 > 
 >> ##### `id`
->> - Required
->> - Type: string, can only contain letters (uppercase or lowercase), numbers, `-`, and `_`, cannot be `enabled`, must be unique
+>> - 必需的
+>> - 类型: string, 只能包含字母（大写或小写），数字， `-`，和 `_`, 不能是 `enabled`，必须是唯一的
 >> 
->> The id of the option choice. Each choice must have a unique id.
+>> 列表中选项的ID。每个选项都必须具有唯一的ID。
 >> 
 >> ##### `name`
->> - Required
->> - Type: string, no more than 512 characters
+>> - 必需的
+>> - 类型: string, 不超过512个字符
 >> 
->> The name of the option choice.
+>> 列表中选项的名称

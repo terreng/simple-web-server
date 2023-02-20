@@ -2,7 +2,7 @@
 
 Simple Web Server 可以将所有请求和任何错误记录到本地日志文件中，此功能默认关闭。
 
-要启用日志记录，请将`log`设置设置为`true`。参见 [编辑 config.json](/zh-CN/docs/config%20file.md).
+要启用日志记录，请将`log`设置设置为`true`。参见 [编辑 config.json](/docs/config%20file.md).
 
 即使日志文件已禁用，您也可以在应用程序运行时查看日志，如下所述。
 

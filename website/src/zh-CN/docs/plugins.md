@@ -89,7 +89,7 @@ module.exports = {onStart, onRequest};
 
 ### 步骤 4: 调试任何问题
 
-如果您看到 `plugin.json` 文件无效的错误，请检是否正确格式化。参见 [插件清单文件](/zh-CN/docs/plugin%20manifest%20file.md) 获取帮助。
+如果您看到 `plugin.json` 文件无效的错误，请检是否正确格式化。参见 [插件清单文件](/docs/plugin%20manifest%20file.md) 获取帮助。
 
 如果您在服务器上遇到"Error starting plugins"错误，或者在响应Web请求时收到`Plugin error`错误消息，请查看日志以了解更多错误详细信息。参见 [查看日志](logs.md)。
 

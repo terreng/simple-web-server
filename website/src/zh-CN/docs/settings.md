@@ -47,6 +47,4 @@
 - 类型: `true/false`
 - 默认值: `false`
 
-Set this option to `true` to enable logging of all requests and any errors to a local log file. 
-
-将此选项设置为`true`，以便将所有请求和任何错误记录到本地日志文件中。参见 [查看日志](/zh-CN/docs/logs.md). 该选项无法在应用程序看见。参见 [编辑 config.json](/zh-CN/docs/config%20file.md).
+将此选项设置为`true`，以便将所有请求和任何错误记录到本地日志文件中。参见 [查看日志](/docs/logs.md). 该选项无法在应用程序看见。参见 [编辑 config.json](/docs/config%20file.md).
