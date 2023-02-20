@@ -1,6 +1,6 @@
 # :+1: Simple Web Server :+1:
 
-:arrow_down_small:[下载](https://simplewebserver.org/zh-CN/download/) &bull; :memo:[文档](https://simplewebserver.org/zh-CN/docs/options.html) &bull; :hammer:[从源码构建](https://simplewebserver.org/zh-CN/docs/build.html)
+[:arrow_down_small:下载](https://simplewebserver.org/zh-CN/download/) &bull; [:memo:文档](https://simplewebserver.org/zh-CN/docs/options.html) &bull; [:hammer:从源码构建](https://simplewebserver.org/zh-CN/docs/build.html)
 
 
 
