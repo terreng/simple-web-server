@@ -1,4 +1,4 @@
-# Advanced configuration using .swshtaccess files <Badge type="tip" text="Unfinished / May change" vertical="top" />
+# 使用.swshtaccess文件进行高级配置 <Badge type="tip" text="未完成/可能改变" vertical="top" />
 
 Simple Web Server does not have support for .htaccess files. Instead, we support custom .swshtaccess files, which offer a subset of the features of .htaccess files.
 

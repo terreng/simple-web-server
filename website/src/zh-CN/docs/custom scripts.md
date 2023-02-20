@@ -1,4 +1,4 @@
-# Using custom scripts <Badge type="tip" text="Unfinished / May change" vertical="top" />
+# 使用自定义脚本 <Badge type="tip" text="未完成/可能改变" vertical="top" />
 
 ## How it works
 

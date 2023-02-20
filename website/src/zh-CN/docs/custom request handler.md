@@ -1,4 +1,4 @@
-# Creating a custom request handler <Badge type="tip" text="Unfinished / May change" vertical="top" />
+# 创建自定义httpRequest程序 <Badge type="tip" text="未完成/可能改变" vertical="top" />
 
 This guide covers how to write a custom `httpRequest` handler script.
 

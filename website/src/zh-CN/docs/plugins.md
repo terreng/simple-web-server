@@ -14,7 +14,7 @@
 
 - [Web Proxy](https://github.com/ethanaobrien/web-proxy) by [@ethanaobrien](https://github.com/ethanaobrien) (Simple Web Server 的联合开发者)
 
-Have you made a plugin that you want to share? [Open an issue on GitHub](https://github.com/terreng/simple-web-server/issues) to request that we add it to this list.
+想分享你的插件吗？[在GitHub上提交Issuse](https://github.com/terreng/simple-web-server/issues)请求我们将其添加到此列表中。
 
 ## 创建插件
 
@@ -22,7 +22,7 @@ Have you made a plugin that you want to share? [Open an issue on GitHub](https:/
 
 首先，为你的插件创建一个新的文件夹。在文件夹中，创建一个名为 `plugin.json`的新文件。使用此文件可以指定插件的名称、唯一标识、任何可配置选项以及它运行的脚本文件的名称。
 
-参见 [插件清单文件](/zh-CN/docs/plugin%20manifest%20file.md) 有关此文件的完整指南。
+参见 [插件清单文件](/docs/plugin%20manifest%20file.md) 有关此文件的完整指南。
 
 **plugin.json文件示例**
 
