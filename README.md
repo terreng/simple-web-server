@@ -2,6 +2,8 @@
 
 [Download](https://simplewebserver.org/download/) &bull; [Documentation](https://simplewebserver.org/docs/options.html) &bull; [Build from source](https://simplewebserver.org/docs/build.html)
 
+[中文简介](https://github.com/terreng/simple-web-server/blob/main/README-zh_CN.md) :point_left:
+
 Create local web servers in just a few clicks with an easy to use interface. Built with Electron.
 
 Features:
