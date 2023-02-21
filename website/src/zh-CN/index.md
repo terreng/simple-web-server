@@ -4,7 +4,7 @@ heroImage: https://raw.githubusercontent.com/terreng/simple-web-server/main/imag
 heroText: Simple Web Server
 tagline: 简单易用! 只需几次点击就可以部署本地 Web 服务器。
 actionText: 下载 →
-actionLink: /download/
+actionLink: /zh-CN/download/
 features:
 - title: 配置超简单
   details: 通过图形界面即可更改服务器配置。
