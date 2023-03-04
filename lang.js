@@ -138,7 +138,8 @@ lang = {
         "version": "Version",
         "documentation": "Documentation",
         "issues_and_suggestions": "Issues & Suggestions",
-        "web_server_url": "Web server URL"
+        "web_server_url": "Web server URL",
+        "ignore_update": "Ignore this update"
     },
     "zh_CN": {
         "settings": "设置",

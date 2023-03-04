@@ -7,7 +7,7 @@ if (!fs.existsSync("src/.vuepress/dist/versions")){
 var versions = JSON.parse(fs.readFileSync("versions.json", "utf8"));
 for (var i = 0; i < Object.keys(versions.versions).length; i++) {
     var update_object = {"update": false};
-    if (Number(Object.keys(versions.versions)[i]) < Number(versions.latest)) {
+    if (Number(Object.keys(versions.versions)[i]) < Number(versions.latest) && (Number(Object.keys(versions.versions)[i]) > 1002005 || Number(Object.keys(versions.versions)[i]) < 1002000)) {
         update_object = {
             "update": true,
             "version": versions.latest,

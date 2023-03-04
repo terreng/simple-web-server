@@ -1,4 +1,4 @@
-const version = 1002005;
+const version = 1002006;
 const install_source = "website"; //"website" | "microsoftstore" | "macappstore"
 const {app, BrowserWindow, ipcMain, Menu, Tray, dialog, shell, nativeTheme} = require('electron');
 const {networkInterfaces} = require('os');
@@ -304,7 +304,7 @@ app.on('ready', function() {
     console.log("\n"+((new Date()).toLocaleString()+"\n"));
     startServers();
     checkForUpdates();
-    setInterval(() => checkForUpdates(), 1000*60*60) //Every hour
+    setInterval(() => checkForUpdates(), 1000*60*60*6) //Every 6 hours
 })
 
 app.on('window-all-closed', function () {
@@ -329,6 +329,10 @@ ipcMain.on('saveconfig', function(event, arg1) {
         console.warn(e);
     }
     configChanged();
+
+    if (update_info && update_info.version == config.ignore_update) {
+        update_info.ignored = true;
+    }
 
     if (arg1.reload && mainWindow) {
         mainWindow.webContents.setUserAgent(mainWindow.webContents.getUserAgent().split(" language:")[0] + " language:" + getLanguage());
@@ -479,7 +483,7 @@ function createWindow() {
         lastIps = getIPs();
         mainWindow.webContents.send('message', {"type": "init", "config": config, ip: lastIps, install_source: install_source, plugins: plugin.getInstalledPlugins(), platform: process.platform});
         if (update_info) {
-            mainWindow.webContents.send('message', {"type": "update", "url": update_info.url, "text": update_info.text, "attributes": update_info.attributes});
+            mainWindow.webContents.send('message', {"type": "update", "url": update_info.url, "text": update_info.text, "attributes": update_info.attributes, "version": update_info.version, "ignored": update_info.ignored});
         }
         updateServerStates();
     });
@@ -728,10 +732,12 @@ function checkForUpdates() {
             update_info = {
                 "url": version_update.download[install_source],
                 "text": version_update.banner_text,
-                "attributes": JSON.parse(version_update.attributes || '[]')
+                "attributes": JSON.parse(version_update.attributes || '[]'),
+                "version": version_update.version,
+                "ignored": (config.ignore_update == version_update.version)
             }
             if (mainWindow && mainWindow.webContentsLoaded) {
-                mainWindow.webContents.send('message', {"type": "update", "url": update_info.url, "text": update_info.text, "attributes": update_info.attributes});
+                mainWindow.webContents.send('message', {"type": "update", "url": update_info.url, "text": update_info.text, "attributes": update_info.attributes, "version": update_info.version, "ignored": update_info.ignored});
             }
         })
     })

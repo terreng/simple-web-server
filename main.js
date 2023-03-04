@@ -31,6 +31,7 @@ let running_states = {
 let install_source;
 let plugins;
 let platform;
+let ignore_update;
 
 window.api.initipc((event, message) => {
     if (message.type === "init") {
@@ -55,14 +56,19 @@ window.api.initipc((event, message) => {
         server_states = message.server_states;
         updateRunningStates();
     } else if (message.type === "update") {
-        document.getElementById("update_banner").style.display = "block";
-        document.getElementById("update_banner").href = message.url;
-        document.getElementById("update_banner_text").innerText = message.text || lang.update_available;
-        if (message.attributes.indexOf("high_priority") > -1) {
-            document.getElementById("update_banner").classList.add("high_priority");
-        } else {
-            document.getElementById("update_banner").classList.remove("high_priority");
+        ignore_update = message.version;
+        if (message.ignored !== true) {
+            document.getElementById("update_banner").style.display = "block";
+            document.getElementById("update_banner").href = message.url;
+            document.getElementById("update_banner_text").innerText = message.text || lang.update_available;
+            if (message.attributes.indexOf("high_priority") > -1) {
+                document.getElementById("update_banner").classList.add("high_priority");
+            } else {
+                document.getElementById("update_banner").classList.remove("high_priority");
+            }
         }
+        document.getElementById("update_notice").style.display = "";
+        document.getElementById("update_notice").querySelector("a").href = message.url;
     } else if (message.type === "ipchange") {
         ip = message.ip;
         updateOnIpChange();
@@ -76,6 +82,12 @@ window.api.initipc((event, message) => {
         location.reload();
     }
 });
+
+function ignoreUpdate() {
+    config.ignore_update = ignore_update;
+    window.api.saveconfig(config);
+    document.getElementById("update_banner").style.display = "none";
+}
 
 window.onresize = () => reevaluateSectionHeights();
 
@@ -620,12 +632,14 @@ function toggleUpdates() {
         document.querySelector("#updates_welcome").setAttribute("aria-checked", "false");
         config.updates = false;
         document.getElementById("update_banner").style.display = "none";
+        document.getElementById("update_notice").style.display = "none";
     } else {
         document.querySelector("#updates").classList.add("checked");
         document.querySelector("#updates").setAttribute("aria-checked", "true");
         document.querySelector("#updates_welcome").classList.add("checked");
         document.querySelector("#updates_welcome").setAttribute("aria-checked", "true");
         config.updates = true
+        delete config.ignore_update;
     }
     window.api.saveconfig(config);
 }
