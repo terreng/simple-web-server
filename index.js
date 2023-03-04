@@ -6,6 +6,7 @@ var chokidar;
 if (!process.mas) {chokidar = require('chokidar')}
 global.hostOS = require('os').platform();
 global.eApp = app;
+global.tray = undefined;
 
 global.savingLogs = true;//prevent saving logs until log option is checked. never becomes false if logging is not enabled.
 global.pendingSave = false;
@@ -110,7 +111,7 @@ process.on('uncaughtException', function(e) {
 
 const quit = function(event) {
     isQuitting = true;
-    if (global.tray) global.tray.destroy();
+    removeTray()
     app.quit()
 };
 
@@ -266,19 +267,7 @@ app.on('ready', function() {
     bookmarks.init();
 
     if (config.tray) {
-        global.tray = new Tray(path.join(__dirname, "images/icon.ico"))
-        const contextMenu = Menu.buildFromTemplate([
-            { label: 'Show', click: ()=>mainWindow&&mainWindow.show() },
-            { label: 'Exit', click: ()=>quit() }
-        ])
-        global.tray.setToolTip('Simple Web Server')
-        global.tray.setContextMenu(contextMenu)
-        global.tray.on('click', function(e){
-            if (mainWindow === null) {
-                createWindow();
-                if (process.platform === "darwin") app.dock.show();
-            } else mainWindow.show();
-        })
+        createTray();
     }
 
     if (process.platform === 'darwin') {
@@ -320,7 +309,7 @@ app.on('ready', function() {
 
 app.on('window-all-closed', function () {
     if (config.background !== true) {
-        if (global.tray) global.tray.destroy();
+        removeTray();
         app.quit();
     } else {
         //Stay running even when all windows closed
@@ -352,6 +341,12 @@ function configChanged() {
 
     if (config.updates === false || install_source === "macappstore") {
         last_update_check_skipped = true;
+    }
+
+    if (config.tray) {
+        createTray();
+    } else {
+        removeTray();
     }
 
     nativeTheme.themeSource = config.theme || "system";
@@ -793,3 +788,21 @@ ipcMain.handle('removePlugin', (event, arg) => {
         }
     }, 100);
 });
+
+function createTray() {
+    if (!global.tray) {
+        global.tray = new Tray(path.join(__dirname, (process.platform == "darwin" ? "images/menuBarIconTemplate.png" : "images/icon.ico")))
+        global.tray.setToolTip('Simple Web Server')
+        global.tray.on('click', function(e){
+            if (mainWindow === null) {
+                createWindow();
+                if (process.platform === "darwin") app.dock.show();
+            } else mainWindow.show();
+        })
+    }
+}
+
+function removeTray() {
+    if (global.tray) global.tray.destroy();
+    global.tray = undefined;
+}

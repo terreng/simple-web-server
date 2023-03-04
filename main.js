@@ -293,6 +293,13 @@ function openSettings(dont_reset_scroll) {
         document.querySelector("#background").classList.remove("checked");
         document.querySelector("#background").setAttribute("aria-checked", "false");
     }
+    if (config.tray) {
+        document.querySelector("#tray").classList.add("checked");
+        document.querySelector("#tray").setAttribute("aria-checked", "true");
+    } else {
+        document.querySelector("#tray").classList.remove("checked");
+        document.querySelector("#tray").setAttribute("aria-checked", "false");
+    }
     if (config.updates === true) {
         document.querySelector("#updates").classList.add("checked");
         document.querySelector("#updates").setAttribute("aria-checked", "true");
@@ -608,10 +615,23 @@ function toggleUpdates() {
         document.getElementById("update_banner").style.display = "none";
     } else {
         document.querySelector("#updates").classList.add("checked");
-        document.querySelector("#background").setAttribute("aria-checked", "true");
+        document.querySelector("#updates").setAttribute("aria-checked", "true");
         document.querySelector("#updates_welcome").classList.add("checked");
-        document.querySelector("#background_welcome").setAttribute("aria-checked", "true");
+        document.querySelector("#updates_welcome").setAttribute("aria-checked", "true");
         config.updates = true
+    }
+    window.api.saveconfig(config);
+}
+
+function toggleTray() {
+    if (config.tray === true) {
+        document.querySelector("#tray").classList.remove("checked");
+        document.querySelector("#tray").setAttribute("aria-checked", "false");
+        config.tray = false;
+    } else {
+        document.querySelector("#tray").classList.add("checked");
+        document.querySelector("#tray").setAttribute("aria-checked", "true");
+        config.tray = true
     }
     window.api.saveconfig(config);
 }
