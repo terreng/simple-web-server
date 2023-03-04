@@ -44,6 +44,13 @@ window.api.initipc((event, message) => {
         document.getElementById("stop_and_quit_button").style.display = config.background ? "block" : "none";
         document.body.style.visibility = "visible";
         refreshPluginList();
+        if (platform == "darwin") {
+            document.querySelector("#tray").setAttribute("aria-label", lang.setting_tray_macos);
+            document.querySelector("#tray > .label").firstChild.textContent = lang.setting_tray_macos+" ";
+        } else {
+            document.querySelector("#tray").setAttribute("aria-label", lang.setting_tray_windows);
+            document.querySelector("#tray > .label").firstChild.textContent = lang.setting_tray_windows+" ";
+        }
     } else if (message.type === "state") {
         server_states = message.server_states;
         updateRunningStates();

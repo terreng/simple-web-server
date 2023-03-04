@@ -23,6 +23,8 @@ lang = {
         "setting_background": "Keep running when closed",
         "setting_background_description": "When enabled, the app will continue to run web servers in the background even when the window is closed. To stop the program while this option is enabled, click the \"Stop & Quit\" button.",
         "setting_tray": "Show icon in system tray/menu bar",
+        "setting_tray_macos": "Show icon in menu bar",
+        "setting_tray_windows": "Show icon in system tray",
         "setting_tray_description": "When enabled, adds a shortcut icon to the system tray or menu bar area whenever Simple Web Server is running.",
         "setting_updates": "Check for updates",
         "setting_updates_description": "Periodically check if there is a new version of the app available. Updates are not automatically installed.",
