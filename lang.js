@@ -159,6 +159,10 @@ lang = {
         "help_us_translate": "帮助我们翻译",
         "setting_background": "保持后台运行",
         "setting_background_description": "启用后，即使窗口关闭，应用程序也将继续在后台运行Web服务器。要在启用此选项时停止程序，请单击\"停止并退出\"按钮。",
+        "setting_tray": "在系统托盘/菜单栏中显示图标",
+        "setting_tray_macos": "在菜单栏中显示图标",
+        "setting_tray_windows": "在系统托盘中显示图标",
+        "setting_tray_description": "启用后，运行Simple Web Server时，会在系统托盘或菜单栏区域中显示图标。",
         "setting_updates": "更新检查",
         "setting_updates_description": "定期检查是否有新版本可用。不会自动安装更新。",
         "setting_theme": "外观",
@@ -271,6 +275,7 @@ lang = {
         "version": "版本",
         "documentation": "文档",
         "issues_and_suggestions": "疑问与建议",
-        "web_server_url": "Web server URL"
+        "web_server_url": "Web server URL",
+        "ignore_update": "忽略此更新"
     }
 }

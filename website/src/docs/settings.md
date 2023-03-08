@@ -24,6 +24,14 @@ If the `language` option is missing or invalid, the app will automatically detec
 
 When enabled, the app will continue to run web servers in the background even when the window is closed. To stop the program while this option is enabled, click the "Stop & Quit" button.
 
+### Show icon in system tray/menu bar
+
+- Name: `tray`
+- Type: `true/false`
+- Default: `false`
+
+When enabled, adds a shortcut icon to the system tray or menu bar area whenever Simple Web Server is running.
+
 ### Check for updates
 
 - Name: `updates`
