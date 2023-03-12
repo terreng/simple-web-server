@@ -1,4 +1,4 @@
-const version = 1002005;
+const version = 1002006;
 const install_source = "website"; //"website" | "microsoftstore" | "macappstore"
 const {app, BrowserWindow, ipcMain, Menu, Tray, dialog, shell, nativeTheme} = require('electron');
 const {networkInterfaces} = require('os');
@@ -6,6 +6,7 @@ var chokidar;
 if (!process.mas) {chokidar = require('chokidar')}
 global.hostOS = require('os').platform();
 global.eApp = app;
+global.tray = undefined;
 
 global.savingLogs = true;//prevent saving logs until log option is checked. never becomes false if logging is not enabled.
 global.pendingSave = false;
@@ -110,7 +111,7 @@ process.on('uncaughtException', function(e) {
 
 const quit = function(event) {
     isQuitting = true;
-    if (global.tray) global.tray.destroy();
+    removeTray()
     app.quit()
 };
 
@@ -266,19 +267,7 @@ app.on('ready', function() {
     bookmarks.init();
 
     if (config.tray) {
-        global.tray = new Tray(path.join(__dirname, "images/icon.ico"))
-        const contextMenu = Menu.buildFromTemplate([
-            { label: 'Show', click: ()=>mainWindow&&mainWindow.show() },
-            { label: 'Exit', click: ()=>quit() }
-        ])
-        global.tray.setToolTip('Simple Web Server')
-        global.tray.setContextMenu(contextMenu)
-        global.tray.on('click', function(e){
-            if (mainWindow === null) {
-                createWindow();
-                if (process.platform === "darwin") app.dock.show();
-            } else mainWindow.show();
-        })
+        createTray();
     }
 
     if (process.platform === 'darwin') {
@@ -315,12 +304,12 @@ app.on('ready', function() {
     console.log("\n"+((new Date()).toLocaleString()+"\n"));
     startServers();
     checkForUpdates();
-    setInterval(() => checkForUpdates(), 1000*60*60) //Every hour
+    setInterval(() => checkForUpdates(), 1000*60*60*6) //Every 6 hours
 })
 
 app.on('window-all-closed', function () {
     if (config.background !== true) {
-        if (global.tray) global.tray.destroy();
+        removeTray();
         app.quit();
     } else {
         //Stay running even when all windows closed
@@ -341,6 +330,10 @@ ipcMain.on('saveconfig', function(event, arg1) {
     }
     configChanged();
 
+    if (update_info && update_info.version == config.ignore_update) {
+        update_info.ignored = true;
+    }
+
     if (arg1.reload && mainWindow) {
         mainWindow.webContents.setUserAgent(mainWindow.webContents.getUserAgent().split(" language:")[0] + " language:" + getLanguage());
         mainWindow.reload();
@@ -352,6 +345,12 @@ function configChanged() {
 
     if (config.updates === false || install_source === "macappstore") {
         last_update_check_skipped = true;
+    }
+
+    if (config.tray) {
+        createTray();
+    } else {
+        removeTray();
     }
 
     nativeTheme.themeSource = config.theme || "system";
@@ -484,7 +483,7 @@ function createWindow() {
         lastIps = getIPs();
         mainWindow.webContents.send('message', {"type": "init", "config": config, ip: lastIps, install_source: install_source, plugins: plugin.getInstalledPlugins(), platform: process.platform});
         if (update_info) {
-            mainWindow.webContents.send('message', {"type": "update", "url": update_info.url, "text": update_info.text, "attributes": update_info.attributes});
+            mainWindow.webContents.send('message', {"type": "update", "url": update_info.url, "text": update_info.text, "attributes": update_info.attributes, "version": update_info.version, "ignored": update_info.ignored});
         }
         updateServerStates();
     });
@@ -733,10 +732,12 @@ function checkForUpdates() {
             update_info = {
                 "url": version_update.download[install_source],
                 "text": version_update.banner_text,
-                "attributes": JSON.parse(version_update.attributes || '[]')
+                "attributes": JSON.parse(version_update.attributes || '[]'),
+                "version": version_update.version,
+                "ignored": (config.ignore_update == version_update.version)
             }
             if (mainWindow && mainWindow.webContentsLoaded) {
-                mainWindow.webContents.send('message', {"type": "update", "url": update_info.url, "text": update_info.text, "attributes": update_info.attributes});
+                mainWindow.webContents.send('message', {"type": "update", "url": update_info.url, "text": update_info.text, "attributes": update_info.attributes, "version": update_info.version, "ignored": update_info.ignored});
             }
         })
     })
@@ -793,3 +794,21 @@ ipcMain.handle('removePlugin', (event, arg) => {
         }
     }, 100);
 });
+
+function createTray() {
+    if (!global.tray) {
+        global.tray = new Tray(path.join(__dirname, (process.platform == "darwin" ? "images/menuBarIconTemplate.png" : "images/icon.ico")))
+        global.tray.setToolTip('Simple Web Server')
+        global.tray.on('click', function(e){
+            if (mainWindow === null) {
+                createWindow();
+                if (process.platform === "darwin") app.dock.show();
+            } else mainWindow.show();
+        })
+    }
+}
+
+function removeTray() {
+    if (global.tray) global.tray.destroy();
+    global.tray = undefined;
+}

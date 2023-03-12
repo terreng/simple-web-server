@@ -18,7 +18,7 @@
         <div class="container" id="main_container">
             <a id="update_banner" target="_blank" onclick="window.api.openExternal(this.href);event.preventDefault()">
                 <div id="update_banner_text"></div>
-                <div aria-hidden="true"><i class="material-icons" aria-hidden="true">chevron_right</i></div>
+                <div aria-label="{lang.ignore_update}" onclick="ignoreUpdate();event.stopPropagation();return false;"><i class="material-icons" aria-hidden="true">close</i></div>
             </a>
             <div id="servers_list">
             </div>
@@ -46,6 +46,11 @@
             <div class="switch_option" id="background" onclick="toggleRunInBk()" tabindex="0" role="switch" aria-label="{lang.setting_background}">
                 <div class="switch"></div>
                 <div class="label">{lang.setting_background} <a href="#" class="help_icon" aria-label="{lang.help}" onclick="helpInfo(event, 'background', 'setting')"><i class="material-icons" aria-hidden="true">help_outline</i></a></div>
+            </div>
+
+            <div class="switch_option" id="tray" onclick="toggleTray()" tabindex="0" role="switch" aria-label="{lang.setting_tray}">
+                <div class="switch"></div>
+                <div class="label">{lang.setting_tray} <a href="#" class="help_icon" aria-label="{lang.help}" onclick="helpInfo(event, 'tray', 'setting')"><i class="material-icons" aria-hidden="true">help_outline</i></a></div>
             </div>
 
             <div class="switch_option" id="updates" onclick="toggleUpdates()" tabindex="0" role="switch" aria-label="{lang.setting_updates}">
@@ -95,10 +100,21 @@
                 <div style="
                     text-align: center;
                     padding-bottom: 10px;
-                ">{lang.version} 1.2.0&nbsp; • &nbsp;<a href="javascript:openLicenses()" style="
+                ">{lang.version} 1.2.6&nbsp; • &nbsp;<a href="javascript:openLicenses()" style="
                     color: var(--text-primary);
                     text-decoration: none;
                 ">MIT License</a></div>
+                <div id="update_notice" style="
+                display: none;
+                text-align: center;
+                width: 310px;
+                margin: 0 auto;
+                max-width: 100%;
+                min-width: 70%;
+                padding-bottom: 10px;
+                "><a target="_blank" onclick="window.api.openExternal(this.href);event.preventDefault()" style="color: var(--link-primary);
+                font-weight: 500;
+                text-decoration: underline;">{lang.update_available}</a></div>
 
                 <a href="https://simplewebserver.org/docs" target="_blank" onclick="window.api.openExternal(this.href);event.preventDefault()"><div class="link_icon_item"><div><span class="material-icons" aria-hidden="true">public</span></div><div>{lang.documentation}</div></div></a>
                 <a href="https://github.com/terreng/simple-web-server/issues" target="_blank" onclick="window.api.openExternal(this.href);event.preventDefault()"><div class="link_icon_item"><div><svg style="width:28px;height:28px;color:var(--icons)" viewBox="0 0 24 24"><path fill="currentColor" d="M12,2A10,10 0 0,0 2,12C2,16.42 4.87,20.17 8.84,21.5C9.34,21.58 9.5,21.27 9.5,21C9.5,20.77 9.5,20.14 9.5,19.31C6.73,19.91 6.14,17.97 6.14,17.97C5.68,16.81 5.03,16.5 5.03,16.5C4.12,15.88 5.1,15.9 5.1,15.9C6.1,15.97 6.63,16.93 6.63,16.93C7.5,18.45 8.97,18 9.54,17.76C9.63,17.11 9.89,16.67 10.17,16.42C7.95,16.17 5.62,15.31 5.62,11.5C5.62,10.39 6,9.5 6.65,8.79C6.55,8.54 6.2,7.5 6.75,6.15C6.75,6.15 7.59,5.88 9.5,7.17C10.29,6.95 11.15,6.84 12,6.84C12.85,6.84 13.71,6.95 14.5,7.17C16.41,5.88 17.25,6.15 17.25,6.15C17.8,7.5 17.45,8.54 17.35,8.79C18,9.5 18.38,10.39 18.38,11.5C18.38,15.32 16.04,16.16 13.81,16.41C14.17,16.72 14.5,17.33 14.5,18.26C14.5,19.6 14.5,20.68 14.5,21C14.5,21.27 14.66,21.59 15.17,21.5C19.14,20.16 22,16.42 22,12A10,10 0 0,0 12,2Z" /></svg></div><div>{lang.issues_and_suggestions}</div></div></a>

@@ -31,6 +31,7 @@ let running_states = {
 let install_source;
 let plugins;
 let platform;
+let ignore_update;
 
 window.api.initipc((event, message) => {
     if (message.type === "init") {
@@ -44,18 +45,30 @@ window.api.initipc((event, message) => {
         document.getElementById("stop_and_quit_button").style.display = config.background ? "block" : "none";
         document.body.style.visibility = "visible";
         refreshPluginList();
+        if (platform == "darwin") {
+            document.querySelector("#tray").setAttribute("aria-label", lang.setting_tray_macos);
+            document.querySelector("#tray > .label").firstChild.textContent = lang.setting_tray_macos+" ";
+        } else {
+            document.querySelector("#tray").setAttribute("aria-label", lang.setting_tray_windows);
+            document.querySelector("#tray > .label").firstChild.textContent = lang.setting_tray_windows+" ";
+        }
     } else if (message.type === "state") {
         server_states = message.server_states;
         updateRunningStates();
     } else if (message.type === "update") {
-        document.getElementById("update_banner").style.display = "block";
-        document.getElementById("update_banner").href = message.url;
-        document.getElementById("update_banner_text").innerText = message.text || lang.update_available;
-        if (message.attributes.indexOf("high_priority") > -1) {
-            document.getElementById("update_banner").classList.add("high_priority");
-        } else {
-            document.getElementById("update_banner").classList.remove("high_priority");
+        ignore_update = message.version;
+        if (message.ignored !== true) {
+            document.getElementById("update_banner").style.display = "block";
+            document.getElementById("update_banner").href = message.url;
+            document.getElementById("update_banner_text").innerText = message.text || lang.update_available;
+            if (message.attributes.indexOf("high_priority") > -1) {
+                document.getElementById("update_banner").classList.add("high_priority");
+            } else {
+                document.getElementById("update_banner").classList.remove("high_priority");
+            }
         }
+        document.getElementById("update_notice").style.display = "";
+        document.getElementById("update_notice").querySelector("a").href = message.url;
     } else if (message.type === "ipchange") {
         ip = message.ip;
         updateOnIpChange();
@@ -69,6 +82,12 @@ window.api.initipc((event, message) => {
         location.reload();
     }
 });
+
+function ignoreUpdate() {
+    config.ignore_update = ignore_update;
+    window.api.saveconfig(config);
+    document.getElementById("update_banner").style.display = "none";
+}
 
 window.onresize = () => reevaluateSectionHeights();
 
@@ -292,6 +311,13 @@ function openSettings(dont_reset_scroll) {
     } else {
         document.querySelector("#background").classList.remove("checked");
         document.querySelector("#background").setAttribute("aria-checked", "false");
+    }
+    if (config.tray) {
+        document.querySelector("#tray").classList.add("checked");
+        document.querySelector("#tray").setAttribute("aria-checked", "true");
+    } else {
+        document.querySelector("#tray").classList.remove("checked");
+        document.querySelector("#tray").setAttribute("aria-checked", "false");
     }
     if (config.updates === true) {
         document.querySelector("#updates").classList.add("checked");
@@ -606,12 +632,27 @@ function toggleUpdates() {
         document.querySelector("#updates_welcome").setAttribute("aria-checked", "false");
         config.updates = false;
         document.getElementById("update_banner").style.display = "none";
+        document.getElementById("update_notice").style.display = "none";
     } else {
         document.querySelector("#updates").classList.add("checked");
-        document.querySelector("#background").setAttribute("aria-checked", "true");
+        document.querySelector("#updates").setAttribute("aria-checked", "true");
         document.querySelector("#updates_welcome").classList.add("checked");
-        document.querySelector("#background_welcome").setAttribute("aria-checked", "true");
+        document.querySelector("#updates_welcome").setAttribute("aria-checked", "true");
         config.updates = true
+        delete config.ignore_update;
+    }
+    window.api.saveconfig(config);
+}
+
+function toggleTray() {
+    if (config.tray === true) {
+        document.querySelector("#tray").classList.remove("checked");
+        document.querySelector("#tray").setAttribute("aria-checked", "false");
+        config.tray = false;
+    } else {
+        document.querySelector("#tray").classList.add("checked");
+        document.querySelector("#tray").setAttribute("aria-checked", "true");
+        config.tray = true
     }
     window.api.saveconfig(config);
 }

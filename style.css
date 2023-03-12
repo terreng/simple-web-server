@@ -963,7 +963,7 @@ body {
 #update_banner > div:nth-child(1) {
     font-size: 18px;
     float: left;
-    width: calc(100% - 32px);
+    width: calc(100% - 36px);
     color: var(--text-primary);
 }
 
@@ -974,7 +974,7 @@ body {
     height: 32px;
     margin-top: -16px;
     position: absolute;
-    right: 4px;
+    right: 8px;
 }
 
 #update_banner > div:nth-child(2) i {
