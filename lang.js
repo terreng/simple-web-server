@@ -106,7 +106,7 @@ lang = {
         "option_https": "Use HTTPS",
         "option_https_description": "Make server accessible over a secure connection (https) instead of http. Uses the same single port, so you cannot use both http and https at the same time. See <a href=\"https://simplewebserver.org/docs/https.html\">Using HTTPS</a>.",
         "option_https_abbreviation": "HTTPS",
-        "option_httpsCert": "SSL/TLS cerificate",
+        "option_httpsCert": "SSL/TLS certificate",
         "option_httpsCert_description": "Optionally override this option to provide a custom HTTPS certificate. See <a href=\"https://simplewebserver.org/docs/https.html\">Using HTTPS</a>.",
         "option_httpsKey": "SSL/TLS private key",
         "option_httpsKey_description": "Optionally override this option to provide a custom HTTPS private key. See <a href=\"https://simplewebserver.org/docs/https.html\">Using HTTPS</a>.",

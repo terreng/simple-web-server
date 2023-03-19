@@ -10,7 +10,7 @@ You do not need to have swsaccess enabled, this does not enable swsaccess. It is
 It is recommended to have the log to file function on, so it is easier to see if something goes wrong
 
 ::: warning
-While not required, it is very highly recomended to turn on the swsaccess feature, as it will block users from performing a get request towards the file.
+While not required, it is very highly recommended to turn on the swsaccess feature, as it will block users from performing a get request towards the file.
 :::
 
 ## Writing the swsaccess file
@@ -41,7 +41,7 @@ Add the following line to your swsaccess file
 ```
 postKey = 'wa4e76yhefy54t4a'
 ```
-Change `wa4e76yhefy54t4a` to the value of the key that you had inputed into the swsaccess file
+Change `wa4e76yhefy54t4a` to the value of the key that you had inputted into the swsaccess file
 The start of the line (`postKey = `) MUST STAY THE SAME (case sensitive). The server does not check for a set variable, but it will scan the file for the text `postKey`
 THIS LINE MUST BE ITS OWN LINE!! You CANNOT combine multiple lines of code with `;`
 Indenting this line may cause for the server to not find this line and in result, the code will not be executed
@@ -59,7 +59,7 @@ res.end() // THEN end the request
 ```
 res contains all the functions to respond, while req contains all the request information
 
-*NOTE* - You can use BOTH server side javascript and Server Side POST in the same file! Just declare 2 seperate keys in the swsaccess and in the file!
+*NOTE* - You can use BOTH server side javascript and Server Side POST in the same file! Just declare 2 separate keys in the swsaccess and in the file!
 
 To Debug the code, open the main window and press ctrl + shift + i
 
@@ -69,11 +69,11 @@ To Debug the code, open the main window and press ctrl + shift + i
 ### `res.end()`: function
 This function MUST be called at the end of the file. If called before finished processing, the server will cut off your script
 This function will close the http request
-You can use this function directly when finished and it will automaticaly respond with an http code of 200 (unless set otherwise)
+You can use this function directly when finished and it will automatically respond with an http code of 200 (unless set otherwise)
 
 ### `res.write(data, httpCode)`: function
 `data: String ||  Buffer  || ArrayBuffer`
-This function will write data to the client. Once called, you canot push any more information.
+This function will write data to the client. Once called, you cannot push any more information.
 
 ### `res.setHeader(headerType, headerValue)`: function
 This function will set headers of the response.
@@ -179,12 +179,12 @@ path: the path of the file
 If the path contains a non existent folder, the folder will be created
 data: string/Buffer/ArrayBuffer of the file. DO NOT SEND OTHER TYPES OF DATA - THIS COULD BREAK THE APP (Just refresh it)
 allowReplaceFile: if file exists and you want to replace the file, set this to true
-callback: function will be excecuted to tell you if there was an error or it will callback the file
+callback: function will be executed to tell you if there was an error or it will callback the file
 
 ### `res.deleteFile(path, callback)`: function
 This function will delete
 path: the path of the file
-callback: function will be excecuted to tell you if there was an error or success
+callback: function will be executed to tell you if there was an error or success
 
 
 Commands once you get the info using the `res.getFile()` function
