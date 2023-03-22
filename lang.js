@@ -172,7 +172,7 @@ lang = {
         "setting_theme_light": "Светлая",
         "setting_theme_dark": "Тёмная",
         "setting_plugins": "Дополнения",
-        "setting_plugins_description": "Plugins allow you to further modify your web servers beyond the options that are available in the app. <a href='https://simplewebserver.org/docs/plugins.html'>Learn more about plugins.</a><br><br>To install a plugin, click \"Add Plugin\" and then choose a directory or ZIP file. After installing a plugin, you must specifically enable it for each server you want to use it with.<br><br>Plugins aren't sandboxed, and run with the same permissions as the app. Only install a plugin if you know and trust the developer.",
+        "setting_plugins_description": "Плагины позволяют расширять функциональность веб сервера. <a href='https://simplewebserver.org/docs/plugins.html'>Узнать больше про плагины.</a><br><br>Чтобы установить плагин нажмите \"Добавить плагин\" и выберите папку с плагином или его файл ZIP. После установки плагина его следует явно включить чтобы начать использовать.<br><br>Плагины не изолированы и запускаются с теми же разрешениями что и сам веб сервер. Устанавливайте плагин только если доверяете его разработчику.",
         "add_plugin": "Добавить плагин",
         "plugin_choose_folder": "Выберете папку",
         "plugin_choose_zip": "Выберете файл .zip",
