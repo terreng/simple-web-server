@@ -893,7 +893,7 @@ function helpInfo(event, id, type) {
     event.preventDefault();
     event.stopPropagation();
 
-    showPrompt((id.indexOf("plugin.") == 0 ? htmlescape(plugin_help_text[id.substring(7)][0]) : lang[type+"_"+id]), (id.indexOf("plugin.") == 0 ? plugin_help_text[id.substring(7)][1] : lang[type+"_"+id+"_description"]).replace(/<a href="(.+)">/g, function(a, b) {return '<a href="'+b+'" target="_blank" onclick="window.api.openExternal(this.href);event.preventDefault()">'}), [[lang.prompt_done,"",hidePrompt]]);
+    showPrompt((id.indexOf("plugin.") == 0 ? htmlescape(plugin_help_text[id.substring(7)][0]) : lang[type+"_"+id]), (id.indexOf("plugin.") == 0 ? plugin_help_text[id.substring(7)][1] : lang[type+"_"+id+"_description"]).replace(/<a href=["'](.+)["']>/g, function(a, b) {return '<a href="'+b+'" target="_blank" onclick="window.api.openExternal(this.href);event.preventDefault()">'}), [[lang.prompt_done,"",hidePrompt]]);
 }
 
 // TODO: Implement drag and drop for setting the folder directory or installing a plugin. I don't know how to make this work with security scoped bookmarks on macOS.

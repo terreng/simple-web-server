@@ -26,6 +26,10 @@ For testing purposes, you can bypass this error:
 
 ## Using a custom certificate
 
+The file `fullchain.pem` corresponds to the SSL/TLS certificate.
+
+The file `privkey.pem` corresponds to the SSL/TLS private key.
+
 To input a custom certificate, you should replace all newlines with `\r\n`.
 
 If your cert/key is initially in the following format:

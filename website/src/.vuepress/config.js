@@ -23,6 +23,10 @@ module.exports = {
     '/zh-CN/': {
       lang: 'zh-CN',
       description: '简单易用! 只需几次点击就可以部署本地 Web 服务器。'
+    },
+    '/ru/': {
+      lang: 'ru',
+      description: 'Создавайте локальный веб-сервер в несколько кликов с помощью простого интерфейса.'
     }
   },
   themeConfig: {
@@ -144,7 +148,66 @@ module.exports = {
             }
           ],
         }
-      }
+      },
+      '/ru/': {
+        label: 'Русский',
+        selectText: 'Язык',
+        nav: [
+          {
+            text: 'Download',
+            link: '/download.html',
+          },
+          {
+            text: 'Documentation',
+            link: '/docs/options.html'
+          },
+          {
+            text: 'GitHub',
+            link: 'https://github.com/terreng/simple-web-server'
+          }
+        ],
+        sidebar: {
+          '/docs/': [
+            {
+              title: 'Configuration',
+              collapsable: false,
+              children: [
+                'options',
+                'settings',
+              ]
+            },
+            {
+              title: 'Guides',
+              collapsable: false,
+              children: [
+                'config file',
+                'https',
+                'logs',
+                'build',
+                'wsc'
+              ]
+            },
+            {
+              title: 'Plugins',
+              collapsable: false,
+              children: [
+                'plugins',
+                'plugin manifest file',
+                'plugin script'
+              ]
+            },
+            {
+              title: 'Advanced Guides',
+              collapsable: false,
+              children: [
+                'swsaccess',
+                'custom scripts',
+                'custom request handler',
+              ]
+            }
+          ]
+        }
+      },
     },
     sidebarDepth: 3,
     repo: '',
