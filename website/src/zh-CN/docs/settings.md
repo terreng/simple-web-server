@@ -7,11 +7,12 @@
 ### 语言
 
 - 名称: `language`
-- 类型: string, `en` or `zh_CN`
+- 类型: string, `en`, `zh_CN`, or `ru`
 
 支持的语言:
 - `en`: English
 - `zh_CN`: Simplified Chinese (简体中文)
+- `ru`: Russian (Русский)
 - [帮助我们翻译](https://github.com/terreng/simple-web-server/issues/124)
 
 如果`language`选项缺失或无效，应用程序将自动检测系统语言。
