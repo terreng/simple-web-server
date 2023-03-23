@@ -218,7 +218,7 @@ Optionally specify a custom string that will be looked for in your error pages a
 
 Make server accessible over a secure connection (https) instead of http. Uses the same single port, so you cannot use both http and https at the same time. See [Using HTTPS](https.md).
 
-### SSL/TLS cerificate
+### SSL/TLS certificate
 
 - Name: `httpsCert`
 - Type: string

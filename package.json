@@ -97,6 +97,7 @@
       "category": "public.app-category.developer-tools",
       "electronLanguages": [
         "en",
+        "ru",
         "zh_CN"
       ]
     },

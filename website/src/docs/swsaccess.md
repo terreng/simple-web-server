@@ -18,9 +18,9 @@ All Htaccess features are built to have 100% compatibility with changes in setti
 denyDirectAccess - This will deny direct access to image/video/audio files. This option only works if https is enabled or if the user is on a localhost address.<br>
 Render Directory Listing - Ignores the value of 404 instead of directory listing and renders the directory listing<br>
 Deny deleting for a specific file or directory - Ignores value of delete option and will deny delete to requested file<br>
-Allow deleting for certian file - Ignores value of delete option and will allow deleting requested file<br>
+Allow deleting for certain file - Ignores value of delete option and will allow deleting requested file<br>
 Deny uploading for a specific file or directory - Ignores value of PUT option and will deny put to requested file<br>
-Allow uploading for certian file - Ignores value of PUT option and will allow deleting requested file.<br>
+Allow uploading for certain file - Ignores value of PUT option and will allow deleting requested file.<br>
 send directory contents - Will send the current directory at the end of the file. See the How To for a more advanced description<br>
 additional header - Will set an additional header<br>
 Versioning - relative file hosting<br>
