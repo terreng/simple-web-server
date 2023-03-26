@@ -17,7 +17,7 @@ features:
 <img src="/images/screenshots.jpeg" style="width: 100%">
 
 <div class="home_footer">
-    <div>Made with ❤️ by <a href="https://github.com/terreng" target="_blank">@terreng</a> and <a href="https://github.com/ethanaobrien" target="_blank">@ethanaobrien</a>.</div>
-    <div>A continuation of <a href="https://chrome.google.com/webstore/detail/web-server-for-chrome/ofhbbkphhbklhfoeikjpcbhemlocgigb" target="_blank">Web Server for Chrome</a> by <a href="https://github.com/kzahel" target="_blank">@kzahel</a>.</div>
-    <div>Chinese translations by <a href="https://github.com/antnesswcm" target="_blank">@antnesswcm</a>.</div>
+    <div>Сделано с любовью авторами <a href="https://github.com/terreng" target="_blank">@terreng</a> и <a href="https://github.com/ethanaobrien" target="_blank">@ethanaobrien</a>.</div>
+    <div>Это продолжение почившего <a href="https://chrome.google.com/webstore/detail/web-server-for-chrome/ofhbbkphhbklhfoeikjpcbhemlocgigb" target="_blank">Web Server for Chrome</a> от <a href="https://github.com/kzahel" target="_blank">@kzahel</a>.</div>
+    <div>Перевёл на китайский <a href="https://github.com/antnesswcm" target="_blank">@antnesswcm</a>.</div>
 </div>

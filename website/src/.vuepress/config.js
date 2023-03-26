@@ -154,11 +154,11 @@ module.exports = {
         selectText: 'Язык',
         nav: [
           {
-            text: 'Download',
+            text: 'Скачать',
             link: '/download.html',
           },
           {
-            text: 'Documentation',
+            text: 'Документация',
             link: '/docs/options.html'
           },
           {
