@@ -216,7 +216,7 @@ class FileSystem {
             stats = fs.statSync(mainPath);
         } catch(e) {
             bookmarks.release(bm);
-            throw new Error('Error checking entry');
+            throw e;
         }
         bookmarks.release(bm);
         if (!stats.isDirectory()) {
