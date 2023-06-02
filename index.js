@@ -448,6 +448,10 @@ function getLanguage() {
                 language = "zh_CN";
                 break;
             }
+            if (system_langs[i].indexOf("ja") == 0) {
+                language = "ja";
+                break;
+            }
         }
     }
 
