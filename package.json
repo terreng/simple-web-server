@@ -1,7 +1,7 @@
 {
   "name": "simple-web-server",
   "productName": "Simple Web Server",
-  "version": "1.2.7",
+  "version": "1.2.8",
   "main": "index.js",
   "description": "Create a local web server in just a few clicks with an easy to use interface. A continuation of Web Server for Chrome, built with Electron.",
   "author": {
@@ -55,7 +55,7 @@
     "make_all_windows_appx": "npm run make_windows_appx_x64 && npm run make_windows_appx_ia32 && npm run make_windows_appx_arm64"
   },
   "build": {
-    "buildVersion": "25",
+    "buildVersion": "26",
     "appId": "org.simplewebserver.simplewebserver",
     "productName": "Simple Web Server",
     "copyright": "MIT License",
@@ -98,7 +98,8 @@
       "electronLanguages": [
         "en",
         "ru",
-        "zh_CN"
+        "zh_CN",
+        "ja"
       ]
     },
     "mas": {
@@ -138,7 +139,7 @@
       "applicationId": "org.simplewebserver.simplewebserver",
       "identityName": "50257Terren.SimpleWebServer",
       "publisher": "CN=823B8264-37A4-4589-B252-9E44611E01EB",
-      "languages": ["en-US", "zh-CN", "ru"]
+      "languages": ["en-US", "zh-CN", "ru", "ja"]
     }
   },
   "devDependencies": {

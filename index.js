@@ -1,4 +1,4 @@
-const version = 1002007;
+const version = 1002008;
 const install_source = "website"; //"website" | "microsoftstore" | "macappstore"
 const {app, BrowserWindow, ipcMain, Menu, Tray, dialog, shell, nativeTheme} = require('electron');
 const {networkInterfaces} = require('os');
@@ -446,6 +446,10 @@ function getLanguage() {
             }
             if (system_langs[i].indexOf("zh") == 0) {
                 language = "zh_CN";
+                break;
+            }
+            if (system_langs[i].indexOf("ja") == 0) {
+                language = "ja";
                 break;
             }
         }
