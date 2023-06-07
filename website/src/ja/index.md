@@ -2,18 +2,18 @@
 home: true
 heroImage: https://raw.githubusercontent.com/terreng/simple-web-server/main/images/icon.png
 heroText: Simple Web Server
-tagline: Create local web servers in just a few clicks with an easy-to-use interface.
+tagline: 簡単UIでほんの数クリックだけでローカルウェブサーバーを作れます
 actionText: Download →
 actionLink: /download/
 features:
-- title: Easy to configure
-  details: Change server options with just a few clicks.
-- title: Run multiple & in the background
-  details: Run multiple web servers at the same time, even when the app is closed.
-- title: Single Page Applications
-  details: Enable mod rewrite for SPAs with a single click.
+- title: 設定が簡単
+  details: ほんの数クリックだけでサーバーの設定を変えられます。
+- title: 複数実行・バックグラウンド実行
+  details: 同時に複数のサーバーを動かせます。アプリを閉じてもサーバーは停止しないようにできます。
+- title: シングルページアプリケーション
+  details: シングルクリックのSPA用にmod rewriteができます。
 ---
-<div class="coming_from_wsc_banner"><a href="/docs/wsc.html">Coming from Web Server for Chrome? →</a></div>
+<div class="coming_from_wsc_banner"><a href="/docs/wsc.html">Web Server for Chromeからの移行ですか？ →</a></div>
 <img src="/images/screenshots.jpeg" style="width: 100%">
 
 <div class="home_footer">

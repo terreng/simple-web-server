@@ -27,6 +27,10 @@ module.exports = {
     '/ru/': {
       lang: 'ru',
       description: 'Создавайте локальный веб-сервер в несколько кликов с помощью простого интерфейса.'
+    },
+    '/ja/': {
+      lang: 'ja',
+      description: '簡単UIでほんの数クリックだけでローカルウェブサーバーを作れます。'
     }
   },
   themeConfig: {
@@ -159,6 +163,65 @@ module.exports = {
           },
           {
             text: 'Документация',
+            link: '/docs/options.html'
+          },
+          {
+            text: 'GitHub',
+            link: 'https://github.com/terreng/simple-web-server'
+          }
+        ],
+        sidebar: {
+          '/docs/': [
+            {
+              title: 'Configuration',
+              collapsable: false,
+              children: [
+                'options',
+                'settings',
+              ]
+            },
+            {
+              title: 'Guides',
+              collapsable: false,
+              children: [
+                'config file',
+                'https',
+                'logs',
+                'build',
+                'wsc'
+              ]
+            },
+            {
+              title: 'Plugins',
+              collapsable: false,
+              children: [
+                'plugins',
+                'plugin manifest file',
+                'plugin script'
+              ]
+            },
+            {
+              title: 'Advanced Guides',
+              collapsable: false,
+              children: [
+                'swsaccess',
+                'custom scripts',
+                'custom request handler',
+              ]
+            }
+          ]
+        }
+      },
+      '/ja/': {
+        label: '日本',
+        selectText: '言語',
+        nav: [
+          {
+            text: 'Download',
+            link: '/download.html',
+          },
+          {
+            text: 'Documentation',
             link: '/docs/options.html'
           },
           {
