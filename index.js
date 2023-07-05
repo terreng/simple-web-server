@@ -804,7 +804,7 @@ ipcMain.handle('removePlugin', (event, arg) => {
 });
 
 function createTray() {
-    if (!global.tray) {
+    if (!global.tray && (process.platform == "darwin" || process.platform == "win32")) {
         global.tray = new Tray(path.join(__dirname, (process.platform == "darwin" ? "images/menuBarIconTemplate.png" : "images/icon.ico")))
         global.tray.setToolTip('Simple Web Server')
         global.tray.on('click', function(e){
