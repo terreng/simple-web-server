@@ -7,12 +7,13 @@ Option names correspond to the option key in config.json. See [Editing config.js
 ### Language
 
 - Name: `language`
-- Type: string, `en`, `zh_CN`, or `ru`
+- Type: string, `en`, `zh_CN`, `ru`, or `ja`
 
 Supported languages:
 - `en`: English
 - `zh_CN`: Simplified Chinese (简体中文)
 - `ru`: Russian (Русский)
+- `ja`: Japanese (日本語)
 - [Help us translate](https://github.com/terreng/simple-web-server/issues/124)
 
 If the `language` option is missing or invalid, the app will automatically detect the system language.
