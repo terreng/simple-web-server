@@ -170,6 +170,14 @@ If hidden/dot files are enabled, determines if they will be shown in the directo
 
 You can use `.swshtaccess` files to set additional rules on a per-directory basis. See [Advanced configuration using .swshtaccess files](swsaccess.md).
 
+### On-the-fly compression <Badge type="tip" text="Hidden" vertical="top" />
+
+- Name: `compression`
+- Type: `true/false`
+- Default: `false`
+
+Enables on-the-fly compression for supported browsers. Supports `br`, `gzip`, and `deflate` compression. Not recommended due to poor performance. See [Issue #74](https://github.com/terreng/simple-web-server/issues/74).
+
 ## Error pages
 
 ### Custom 404 page file path

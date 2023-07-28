@@ -13,6 +13,7 @@
 ## 社区插件
 
 - [Web Proxy](https://github.com/ethanaobrien/web-proxy) by [@ethanaobrien](https://github.com/ethanaobrien) (Simple Web Server 的联合开发者)
+- [Redirect](https://github.com/terreng/sws-redirect-plugin)
 
 想分享你的插件吗？[在GitHub上提交Issuse](https://github.com/terreng/simple-web-server/issues)请求我们将其添加到此列表中。
 

@@ -24,7 +24,7 @@ Please note that some features from Web Server for Chrome have been removed in f
     </tr>
     <tr>
         <td>Accessible on internet</td>
-        <td>To make a web server accessible on the internet, you must first enable the <a href="/docs/options.html#accessible-on-local-network">Accessible on local network</a> option, and then <i>port forward</i> the server's port through your router so that anyone on the internet can access it. Search online for a guide on how to set up port forwarding for your specific router, or <a href="https://www.wikihow.com/Set-Up-Port-Forwarding-on-a-Router" target="_blank">see this wikiHow guide</a>. Once you have set up port forwarding, and adjusted firewall settings if necessary, you will be able to access the web server at your public IP address and the specified port.</td>
+        <td><b>Not recommended. Simple Web Server isn't designed for this use case.</b> To make a web server accessible on the internet, you must first enable the <a href="/docs/options.html#accessible-on-local-network">Accessible on local network</a> option, and then <i>port forward</i> the server's port through your router so that anyone on the internet can access it. Search online for a guide on how to set up port forwarding for your specific router, or <a href="https://www.wikihow.com/Set-Up-Port-Forwarding-on-a-Router" target="_blank">see this wikiHow guide</a>. Once you have set up port forwarding, and adjusted firewall settings if necessary, you will be able to access the web server at your public IP address and the specified port.</td>
     </tr>
     <tr>
         <td>Prevent computer from sleeping</td>

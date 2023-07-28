@@ -24,7 +24,7 @@ Simple Web Server为来自Web Server for Chrome的用户提供了许多新特性
     </tr>
     <tr>
         <td>可通过互联网访问</td>
-        <td>要在Internet上访问Web服务器，必须首先启用 <a href="/zh-CN/docs/options.html#accessible-on-local-network">可通过局域网访问</a> 选项, 然后<i>通过路由器转发</i>服务器的端口，以便互联网上的任何人都可以访问它。 在线搜索有关如何为特定路由器设置端口转发的指南， 或者 <a href="https://www.wikihow.com/Set-Up-Port-Forwarding-on-a-Router" target="_blank">查看此WikiHow指南</a>. 一旦设置了端口转发，并根据需要调整了防火墙设置，您将能够通过IP地址和指定的端口访问Web服务器。</td>
+        <td><b>不建议使用。简单网络服务器不是为这种使用情况设计的。</b> 要在Internet上访问Web服务器，必须首先启用 <a href="/zh-CN/docs/options.html#accessible-on-local-network">可通过局域网访问</a> 选项, 然后<i>通过路由器转发</i>服务器的端口，以便互联网上的任何人都可以访问它。 在线搜索有关如何为特定路由器设置端口转发的指南， 或者 <a href="https://www.wikihow.com/Set-Up-Port-Forwarding-on-a-Router" target="_blank">查看此WikiHow指南</a>. 一旦设置了端口转发，并根据需要调整了防火墙设置，您将能够通过IP地址和指定的端口访问Web服务器。</td>
     </tr>
     <tr>
         <td>防止计算机休眠</td>

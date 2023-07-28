@@ -13,6 +13,7 @@ Plugins aren't sandboxed, and run with the same permissions as the app. Only ins
 ## Community plugins
 
 - [Web Proxy](https://github.com/ethanaobrien/web-proxy) by [@ethanaobrien](https://github.com/ethanaobrien) (Co-creator of Simple Web Server)
+- [Redirect](https://github.com/terreng/sws-redirect-plugin)
 
 Have you made a plugin that you want to share? [Open an issue on GitHub](https://github.com/terreng/simple-web-server/issues) to request that we add it to this list.
 

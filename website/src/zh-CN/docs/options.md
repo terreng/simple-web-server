@@ -170,6 +170,14 @@
 
 您可以使用<code>.swshtaccess</code>文件 设置每个目录的附加规则。 参见 [高级配置文件 .swshtaccess](swsaccess.md).
 
+### 即时压缩 <Badge type="tip" text="隐藏的" vertical="top" />
+
+- 名称: `compression`
+- 类型: `true/false`
+- 默认值: `false`
+
+为支持的浏览器启用即时压缩。支持 `br`、`gzip` 和 `deflate` 压缩。由于性能较差，不推荐使用。[参见问题 #74](https://github.com/terreng/simple-web-server/issues/74)。
+
 ## 错误页面
 
 ### 自定义404页文件
