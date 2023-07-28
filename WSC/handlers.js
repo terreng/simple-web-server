@@ -174,9 +174,11 @@ class DirectoryEntryHandler {
             const auth = this.request.headers['authorization'];
             if (auth) {
                 if (auth.slice(0,6).toLowerCase() === 'basic ') {
-                    const userpass = atob(auth.slice(6,auth.length)).split(':');
-                    if (userpass[0] === this.opts.httpAuthUsername &&
-                        userpass[1] === this.opts.httpAuthPassword) {
+                    const auth_decoded = atob(auth.slice(6,auth.length));
+                    const auth_username = auth_decoded.substring(0, auth_decoded.indexOf(":"));
+                    const auth_password = auth_decoded.substring(auth_decoded.indexOf(":")+1);
+                    if (auth_username === this.opts.httpAuthUsername &&
+                        auth_password === this.opts.httpAuthPassword) {
                         validAuth = true;
                     }
                 }
