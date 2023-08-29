@@ -495,7 +495,7 @@
             }
             lang = lang["en"];
 
-            document.body.innerHTML = document.body.innerHTML.replace(/{lang\.([\w.]+?)}/g, function(match) {if (!lang[match.substring(6, match.length-1)]) {console.warn("Could't find lang string: "+match.substring(6, match.length-1))}; return lang[match.substring(6, match.length-1)]});
+            document.body.innerHTML = document.body.innerHTML.replace(/{lang\.([\w.]+?)}/g, function(match) {if (!lang[match.substring(6, match.length-1)]) {console.warn("Couldn't find lang string: "+match.substring(6, match.length-1))}; return lang[match.substring(6, match.length-1)]});
 
             document.getElementById("language").innerHTML = Array.from(Object.entries(languages)).map(function(a) {return '<option value="'+a[0]+'">'+a[1]+'</option>'}).join("");
             document.getElementById("language").value = language;
