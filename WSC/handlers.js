@@ -170,20 +170,8 @@ class DirectoryEntryHandler {
             return;
         }
         if (this.opts.httpAuth) {
-            let validAuth = false;
             const auth = this.request.headers['authorization'];
-            if (auth) {
-                if (auth.slice(0,6).toLowerCase() === 'basic ') {
-                    const auth_decoded = atob(auth.slice(6,auth.length));
-                    const auth_username = auth_decoded.substring(0, auth_decoded.indexOf(":"));
-                    const auth_password = auth_decoded.substring(auth_decoded.indexOf(":")+1);
-                    if (auth_username === this.opts.httpAuthUsername &&
-                        auth_password === this.opts.httpAuthPassword) {
-                        validAuth = true;
-                    }
-                }
-            }
-            if (!validAuth) {
+            if (!WSC.utils.validateAuth(auth, this.opts.httpAuthUsername, this.opts.httpAuthPassword)) {
                 this.error("", 401);
                 return;
             }
@@ -277,15 +265,7 @@ class DirectoryEntryHandler {
             }
             let validAuth = false;
             const authHeader = this.request.headers['authorization'];
-            if (authHeader) {
-                if (authHeader.slice(0,6).toLowerCase() === 'basic ') {
-                    const userpass = atob(authHeader.slice(6,auth.length)).split(':');
-                    if (userpass[0] === authdata.username && userpass[1] === authdata.password) {
-                        validAuth = true;
-                    }
-                }
-            }
-            if (!validAuth) {
+            if (!WSC.utils.validateAuth(authHeader, authdata.username, authdata.password)) {
                 this.error("", 401);
                 return;
             }
@@ -436,15 +416,7 @@ class DirectoryEntryHandler {
             }
             let validAuth = false;
             const authHeader = this.request.headers['authorization'];
-            if (authHeader) {
-                if (authHeader.slice(0,6).toLowerCase() === 'basic ') {
-                    const userpass = atob(authHeader.slice(6, authHeader.length)).split(':');
-                    if (userpass[0] === authdata.username && userpass[1] === authdata.password) {
-                        validAuth = true;
-                    }
-                }
-            }
-            if (!validAuth) {
+            if (!WSC.utils.validateAuth(authHeader, authdata.username, authdata.password)) {
                 this.error("", 401);
                 return;
             }
@@ -758,15 +730,7 @@ class DirectoryEntryHandler {
             }
             let validAuth = false;
             const authHeader = this.request.headers['authorization'];
-            if (authHeader) {
-                if (authHeader.slice(0,6).toLowerCase() === 'basic ') {
-                    const userpass = atob(authHeader.slice(6, authHeader.length)).split(':');
-                    if (userpass[0] === authdata.username && userpass[1] === authdata.password) {
-                        validAuth = true;
-                    }
-                }
-            }
-            if (!validAuth) {
+            if (!WSC.utils.validateAuth(authHeader, authdata.username, authdata.password)) {
                 this.error("", 401);
                 return;
             }
