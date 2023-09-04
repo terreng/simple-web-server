@@ -407,6 +407,7 @@ function addServer(editindex) {
         document.querySelector("#httpAuthUsername").value = config.servers[editindex].httpAuthUsername || "";
         httpAuthUsernameChange();
         document.querySelector("#httpAuthPassword").value = config.servers[editindex].httpAuthPassword || "";
+        httpAuthPasswordChange();
         document.querySelector("#ipThrottling").value = config.servers[editindex].ipThrottling || 10;
         ipLimitChange();
 
@@ -457,6 +458,7 @@ function addServer(editindex) {
         document.querySelector("#httpAuthUsername").value = "";
         httpAuthUsernameChange();
         document.querySelector("#httpAuthPassword").value = "";
+        httpAuthPasswordChange();
         document.querySelector("#ipThrottling").value = 10;
         ipLimitChange();
 
@@ -501,6 +503,17 @@ function submitAddServer() {
             setTimeout(()=>document.querySelector("#httpAuthUsername").previousElementSibling.scrollIntoView({behavior: "smooth"}), 210);
         } else {
             document.querySelector("#httpAuthUsername").previousElementSibling.scrollIntoView({behavior: "smooth"});
+        }
+        return;
+    }
+
+    if (!httpAuthPasswordValid()) {
+        document.querySelector("#httpAuthPassword").parentElement.nextElementSibling.style.display = "block";
+        if (!document.querySelector("#security_section").classList.contains("section_visible")) {
+            toggleSection(document.querySelector("#security_section"))
+            setTimeout(()=>document.querySelector("#httpAuthPassword").previousElementSibling.scrollIntoView({behavior: "smooth"}), 210);
+        } else {
+            document.querySelector("#httpAuthPassword").previousElementSibling.scrollIntoView({behavior: "smooth"});
         }
         return;
     }
@@ -704,8 +717,13 @@ function ipLimitChange() {
     }
 }
 
+function stringContainsControlCharacters(str) {
+    const controlCharacterPattern = /[\x00-\x1F\x7F]/;
+    return controlCharacterPattern.test(str);
+  }
+
 function httpAuthUsernameValid() {
-    return document.querySelector("#httpAuthUsername").value.indexOf(":") === -1;
+    return document.querySelector("#httpAuthUsername").value.indexOf(":") === -1 && !stringContainsControlCharacters(document.querySelector("#httpAuthUsername").value);
 }
 
 function httpAuthUsernameChange() {
@@ -713,6 +731,18 @@ function httpAuthUsernameChange() {
         document.querySelector("#httpAuthUsername").parentElement.nextElementSibling.style.display = "none";
     } else {
         document.querySelector("#httpAuthUsername").parentElement.nextElementSibling.style.display = "block";
+    }
+}
+
+function httpAuthPasswordValid() {
+    return !stringContainsControlCharacters(document.querySelector("#httpAuthPassword").value);
+}
+
+function httpAuthPasswordChange() {
+    if (httpAuthPasswordValid()) {
+        document.querySelector("#httpAuthPassword").parentElement.nextElementSibling.style.display = "none";
+    } else {
+        document.querySelector("#httpAuthPassword").parentElement.nextElementSibling.style.display = "block";
     }
 }
 

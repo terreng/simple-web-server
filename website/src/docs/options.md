@@ -261,7 +261,7 @@ Require authentication using the HTTP Basic authentication protocol. Specify a u
 - Type: string
 - Default: -
 
-Username for HTTP Basic authentication. Cannot contain a colon (`:`) character.
+Username for HTTP Basic authentication. Cannot contain a colon (`:`) character or control characters.
 
 ### HTTP Basic auth password
 
@@ -269,7 +269,7 @@ Username for HTTP Basic authentication. Cannot contain a colon (`:`) character.
 - Type: string
 - Default: -
 
-Password for HTTP Basic authentication. Stored in plain text.
+Password for HTTP Basic authentication. Stored in plain text. Cannot contain control characters.
 
 ### Maximum connections per IP address
 

@@ -393,8 +393,10 @@
 
                 <div class="input_option">
                     <div class="label">{lang.option_httpAuthPassword} <a href="#" class="help_icon" aria-label="{lang.help}" onclick="helpInfo(event, 'httpAuthPassword', 'option')"><i class="material-icons" aria-hidden="true">help_outline</i></a></div>
-                    <input type="text" id="httpAuthPassword" placeholder="" aria-label="{lang.option_httpAuthPassword}">
+                    <input type="text" id="httpAuthPassword" placeholder="" oninput="httpAuthPasswordChange();reevaluateSectionHeights();" aria-label="{lang.option_httpAuthPassword}">
                 </div>
+
+                <div class="input_error">{lang.httpAuthPassword_invalid}</div>
 
                 <div class="input_option">
                     <div class="label">{lang.option_ipThrottling} <a href="#" class="help_icon" aria-label="{lang.help}" onclick="helpInfo(event, 'ipThrottling', 'option')"><i class="material-icons" aria-hidden="true">help_outline</i></a></div>
