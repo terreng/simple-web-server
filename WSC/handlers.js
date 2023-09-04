@@ -516,7 +516,7 @@ class DirectoryEntryHandler {
         }
         if (this.opts.excludeDotHtml && !this.request.origpath.endsWith("/") && this.request.path !== '') {
             const extension = this.request.path.split('.').pop();
-            const more = this.request.uri.substring(0, this.request.path.origpath);
+            const more = this.request.uri.substring(this.request.origpath.length);
             if (['htm', 'html'].includes(extension)) {
                 const path = this.request.path;
                 let newpath;
