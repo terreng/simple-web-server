@@ -42,7 +42,7 @@ class DirectoryEntryHandler {
     error(msg, httpCode) {
         const defaultMsg = '<h1>' + httpCode + ' - ' + WSC.HTTPRESPONSES[httpCode] + '</h1>\n\n<p>' + msg + '</p>';
         if (httpCode === 401) {
-            this.setHeader("WWW-Authenticate", "Basic");
+            this.setHeader("WWW-Authenticate", "Basic realm=\"SimpleWebServer\", charset=\"UTF-8\"");
         }
         if (this.request.method === "HEAD") {
             this.responseLength = 0;
