@@ -253,19 +253,21 @@ class DirectoryEntryHandler {
                 this.htaccessError('Missing Request Path');
                 return;
             }
-            if (origdata[i].type === 403 && origdata[i].request_path === filerequested) {
+            const equalsRequestPath = WSC.utils.isExpectedFile(filerequested.trim(), origdata[i].request_path.trim());
+            if (!equalsRequestPath) continue;
+            if (origdata[i].type === 403) {
                 this.error('', 403);
                 return;
             }
-            if (origdata[i].request_path === filerequested && ['serverSideJavaScript', 'POSTkey'].includes(origdata[i].type)) {
+            if (['serverSideJavaScript', 'POSTkey'].includes(origdata[i].type)) {
                 this.error('', 400);
                 return;
             }
-            if (origdata[i].type === 401 && !auth && ['all files', filerequested].includes(origdata[i].request_path)) {
+            if (origdata[i].type === 401 && !auth) {
                 authdata = origdata[i];
                 auth = true;
             }
-            if ([filerequested, 'all files'].includes(origdata[i].request_path) && [allow, deny].includes(origdata[i].type) && !filefound) {
+            if ([allow, deny].includes(origdata[i].type) && !filefound) {
                 data = origdata[i];
                 filefound = true;
             }
@@ -407,11 +409,12 @@ class DirectoryEntryHandler {
             origdata[i].original_request_path = origdata[i].request_path;
             origdata[i].filerequested = filerequested;
             origdata[i].request_path = WSC.utils.htaccessFileRequested(origdata[i].request_path, this.opts.showIndex);
-            if (origdata[i].type === 401 && !auth && [filerequested, 'all files'].includes(origdata[i].request_path)) {
+            const equalsRequestPath = WSC.utils.isExpectedFile(filerequested.trim(), origdata[i].request_path.trim());
+            if (origdata[i].type === 401 && !auth && equalsRequestPath) {
                 authdata = origdata[i];
                 auth = true;
             }
-            if (origdata[i].type === 403 && origdata[i].request_path === filerequested) {
+            if (origdata[i].type === 403 && equalsRequestPath) {
                 this.error('', 403);
                 return;
             }
@@ -643,8 +646,8 @@ class DirectoryEntryHandler {
         }
     }
     htaccessMain(filerequested) {
-        const finalpath = WSC.utils.stripOffFile(this.request.origpath);
-        const file = this.fs.getByPath(finalpath+this.htaccessName);
+        const htaccessPath = WSC.utils.stripOffFile(this.request.origpath)+this.htaccessName;
+        const file = this.fs.getByPath(htaccessPath);
         if (file.error || !file.isFile) {
             this.onEntryMain();
             return;
@@ -657,7 +660,7 @@ class DirectoryEntryHandler {
                 throw new Error('Not An Array');
             }
         } catch(e) {
-            console.error('Config Error', finalpath+this.htaccessName, e);
+            console.error('Config Error', htaccessPath, e);
             this.error('', 500);
             this.finish();
             return;
@@ -686,24 +689,29 @@ class DirectoryEntryHandler {
             origdata[i].original_request_path = origdata[i].request_path;
             origdata[i].filerequested = filerequested;
             origdata[i].request_path = WSC.utils.htaccessFileRequested(origdata[i].request_path, this.opts.showIndex);
-            if (origdata[i].type === 401 && !auth && [filerequested, 'all files'].includes(origdata[i].request_path) && !this.request.isVersioning) {
+            
+            const equalsRequestPath = WSC.utils.isExpectedFile(filerequested.trim(), origdata[i].request_path.trim());
+            
+            if (origdata[i].type === 401 && !auth && equalsRequestPath && !this.request.isVersioning) {
                 auth = true;
                 authdata = origdata[i];
             }
+            if (this.request.origpath.split('/').pop() === origdata[i].original_request_path && origdata[i].type === 'POSTkey') {
+                hasPost = true;
+            }
+            //console.log(origdata[i].request_path === filerequested);
+            if (equalsRequestPath && origdata[i].type === 'additional header') {
+                additionalHeaders = true;
+                htaccessHeaders.push(origdata[i]);
+            }
+            
             if (origdata[i].type === 'directory listing' &&
-                this.request.origpath.split('/').pop() === '' &&
-                !filefound) {
+                this.request.origpath.split('/').pop() === '') {
                 data = origdata[i];
                 filefound = true;
             }
-            if (origdata[i].type === 'send directory contents' && origdata[i].request_path === filerequested) {
-                const extension = origdata[i].original_request_path.split('.').pop();
-                if (['htm', 'html'].includes(extension)) {
-                    data = origdata[i];
-                    filefound = true;
-                }
-            }
-            if (origdata[i].type === 'serverSideJavaScript' && !filefound) {
+            if (filefound) continue;
+            if (origdata[i].type === 'serverSideJavaScript') {
                 if (this.request.origpath.split('/').pop() === origdata[i].original_request_path || 
                     (['html', 'htm'].includes(origdata[i].original_request_path.split('.').pop()) && 
                      origdata[i].original_request_path.split('/').pop().split('.')[0] === this.request.origpath.split('/').pop() &&
@@ -715,24 +723,23 @@ class DirectoryEntryHandler {
                     filefound = true;
                 }
             }
-            if ([filerequested, 'all files'].includes(origdata[i].request_path) && origdata[i].type === 'versioning' && !filefound && !this.request.isVersioning) {
+            if (!equalsRequestPath) continue;
+            if (origdata[i].type === 'send directory contents') {
+                const extension = origdata[i].original_request_path.split('.').pop();
+                if (['htm', 'html'].includes(extension)) {
+                    data = origdata[i];
+                    filefound = true;
+                }
+            }
+            if (origdata[i].type === 'versioning' && !this.request.isVersioning) {
                 data = origdata[i];
                 filefound = true;
             }
-            if ([filerequested, 'all files'].includes(origdata[i].request_path) &&
-                !filefound &&
-                !['allow delete', 'allow put', 'deny delete', 'deny put', 401, 'directory listing', 'additional header', 'send directory contents', 'POSTkey', 'serverSideJavaScript', 'versioning'].includes(origdata[i].type)) {
+            if (!['allow delete', 'allow put', 'deny delete', 'deny put', 401, 'directory listing', 'additional header', 'send directory contents', 'POSTkey', 'serverSideJavaScript', 'versioning'].includes(origdata[i].type)) {
                 data = origdata[i];
                 filefound = true;
             }
-            if (this.request.origpath.split('/').pop() === origdata[i].original_request_path && origdata[i].type === 'POSTkey') {
-                hasPost = true;
-            }
-            //console.log(origdata[i].request_path === filerequested);
-            if ([filerequested, 'all files'].includes(origdata[i].request_path) && origdata[i].type === 'additional header') {
-                additionalHeaders = true;
-                htaccessHeaders.push(origdata[i]);
-            }
+            
         }
         //console.log(data);
         //console.log(authdata);
