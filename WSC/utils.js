@@ -82,6 +82,14 @@ module.exports = {
         if (origpath === '/') return '/';
         return origpath.substring(0, origpath.length - origpath.split('/').pop().length);
     },
+    isExpectedFile: function(file, expected) {
+        if (expected === "all files") return true;
+        if (!expected.includes("*")) return (file === expected);
+        if (expected === "*") return true;
+        if (expected.startsWith("*.") && file.split(expected.substring(1)).pop() === "") return true;
+        if (expected.endsWith(".*") && file.split(expected.substring(0, expected.length-1))[0] === "") return true;
+        return (file === expected);
+    },
     isHidden: function(path) {
         //RegExp from https://stackoverflow.com/questions/18973655/how-to-ignore-hidden-files-in-fs-readdir-result/37030655#37030655
         const a = path.split('/');
