@@ -89,5 +89,19 @@ module.exports = {
             if ((/(^|\/)\.[^\/\.]/g).test(a[i])) return true;
         }
         return false;
+    },
+    validateAuth: function(auth, username, password) {
+        if (!auth) return false;
+        if (auth.slice(0,6).toLowerCase() !== 'basic ') return false;
+        let auth_decoded;
+        try {
+            auth_decoded = Buffer.from(auth.slice(6, auth.length), 'base64').toString('utf8');
+        } catch(e) {}
+        if (!auth_decoded) return false;
+        
+        const auth_username = auth_decoded.substring(0, auth_decoded.indexOf(":"));
+        const auth_password = auth_decoded.substring(auth_decoded.indexOf(":")+1);
+        
+        return (auth_username === username && auth_password === password);
     }
 }
