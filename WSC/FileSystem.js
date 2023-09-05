@@ -1,6 +1,7 @@
 // When reading a directory, cache the directory contents.
 // This is a performance thing.
 let lastDirReadCache = null;
+const logFSErrors = false;
 
 class getByPath {
     fs;
@@ -39,7 +40,7 @@ class getByPath {
         try {
             stats = fs.statSync(path);
         } catch(e) {
-            console.warn('Error stating "'+path+'"', e);
+            if (logFSErrors) console.warn('Error stating "'+path+'"', e);
             error = e;
         }
         bookmarks.release(bm);
@@ -93,7 +94,7 @@ class getByPath {
             try {
                 files = fs.readdirSync(folder, {encoding: 'utf-8'});
             } catch(e) {
-                console.warn('Error reading directory "'+folder+'"', e);
+                if (logFSErrors) console.warn('Error reading directory "'+folder+'"', e);
                 this.callback({error: 'Path Not Found'});
                 this.callback = null;
                 bookmarks.release(bm);
