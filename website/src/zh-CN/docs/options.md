@@ -162,6 +162,14 @@
 
 如果启用了提供隐藏/.文件的访问，并勾选此选项，则它们会显示在目录列表中，其中包括`.swshtaccess` 文件。
 
+### Serve precompressed .gz and .br files
+
+- 名称: `precompression`
+- 类型: `true/false`
+- 默认值: `true`
+
+Check for and serve precompressed versions of files stored in the same directory with .gz or .br appended to the file extension. Supports Gzip and/or Brotli compression. For example, if a request is made for `example.txt`, the server will first check for `example.txt.gz` or `example.txt.br` and serve those if they exist and if the client indicates it supports that compression method via the `Accept-Encoding` header.
+
 ### 启用.swshttaccess配置文件 <Badge type="tip" text="未完成/可能改变" vertical="top" />
 
 - 名称: `htaccess`

@@ -162,6 +162,14 @@ Disables JavaScript enhancement of the directory listing page.
 
 If hidden/dot files are enabled, determines if they will be shown in the directory listing. This includes `.swshtaccess` files.
 
+### Serve precompressed .gz and .br files
+
+- Name: `precompression`
+- Type: `true/false`
+- Default: `true`
+
+Check for and serve precompressed versions of files stored in the same directory with .gz or .br appended to the file extension. Supports Gzip and/or Brotli compression. For example, if a request is made for `example.txt`, the server will first check for `example.txt.gz` or `example.txt.br` and serve those if they exist and if the client indicates it supports that compression method via the `Accept-Encoding` header.
+
 ### Enable .swshtaccess configuration files <Badge type="tip" text="Unfinished / May change" vertical="top" />
 
 - Name: `htaccess`
