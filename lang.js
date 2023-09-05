@@ -124,7 +124,7 @@ lang = {
         "httpAuthUsername_invalid": "Username cannot contain <code>:</code> or control characters",
         "httpAuthPassword_invalid": "Password cannot contain control characters",
         "option_httpAuthPassword": "HTTP Basic auth password",
-        "option_httpAuthPassword_description": "Password for HTTP Basic authentication. Stored in plain text.",
+        "option_httpAuthPassword_description": "Password for HTTP Basic authentication. Stored in plain text. Cannot contain control characters.",
         "option_ipThrottling": "Maximum connections per IP address",
         "option_ipThrottling_description": "Limits the number of incoming connections per IP address. Set to 0 for unlimited connections.",
         "ipThrottling_invalid": "Enter a number greater than or equal to 0",
