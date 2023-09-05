@@ -787,6 +787,26 @@ class DirectoryEntryHandler {
             this.error('', 404);
             return;
         }
+        //Check to see if this entry file has compressed files we can serve
+        if (this.opts.precompression) {
+            let found = false;
+            const ac = this.request.headers['accept-encoding'];
+            if (ac.includes('gzip')) {
+                let file = this.fs.getByPath(entry.fullPath+".gz");
+                if (file && !file.error) {
+                    entry = file;
+                    this.setHeader('Content-Encoding', 'gzip');
+                    found = true;
+                }
+            }
+            if (ac.includes('br') && !found) {
+                let file = this.fs.getByPath(entry.fullPath+".br");
+                if (file && !file.error) {
+                    this.setHeader('Content-Encoding', 'br');
+                    entry = file;
+                }
+            }
+        }
         if (entry.hidden && !this.opts.hiddenDotFiles) {
             this.error('', 404);
             return;
