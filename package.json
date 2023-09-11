@@ -45,14 +45,15 @@
     "make_windows_appx_ia32": "electron-builder --windows appx --ia32",
     "make_windows_appx_arm64": "electron-builder --windows appx --arm64",
     "make_linux_deb_x64": "electron-builder --linux deb --x64",
-    "make_linux_deb_ia32": "electron-builder --linux deb --ia32",
     "make_linux_deb_arm64": "electron-builder --linux deb --arm64",
-    "make_linux_targz_x64": "electron-builder --linux targz --x64",
-    "make_linux_targz_ia32": "electron-builder --linux targz --ia32",
-    "make_linux_targz_arm64": "electron-builder --linux targz --arm64",
+    "make_linux_rpm_x64": "electron-builder --linux rpm --x64",
+    "make_linux_rpm_arm64": "electron-builder --linux rpm --arm64",
+    "make_linux_zip_x64": "electron-builder --linux zip --x64",
+    "make_linux_zip_arm64": "electron-builder --linux zip --arm64",
     "make_all_macos": "npm run make_macos_x64 && npm run make_macos_arm64 && npm run make_macos_zip_x64 && npm run make_macos_zip_arm64",
     "make_all_windows": "npm run make_windows_x64 && npm run make_windows_ia32 && npm run make_windows_arm64 && npm run make_windows_zip_x64 && npm run make_windows_zip_ia32 && npm run make_windows_zip_arm64",
-    "make_all_windows_appx": "npm run make_windows_appx_x64 && npm run make_windows_appx_ia32 && npm run make_windows_appx_arm64"
+    "make_all_windows_appx": "npm run make_windows_appx_x64 && npm run make_windows_appx_ia32 && npm run make_windows_appx_arm64",
+    "make_all_linux": "npm run make_linux_deb_x64 && npm run make_linux_deb_arm64 && npm run make_linux_rpm_x64 && npm run make_linux_rpm_arm64 && npm run make_linux_zip_x64 && npm run make_linux_zip_arm64"
   },
   "build": {
     "buildVersion": "27",

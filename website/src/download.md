@@ -38,7 +38,13 @@ Current version: **1.2.9** | [Older versions and release notes](https://github.c
 
 ### Linux
 
-We don't offer a Linux download yet, so Linux users should [manually build](/docs/build.md) for their platform.
+**Debian/Ubuntu (.deb):** [64 bit](https://github.com/terreng/simple-web-server/releases/download/v1.2.9/Simple-Web-Server-1.2.9-amd64.deb) | [ARM](https://github.com/terreng/simple-web-server/releases/download/v1.2.9/Simple-Web-Server-1.2.9-arm64.deb)
+
+**Fedora/openSUSE (.rpm):** [64 bit](https://github.com/terreng/simple-web-server/releases/download/v1.2.9/Simple-Web-Server-1.2.9-x86_64.rpm) | [ARM](https://github.com/terreng/simple-web-server/releases/download/v1.2.9/Simple-Web-Server-1.2.9-aarch64.rpm)
+
+**Portable (.zip):** [64 bit](https://github.com/terreng/simple-web-server/releases/download/v1.2.9/Simple-Web-Server-1.2.9.zip) | [ARM](https://github.com/terreng/simple-web-server/releases/download/v1.2.9/Simple-Web-Server-1.2.9-arm64.zip)
+
+If we don't have the download you need, you can [manually build](/docs/build.md) for your platform.
 
 ### Chrome OS
 
