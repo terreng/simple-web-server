@@ -2,9 +2,7 @@ import { description } from '../../package.json'
 import { defaultTheme } from '@vuepress/theme-default'
 import { backToTopPlugin } from '@vuepress/plugin-back-to-top'
 import { mediumZoomPlugin } from '@vuepress/plugin-medium-zoom'
-import { registerComponentsPlugin } from '@vuepress/plugin-register-components'
 import { searchPlugin } from '@vuepress/plugin-search'
-import path from 'path'
 
 export default {
   title: 'Simple Web Server',
@@ -52,10 +50,6 @@ export default {
           {
             text: 'Documentation',
             link: '/docs/options.html'
-          },
-          {
-            text: 'GitHub',
-            link: 'https://github.com/terreng/simple-web-server'
           }
         ],
         sidebar: {
@@ -111,10 +105,6 @@ export default {
           {
             text: '文档',
             link: '/zh-CN/docs/options.html'
-          },
-          {
-            text: 'GitHub',
-            link: 'https://github.com/terreng/simple-web-server'
           }
         ],
         sidebar: {
@@ -170,10 +160,6 @@ export default {
           {
             text: 'Документация',
             link: '/docs/options.html'
-          },
-          {
-            text: 'GitHub',
-            link: 'https://github.com/terreng/simple-web-server'
           }
         ],
         sidebar: {
@@ -229,10 +215,6 @@ export default {
           {
             text: 'Documentation',
             link: '/docs/options.html'
-          },
-          {
-            text: 'GitHub',
-            link: 'https://github.com/terreng/simple-web-server'
           }
         ],
         sidebar: {
@@ -281,13 +263,12 @@ export default {
     logo: '/favicon.ico',
     accentColor: '#d09608',
     repo: 'https://github.com/terreng/simple-web-server',
-    repoLabel: 'Simple Web Server',
-    editLink: false,
+    repoLabel: 'GitHub',
+    editLink: true,
     smoothScroll: true,
-    lastUpdated: false,
     contributors: false,
-    docsDir: '',
-    editLinkText: '',
+    docsDir: 'website/src',
+    editLinkText: 'Edit this page on GitHub',
     lastUpdated: false,
   }),
   plugins: [
