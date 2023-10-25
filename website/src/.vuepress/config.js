@@ -1,6 +1,12 @@
-const { description } = require('../../package')
+import { description } from '../../package.json'
+import { defaultTheme } from '@vuepress/theme-default'
+import { backToTopPlugin } from '@vuepress/plugin-back-to-top'
+import { mediumZoomPlugin } from '@vuepress/plugin-medium-zoom'
+import { registerComponentsPlugin } from '@vuepress/plugin-register-components'
+import { searchPlugin } from '@vuepress/plugin-search'
+import path from 'path'
 
-module.exports = {
+export default {
   title: 'Simple Web Server',
   description: description,
   head: [
@@ -33,12 +39,12 @@ module.exports = {
       description: '簡単UIでほんの数クリックだけでローカルウェブサーバーを作れます。'
     }
   },
-  themeConfig: {
+  theme: defaultTheme({
     locales: {
       '/': {
         label: 'English',
         selectText: 'Language',
-        nav: [
+        navbar: [
           {
             text: 'Download',
             link: '/download.html',
@@ -97,7 +103,7 @@ module.exports = {
       '/zh-CN/': {
         label: '简体中文',
         selectText: '语言',
-        nav: [
+        navbar: [
           {
             text: '下载',
             link: '/zh-CN/download.html',
@@ -156,7 +162,7 @@ module.exports = {
       '/ru/': {
         label: 'Русский',
         selectText: 'Язык',
-        nav: [
+        navbar: [
           {
             text: 'Скачать',
             link: '/download.html',
@@ -215,7 +221,7 @@ module.exports = {
       '/ja/': {
         label: '日本',
         selectText: '言語',
-        nav: [
+        navbar: [
           {
             text: 'Download',
             link: '/download.html',
@@ -272,16 +278,30 @@ module.exports = {
         }
       },
     },
-    sidebarDepth: 3,
-    repo: '',
-    editLinks: false,
+    logo: '/favicon.ico',
+    accentColor: '#d09608',
+    repo: 'https://github.com/terreng/simple-web-server',
+    repoLabel: 'Simple Web Server',
+    editLink: false,
     smoothScroll: true,
+    lastUpdated: false,
+    contributors: false,
     docsDir: '',
     editLinkText: '',
     lastUpdated: false,
-  },
+  }),
   plugins: [
-    '@vuepress/plugin-back-to-top',
-    '@vuepress/plugin-medium-zoom',
+    backToTopPlugin(),
+    mediumZoomPlugin(),
+    searchPlugin({
+      maxSuggestions: 10,
+      isSearchable: (page) => page.path !== '/',
+      getExtraFields: (page) => page.frontmatter.tags ?? [],
+      locales: {
+        '/': {
+          placeholder: 'Search',
+        }
+      }
+    })
   ]
 }
