@@ -1,6 +1,10 @@
-const { description } = require('../../package')
+import { description } from '../../package.json'
+import { defaultTheme } from '@vuepress/theme-default'
+import { backToTopPlugin } from '@vuepress/plugin-back-to-top'
+import { mediumZoomPlugin } from '@vuepress/plugin-medium-zoom'
+import { searchPlugin } from '@vuepress/plugin-search'
 
-module.exports = {
+export default {
   title: 'Simple Web Server',
   description: description,
   head: [
@@ -33,12 +37,12 @@ module.exports = {
       description: '簡単UIでほんの数クリックだけでローカルウェブサーバーを作れます。'
     }
   },
-  themeConfig: {
+  theme: defaultTheme({
     locales: {
       '/': {
         label: 'English',
         selectText: 'Language',
-        nav: [
+        navbar: [
           {
             text: 'Download',
             link: '/download.html',
@@ -46,10 +50,6 @@ module.exports = {
           {
             text: 'Documentation',
             link: '/docs/options.html'
-          },
-          {
-            text: 'GitHub',
-            link: 'https://github.com/terreng/simple-web-server'
           }
         ],
         sidebar: {
@@ -97,7 +97,7 @@ module.exports = {
       '/zh-CN/': {
         label: '简体中文',
         selectText: '语言',
-        nav: [
+        navbar: [
           {
             text: '下载',
             link: '/zh-CN/download.html',
@@ -105,10 +105,6 @@ module.exports = {
           {
             text: '文档',
             link: '/zh-CN/docs/options.html'
-          },
-          {
-            text: 'GitHub',
-            link: 'https://github.com/terreng/simple-web-server'
           }
         ],
         sidebar: {
@@ -156,7 +152,7 @@ module.exports = {
       '/ru/': {
         label: 'Русский',
         selectText: 'Язык',
-        nav: [
+        navbar: [
           {
             text: 'Скачать',
             link: '/download.html',
@@ -164,10 +160,6 @@ module.exports = {
           {
             text: 'Документация',
             link: '/docs/options.html'
-          },
-          {
-            text: 'GitHub',
-            link: 'https://github.com/terreng/simple-web-server'
           }
         ],
         sidebar: {
@@ -215,7 +207,7 @@ module.exports = {
       '/ja/': {
         label: '日本',
         selectText: '言語',
-        nav: [
+        navbar: [
           {
             text: 'Download',
             link: '/download.html',
@@ -223,10 +215,6 @@ module.exports = {
           {
             text: 'Documentation',
             link: '/docs/options.html'
-          },
-          {
-            text: 'GitHub',
-            link: 'https://github.com/terreng/simple-web-server'
           }
         ],
         sidebar: {
@@ -272,16 +260,29 @@ module.exports = {
         }
       },
     },
-    sidebarDepth: 3,
-    repo: '',
-    editLinks: false,
+    logo: '/favicon.ico',
+    accentColor: '#d09608',
+    repo: 'https://github.com/terreng/simple-web-server',
+    repoLabel: 'GitHub',
+    editLink: true,
     smoothScroll: true,
-    docsDir: '',
-    editLinkText: '',
+    contributors: false,
+    docsDir: 'website/src',
+    editLinkText: 'Edit this page on GitHub',
     lastUpdated: false,
-  },
+  }),
   plugins: [
-    '@vuepress/plugin-back-to-top',
-    '@vuepress/plugin-medium-zoom',
+    backToTopPlugin(),
+    mediumZoomPlugin(),
+    searchPlugin({
+      maxSuggestions: 10,
+      isSearchable: (page) => page.path !== '/',
+      getExtraFields: (page) => page.frontmatter.tags ?? [],
+      locales: {
+        '/': {
+          placeholder: 'Search',
+        }
+      }
+    })
   ]
 }
