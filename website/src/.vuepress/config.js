@@ -40,7 +40,7 @@ export default {
   theme: defaultTheme({
     locales: {
       '/': {
-        label: 'English',
+        selectLanguageName: 'English',
         selectText: 'Language',
         navbar: [
           {
@@ -95,7 +95,7 @@ export default {
         }
       },
       '/zh-CN/': {
-        label: '简体中文',
+        selectLanguageName: '简体中文',
         selectText: '语言',
         navbar: [
           {
@@ -150,7 +150,7 @@ export default {
         }
       },
       '/ru/': {
-        label: 'Русский',
+        selectLanguageName: 'Русский',
         selectText: 'Язык',
         navbar: [
           {
@@ -205,7 +205,7 @@ export default {
         }
       },
       '/ja/': {
-        label: '日本',
+        selectLanguageName: '日本',
         selectText: '言語',
         navbar: [
           {
