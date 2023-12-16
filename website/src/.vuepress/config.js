@@ -35,6 +35,10 @@ export default {
     '/ja/': {
       lang: 'ja',
       description: '簡単UIでほんの数クリックだけでローカルウェブサーバーを作れます。'
+    },
+    '/fr-FR/': {
+      lang: 'fr-FR',
+      description: 'Créez des serveurs Web locaux en quelques clics avec une interface facile à utiliser.'
     }
   },
   theme: defaultTheme({
@@ -207,6 +211,61 @@ export default {
       '/ja/': {
         selectLanguageName: '日本',
         selectText: '言語',
+        navbar: [
+          {
+            text: 'Download',
+            link: '/download.html',
+          },
+          {
+            text: 'Documentation',
+            link: '/docs/options.html'
+          }
+        ],
+        sidebar: {
+          '/docs/': [
+            {
+              title: 'Configuration',
+              collapsable: false,
+              children: [
+                'options',
+                'settings',
+              ]
+            },
+            {
+              title: 'Guides',
+              collapsable: false,
+              children: [
+                'config file',
+                'https',
+                'logs',
+                'build',
+                'wsc'
+              ]
+            },
+            {
+              title: 'Plugins',
+              collapsable: false,
+              children: [
+                'plugins',
+                'plugin manifest file',
+                'plugin script'
+              ]
+            },
+            {
+              title: 'Advanced Guides',
+              collapsable: false,
+              children: [
+                'swsaccess',
+                'custom scripts',
+                'custom request handler',
+              ]
+            }
+          ]
+        }
+      },
+      '/fr-FR/': {
+        selectLanguageName: 'Français',
+        selectText: 'Langue',
         navbar: [
           {
             text: 'Download',
