@@ -452,6 +452,10 @@ function getLanguage() {
                 language = "ja";
                 break;
             }
+            if (system_langs[i].indexOf("fr") == 0) {
+                language = "fr_FR";
+                break;
+            }
         }
     }
 
