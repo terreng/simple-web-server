@@ -2,8 +2,6 @@
 
 Option names correspond to the option key in config.json. See [Editing config.json](config%20file.md).
 
-## Basic options
-
 ### Enabled
 
 - Name: `enabled`
@@ -46,7 +44,7 @@ Enabling this option requires local network access. On Windows and macOS you may
   <figcaption>Firewall permission prompt on macOS</figcaption>
 </figure>
 
-## Basic rules
+## Basic Options
 
 ### Automatically show index.html
 
@@ -88,7 +86,7 @@ Show a list of files in the specified directory instead of a 404 page.
 
 Exclude .htm and .html extensions from URLs. For example, `/example.html` will redirect to `/example`. If a file exists at the path without an extension, the HTML file will still be rendered instead.
 
-## Advanced rules
+## Advanced Options
 
 ### Listen on IPV6
 
@@ -186,7 +184,7 @@ You can use `.swshtaccess` files to set additional rules on a per-directory basi
 
 Enables on-the-fly compression for supported browsers. Supports `br`, `gzip`, and `deflate` compression. Not recommended due to poor performance. See [Issue #74](https://github.com/terreng/simple-web-server/issues/74).
 
-## Error pages
+## Error Pages
 
 ### Custom 404 page file path
 
