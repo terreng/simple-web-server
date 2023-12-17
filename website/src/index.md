@@ -19,6 +19,7 @@ footer:
         <div><p>A continuation of <a href="https://chrome.google.com/webstore/detail/web-server-for-chrome/ofhbbkphhbklhfoeikjpcbhemlocgigb" target="_blank">Web Server for Chrome</a> by <a href="https://github.com/kzahel" target="_blank">@kzahel</a>.</p?</div>
         <div><p>Chinese translations by <a href="https://github.com/antnesswcm" target="_blank">@antnesswcm</a>.</p></div>
         <div><p>Japanese translations by <a href="https://github.com/ShinodaNaoki" target="_blank">@ShinodaNaoki</a>.</p></div>
+        <div><p>French translations by <a href="https://github.com/pferrucci" target="_blank">@pferrucci</a>.</p></div>
     </div>
 ---
 <div class="coming_from_wsc_banner"><a href="/docs/wsc.html">Coming from Web Server for Chrome? →</a></div>
