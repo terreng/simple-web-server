@@ -3,8 +3,10 @@ home: true
 heroImage: https://raw.githubusercontent.com/terreng/simple-web-server/main/images/icon.png
 heroText: Simple Web Server
 tagline: Создавайте локальный веб-сервер в несколько кликов с помощью простого интерфейса.
-actionText: Download →
-actionLink: /download/
+actions:
+  - text: Download →
+    link: /download/
+    type: primary
 features:
 - title: Простота настройки
   details: Настройки сервера можно менять под себя в несколько кликов.

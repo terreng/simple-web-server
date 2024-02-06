@@ -3,8 +3,10 @@ home: true
 heroImage: https://raw.githubusercontent.com/terreng/simple-web-server/main/images/icon.png
 heroText: Simple Web Server
 tagline: 簡単UIでほんの数クリックだけでローカルウェブサーバーを作れます
-actionText: Download →
-actionLink: /download/
+actions:
+  - text: Download →
+    link: /download/
+    type: primary
 features:
 - title: 設定が簡単
   details: ほんの数クリックだけでサーバーの設定を変えられます。
