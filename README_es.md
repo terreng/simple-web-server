@@ -2,16 +2,16 @@
 
 [Download](https://simplewebserver.org/download/) &bull; [Documentation](https://simplewebserver.org/docs/options.html) &bull; [Build from source](https://simplewebserver.org/docs/build.html)
 
-Créez des serveurs Web locaux en quelques clics avec une interface facile à utiliser.
+Crear servidores web locales con solo unos pocos clicks, con una interfaz fácil de usar.
 
-Facile à configurer
-Modifiez les options du serveur en quelques clics.
+Fácil de configurar
+Cambie las opciones del servidor con solo unos pocos clicks.
 
-Exécuter plusieurs et en arrière-plan
-Exécutez plusieurs serveurs Web en même temps, même lorsque l'application est fermée.
+Ejecute múltiples & en segundo plano
+Ejecute múltiples servidores web al mismo tiempo, incluso cuando la app esta cerrada.
 
-Applications monopages (SPA)
-Activez la réécriture des chemins pour les SPA en un seul clic.
+Aplicaciones de Una Página
+Active mod rewrite para SPAs con un solo click.
 
 ![screenshots](https://user-images.githubusercontent.com/11605395/163694811-46e3b79c-a187-4c78-b622-6250a6d5d9d0.jpeg)
 
