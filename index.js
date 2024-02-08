@@ -440,6 +440,10 @@ function getLanguage() {
                 language = "en";
                 break;
             }
+            if (system_langs[i].indexOf("es") == 0) {
+                language = "es";
+                break;
+            }
             if (system_langs[i].indexOf("ru") == 0) {
                 language = "ru";
                 break;
