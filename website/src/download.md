@@ -10,7 +10,7 @@ Current version: **1.2.10** | [Older versions and release notes](https://github.
 
 **Installer (.exe):** [64 bit](https://github.com/terreng/simple-web-server/releases/download/v1.2.10/Simple-Web-Server-Installer-1.2.10-x64.exe) | [32 bit](https://github.com/terreng/simple-web-server/releases/download/v1.2.10/Simple-Web-Server-Installer-1.2.10-ia32.exe) | [ARM](https://github.com/terreng/simple-web-server/releases/download/v1.2.10/Simple-Web-Server-Installer-1.2.10-arm64.exe)
 
-**Portable (.zip):** [64 bit](https://github.com/terreng/simple-web-server/releases/download/v1.2.10/Simple-Web-Server-Windows-1.2.10-win.zip) | [32 bit](https://github.com/terreng/simple-web-server/releases/download/v1.2.10/Simple-Web-Server-Windows-1.2.10-ia32-win.zip) | [ARM](https://github.com/terreng/simple-web-server/releases/download/v1.2.10/Simple-Web-Server-Windows-1.2.10-arm64-win.zip)
+**Portable (.zip):** [64 bit](https://github.com/terreng/simple-web-server/releases/download/v1.2.10/Simple-Web-Server-Windows-1.2.10-x64.zip) | [32 bit](https://github.com/terreng/simple-web-server/releases/download/v1.2.10/Simple-Web-Server-Windows-1.2.10-ia32.zip) | [ARM](https://github.com/terreng/simple-web-server/releases/download/v1.2.10/Simple-Web-Server-Windows-1.2.10-arm64.zip)
 
 [How to check if your computer is 32 bit or 64 bit](https://support.microsoft.com/en-us/windows/32-bit-and-64-bit-windows-frequently-asked-questions-c6ca9541-8dce-4d48-0415-94a3faa2e13d)
 
@@ -30,9 +30,9 @@ Current version: **1.2.10** | [Older versions and release notes](https://github.
 
 ### macOS
 
-**Installer (.dmg):** [Intel Chip](https://github.com/terreng/simple-web-server/releases/download/v1.2.10/Simple-Web-Server-macOS-1.2.10.dmg) | [Apple Silicon](https://github.com/terreng/simple-web-server/releases/download/v1.2.10/Simple-Web-Server-macOS-1.2.10-arm64.dmg) (Mac OSX 10.12+)
+**Installer (.dmg):** [Intel Chip](https://github.com/terreng/simple-web-server/releases/download/v1.2.10/Simple-Web-Server-macOS-1.2.10-x64.dmg) | [Apple Silicon](https://github.com/terreng/simple-web-server/releases/download/v1.2.10/Simple-Web-Server-macOS-1.2.10-arm64.dmg) (Mac OSX 10.12+)
 
-**Standalone (.app inside .zip):** [Intel Chip](https://github.com/terreng/simple-web-server/releases/download/v1.2.10/Simple-Web-Server-macOS-1.2.10-mac.zip) | [Apple Silicon](https://github.com/terreng/simple-web-server/releases/download/v1.2.10/Simple-Web-Server-macOS-1.2.10-arm64-mac.zip)
+**Standalone (.app inside .zip):** [Intel Chip](https://github.com/terreng/simple-web-server/releases/download/v1.2.10/Simple-Web-Server-macOS-1.2.10-x64.zip) | [Apple Silicon](https://github.com/terreng/simple-web-server/releases/download/v1.2.10/Simple-Web-Server-macOS-1.2.10-arm64.zip)
 
 [How to check if your Mac has an Intel processor or Apple silicon](https://support.apple.com/en-us/HT211814)
 
@@ -42,7 +42,7 @@ Current version: **1.2.10** | [Older versions and release notes](https://github.
 
 **Fedora/openSUSE (.rpm):** [64 bit](https://github.com/terreng/simple-web-server/releases/download/v1.2.10/Simple-Web-Server-Linux-1.2.10-x86_64.rpm) | [ARM](https://github.com/terreng/simple-web-server/releases/download/v1.2.10/Simple-Web-Server-Linux-1.2.10-aarch64.rpm)
 
-**Portable (.zip):** [64 bit](https://github.com/terreng/simple-web-server/releases/download/v1.2.10/Simple-Web-Server-Linux-1.2.10.zip) | [ARM](https://github.com/terreng/simple-web-server/releases/download/v1.2.10/Simple-Web-Server-Linux-1.2.10-arm64.zip)
+**Portable (.zip):** [64 bit](https://github.com/terreng/simple-web-server/releases/download/v1.2.10/Simple-Web-Server-Linux-1.2.10-x64.zip) | [ARM](https://github.com/terreng/simple-web-server/releases/download/v1.2.10/Simple-Web-Server-Linux-1.2.10-arm64.zip)
 
 If we don't have the download you need, you can [manually build](/docs/build.md) for your platform.
 
