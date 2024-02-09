@@ -101,7 +101,7 @@
         "ja",
         "fr_FR"
       ],
-      "artifactName": "Simple-Web-Server-${version}-${arch}.${ext}"
+      "artifactName": "Simple-Web-Server-macOS-${version}-${arch}.${ext}"
     },
     "mas": {
       "gatekeeperAssess": false,
@@ -123,7 +123,7 @@
     "win": {
       "icon": "images/icon.ico",
       "publisherName": "Simple Web Server",
-      "artifactName": "Simple-Web-Server-${version}-${arch}.${ext}"
+      "artifactName": "Simple-Web-Server-Windows-${version}-${arch}.${ext}"
     },
     "nsis": {
       "createDesktopShortcut": "always",
