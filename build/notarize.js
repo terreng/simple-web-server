@@ -1,5 +1,4 @@
-require('dotenv').config();
-const { notarize } = require('electron-notarize');
+const { notarize } = require('@electron/notarize');
 
 exports.default = async function notarizing(context) {
 
@@ -12,11 +11,10 @@ exports.default = async function notarizing(context) {
     console.log("Notarizing...");
 
     return await notarize({
-        appBundleId: 'org.simplewebserver.simplewebserver',
+        tool: "notarytool",
         appPath: `${appOutDir}/${appName}.app`,
-        appleId: process.env.APPLEID,
-        appleIdPassword: "@keychain:ElectronSigningAppleID",
-        teamId: process.env.TEAMID,
-        ascProvider: process.env.TEAMID
+        keychainProfile: "SWS_Electron_Signing"
     });
+
+    // xcrun notarytool store-credentials "SWS_Electron_Signing" --apple-id "email@example.com" --team-id "RXXXXXXXXX" --password "foos-bars-bazz-bang"
 };

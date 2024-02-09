@@ -17,10 +17,6 @@
     {
       "name": "Ethan O'Brien",
       "url": "https://github.com/ethanaobrien"
-    },
-    {
-      "name": "Kyle Graehl",
-      "url": "https://github.com/kzahel"
     }
   ],
   "license": "MIT",
@@ -54,7 +50,7 @@
     "make_all_windows": "npm run make_windows_x64 && npm run make_windows_ia32 && npm run make_windows_arm64 && npm run make_windows_zip_x64 && npm run make_windows_zip_ia32 && npm run make_windows_zip_arm64",
     "make_all_windows_appx": "npm run make_windows_appx_x64 && npm run make_windows_appx_ia32 && npm run make_windows_appx_arm64",
     "make_all_linux": "npm run make_linux_deb_x64 && npm run make_linux_deb_arm64 && npm run make_linux_rpm_x64 && npm run make_linux_rpm_arm64 && npm run make_linux_zip_x64 && npm run make_linux_zip_arm64",
-    "make_all": "npm run make_all_macos && npm run make_all_windows && npm run make_all_windows_appx && npm run make_all_linux"
+    "make_all": "npm run make_all_macos && npm run make_macos_mas_universal && npm run make_all_linux && npm run make_all_windows && npm run make_all_windows_appx"
   },
   "build": {
     "buildVersion": "28",
@@ -138,7 +134,7 @@
       "icon": "images/512x512.png",
       "category": "Development",
       "vendor": "Simple Web Server",
-      "artifactName": "Simple-Web-Server-${version}-${arch}.${ext}"
+      "artifactName": "Simple-Web-Server-Linux-${version}-${arch}.${ext}"
     },
     "appx": {
       "publisherDisplayName": "Terren",
@@ -157,10 +153,10 @@
     }
   },
   "devDependencies": {
+    "@electron/notarize": "^2.2.1",
     "dotenv": "^16.4.1",
     "electron": "^28.2.2",
     "electron-builder": "^24.9.1",
-    "electron-notarize": "^1.2.2",
     "electron-osx-sign": "^0.6.0"
   },
   "dependencies": {
