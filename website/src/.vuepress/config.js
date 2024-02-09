@@ -26,7 +26,7 @@ export default {
     },
     '/es/': {
       lang: 'es',
-      description: 'Crear servidores web locales con solo unos pocos clicks, con una interfaz fácil de usar.'
+      description: 'Cree servidores web locales con solo unos pocos clicks y con una interfaz fácil de usar.'
     },
     '/zh-CN/': {
       lang: 'zh-CN',
