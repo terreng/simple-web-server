@@ -1073,7 +1073,7 @@ function renderPluginOptions(server_config) {
         let manifest = plugins[Object.keys(plugins)[i]];
         let plugin_options = (server_config && server_config.plugins && server_config.plugins[manifest.id]) ? server_config.plugins[manifest.id] : {};
 
-        pendhtml += '<div tabindex="0" class="settings_section_header plugin_section'+(plugin_options.enabled ? " plugin_enabled" : "")+((manifest.options && manifest.options.length > 0) ? "" : " plugin_nooptions")+'" onclick="toggleSection(this)" id="plugin.'+manifest.id+'" role="button" aria-label="'+urlescape(manifest.name)+'"><div role="checkbox" tabindex="0" aria-label="'+lang.enabled_switch+'" aria-checked="'+(plugin_options.enabled ? "true" : "false")+'" onclick="togglePlugin(event, this)"><i class="material-icons" aria-hidden="true">'+(plugin_options.enabled ? "check_box" : "check_box_outline_blank")+'</i></div><div>'+htmlescape(manifest.name)+'</div>'+((manifest.options && manifest.options.length > 0) ? '<div><i class="material-icons" aria-hidden="true">expand_more</i></div>' : '')+'</div><div class="settings_section" inert><div class="settings_section_inner"'+(plugin_options.enabled ? "" : " inert")+'>'+manifest.options.map(option => drawOption(manifest.id, option, plugin_options)).join("")+'</div></div>';
+        pendhtml += '<div tabindex="0" class="settings_section_header plugin_section'+(plugin_options.enabled ? " plugin_enabled" : "")+(((manifest.options || []).length > 0) ? "" : " plugin_nooptions")+'" onclick="toggleSection(this)" id="plugin.'+manifest.id+'" role="button" aria-label="'+urlescape(manifest.name)+'"><div role="checkbox" tabindex="0" aria-label="'+lang.enabled_switch+'" aria-checked="'+(plugin_options.enabled ? "true" : "false")+'" onclick="togglePlugin(event, this)"><i class="material-icons" aria-hidden="true">'+(plugin_options.enabled ? "check_box" : "check_box_outline_blank")+'</i></div><div>'+htmlescape(manifest.name)+'</div>'+(((manifest.options || []).length > 0) ? '<div><i class="material-icons" aria-hidden="true">expand_more</i></div>' : '')+'</div><div class="settings_section" inert><div class="settings_section_inner"'+(plugin_options.enabled ? "" : " inert")+'>'+(manifest.options || []).map(option => drawOption(manifest.id, option, plugin_options)).join("")+'</div></div>';
     }
 
     document.querySelector("#plugin_options").innerHTML = pendhtml;
@@ -1108,7 +1108,7 @@ function savePluginOptions() {
             "enabled": document.querySelector("#plugin\\."+manifest.id).classList.contains("plugin_enabled")
         }
 
-        for (let e=0; e<manifest.options.length; e++) {
+        for (let e=0; e<(manifest.options || []).length; e++) {
             let option = manifest.options[e];
             
             if (option.type == "bool") {
