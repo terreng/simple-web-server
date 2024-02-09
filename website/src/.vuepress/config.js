@@ -24,6 +24,10 @@ export default {
       title: 'Simple Web Server',
       description: 'Create local web servers in just a few clicks with an easy-to-use interface.'
     },
+    '/es/': {
+      lang: 'es',
+      description: 'Crear servidores web locales con solo unos pocos clicks, con una interfaz fácil de usar.'
+    },
     '/zh-CN/': {
       lang: 'zh-CN',
       description: '简单易用! 只需几次点击就可以部署本地 Web 服务器。'
@@ -53,6 +57,61 @@ export default {
           },
           {
             text: 'Documentation',
+            link: '/docs/options.html'
+          }
+        ],
+        sidebar: {
+          '/docs/': [
+            {
+              title: 'Configuration',
+              collapsable: false,
+              children: [
+                'options',
+                'settings',
+              ]
+            },
+            {
+              title: 'Guides',
+              collapsable: false,
+              children: [
+                'config file',
+                'https',
+                'logs',
+                'build',
+                'wsc'
+              ]
+            },
+            {
+              title: 'Plugins',
+              collapsable: false,
+              children: [
+                'plugins',
+                'plugin manifest file',
+                'plugin script'
+              ]
+            },
+            {
+              title: 'Advanced Guides',
+              collapsable: false,
+              children: [
+                'swsaccess',
+                'custom scripts',
+                'custom request handler',
+              ]
+            }
+          ]
+        }
+      },
+      '/es/': {
+        selectLanguageName: 'Español',
+        selectText: 'Idioma',
+        navbar: [
+          {
+            text: 'Descargar',
+            link: '/download.html',
+          },
+          {
+            text: 'Documentación',
             link: '/docs/options.html'
           }
         ],

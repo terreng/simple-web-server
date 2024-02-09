@@ -2,18 +2,18 @@
 home: true
 heroImage: https://raw.githubusercontent.com/terreng/simple-web-server/main/images/icon.png
 heroText: Simple Web Server
-tagline: Создавайте локальный веб-сервер в несколько кликов с помощью простого интерфейса.
+tagline: Crear servidores web locales con solo unos pocos clicks, con una interfaz fácil de usar.
 actions:
-  - text: Download →
+  - text: Descargar →
     link: /download/
     type: primary
 features:
-- title: Простота настройки
-  details: Настройки сервера можно менять под себя в несколько кликов.
-- title: Множество веб-серверов в фоновом режиме
-  details: Запускайте несколько веб-серверов одновременно, даже когда приложение закрыто.
-- title: Одностраничные приложения
-  details: Легко можно включить перенаправление запросов для одностраничных приложений Single Page Applications (SPA).
+- title: Fácil de configurar
+  details: Cambie las opciones del servidor con solo unos pocos clicks.
+- title: Ejecute múltiples & en segundo plano
+  details: Ejecute múltiples servidores web al mismo tiempo, incluso cuando la app esta cerrada.
+- title: Aplicaciones de Una Página (SPA)
+  details: Active mod rewrite para SPAs con un solo click.
 footerHtml: true
 footer:
     <div class="home_footer">

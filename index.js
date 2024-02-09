@@ -1,5 +1,4 @@
-const version = 1002009;
-const install_source = "website"; //"website" | "microsoftstore" | "macappstore"
+const install_source = process.mas ? "macappstore" : (process.windowsStore ? "microsoftstore" : "website");
 const {app, BrowserWindow, ipcMain, Menu, Tray, dialog, shell, nativeTheme} = require('electron');
 const {networkInterfaces} = require('os');
 var chokidar;
@@ -440,6 +439,10 @@ function getLanguage() {
                 language = "en";
                 break;
             }
+            if (system_langs[i].indexOf("es") == 0) {
+                language = "es";
+                break;
+            }
             if (system_langs[i].indexOf("ru") == 0) {
                 language = "ru";
                 break;
@@ -493,7 +496,7 @@ function createWindow() {
     mainWindow.webContents.on('did-finish-load', () => {
         mainWindow.webContentsLoaded = true;
         lastIps = getIPs();
-        mainWindow.webContents.send('message', {"type": "init", "config": config, ip: lastIps, install_source: install_source, plugins: plugin.getInstalledPlugins(), platform: process.platform});
+        mainWindow.webContents.send('message', {"type": "init", "config": config, ip: lastIps, install_source: install_source, plugins: plugin.getInstalledPlugins(), platform: process.platform, version: app.getVersion()});
         if (update_info) {
             mainWindow.webContents.send('message', {"type": "update", "url": update_info.url, "text": update_info.text, "attributes": update_info.attributes, "version": update_info.version, "ignored": update_info.ignored});
         }
@@ -719,6 +722,13 @@ function checkForUpdates() {
         return;
     }
     last_update_check_skipped = false;
+
+    const parts = app.getVersion().split('.').map(part => parseInt(part, 10));
+    const major = parts[0] * 1000000;
+    const minor = parts[1] * 1000;
+    const patch = parts[2];
+    let version = major + minor + patch;
+
     let req = global.https.request({
         hostname: 'simplewebserver.org',
         port: 443,
