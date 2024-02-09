@@ -40,6 +40,7 @@ window.api.initipc((event, message) => {
         install_source = message.install_source;
         plugins = message.plugins;
         platform = message.platform;
+        document.getElementById("version_number").innerText = message.version;
         if (config.background != null && config.updates != null) openMain();
         else initWelcome();
         document.getElementById("stop_and_quit_button").style.display = config.background ? "block" : "none";
