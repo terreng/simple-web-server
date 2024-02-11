@@ -22,7 +22,7 @@ export default {
     '/': {
       lang: 'en-US',
       title: 'Simple Web Server',
-      description: 'Create local web servers in just a few clicks with an easy-to-use interface.'
+      description: 'Create local web servers in just a few clicks with an easy-to-use interface. Download for Windows or macOS.'
     },
     '/es/': {
       lang: 'es',
