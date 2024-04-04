@@ -459,7 +459,7 @@ body {
     padding-bottom: 8px;
 }
 
-.input_option input {
+.input_option input, .input_option textarea {
     font-size: 20px;
     padding: 6px 8px;
     width: calc(100% - 20px);
@@ -472,7 +472,13 @@ body {
     color: var(--text-primary);
 }
 
-.input_option input:focus {
+.input_option textarea {
+    white-space: pre-wrap;
+    resize: vertical;
+    min-height: 56px;
+}
+
+.input_option input:focus, .input_option textarea:focus {
     border: 2px solid var(--input-outline-focus);
 }
 

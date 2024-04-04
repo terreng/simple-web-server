@@ -1010,7 +1010,7 @@ function addPlugin(select_type) {
 }
 
 window.addEventListener("keypress", function(event) {
-    if (event.key === "Enter") {
+    if (event.key === "Enter" && event.target.tagName !== "TEXTAREA") {
         event.preventDefault();
         document.activeElement.click();
     }
