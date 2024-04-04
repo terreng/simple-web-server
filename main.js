@@ -403,8 +403,8 @@ function addServer(editindex) {
         document.querySelector("#customErrorReplaceString").value = config.servers[editindex].customErrorReplaceString || "";
 
         toggleCheckbox("https", config.servers[editindex].https != null ? config.servers[editindex].https : false);
-        document.querySelector("#httpsCert").value = config.servers[editindex].httpsCert ? config.servers[editindex].httpsCert.split("\r").join("\\r").split("\n").join("\\n") : "";
-        document.querySelector("#httpsKey").value = config.servers[editindex].httpsKey ? config.servers[editindex].httpsKey.split("\r").join("\\r").split("\n").join("\\n") : "";
+        document.querySelector("#httpsCert").value = config.servers[editindex].httpsCert ? config.servers[editindex].httpsCert : "";
+        document.querySelector("#httpsKey").value = config.servers[editindex].httpsKey ? config.servers[editindex].httpsKey : "";
         toggleCheckbox("httpAuth", config.servers[editindex].httpAuth != null ? config.servers[editindex].httpAuth : false);
         document.querySelector("#httpAuthUsername").value = config.servers[editindex].httpAuthUsername || "";
         httpAuthUsernameChange();
@@ -562,8 +562,8 @@ function submitAddServer() {
         "customErrorReplaceString": document.querySelector("#customErrorReplaceString").value,
 
         "https": isChecked("https"),
-        "httpsCert": document.querySelector("#httpsCert").value.split("\\r").join("\r").split("\\n").join("\n"),
-        "httpsKey": document.querySelector("#httpsKey").value.split("\\r").join("\r").split("\\n").join("\n"),
+        "httpsCert": document.querySelector("#httpsCert").value,
+        "httpsKey": document.querySelector("#httpsKey").value,
         "httpAuth": isChecked("httpAuth"),
         "httpAuthUsername": document.querySelector("#httpAuthUsername").value,
         "httpAuthPassword": document.querySelector("#httpAuthPassword").value,
@@ -898,15 +898,15 @@ function generateCrypto() {
             document.getElementById("generate_crypto").classList.remove("disabled");
             if (document.getElementById("httpsCert").value.length > 0 || document.getElementById("httpsKey").value.length > 0) {
                 showPrompt(lang.generate_crypto_overwrite, lang.generate_crypto_overwrite_description, [[lang.prompt_confirm,"destructive",function() {
-                    document.getElementById("httpsCert").value = crypto.cert.split("\r").join("\\r").split("\n").join("\\n");
-                    document.getElementById("httpsKey").value = crypto.privateKey.split("\r").join("\\r").split("\n").join("\\n");
+                    document.getElementById("httpsCert").value = crypto.cert;
+                    document.getElementById("httpsKey").value = crypto.privateKey;
                     hidePrompt();
                 }],[lang.cancel,"",function() {hidePrompt()}]])
             } else {
                 console.log(crypto.cert);
                 console.log(crypto.privateKey);
-                document.getElementById("httpsCert").value = crypto.cert.split("\r").join("\\r").split("\n").join("\\n");
-                document.getElementById("httpsKey").value = crypto.privateKey.split("\r").join("\\r").split("\n").join("\\n");
+                document.getElementById("httpsCert").value = crypto.cert;
+                document.getElementById("httpsKey").value = crypto.privateKey;
             }
         }
     });
