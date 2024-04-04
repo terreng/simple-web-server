@@ -562,8 +562,8 @@ function submitAddServer() {
         "customErrorReplaceString": document.querySelector("#customErrorReplaceString").value,
 
         "https": isChecked("https"),
-        "httpsCert": document.querySelector("#httpsCert").value,
-        "httpsKey": document.querySelector("#httpsKey").value,
+        "httpsCert": document.querySelector("#httpsCert").value.replace(/\r?\n/g, a => '\r\n'),
+        "httpsKey": document.querySelector("#httpsKey").value.replace(/\r?\n/g, a => '\r\n'),
         "httpAuth": isChecked("httpAuth"),
         "httpAuthUsername": document.querySelector("#httpAuthUsername").value,
         "httpAuthPassword": document.querySelector("#httpAuthPassword").value,
