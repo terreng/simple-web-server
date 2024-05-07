@@ -931,13 +931,13 @@ lang = {
         "update_available": "È disponibile una versione più recente di Simple Web Server",
         "no_servers": "Non hai ancora creato server",
         "error_port_in_use_description": "Il server web non è riuscito a partire perché la porta [PORT] è in uso da un altro programma."
-        "error_file_system": "Erreur d'accès au disque",
-        "error_plugins": "Erreur au démarrage des plugins",
-        "error_generic": "Erreur",
-        "version": "Version",
-        "documentation": "Documentation",
-        "issues_and_suggestions": "Problèmes & Suggestions",
-        "web_server_url": "URL du serveur web",
-        "ignore_update": "Ignorer cette mise à jour"
+        "error_file_system": "Errore di accesso al disco",
+        "error_plugins": "Errore all'avvio dei plugin",
+        "error_generic": "Errore generico",
+        "version": "Versione",
+        "documentation": "Documentazione",
+        "issues_and_suggestions": "Problemi e Suggerimenti",
+        "web_server_url": "URL del server web",
+        "ignore_update": "Ignora questo aggiornamento"
     }
 }
