@@ -39,7 +39,7 @@
     "add_plugin_failed_description": "В папке или ZIP файле плагина не найдено описание плагина <code>plugin.json</code>.",
     "remove_plugin": "Удалить плагин",
     "remove_plugin_confirm": "Удалить плагин \"[NAME]\"?",
-    "remove_plugin_confirm_description": "Все настройки этого плагина будут удалены. Если вы просто хотите обновить тогда добавьте новую версию плагина не удаляя его старую версию",
+    "remove_plugin_confirm_description": "Все настройки этого плагина будут удалены. Если вы просто хотите обновить тогда добавьте новую версию плагина не удаляя его старую версию.",
     "edit_server": "Изменить сервер",
     "add_server": "Добавить сервер",
     "create_server": "Создать сервер",
@@ -64,7 +64,7 @@
     "option_directoryListing": "Показывать файлы в папке",
     "option_directoryListing_description": "Показывать список файлов в указаной папке вместо страницы 404й ошибки.",
     "option_excludeDotHtml": "Убирать расширение .html",
-    "option_excludeDotHtml_description": "Убирать из URL расширение .htm и .html файлов. Например, <code>/example.html</code> будет перенаправлен нао <code>/example</code>. Даже если существует такой файл без расширения т.е. <code>example</code> то всё равно будет показан HTML файл <code>example.html</code>.",
+    "option_excludeDotHtml_description": "Убирать из URL расширение .htm и .html файлов. Например, <code>/example.html</code> будет перенаправлен на <code>/example</code>. Даже если существует такой файл без расширения т.е. <code>/example</code> то всё равно будет показан HTML файл <code>/example.html</code>.",
     "section_advanced_rules": "Расширенные правила",
     "option_ipv6": "Слушать на IPV6 адресе",
     "option_ipv6_description": "Использовать IPV6 вместо IPV4. Это изменит URL веб сервера.",
@@ -136,5 +136,12 @@
     "documentation": "Документация",
     "issues_and_suggestions": "Проблемы и предложения",
     "web_server_url": "URL вебсервера",
-    "ignore_update": "Пропустить обновление"
+    "ignore_update": "Пропустить обновление",
+    "feature_1": "Легко настроить",
+    "feature_1_description": "Изменение параметров сервера всего за несколько кликов.",
+    "feature_2": "Запустить несколько в фоновом режиме",
+    "feature_3": "Одностраничные приложения (Single Page Applications, SPA)",
+    "feature_3_description": "Включить перенаправление на index.html для SPA одним щелчком.",
+    "tagline": "Создайте локальные веб-серверы всего в несколько кликов с простым в использовании интерфейсом.",
+    "feature_2_description": "Несколько веб-серверов работают одновременно, даже когда приложение закрыто."
 }
