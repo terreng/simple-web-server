@@ -12,6 +12,13 @@ languages = {
 
 lang = {
     "en": {
+        "tagline": "Create local web servers in just a few clicks with an easy-to-use interface.",
+        "feature_1": "Easy to configure",
+        "feature_1_description": "Change server options with just a few clicks.",
+        "feature_2": "Run multiple & in the background",
+        "feature_2_description": "Run multiple web servers at the same time, even when the app is closed.",
+        "feature_3": "Single Page Applications",
+        "feature_3_description": "Enable rewrite to index.html for SPAs with a single click.",
         "settings": "Settings",
         "stop_and_quit": "Stop & Quit",
         "new_server": "New Server",
