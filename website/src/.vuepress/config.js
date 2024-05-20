@@ -1,8 +1,6 @@
 import { defineUserConfig } from 'vuepress'
 import { description } from '../../package.json'
 import { defaultTheme } from '@vuepress/theme-default'
-import { backToTopPlugin } from '@vuepress/plugin-back-to-top'
-import { mediumZoomPlugin } from '@vuepress/plugin-medium-zoom'
 import { searchPlugin } from '@vuepress/plugin-search'
 import { viteBundler } from '@vuepress/bundler-vite'
 
@@ -305,8 +303,6 @@ export default defineUserConfig({
     lastUpdated: false,
   }),
   plugins: [
-    backToTopPlugin(),
-    mediumZoomPlugin(),
     searchPlugin({
       maxSuggestions: 10,
       isSearchable: (page) => page.path !== '/',
