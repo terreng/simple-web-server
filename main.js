@@ -1,40 +1,56 @@
 let config = {};
 let ip;
 let server_states = [];
-let running_states = {
-    "stopped": {
-        "text": lang.state_stopped,
-        "list_color": "var(--status-gray)",
-        "edit_color": "var(--text-primary)"
-    },
-    "starting": {
-        "text": lang.state_starting,
-        "list_color": "var(--status-gray)",
-        "edit_color": "var(--text-primary)"
-    },
-    "running": {
-        "text":  lang.state_running,
-        "list_color": "var(--status-green)",
-        "edit_color": "var(--status-green)"
-    },
-    "error": {
-        "text": lang.state_error,
-        "list_color": "var(--status-red)",
-        "edit_color": "var(--status-red)"
-    },
-    "unknown": {
-        "text": lang.state_starting,
-        "list_color": "var(--status-gray)",
-        "edit_color": "var(--text-primary)"
-    },
-}
+let running_states = {};
 let install_source;
 let plugins;
 let platform;
 let ignore_update;
+let lang;
+let languages;
+var language;
 
 window.api.initipc((event, message) => {
     if (message.type === "init") {
+        lang = message.lang;
+        languages = message.languages;
+        language = message.language;
+
+        document.body.innerHTML = document.body.innerHTML.replace(/{lang\.([\w.]+?)}/g, function(match) {if (!lang[match.substring(6, match.length-1)]) {console.warn("Couldn't find lang string: "+match.substring(6, match.length-1))}; return lang[match.substring(6, match.length-1)]});
+
+        document.getElementById("language").innerHTML = Array.from(Object.entries(languages)).map(function(a) {return '<option value="'+a[0]+'">'+a[1]+'</option>'}).join("");
+        document.getElementById("language").value = language;
+
+        document.documentElement.setAttribute("lang", language);
+
+        running_states = {
+            "stopped": {
+                "text": lang.state_stopped,
+                "list_color": "var(--status-gray)",
+                "edit_color": "var(--text-primary)"
+            },
+            "starting": {
+                "text": lang.state_starting,
+                "list_color": "var(--status-gray)",
+                "edit_color": "var(--text-primary)"
+            },
+            "running": {
+                "text":  lang.state_running,
+                "list_color": "var(--status-green)",
+                "edit_color": "var(--status-green)"
+            },
+            "error": {
+                "text": lang.state_error,
+                "list_color": "var(--status-red)",
+                "edit_color": "var(--status-red)"
+            },
+            "unknown": {
+                "text": lang.state_starting,
+                "list_color": "var(--status-gray)",
+                "edit_color": "var(--text-primary)"
+            },
+        }
+
         config = message.config;
         ip = message.ip;
         install_source = message.install_source;

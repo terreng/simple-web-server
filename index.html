@@ -5,7 +5,6 @@
         <meta http-equiv="Content-Security-Policy" content="default-src 'self' 'unsafe-inline'">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <link rel="stylesheet" href="style.css">
-        <script type='application/javascript' charset="utf-8" src='lang.js'></script>
     </head>
     <body style="visibility: hidden;" ondragenter="dragEnter(event)" ondragover="dragOver(event)" ondragleave="dragLeave(event)" ondrop="dragDrop(event)">
 
@@ -494,23 +493,6 @@
 
         <div id="drop_zone"></div>
 
-        <script>
-            var language = navigator.userAgent.split("language:")[1];
-
-            if (lang[language] && Object.keys(lang[language])) {
-                for (var i = 0; i < Object.keys(lang[language]).length; i++) {
-                    lang["en"][Object.keys(lang[language])[i]] = lang[language][Object.keys(lang[language])[i]];
-                }
-            }
-            lang = lang["en"];
-
-            document.body.innerHTML = document.body.innerHTML.replace(/{lang\.([\w.]+?)}/g, function(match) {if (!lang[match.substring(6, match.length-1)]) {console.warn("Couldn't find lang string: "+match.substring(6, match.length-1))}; return lang[match.substring(6, match.length-1)]});
-
-            document.getElementById("language").innerHTML = Array.from(Object.entries(languages)).map(function(a) {return '<option value="'+a[0]+'">'+a[1]+'</option>'}).join("");
-            document.getElementById("language").value = language;
-
-            document.documentElement.setAttribute("lang", language);
-        </script>
         <script src="main.js"></script>
     </body>
 </html>

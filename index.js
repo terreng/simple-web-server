@@ -26,7 +26,17 @@ global.bookmarks = require('./bookmarks.js');
 global.plugin = require('./plugin.js');
 global.WSC = require("./WSC.js");
 
-require("./lang.js");
+const languages = {
+    "en": "English",
+    "es": "Español",
+    "ru": "Русский",
+    "zh_CN": "简体中文",
+    "ja": "日本語",
+    "fr_FR": "Français",
+    "pt_PT": "Português",
+    "it_IT": "Italiano",
+    "uk": "Українська"
+}
 
 console = function(old_console) {
     let new_console = {
@@ -334,7 +344,7 @@ ipcMain.on('saveconfig', function(event, arg1) {
     }
 
     if (arg1.reload && mainWindow) {
-        mainWindow.webContents.setUserAgent(mainWindow.webContents.getUserAgent().split(" language:")[0] + " language:" + getLanguage());
+        // mainWindow.webContents.setUserAgent(mainWindow.webContents.getUserAgent().split(" language:")[0] + " language:" + getLanguage());
         mainWindow.reload();
     }
 })
@@ -465,6 +475,21 @@ function getLanguage() {
     return language;
 }
 
+function getLang() {
+    if (getLanguage() !== "en") {
+        let lang_target_src = JSON.parse(fs.readFileSync(path.join(__dirname, "lang/"+getLanguage().split("_")[0]+".json"), "utf-8"));   
+        let lang_to_return = JSON.parse(fs.readFileSync(path.join(__dirname, "lang/en.json"), "utf-8"));
+        
+        for (var i = 0; i < Object.keys(lang_target_src).length; i++) {
+            lang_to_return[Object.keys(lang_target_src)[i]] = lang_target_src[Object.keys(lang_target_src)[i]];
+        }
+        
+        return lang_to_return;
+    } else {
+        return JSON.parse(fs.readFileSync(path.join(__dirname, "lang/en.json"), "utf-8"));
+    }
+}
+
 function createWindow() {
     mainWindow = new BrowserWindow({
         backgroundColor: nativeTheme.shouldUseDarkColors ? '#202020' : '#ffffff',
@@ -487,7 +512,7 @@ function createWindow() {
     });
     mainWindow.setMenuBarVisibility(false);
 
-    mainWindow.webContents.setUserAgent(mainWindow.webContents.getUserAgent() + " language:" + getLanguage());
+    // mainWindow.webContents.setUserAgent(mainWindow.webContents.getUserAgent() + " language:" + getLanguage());
 
     mainWindow.loadFile('index.html');
 
@@ -496,7 +521,7 @@ function createWindow() {
     mainWindow.webContents.on('did-finish-load', () => {
         mainWindow.webContentsLoaded = true;
         lastIps = getIPs();
-        mainWindow.webContents.send('message', {"type": "init", "config": config, ip: lastIps, install_source: install_source, plugins: plugin.getInstalledPlugins(), platform: process.platform, version: app.getVersion()});
+        mainWindow.webContents.send('message', {"type": "init", "language": getLanguage(), "languages": languages, "lang": getLang(), "config": config, ip: lastIps, install_source: install_source, plugins: plugin.getInstalledPlugins(), platform: process.platform, version: app.getVersion()});
         if (update_info) {
             mainWindow.webContents.send('message', {"type": "update", "url": update_info.url, "text": update_info.text, "attributes": update_info.attributes, "version": update_info.version, "ignored": update_info.ignored});
         }
