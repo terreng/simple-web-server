@@ -119,7 +119,7 @@
     "option_httpAuthPassword_description": "Contraseña para la autenticación básica HTTP. Se almacena coo texto plano. No puede contener caracters de control.",
     "option_ipThrottling": "Máxima cantidad de conexiones por dirección IP",
     "option_ipThrottling_description": "Limita el numero de conexiones entrantes por dirección IP. Coloque 0 para permitir conexiones ilimitadas.",
-    "ipThrottling_invalid": "",
+    "ipThrottling_invalid": "Introduzca un número mayor o igual que 0",
     "state_stopped": "Detenido",
     "state_starting": "Iniciando...",
     "state_running": "Ejecutando",
@@ -142,6 +142,6 @@
     "feature_2_description": "Ejecute múltiples servidores web al mismo tiempo, incluso cuando la app esta cerrada.",
     "feature_3": "Aplicaciones de Una Página (SPA)",
     "tagline": "Cree servidores web locales con solo unos pocos clicks y con una interfaz fácil de usar.",
-    "feature_3_description": "Active el mod rewrite para SPAs con un solo click.",
+    "feature_3_description": "Habilite la reescritura en index.html para SPAs con un solo clic.",
     "feature_1_description": "Cambie las opciones del servidor con solo unos pocos clicks."
 }
