@@ -136,5 +136,12 @@
     "documentation": "Documentation",
     "issues_and_suggestions": "Problèmes & Suggestions",
     "web_server_url": "URL du serveur web",
-    "ignore_update": "Ignorer cette mise à jour"
+    "ignore_update": "Ignorer cette mise à jour",
+    "tagline": "Créez des serveurs Web locaux en quelques clics avec une interface facile à utiliser.",
+    "feature_1": "Facile à configurer",
+    "feature_3": "Applications monopages (SPA)",
+    "feature_1_description": "Modifiez les options du serveur en quelques clics.",
+    "feature_2": "Exécuter plusieurs et en arrière-plan",
+    "feature_2_description": "Exécutez plusieurs serveurs Web en même temps, même lorsque l'application est fermée.",
+    "feature_3_description": "Activez la réécriture des chemins pour les SPA en un seul clic."
 }
