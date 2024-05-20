@@ -5,7 +5,7 @@ heroText: Simple Web Server
 tagline: 简单易用! 只需几次点击就可以部署本地 Web 服务器。
 actions:
   - text: 下载 →
-    link: /zh-CN/download/
+    link: /zh-CN/download.html
     type: primary
 features:
 - title: 配置超简单

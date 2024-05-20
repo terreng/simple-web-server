@@ -5,7 +5,7 @@ heroText: Simple Web Server
 tagline: Cree servidores web locales con solo unos pocos clicks y con una interfaz fácil de usar.
 actions:
   - text: Descargar →
-    link: /download/
+    link: /download.html
     type: primary
 features:
 - title: Fácil de configurar

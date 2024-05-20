@@ -5,7 +5,7 @@ heroText: Simple Web Server
 tagline: 簡単UIでほんの数クリックだけでローカルウェブサーバーを作れます
 actions:
   - text: Download →
-    link: /download/
+    link: /download.html
     type: primary
 features:
 - title: 設定が簡単
