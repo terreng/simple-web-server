@@ -1,7 +1,7 @@
 {
   "name": "simple-web-server",
   "productName": "Simple Web Server",
-  "version": "1.2.10",
+  "version": "1.2.11",
   "main": "index.js",
   "description": "Create a local web server in just a few clicks with an easy to use interface. A continuation of Web Server for Chrome, built with Electron.",
   "author": {
@@ -46,14 +46,14 @@
     "make_linux_rpm_arm64": "electron-builder --linux rpm --arm64",
     "make_linux_zip_x64": "electron-builder --linux zip --x64",
     "make_linux_zip_arm64": "electron-builder --linux zip --arm64",
-    "make_all_macos": "npm run make_macos_x64 && npm run make_macos_arm64 && npm run make_macos_zip_x64 && npm run make_macos_zip_arm64",
-    "make_all_windows": "npm run make_windows_x64 && npm run make_windows_ia32 && npm run make_windows_arm64 && npm run make_windows_zip_x64 && npm run make_windows_zip_ia32 && npm run make_windows_zip_arm64",
-    "make_all_windows_appx": "npm run make_windows_appx_x64 && npm run make_windows_appx_ia32 && npm run make_windows_appx_arm64",
-    "make_all_linux": "npm run make_linux_deb_x64 && npm run make_linux_deb_arm64 && npm run make_linux_rpm_x64 && npm run make_linux_rpm_arm64 && npm run make_linux_zip_x64 && npm run make_linux_zip_arm64",
+    "make_all_macos": "electron-builder --mac dmg zip --x64 --arm64 -c.mac.identity=\"Terren Gurule\"",
+    "make_all_windows": "electron-builder --windows nsis zip --x64 --ia32 --arm64",
+    "make_all_windows_appx": "electron-builder --windows appx --x64 --ia32 --arm64",
+    "make_all_linux": "electron-builder --linux deb rpm zip --x64 --arm64",
     "make_all": "npm run make_all_macos && npm run make_macos_mas_universal && npm run make_all_linux && npm run make_all_windows && npm run make_all_windows_appx"
   },
   "build": {
-    "buildVersion": "28",
+    "buildVersion": "29",
     "appId": "org.simplewebserver.simplewebserver",
     "productName": "Simple Web Server",
     "copyright": "MIT License",
@@ -99,7 +99,10 @@
         "ru",
         "zh_CN",
         "ja",
-        "fr_FR"
+        "fr_FR",
+        "pt_PT",
+        "it_IT",
+        "uk"
       ],
       "artifactName": "Simple-Web-Server-macOS-${version}-${arch}.${ext}"
     },
@@ -148,7 +151,10 @@
         "zh-CN",
         "ru",
         "ja",
-        "fr_FR"
+        "fr-FR",
+        "pt-PT",
+        "it-IT",
+        "uk"
       ]
     }
   },
