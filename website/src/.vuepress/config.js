@@ -43,7 +43,16 @@ export default {
     '/fr-FR/': {
       lang: 'fr-FR',
       description: 'Créez des serveurs Web locaux en quelques clics avec une interface facile à utiliser.'
-    }
+    },
+    '/pt-PT/': {
+      lang: 'pt-PT',
+    },
+    '/it-IT/': {
+      lang: 'it-IT',
+    },
+    '/uk/': {
+      lang: 'uk',
+    },
   },
   theme: defaultTheme({
     locales: {
@@ -114,48 +123,7 @@ export default {
             text: 'Documentación',
             link: '/docs/options.html'
           }
-        ],
-        sidebar: {
-          '/docs/': [
-            {
-              title: 'Configuration',
-              collapsable: false,
-              children: [
-                'options',
-                'settings',
-              ]
-            },
-            {
-              title: 'Guides',
-              collapsable: false,
-              children: [
-                'config file',
-                'https',
-                'logs',
-                'build',
-                'wsc'
-              ]
-            },
-            {
-              title: 'Plugins',
-              collapsable: false,
-              children: [
-                'plugins',
-                'plugin manifest file',
-                'plugin script'
-              ]
-            },
-            {
-              title: 'Advanced Guides',
-              collapsable: false,
-              children: [
-                'swsaccess',
-                'custom scripts',
-                'custom request handler',
-              ]
-            }
-          ]
-        }
+        ]
       },
       '/zh-CN/': {
         selectLanguageName: '简体中文',
@@ -224,158 +192,27 @@ export default {
             text: 'Документация',
             link: '/docs/options.html'
           }
-        ],
-        sidebar: {
-          '/docs/': [
-            {
-              title: 'Configuration',
-              collapsable: false,
-              children: [
-                'options',
-                'settings',
-              ]
-            },
-            {
-              title: 'Guides',
-              collapsable: false,
-              children: [
-                'config file',
-                'https',
-                'logs',
-                'build',
-                'wsc'
-              ]
-            },
-            {
-              title: 'Plugins',
-              collapsable: false,
-              children: [
-                'plugins',
-                'plugin manifest file',
-                'plugin script'
-              ]
-            },
-            {
-              title: 'Advanced Guides',
-              collapsable: false,
-              children: [
-                'swsaccess',
-                'custom scripts',
-                'custom request handler',
-              ]
-            }
-          ]
-        }
+        ]
       },
       '/ja/': {
         selectLanguageName: '日本',
-        selectText: '言語',
-        navbar: [
-          {
-            text: 'Download',
-            link: '/download.html',
-          },
-          {
-            text: 'Documentation',
-            link: '/docs/options.html'
-          }
-        ],
-        sidebar: {
-          '/docs/': [
-            {
-              title: 'Configuration',
-              collapsable: false,
-              children: [
-                'options',
-                'settings',
-              ]
-            },
-            {
-              title: 'Guides',
-              collapsable: false,
-              children: [
-                'config file',
-                'https',
-                'logs',
-                'build',
-                'wsc'
-              ]
-            },
-            {
-              title: 'Plugins',
-              collapsable: false,
-              children: [
-                'plugins',
-                'plugin manifest file',
-                'plugin script'
-              ]
-            },
-            {
-              title: 'Advanced Guides',
-              collapsable: false,
-              children: [
-                'swsaccess',
-                'custom scripts',
-                'custom request handler',
-              ]
-            }
-          ]
-        }
+        selectText: '言語'
       },
       '/fr-FR/': {
         selectLanguageName: 'Français',
-        selectText: 'Langue',
-        navbar: [
-          {
-            text: 'Download',
-            link: '/download.html',
-          },
-          {
-            text: 'Documentation',
-            link: '/docs/options.html'
-          }
-        ],
-        sidebar: {
-          '/docs/': [
-            {
-              title: 'Configuration',
-              collapsable: false,
-              children: [
-                'options',
-                'settings',
-              ]
-            },
-            {
-              title: 'Guides',
-              collapsable: false,
-              children: [
-                'config file',
-                'https',
-                'logs',
-                'build',
-                'wsc'
-              ]
-            },
-            {
-              title: 'Plugins',
-              collapsable: false,
-              children: [
-                'plugins',
-                'plugin manifest file',
-                'plugin script'
-              ]
-            },
-            {
-              title: 'Advanced Guides',
-              collapsable: false,
-              children: [
-                'swsaccess',
-                'custom scripts',
-                'custom request handler',
-              ]
-            }
-          ]
-        }
+        selectText: 'Langue'
+      },
+      '/pt-PT/': {
+        selectLanguageName: 'Português',
+        selectText: 'Idioma'
+      },
+      '/it-IT/': {
+        selectLanguageName: 'Italiano',
+        selectText: 'Lingua'
+      },
+      '/uk/': {
+        selectLanguageName: 'Українська',
+        selectText: 'Мова'
       },
     },
     logo: '/favicon.ico',

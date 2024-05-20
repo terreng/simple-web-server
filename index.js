@@ -444,30 +444,12 @@ function getLanguage() {
         language = config.language;
     } else {
         var system_langs = app.getPreferredSystemLanguages();
-        for (var i = 0; i < system_langs.length; i++) {
-            if (system_langs[i].indexOf("en") == 0) {
-                language = "en";
-                break;
-            }
-            if (system_langs[i].indexOf("es") == 0) {
-                language = "es";
-                break;
-            }
-            if (system_langs[i].indexOf("ru") == 0) {
-                language = "ru";
-                break;
-            }
-            if (system_langs[i].indexOf("zh") == 0) {
-                language = "zh_CN";
-                break;
-            }
-            if (system_langs[i].indexOf("ja") == 0) {
-                language = "ja";
-                break;
-            }
-            if (system_langs[i].indexOf("fr") == 0) {
-                language = "fr_FR";
-                break;
+        for (let i = 0; i < system_langs.length; i++) {
+            for (let e = 0; e < Object.keys(languages).length; e++) {
+                if (system_langs[i].indexOf(Object.keys(languages)[e].split("_")[0]) == 0) {
+                    language = Object.keys(languages)[e];
+                    break;
+                }
             }
         }
     }

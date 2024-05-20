@@ -34,7 +34,7 @@
     "make_all": "npm run make_all_macos && npm run make_macos_mas_universal && npm run make_all_linux && npm run make_all_windows && npm run make_all_windows_appx"
   },
   "build": {
-    "buildVersion": "29",
+    "buildVersion": "30",
     "appId": "org.simplewebserver.simplewebserver",
     "productName": "Simple Web Server",
     "copyright": "MIT License",
@@ -80,9 +80,9 @@
         "ru",
         "zh_CN",
         "ja",
-        "fr_FR",
+        "fr",
         "pt_PT",
-        "it_IT",
+        "it",
         "uk"
       ],
       "artifactName": "Simple-Web-Server-macOS-${version}-${arch}.${ext}"
