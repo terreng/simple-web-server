@@ -1,10 +1,12 @@
+import { defineUserConfig } from 'vuepress'
 import { description } from '../../package.json'
 import { defaultTheme } from '@vuepress/theme-default'
 import { backToTopPlugin } from '@vuepress/plugin-back-to-top'
 import { mediumZoomPlugin } from '@vuepress/plugin-medium-zoom'
 import { searchPlugin } from '@vuepress/plugin-search'
+import { viteBundler } from '@vuepress/bundler-vite'
 
-export default {
+export default defineUserConfig({
   title: 'Simple Web Server',
   description: description,
   head: [
@@ -55,62 +57,99 @@ export default {
     },
   },
   theme: defaultTheme({
-    locales: {
-      '/': {
-        selectLanguageName: 'English',
-        selectText: 'Language',
-        navbar: [
-          {
-            text: 'Download',
-            link: '/download.html',
-          },
-          {
-            text: 'Documentation',
-            link: '/docs/options.html'
-          }
-        ],
-        sidebar: {
-          '/docs/': [
+    selectLanguageName: 'English',
+    selectText: 'Language',
+    navbar: [
+      {
+        text: 'Download',
+        link: '/download.html',
+      },
+      {
+        text: 'Documentation',
+        link: '/docs/options.html'
+      }
+    ],
+    sidebar: {
+      '/docs/': [
+        {
+          title: 'Configuration',
+          collapsable: false,
+          children: [
             {
-              title: 'Configuration',
-              collapsable: false,
-              children: [
-                'options',
-                'settings',
-              ]
+              text: "Server Options",
+              link: "/docs/options.html"
             },
             {
-              title: 'Guides',
-              collapsable: false,
-              children: [
-                'config file',
-                'https',
-                'logs',
-                'build',
-                'wsc'
-              ]
+              text: "App Settings",
+              link: "/docs/settings.html"
+            }
+          ]
+        },
+        {
+          title: 'Guides',
+          collapsable: false,
+          children: [
+            {
+              text: "Editing config.json",
+              link: "/docs/config file.html"
             },
             {
-              title: 'Plugins',
-              collapsable: false,
-              children: [
-                'plugins',
-                'plugin manifest file',
-                'plugin script'
-              ]
+              text: "Using HTTPS",
+              link: "/docs/https.html"
             },
             {
-              title: 'Advanced Guides',
-              collapsable: false,
-              children: [
-                'swsaccess',
-                'custom scripts',
-                'custom request handler',
-              ]
+              text: "Viewing logs",
+              link: "/docs/logs.html"
+            },
+            {
+              text: "Building from source",
+              link: "/docs/build.html"
+            },
+            {
+              text: "Coming from Web Server for Chrome?",
+              link: "/docs/wsc.html"
+            }
+          ]
+        },
+        {
+          title: 'Plugins',
+          collapsable: false,
+          children: [
+            {
+              text: "Introduction to plugins",
+              link: "/docs/plugins.html"
+            },
+            {
+              text: "Plugin manifest file",
+              link: "/docs/plugin manifest file.html"
+            },
+            {
+              text: "Plugin script",
+              link: "/docs/plugin script.html"
+            }
+          ]
+        },
+        {
+          title: 'Advanced Guides',
+          collapsable: false,
+          children: [
+            {
+              text: "Advanced configuration using .swshtaccess files",
+              link: "/docs/swsaccess.html"
+            },
+            {
+              text: "Using custom scripts",
+              link: "/docs/custom scripts.html"
+            },
+            {
+              text: "Creating a custom request handler",
+              link: "/docs/custom request handler.html"
             }
           ]
         }
-      },
+      ]
+    },
+    locales: {
       '/es/': {
         selectLanguageName: 'Español',
         selectText: 'Idioma',
@@ -144,40 +183,79 @@ export default {
               title: '配置',
               collapsable: false,
               children: [
-                'options',
-                'settings',
+                {
+                  text: "服务器配置",
+                  link: "/zh-CN/docs/options.html"
+                },
+                {
+                  text: "应用设置",
+                  link: "/zh-CN/docs/settings.html"
+                }
               ]
             },
             {
               title: '指南',
               collapsable: false,
               children: [
-                'config file',
-                'https',
-                'logs',
-                'build',
-                'wsc'
+                {
+                  text: "编辑 config.json",
+                  link: "/zh-CN/docs/config file.html"
+                },
+                {
+                  text: "使用 HTTPS",
+                  link: "/zh-CN/docs/https.html"
+                },
+                {
+                  text: "查看日志",
+                  link: "/zh-CN/docs/logs.html"
+                },
+                {
+                  text: "从源码构建",
+                  link: "/zh-CN/docs/build.html"
+                },
+                {
+                  text: "来自Chrome的Web Server?",
+                  link: "/zh-CN/docs/wsc.html"
+                }
               ]
             },
             {
               title: '插件',
               collapsable: false,
               children: [
-                'plugins',
-                'plugin manifest file',
-                'plugin script'
+                {
+                  text: "插件介绍",
+                  link: "/zh-CN/docs/plugins.html"
+                },
+                {
+                  text: "插件清单文件",
+                  link: "/zh-CN/docs/plugin manifest file.html"
+                },
+                {
+                  text: "插件脚本",
+                  link: "/zh-CN/docs/plugin script.html"
+                }
               ]
             },
             {
               title: '高级指南',
               collapsable: false,
               children: [
-                'swsaccess',
-                'custom scripts',
-                'custom request handler',
+                {
+                  text: "使用.swshtaccess文件进行高级配置",
+                  link: "/zh-CN/docs/swsaccess.html"
+                },
+                {
+                  text: "使用自定义脚本",
+                  link: "/zh-CN/docs/custom scripts.html"
+                },
+                {
+                  text: "创建自定义httpRequest程序",
+                  link: "/zh-CN/docs/custom request handler.html"
+                }
               ]
             }
-          ],
+          ]
         }
       },
       '/ru/': {
@@ -235,9 +313,16 @@ export default {
       getExtraFields: (page) => page.frontmatter.tags ?? [],
       locales: {
         '/': {
-          placeholder: 'Search',
+          placeholder: 'Search...',
+        },
+        '/es/': {
+          placeholder: 'Busca...',
         }
       }
     })
-  ]
-}
+  ],
+  bundler: viteBundler({
+    viteOptions: {},
+    vuePluginOptions: {},
+  })
+})
