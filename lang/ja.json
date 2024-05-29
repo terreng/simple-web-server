@@ -85,8 +85,8 @@
     "option_staticDirectoryListing_description": "ディレクトリ内一覧ページでのJavaScriptによる機能強化を無効化します。",
     "option_hiddenDotFilesDirectoryListing": "ディレクトリ内一覧に隠しファイル/dotファイルを表示",
     "option_hiddenDotFilesDirectoryListing_description": "隠しファイル/dotファイルが有効な場合、ディレクトリ内一覧ページでもそれらを表示します。この対象には<code>.swshtaccess</code>ファイルも含まれます。",
-    "option_precompression": "Serve precompressed .gz and .br files",
-    "option_precompression_description": "Check for and serve precompressed versions of files stored in the same directory with .gz or .br appended to the file extension. Supports Gzip and/or Brotli compression. For example, if a request is made for <code>example.txt</code>, the server will first check for <code>example.txt.gz</code> or <code>example.txt.br</code> and serve those if they exist and if the client indicates it supports that compression method via the <code>Accept-Encoding</code> header.",
+    "option_precompression": "",
+    "option_precompression_description": "",
     "option_htaccess": ".swshtaccessファイル適用",
     "option_htaccess_description": "<code>.swshtaccess</code>ファイルを使って、ディレクトリごとに追加のルールを設定できます。<a href='https://simplewebserver.org/docs/swsaccess.html'>.swshtaccessファイルを使用した拡張設定について</a>。<br><br>これは実験的機能であり、今後仕様変更される場合があります。代わりに<a href='https://simplewebserver.org/docs/plugins.html'>プラグイン</a>の利用もご検討ください。",
     "section_error_pages": "エラーページ",
@@ -114,7 +114,7 @@
     "option_httpAuthUsername": "ベーシック認証ユーザー名",
     "option_httpAuthUsername_description": "ベーシック認証のユーザー名。<code>:</code>を含んでいてはいけません。",
     "httpAuthUsername_invalid": "ユーザー名に<code>:</code>を含めることはできません。",
-    "httpAuthPassword_invalid": "Password cannot contain control characters",
+    "httpAuthPassword_invalid": "",
     "option_httpAuthPassword": "ベーシック認証パスワード",
     "option_httpAuthPassword_description": "ベーシック認証のパスワード。平文で保存されます。",
     "option_ipThrottling": "IPアドレスごとの最大接続数",
@@ -136,5 +136,12 @@
     "documentation": "ドキュメント",
     "issues_and_suggestions": "問題の報告や提案",
     "web_server_url": "ウェブサーバーURL",
-    "ignore_update": "更新を無視する"
+    "ignore_update": "更新を無視する",
+    "feature_1": "設定が簡単",
+    "feature_1_description": "ほんの数クリックだけでサーバーの設定を変えられます。",
+    "tagline": "簡単UIでほんの数クリックだけでローカルウェブサーバーを作れます",
+    "feature_2": "複数実行・バックグラウンド実行",
+    "feature_2_description": "同時に複数のサーバーを動かせます。アプリを閉じてもサーバーは停止しないようにできます。",
+    "feature_3": "シングルページアプリケーション",
+    "feature_3_description": "シングルクリックのSPA用にmod rewriteができます。"
 }

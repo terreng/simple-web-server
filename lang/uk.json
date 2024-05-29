@@ -64,7 +64,7 @@
     "option_directoryListing": "Показати зміст директорії",
     "option_directoryListing_description": "Показати список файлі в зазначеній директорії замість 404 сторінки(коли файла не знайдено).",
     "option_excludeDotHtml": "Не показувати .html розшинення",
-    "option_excludeDotHtml_description": "Не показувати .htm чи .html розширення в URL-адресі. Для прикладу, <code>/example.html</code> буде перенаправлено до code>/example</code>. Якщо такий файл без розширення вже існує, HTML файл буде всерівно показаний.",
+    "option_excludeDotHtml_description": "Не показувати .htm чи .html розширення в URL-адресі. Для прикладу, <code>/example.html</code> буде перенаправлено до <code>/example</code>. Якщо такий файл без розширення вже існує, HTML файл буде всерівно показаний.",
     "section_advanced_rules": "Розширені опції",
     "option_ipv6": "Слухати на IPV6",
     "option_ipv6_description": "Слухати на IPV6 замість протоколу по замовчуванню, яким є IPV4. Цей параметр змінить URL адреси, які будуть використовувати IPV6 замість IPV4, однак деякі IPV4 адреси залишуться працювати при увімкненій мережі.",

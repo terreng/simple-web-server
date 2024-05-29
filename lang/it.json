@@ -87,5 +87,12 @@
     "documentation": "Documentazione",
     "issues_and_suggestions": "Problemi e Suggerimenti",
     "web_server_url": "URL del server web",
-    "ignore_update": "Ignora questo aggiornamento"
+    "ignore_update": "Ignora questo aggiornamento",
+    "tagline": "Crea server web locali in pochi clic con un'interfaccia facile da usare.",
+    "feature_1": "Facile da configurare",
+    "feature_1_description": "Modifica le opzioni del server con pochi clic.",
+    "feature_2": "Esegui multipli in background",
+    "feature_2_description": "Esegui più server web contemporaneamente, anche quando l'applicazione è chiusa.",
+    "feature_3": "Applicazioni a pagina singola",
+    "feature_3_description": "Abilita la modifica del modulo per le SPA con un solo clic."
 }
