@@ -1,6 +1,6 @@
 # Download
 
-<ms-store-badge productid="9PC6682RJCDD" style="margin-right: 10px;"></ms-store-badge><a href="https://apps.apple.com/us/app/simple-web-server/id1625925255?mt=12&amp;itsct=apps_box_badge&amp;itscg=30200" target="_blank" rel="noopener"><img src="/appstorebadge.svg" alt="Download on the Mac App Store" style="border-radius:13px;height: 60px;"></a>
+<ms-store-badge productid="9PC6682RJCDD" style="margin-right: 10px;"></ms-store-badge><a href="https://apps.apple.com/us/app/simple-web-server/id1625925255?mt=12&amp;itsct=apps_box_badge&amp;itscg=30200" target="_blank" rel="noopener"><img src="/appstorebadge.svg" alt="Download on the Mac App Store" style="height: 60px;"></a>
 
 Current version: **1.2.11** | [Older versions and release notes](https://github.com/terreng/simple-web-server/releases)
 
@@ -30,11 +30,33 @@ Current version: **1.2.11** | [Older versions and release notes](https://github.
 
 ### macOS
 
-**Installer (.dmg):** [Intel Chip](https://github.com/terreng/simple-web-server/releases/download/v1.2.11/Simple-Web-Server-macOS-1.2.11-x64.dmg) | [Apple Silicon](https://github.com/terreng/simple-web-server/releases/download/v1.2.11/Simple-Web-Server-macOS-1.2.11-arm64.dmg) (Mac OSX 10.12+)
+**Installer (.dmg):** [Intel Chip](https://github.com/terreng/simple-web-server/releases/download/v1.2.11/Simple-Web-Server-macOS-1.2.11-x64.dmg) | [Apple Silicon](https://github.com/terreng/simple-web-server/releases/download/v1.2.11/Simple-Web-Server-macOS-1.2.11-arm64.dmg)
 
 **Standalone (.app inside .zip):** [Intel Chip](https://github.com/terreng/simple-web-server/releases/download/v1.2.11/Simple-Web-Server-macOS-1.2.11-x64.zip) | [Apple Silicon](https://github.com/terreng/simple-web-server/releases/download/v1.2.11/Simple-Web-Server-macOS-1.2.11-arm64.zip)
 
 [How to check if your Mac has an Intel processor or Apple silicon](https://support.apple.com/en-us/HT211814)
+
+<p>
+<details>
+  <summary>These downloads require Mac OSX 10.15 or later. For older versions of Mac OSX, expand this section.</summary>
+
+  ### Mac OSX 10.13 and 10.14
+
+  The last compatible version is 1.2.9.
+
+  **Installer (.dmg):** [Intel Chip](https://github.com/terreng/simple-web-server/releases/download/v1.2.9/Simple-Web-Server-1.2.9.dmg)
+
+  **Standalone (.app inside .zip):** [Intel Chip](https://github.com/terreng/simple-web-server/releases/download/v1.2.9/Simple-Web-Server-1.2.9-mac.zip)
+
+  ### Older versions of Mac OSX
+
+  Try version 1.2.0.
+
+  **Installer (.dmg):** [Intel Chip](https://github.com/terreng/simple-web-server/releases/download/v1.2.0/Simple-Web-Server-1.2.0.dmg) (Mac OSX 10.12+)
+
+  **Standalone (.app inside .zip):** [Intel Chip](https://github.com/terreng/simple-web-server/releases/download/v1.2.0/Simple-Web-Server-1.2.0-mac.zip)
+</details>
+</p>
 
 ### Linux
 

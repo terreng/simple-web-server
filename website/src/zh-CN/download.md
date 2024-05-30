@@ -1,6 +1,6 @@
 # 下载
 
-<ms-store-badge productid="9PC6682RJCDD" style="margin-right: 10px;"></ms-store-badge><a href="https://apps.apple.com/us/app/simple-web-server/id1625925255?mt=12&itsct=apps_box_badge&itscg=30200" target="_blank" rel="noopener"><img src="/appstorebadge.svg" alt="通过 Mac App Store 获取" style="border-radius:13px;height: 60px;"></a>
+<ms-store-badge productid="9PC6682RJCDD" style="margin-right: 10px;"></ms-store-badge><a href="https://apps.apple.com/us/app/simple-web-server/id1625925255?mt=12&itsct=apps_box_badge&itscg=30200" target="_blank" rel="noopener"><img src="/appstorebadge.svg" alt="通过 Mac App Store 获取" style="height: 60px;"></a>
 
 当前版本: **1.2.11** | [历史版本和发行说明](https://github.com/terreng/simple-web-server/releases)
 
@@ -31,7 +31,7 @@
 
 ### macOS
 
-**安装程序 (.dmg):** [Intel处理器](https://github.com/terreng/simple-web-server/releases/download/v1.2.11/Simple-Web-Server-macOS-1.2.11-x64.dmg) | [Apple处理器](https://github.com/terreng/simple-web-server/releases/download/v1.2.11/Simple-Web-Server-macOS-1.2.11-arm64.dmg) (Mac OSX 10.12+)
+**安装程序 (.dmg):** [Intel处理器](https://github.com/terreng/simple-web-server/releases/download/v1.2.11/Simple-Web-Server-macOS-1.2.11-x64.dmg) | [Apple处理器](https://github.com/terreng/simple-web-server/releases/download/v1.2.11/Simple-Web-Server-macOS-1.2.11-arm64.dmg)
 
 **独立版本(.app inside .zip):** [Intel处理器](https://github.com/terreng/simple-web-server/releases/download/v1.2.11/Simple-Web-Server-macOS-1.2.11-x64.zip) | [Apple处理器](https://github.com/terreng/simple-web-server/releases/download/v1.2.11/Simple-Web-Server-macOS-1.2.11-arm64.zip)
 
