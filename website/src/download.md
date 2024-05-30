@@ -40,7 +40,7 @@ Current version: **1.2.11** | [Older versions and release notes](https://github.
 <details>
   <summary>These downloads require Mac OSX 10.15 or later. For older versions of Mac OSX, expand this section.</summary>
 
-  ### Mac OSX 10.13 and 10.14
+  #### Mac OSX 10.13 and 10.14
 
   The last compatible version is 1.2.9.
 
@@ -48,7 +48,7 @@ Current version: **1.2.11** | [Older versions and release notes](https://github.
 
   **Standalone (.app inside .zip):** [Intel Chip](https://github.com/terreng/simple-web-server/releases/download/v1.2.9/Simple-Web-Server-1.2.9-mac.zip)
 
-  ### Older versions of Mac OSX
+  #### Older versions of Mac OSX
 
   Try version 1.2.0.
 
