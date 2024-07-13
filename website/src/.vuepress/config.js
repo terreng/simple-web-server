@@ -53,6 +53,14 @@ export default defineUserConfig({
     '/uk/': {
       lang: 'uk',
     },
+    '/de/': {
+      lang: 'de',
+      description: 'Erstelle lokale Webserver mit wenigen Klicks und einem einfachen Interface.'
+    },
+    '/sv/': {
+      lang: 'sv',
+      description: 'Skapa lokala webservrar med några få klick i ett lättanvänt användargränssnitt.'
+    },
   },
   theme: defaultTheme({
     selectLanguageName: 'English',
@@ -289,6 +297,14 @@ export default defineUserConfig({
       '/uk/': {
         selectLanguageName: 'Українська',
         selectText: 'Мова'
+      },
+      '/de/': {
+        selectLanguageName: 'Deutsch',
+        selectText: 'Taal'
+      },
+      '/sv/': {
+        selectLanguageName: 'Svenska',
+        selectText: 'Språk'
       },
     },
     logo: '/favicon.ico',

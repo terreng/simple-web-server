@@ -18,7 +18,7 @@ footerHtml: true
 footer:
     <div class="home_footer">
         <div><p>Made with ❤️ by <a href="https://github.com/terreng" target="_blank">@terreng</a> and <a href="https://github.com/ethanaobrien" target="_blank">@ethanaobrien</a>.</p></div>
-        <div><p>A continuation of <a href="https://chrome.google.com/webstore/detail/web-server-for-chrome/ofhbbkphhbklhfoeikjpcbhemlocgigb" target="_blank">Web Server for Chrome</a> by <a href="https://github.com/kzahel" target="_blank">@kzahel</a>.</p?</div>
+        <div><p>A continuation of <a href="https://chrome.google.com/webstore/detail/web-server-for-chrome/ofhbbkphhbklhfoeikjpcbhemlocgigb" target="_blank">Web Server for Chrome</a> by <a href="https://github.com/kzahel" target="_blank">@kzahel</a>.</p></div>
     </div>
 ---
 <div class="coming_from_wsc_banner"><a href="/docs/wsc.html">Coming from Web Server for Chrome? →</a></div>
