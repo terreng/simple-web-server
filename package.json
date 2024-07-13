@@ -143,7 +143,7 @@
     "@electron/notarize": "^2.2.1",
     "dotenv": "^16.4.1",
     "electron": "^28.2.2",
-    "electron-builder": "^24.9.1",
+    "electron-builder": "^24.13.3",
     "electron-osx-sign": "^0.6.0"
   },
   "dependencies": {
