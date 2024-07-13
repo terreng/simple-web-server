@@ -2,15 +2,15 @@
 
 <ms-store-badge productid="9PC6682RJCDD" style="margin-right: 10px;"></ms-store-badge><a href="https://apps.apple.com/us/app/simple-web-server/id1625925255?mt=12&itsct=apps_box_badge&itscg=30200" target="_blank" rel="noopener"><img src="/appstorebadge.svg" alt="通过 Mac App Store 获取" style="height: 60px;"></a>
 
-当前版本: **1.2.11** | [历史版本和发行说明](https://github.com/terreng/simple-web-server/releases)
+当前版本: **1.2.12** | [历史版本和发行说明](https://github.com/terreng/simple-web-server/releases)
 
 ## 直接下载
 
 ### Windows
 
-**安装程序 (.exe):** [64 bit](https://github.com/terreng/simple-web-server/releases/download/v1.2.11/Simple-Web-Server-Installer-1.2.11-x64.exe) | [32 bit](https://github.com/terreng/simple-web-server/releases/download/v1.2.11/Simple-Web-Server-Installer-1.2.11-ia32.exe) | [ARM](https://github.com/terreng/simple-web-server/releases/download/v1.2.11/Simple-Web-Server-Installer-1.2.11-arm64.exe)
+**安装程序 (.exe):** [64 bit](https://github.com/terreng/simple-web-server/releases/download/v1.2.12/Simple-Web-Server-Installer-1.2.12-x64.exe) | [32 bit](https://github.com/terreng/simple-web-server/releases/download/v1.2.12/Simple-Web-Server-Installer-1.2.12-ia32.exe) | [ARM](https://github.com/terreng/simple-web-server/releases/download/v1.2.12/Simple-Web-Server-Installer-1.2.12-arm64.exe)
 
-**便携版本 (.zip):** [64 bit](https://github.com/terreng/simple-web-server/releases/download/v1.2.11/Simple-Web-Server-Windows-1.2.11-x64.zip) | [32 bit](https://github.com/terreng/simple-web-server/releases/download/v1.2.11/Simple-Web-Server-Windows-1.2.11-ia32.zip) | [ARM](https://github.com/terreng/simple-web-server/releases/download/v1.2.11/Simple-Web-Server-Windows-1.2.11-arm64.zip)
+**便携版本 (.zip):** [64 bit](https://github.com/terreng/simple-web-server/releases/download/v1.2.12/Simple-Web-Server-Windows-1.2.12-x64.zip) | [32 bit](https://github.com/terreng/simple-web-server/releases/download/v1.2.12/Simple-Web-Server-Windows-1.2.12-ia32.zip) | [ARM](https://github.com/terreng/simple-web-server/releases/download/v1.2.12/Simple-Web-Server-Windows-1.2.12-arm64.zip)
 
 [如何检查您的计算机是32位还是64位](https://support.microsoft.com/en-us/windows/32-bit-and-64-bit-windows-frequently-asked-questions-c6ca9541-8dce-4d48-0415-94a3faa2e13d)
 
@@ -31,19 +31,19 @@
 
 ### macOS
 
-**安装程序 (.dmg):** [Intel处理器](https://github.com/terreng/simple-web-server/releases/download/v1.2.11/Simple-Web-Server-macOS-1.2.11-x64.dmg) | [Apple处理器](https://github.com/terreng/simple-web-server/releases/download/v1.2.11/Simple-Web-Server-macOS-1.2.11-arm64.dmg)
+**安装程序 (.dmg):** [Intel处理器](https://github.com/terreng/simple-web-server/releases/download/v1.2.12/Simple-Web-Server-macOS-1.2.12-x64.dmg) | [Apple处理器](https://github.com/terreng/simple-web-server/releases/download/v1.2.12/Simple-Web-Server-macOS-1.2.12-arm64.dmg)
 
-**独立版本(.app inside .zip):** [Intel处理器](https://github.com/terreng/simple-web-server/releases/download/v1.2.11/Simple-Web-Server-macOS-1.2.11-x64.zip) | [Apple处理器](https://github.com/terreng/simple-web-server/releases/download/v1.2.11/Simple-Web-Server-macOS-1.2.11-arm64.zip)
+**独立版本(.app inside .zip):** [Intel处理器](https://github.com/terreng/simple-web-server/releases/download/v1.2.12/Simple-Web-Server-macOS-1.2.12-x64.zip) | [Apple处理器](https://github.com/terreng/simple-web-server/releases/download/v1.2.12/Simple-Web-Server-macOS-1.2.12-arm64.zip)
 
 [如何检查您的Mac是Intel处理器还是Apple处理器](https://support.apple.com/en-us/HT211814)
 
 ### Linux
 
-**Debian/Ubuntu (.deb):** [64 bit](https://github.com/terreng/simple-web-server/releases/download/v1.2.11/Simple-Web-Server-Linux-1.2.11-amd64.deb) | [ARM](https://github.com/terreng/simple-web-server/releases/download/v1.2.11/Simple-Web-Server-Linux-1.2.11-arm64.deb)
+**Debian/Ubuntu (.deb):** [64 bit](https://github.com/terreng/simple-web-server/releases/download/v1.2.12/Simple-Web-Server-Linux-1.2.12-amd64.deb) | [ARM](https://github.com/terreng/simple-web-server/releases/download/v1.2.12/Simple-Web-Server-Linux-1.2.12-arm64.deb)
 
-**Fedora/openSUSE (.rpm):** [64 bit](https://github.com/terreng/simple-web-server/releases/download/v1.2.11/Simple-Web-Server-Linux-1.2.11-x86_64.rpm) | [ARM](https://github.com/terreng/simple-web-server/releases/download/v1.2.11/Simple-Web-Server-Linux-1.2.11-aarch64.rpm)
+**Fedora/openSUSE (.rpm):** [64 bit](https://github.com/terreng/simple-web-server/releases/download/v1.2.12/Simple-Web-Server-Linux-1.2.12-x86_64.rpm) | [ARM](https://github.com/terreng/simple-web-server/releases/download/v1.2.12/Simple-Web-Server-Linux-1.2.12-aarch64.rpm)
 
-**Portable (.zip):** [64 bit](https://github.com/terreng/simple-web-server/releases/download/v1.2.11/Simple-Web-Server-Linux-1.2.11-x64.zip) | [ARM](https://github.com/terreng/simple-web-server/releases/download/v1.2.11/Simple-Web-Server-Linux-1.2.11-arm64.zip)
+**Portable (.zip):** [64 bit](https://github.com/terreng/simple-web-server/releases/download/v1.2.12/Simple-Web-Server-Linux-1.2.12-x64.zip) | [ARM](https://github.com/terreng/simple-web-server/releases/download/v1.2.12/Simple-Web-Server-Linux-1.2.12-arm64.zip)
 
 If we don't have the download you need, you can [manually build](/docs/build.md) for your platform.
 
