@@ -20,6 +20,8 @@ Languages:
 - Português
 - Italiano
 - Українська
+- Deutsch
+- Svenska
 
 Help us translate to more languages on [Weblate](https://hosted.weblate.org/projects/simple-web-server/simple-web-server/)!
 

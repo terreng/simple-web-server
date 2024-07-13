@@ -35,7 +35,9 @@ const languages = {
     "fr_FR": "Français",
     "pt_PT": "Português",
     "it_IT": "Italiano",
-    "uk": "Українська"
+    "uk": "Українська",
+    "de": "Deutsch",
+    "sv": "Svenska",
 }
 
 console = function(old_console) {
