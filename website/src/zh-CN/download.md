@@ -14,20 +14,14 @@
 
 [如何检查您的计算机是32位还是64位](https://support.microsoft.com/en-us/windows/32-bit-and-64-bit-windows-frequently-asked-questions-c6ca9541-8dce-4d48-0415-94a3faa2e13d)
 
-<p>
-<details>
-  <summary>这些下载未签名。运行安装程序时，您可能会看到一条警告消息.</summary>
-
-
+::: details 这些下载未签名。运行安装程序时，您可能会看到一条警告消息.
 单击**更多信息**，然后单击**仍然运行**以继续。
 
 <figure>
-      <img src='/images/windows_code_sign_warning.jpeg' style='width: 350px'>
-      <figcaption>Windows Defender警告消息</figcaption>
-  </figure>
-
-</details>
-</p>
+  <img src='/images/windows_code_sign_warning.jpeg' style='width: 350px'>
+  <figcaption>Windows Defender警告消息</figcaption>
+</figure>
+:::
 
 ### macOS
 
