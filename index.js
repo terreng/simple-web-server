@@ -440,17 +440,17 @@ setInterval(function() {
 }, 10000) //every 10 seconds
 
 function getLanguage() {
-    var language = "en";
+    let language = "en";
 
     if (config.language && Object.keys(languages).indexOf(config.language) > -1) {
         language = config.language;
     } else {
-        var system_langs = app.getPreferredSystemLanguages();
+        let system_langs = app.getPreferredSystemLanguages();
         for (let i = 0; i < system_langs.length; i++) {
             for (let e = 0; e < Object.keys(languages).length; e++) {
                 if (system_langs[i].indexOf(Object.keys(languages)[e].split("_")[0]) == 0) {
                     language = Object.keys(languages)[e];
-                    break;
+                    return language;
                 }
             }
         }
