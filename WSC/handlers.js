@@ -876,6 +876,18 @@ class DirectoryEntryHandler {
                     });
                 }
             }
+            // Check if the file has a .gz extension
+            if (entry.fullPath.endsWith('.gz')) {
+                // Remove the .gz extension and check if the remaining string has a valid file extension
+                const remainingPath = entry.fullPath.slice(0, -3);
+                const remainingExt = remainingPath.split('.').pop().toLowerCase();
+                const remainingType = WSC.MIMETYPES[remainingExt];
+                if (remainingType) {
+                    // Set the appropriate Content-Type and Content-Encoding headers
+                    this.setHeader('Content-Type', remainingType);
+                    this.setHeader('Content-Encoding', 'gzip');
+                }
+            }
             this.writeHeaders(code);
             if (!compression) {
                 const res = this.res;
