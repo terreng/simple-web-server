@@ -26,11 +26,11 @@
     "tauri": "tauri"
   },
   "devDependencies": {
-    "@tauri-apps/cli": "^1.1.1"
+    "@tauri-apps/cli": "^2.0.4"
   },
   "dependencies": {
     "atob": "^2.1.2",
-    "dotenv": "^16.0.1",
+    "dotenv": "^16.4.5",
     "http": "^0.0.1-security",
     "https": "^1.0.0",
     "jszip": "^3.10.1",
