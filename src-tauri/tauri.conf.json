@@ -3,8 +3,7 @@
   "build": {
     "beforeBuildCommand": "",
     "beforeDevCommand": "",
-    "frontendDist": "../..",
-    "devUrl": "http://127.0.0.1:8765/index.html"
+    "frontendDist": "../"
   },
   "bundle": {
     "active": true,

@@ -64,7 +64,7 @@ fn main() {
         .expect("error while building tauri application")
         .run(|_app_handle, event| match event {
             tauri::RunEvent::ExitRequested { api, .. } => {
-                api.prevent_exit();
+                // api.prevent_exit();
             }
             _ => {}
         });
@@ -114,12 +114,12 @@ fn init(app_handle: tauri::AppHandle) -> Result<serde_json::Value, String> {
 
     Ok(json!({
         "config": config,
-        "ip": ["127.0.0.1"],
+        "ip": ["127.0.0.1"], // TODO: Get IPs
         "install_source": INSTALL_SOURCE,
-        "plugins": {},
-        "platform": "darwin",  // Change from "darwin" to the PLATFORM constant
+        "plugins": {},  // TODO: Support plugins
+        "platform": "darwin",  // TODO: Change from "darwin" to the PLATFORM constant
         "languages": available_languages,
-        "language": "en",
+        "language": "en",  // TODO: Detect device language
         "lang": lang_data
     }))
 }
