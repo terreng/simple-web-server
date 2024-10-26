@@ -15,9 +15,28 @@ use std::io::BufReader;
 use std::io::BufWriter;
 use std::io::Write;
 use std::path::Path;
+use std::collections::HashMap;
+use std::fs;
+use std::path::PathBuf;
 
 const VERSION: i32 = 1001004;
 const INSTALL_SOURCE: &str = "website";
+
+fn languages() -> HashMap<&'static str, &'static str> {
+    let mut languages = HashMap::new();
+    languages.insert("en", "English");
+    languages.insert("es", "Español");
+    languages.insert("ru", "Русский");
+    languages.insert("zh_CN", "简体中文");
+    languages.insert("ja", "日本語");
+    languages.insert("fr_FR", "Français");
+    languages.insert("pt_PT", "Português");
+    languages.insert("it_IT", "Italiano");
+    languages.insert("uk", "Українська");
+    languages.insert("de", "Deutsch");
+    languages.insert("sv", "Svenska");
+    languages
+}
 
 fn savepath() -> String {
     let config_directory: String = dirs::config_dir().unwrap().display().to_string();
@@ -51,19 +70,58 @@ fn main() {
         });
 }
 
-#[tauri::command]
-fn init() -> Value {
-    let mut config: Value = json!({});
-    if Path::new(&(savepath() + "config.json")).exists() {
-        let file = File::open(savepath() + "config.json").expect("Unable to open");
-        let reader = BufReader::new(file);
-        config = serde_json::from_reader(reader).expect("Unable to read JSON");
+fn get_lang(language: &str, _app_handle: &tauri::AppHandle) -> HashMap<String, String> {
+    let mut lang_to_return: HashMap<String, String> = HashMap::new();
+
+    // Include the default language file at compile time
+    let default_lang_content = include_str!("../../lang/en.json");
+    let default_lang: HashMap<String, String> = serde_json::from_str(default_lang_content)
+        .expect("Failed to parse default language file");
+
+    if language != "en" {
+        // Try to read the target language file
+        let target_lang_path = format!("../../lang/{}.json", language.split('_').next().unwrap());
+        if let Ok(target_lang_content) = std::fs::read_to_string(target_lang_path) {
+            if let Ok(target_lang) = serde_json::from_str::<HashMap<String, String>>(&target_lang_content) {
+                for (key, value) in default_lang {
+                    lang_to_return.insert(key.clone(), target_lang.get(&key).unwrap_or(&value).clone());
+                }
+            } else {
+                lang_to_return = default_lang.clone();
+            }
+        } else {
+            lang_to_return = default_lang.clone();
+        }
+    } else {
+        return default_lang;
     }
-    return json!({
+
+    lang_to_return
+}
+
+#[tauri::command]
+fn init(app_handle: tauri::AppHandle) -> Result<serde_json::Value, String> {
+    let config: Value = if Path::new(&(savepath() + "config.json")).exists() {
+        let file = File::open(savepath() + "config.json").map_err(|e| e.to_string())?;
+        let reader = BufReader::new(file);
+        serde_json::from_reader(reader).map_err(|e| e.to_string())?
+    } else {
+        json!({})
+    };
+
+    let available_languages = languages();
+    let lang_data = get_lang("en", &app_handle);
+
+    Ok(json!({
         "config": config,
         "ip": ["127.0.0.1"],
-        "install_source": INSTALL_SOURCE
-    });
+        "install_source": INSTALL_SOURCE,
+        "plugins": {},
+        "platform": "darwin",  // Change from "darwin" to the PLATFORM constant
+        "languages": available_languages,
+        "language": "en",
+        "lang": lang_data
+    }))
 }
 
 #[tauri::command]
