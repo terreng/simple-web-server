@@ -143,5 +143,7 @@
     "documentation": "Documentation",
     "issues_and_suggestions": "Issues & Suggestions",
     "web_server_url": "Web server URL",
-    "ignore_update": "Ignore this update"
+    "ignore_update": "Ignore this update",
+    "error_mas_stale_bookmarks_description": "This program no longer has permission to access the selected folder due to macOS security restrictions for apps downloaded from the App Store. The folder may have been deleted or recreated. Please re-select the folder below to restore access. If you encounter this error frequently, consider downloading Simple Web Server directly from our website to avoid this limitation.",
+    "error_mas_stale_bookmarks_title": "Please re-select the folder"
 }
