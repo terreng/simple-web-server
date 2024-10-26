@@ -21,7 +21,7 @@
         </div>
 
         <div class="container" id="main_container">
-            <a id="update_banner" target="_blank">
+            <a id="update_banner" target="_blank" onclick="window.api.openExternal(this.href);event.preventDefault()">
                 <div id="update_banner_text"></div>
                 <div aria-label="{lang.ignore_update}" onclick="ignoreUpdate();event.stopPropagation();return false;"><i class="material-icons" aria-hidden="true">close</i></div>
             </a>
