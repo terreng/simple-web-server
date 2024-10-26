@@ -824,19 +824,29 @@ class DirectoryEntryHandler {
                 this.finish();
                 return;
             }
-            let fileOffset, fileEndOffset, code;
+            let fileOffset,
+                fileEndOffset = entry.size - 1,
+                code;
             if (this.request.headers['range']) {
                 //console.log('range request')
                 const range = this.request.headers['range'].split('=')[1].trim();
                 const rparts = range.split('-');
                 fileOffset = parseInt(rparts[0]);
                 if (! rparts[1]) {
-                    fileEndOffset = entry.size - 1;
+                    if (fileOffset > fileEndOffset) {
+                        fileOffset = fileEndOffset;
+                    }
                     this.responseLength = entry.size-fileOffset;
                     this.setHeader('content-range','bytes '+fileOffset+'-'+(entry.size-1)+'/'+entry.size);
                     code = (fileOffset === 0) ? 200 : 206;
                 } else {
-                    fileEndOffset = parseInt(rparts[1])
+                    const newFileEndOffset = parseInt(rparts[1]);
+                    if (newFileEndOffset < fileEndOffset) {
+                        fileEndOffset = newFileEndOffset;
+                    }
+                    if (fileOffset > fileEndOffset) {
+                        fileOffset = fileEndOffset;
+                    }
                     this.responseLength = fileEndOffset - fileOffset + 1;
                     this.setHeader('content-range','bytes '+fileOffset+'-'+(fileEndOffset)+'/'+entry.size);
                     code = 206;
