@@ -143,5 +143,7 @@
     "feature_3": "Aplicaciones de Una Página (SPA)",
     "tagline": "Cree servidores web locales con solo unos pocos clicks y con una interfaz fácil de usar.",
     "feature_3_description": "Habilite la reescritura en index.html para SPAs con un solo clic.",
-    "feature_1_description": "Cambie las opciones del servidor con solo unos pocos clicks."
+    "feature_1_description": "Cambie las opciones del servidor con solo unos pocos clicks.",
+    "error_mas_stale_bookmarks_description": "Este programa ya no tiene permiso para acceder a la carpeta seleccionada debido a las restricciones de seguridad de macOS para aplicaciones descargadas desde App Store. La carpeta puede haber sido eliminada o recreada. Por favor, vuelva a seleccionar la carpeta de abajo para restaurar el acceso. Si se encuentra con este error con frecuencia, considere la posibilidad de descargar Simple Web Server directamente desde nuestro sitio web para evitar esta limitación.",
+    "error_mas_stale_bookmarks_title": "Por favor, vuelva a seleccionar la carpeta"
 }
