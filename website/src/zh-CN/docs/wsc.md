@@ -32,6 +32,6 @@ Simple Web Server为来自Web Server for Chrome的用户提供了许多新特性
     </tr>
     <tr>
         <td>自定义 mod-rewrite Regexp</td>
-        <td><b>不支持。</b> Simple Web Server提供了一个简单的复选框选项，用于启用对指定文件的单页重写，但不提供指定自定义正则表达式的选项。这个选项被省略了，因为我们不知道这个特性的任何用例。如果您希望在以后的版本中添加这个特性,请 <a href="https://github.com/terreng/simple-web-server/issues/88" target="_blank">提交 issue #88</a> 并分享您的用例。</td>
+        <td><b>不支持。</b> Simple Web Server提供了一个简单的复选框选项，用于启用对指定文件的单页重写，但不提供指定自定义正则表达式的选项。这个选项被省略了，因为我们不知道这个特性的任何用例。</td>
     </tr>
 </table>
