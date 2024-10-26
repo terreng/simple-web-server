@@ -32,6 +32,6 @@ Please note that some features from Web Server for Chrome have been removed in f
     </tr>
     <tr>
         <td>Custom mod-rewrite Regexp</td>
-        <td><b>Not supported.</b> Simple Web Server provides a simple checkbox option to enable a single page rewrite to a specified file, but does not provide an option to specify a custom regular expression. This option was omitted because we are not aware of any use cases for this feature. If you want to see this feature added in a future release, please <a href="https://github.com/terreng/simple-web-server/issues/88" target="_blank">comment on issue #88</a> and share your use case.</td>
+        <td><b>Not supported.</b> Simple Web Server provides a simple checkbox option to enable a single page rewrite to a specified file, but does not provide an option to specify a custom regular expression. This option was omitted because we are not aware of any use cases for this feature.</td>
     </tr>
 </table>
