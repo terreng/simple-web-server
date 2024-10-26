@@ -40,6 +40,14 @@ class DirectoryEntryHandler {
         }
     }
     error(msg, httpCode) {
+        if (this.opts.spa && httpCode === 404 && this.request.path !== (this.opts.rewriteTo || "/index.html")) {
+            let newPath = (this.opts.rewriteTo || "/index.html");
+            this.request.path = newPath;
+            this.request.origpath = newPath;
+            this.request.uri = newPath;
+            this.fs.getByPath((this.opts.rewriteTo || "/index.html"), this.onEntry.bind(this));
+            return;
+        }
         const defaultMsg = '<h1>' + httpCode + ' - ' + WSC.HTTPRESPONSES[httpCode] + '</h1>\n\n<p>' + msg + '</p>';
         if (httpCode === 401) {
             this.setHeader("WWW-Authenticate", "Basic realm=\"SimpleWebServer\", charset=\"UTF-8\"");
@@ -175,10 +183,6 @@ class DirectoryEntryHandler {
                 this.error("", 401);
                 return;
             }
-        }
-
-        if (this.opts.spa && !this.request.uri.match(/.*\.[\d\w]+$/)) {
-            this.rewrite_to = this.opts.rewriteTo || "/index.html";
         }
 
         if (this[this.request.method.toLowerCase()]) {
@@ -508,11 +512,7 @@ class DirectoryEntryHandler {
                 return;
             }
         }
-        if (this.rewrite_to) {
-            this.fs.getByPath(this.rewrite_to, this.onEntry.bind(this));
-        } else {
-            this.fs.getByPath(this.request.path, this.onEntry.bind(this));
-        }
+        this.fs.getByPath(this.request.path, this.onEntry.bind(this));
     }
     onEntryMain() {
         if (this.opts.excludeDotHtml && this.request.path !== '' && ! this.request.origpath.endsWith("/")) {
@@ -549,7 +549,7 @@ class DirectoryEntryHandler {
             if (this.entry.error.code === 'EPERM') {
                 this.error('', 403);
             } else {
-                this.error('Entry Not Found: ' + (this.rewrite_to || this.request.path).htmlEscape(), 404);
+                this.error('Entry Not Found: ' + this.request.path.htmlEscape(), 404);
             }
         } else if (this.entry.isFile) {
             this.renderFileContents(this.entry);
@@ -783,7 +783,7 @@ class DirectoryEntryHandler {
         this.htaccessMain(filerequested);
     }
     renderFileContents(entry) {
-        if (!entry.path) {
+        if (!entry.path || entry.error) {
             this.error('', 404);
             return;
         }
