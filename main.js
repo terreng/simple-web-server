@@ -289,7 +289,11 @@ function getServerStatusBox(local_config) {
         if (error_message.indexOf("EADDRINUSE") > -1) {
             return '<div class="status_box error_status_box"><div>'+lang.error_port_in_use+'</div><div>'+lang.error_port_in_use_description.replace("[PORT]", local_config.port)+'</div></div>';
         } else if (error_message.indexOf("FILESYSTEMERROR-") == 0) {
-            return '<div class="status_box error_status_box"><div>'+lang.error_file_system+'</div><div>'+htmlescape(error_message.substring("FILESYSTEMERROR-".length))+'</div></div>';
+            if (error_message.indexOf("bookmarkDataIsStale") > -1) {
+                return '<div class="status_box error_status_box"><div>'+lang.error_mas_stale_bookmarks_title+'</div><div>'+lang.error_mas_stale_bookmarks_description+'</div></div>';
+            } else {
+                return '<div class="status_box error_status_box"><div>'+lang.error_file_system+'</div><div>'+htmlescape(error_message.substring("FILESYSTEMERROR-".length))+'</div></div>';
+            }
         } else if (error_message.indexOf("PLUGINERROR-") == 0) {
             return '<div class="status_box error_status_box"><div>'+lang.error_plugins+'</div><div>'+htmlescape(error_message.substring("PLUGINERROR-".length))+'</div></div>';
         } else {
