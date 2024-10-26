@@ -7,7 +7,7 @@ license = "MIT License"
 repository = "https://github.com/terreng/simple-web-server"
 default-run = "app"
 edition = "2021"
-rust-version = "1.57"
+rust-version = "1.82"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
