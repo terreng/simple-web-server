@@ -534,7 +534,23 @@ class DirectoryEntryHandler {
         }
         const ac = this.request.headers['accept-encoding'];
         let preCompressed = false;
-        if (ac.includes('gzip')) {
+        let requestPathSplit = this.request.path.split(".");
+        let ext = this.request.path.split('.').pop().toLowerCase();
+        if (requestPathSplit.length > 2) {
+            let lastExt = requestPathSplit.pop();
+            let mainExt = requestPathSplit.pop();
+            let has2Extensions = WSC.MIMETYPES[mainExt];
+            if (has2Extensions && ac.includes('gzip') && lastExt === "gz") {
+                this.setHeader('Content-Encoding', 'gzip');
+                preCompressed = true;
+                ext = mainExt;
+            } else if (has2Extensions && ac.includes('br') && lastExt === "br") {
+                this.setHeader('Content-Encoding', 'br');
+                preCompressed = true;
+                ext = mainExt;
+            }
+        }
+        if (ac.includes('gzip') && !preCompressed) {
             let file = this.fs.getByPath(this.request.path+".gz");
             if (file && !file.error) {
                 this.setHeader('Content-Encoding', 'gzip');
@@ -551,7 +567,6 @@ class DirectoryEntryHandler {
             }
         }
         if (preCompressed) {
-            const ext = this.request.path.split('.').pop().toLowerCase();
             let type = WSC.MIMETYPES[ext];
             if (type) {
                 this.contentType(type);
