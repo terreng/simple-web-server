@@ -2,9 +2,15 @@
 <html lang="en">
     <head>
         <meta charset="utf-8">
-        <meta http-equiv="Content-Security-Policy" content="default-src 'self' 'unsafe-inline'">
+        <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; connect-src 'self' ipc://localhost;">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <link rel="stylesheet" href="style.css">
+        <script>
+            const invoke = window.__TAURI__.core.invoke;
+            const listen = window.__TAURI__.event.listen;
+            const emit = window.__TAURI__.event.emit;
+            const dialog = window.__TAURI__.dialog;
+        </script>
     </head>
     <body style="visibility: hidden;" ondragenter="dragEnter(event)" ondragover="dragOver(event)" ondragleave="dragLeave(event)" ondrop="dragDrop(event)">
 
@@ -24,7 +30,7 @@
         </div>
 
         <div class="button_row" id="main_actions">
-            <div tabindex="0" class="button left" id="stop_and_quit_button" onclick="window.api.quit()" aria-label="{lang.stop_and_quit}" role="button">{lang.stop_and_quit}</div>
+            <div tabindex="0" class="button left" id="stop_and_quit_button" onclick="invoke('quit')" aria-label="{lang.stop_and_quit}" role="button">{lang.stop_and_quit}</div>
             <div tabindex="0" class="button primary" onclick="addServer()" aria-label="{lang.new_server}" role="button">{lang.new_server}</div>
         </div>
 

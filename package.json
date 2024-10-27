@@ -1,9 +1,9 @@
 {
   "name": "simple-web-server",
   "productName": "Simple Web Server",
-  "version": "1.2.12",
+  "version": "2.0.0",
   "main": "index.js",
-  "description": "Create a local web server in just a few clicks with an easy to use interface. A continuation of Web Server for Chrome, built with Electron.",
+  "description": "Create a local web server in just a few clicks with an easy to use interface. A continuation of Web Server for Chrome, built with Tauri.",
   "author": {
     "name": "Simple Web Server",
     "url": "https://simplewebserver.org",
@@ -23,136 +23,23 @@
   "homepage": "https://simplewebserver.org",
   "bugs": "https://github.com/terreng/simple-web-server/issues",
   "scripts": {
-    "start": "electron .",
-    "make": "electron-builder",
-    "make_macos_mas_universal": "electron-builder --mac mas --universal -c.mac.identity=\"Terren Gurule\"",
-    "make_macos_mas_universal_dev": "electron-builder --mac mas-dev --universal -c.mac.identity=\"Terren Gurule\"",
-    "make_all_macos": "electron-builder --mac dmg zip --x64 --arm64 -c.mac.identity=\"Terren Gurule\"",
-    "make_all_windows": "electron-builder --windows nsis zip --x64 --ia32 --arm64",
-    "make_all_windows_appx": "electron-builder --windows appx --x64 --ia32 --arm64",
-    "make_all_linux": "electron-builder --linux deb rpm zip --x64 --arm64",
-    "make_all": "npm run make_all_macos && npm run make_macos_mas_universal && npm run make_all_linux && npm run make_all_windows && npm run make_all_windows_appx"
-  },
-  "build": {
-    "buildVersion": "31",
-    "appId": "org.simplewebserver.simplewebserver",
-    "productName": "Simple Web Server",
-    "copyright": "MIT License",
-    "files": [
-      "./index.js",
-      "./directory-listing-template-static.html",
-      "./directory-listing-template.html",
-      "./index.html",
-      "./LICENSE",
-      "./main.js",
-      "./lang/**",
-      "./mime.js",
-      "./open_source_licenses.txt",
-      "./preload.js",
-      "./style.css",
-      "./WSC.js",
-      "./bookmarks.js",
-      "./plugin.js",
-      "./images/logo.png",
-      "./images/icon.ico",
-      "./images/menuBarIconTemplate.png",
-      "./images/menuBarIconTemplate@2x.png",
-      "./images/menuBarIconTemplate@4x.png",
-      "./images/menu-down.svg",
-      "./images/menu-down-dark.svg",
-      "./fonts/**",
-      "./WSC/**"
-    ],
-    "directories": {
-      "buildResources": "build"
-    },
-    "afterSign": "build/notarize.js",
-    "mac": {
-      "icon": "images/icon.icns",
-      "gatekeeperAssess": false,
-      "hardenedRuntime": true,
-      "entitlements": "build/entitlements.mac.plist",
-      "entitlementsInherit": "build/entitlements_inherit.mac.plist",
-      "category": "public.app-category.developer-tools",
-      "electronLanguages": [
-        "en",
-        "es",
-        "ru",
-        "zh_CN",
-        "ja",
-        "fr",
-        "pt_PT",
-        "it",
-        "uk",
-        "de",
-        "sv"
-      ],
-      "artifactName": "Simple-Web-Server-macOS-${version}-${arch}.${ext}"
-    },
-    "mas": {
-      "gatekeeperAssess": false,
-      "hardenedRuntime": false,
-      "entitlements": "build/entitlements.mas.plist",
-      "entitlementsInherit": "build/entitlements_inherit.mas.plist",
-      "provisioningProfile": "build/mas_provisioning_profile.provisionprofile"
-    },
-    "masDev": {
-      "gatekeeperAssess": false,
-      "hardenedRuntime": false,
-      "entitlements": "build/entitlements.mas.plist",
-      "entitlementsInherit": "build/entitlements_inherit.mas.plist",
-      "provisioningProfile": "build/development_provisioning_profile.provisionprofile"
-    },
-    "dmg": {
-      "sign": false
-    },
-    "win": {
-      "icon": "images/icon.ico",
-      "publisherName": "Simple Web Server",
-      "artifactName": "Simple-Web-Server-Windows-${version}-${arch}.${ext}"
-    },
-    "nsis": {
-      "createDesktopShortcut": "always",
-      "artifactName": "Simple-Web-Server-Installer-${version}-${arch}.${ext}",
-      "license": "LICENSE"
-    },
-    "linux": {
-      "icon": "images/512x512.png",
-      "category": "Development",
-      "vendor": "Simple Web Server",
-      "artifactName": "Simple-Web-Server-Linux-${version}-${arch}.${ext}"
-    },
-    "appx": {
-      "publisherDisplayName": "Terren",
-      "displayName": "Simple Web Server",
-      "applicationId": "org.simplewebserver.simplewebserver",
-      "identityName": "50257Terren.SimpleWebServer",
-      "publisher": "CN=823B8264-37A4-4589-B252-9E44611E01EB",
-      "languages": [
-        "en-US",
-        "es",
-        "zh-CN",
-        "ru",
-        "ja",
-        "fr-FR",
-        "pt-PT",
-        "it-IT",
-        "uk",
-        "de-DE",
-        "sv-SE"
-      ]
-    }
+    "tauri": "tauri"
   },
   "devDependencies": {
-    "@electron/notarize": "^2.5.0",
-    "dotenv": "^16.4.5",
-    "electron": "^33.0.2",
-    "electron-builder": "^25.1.8",
-    "electron-osx-sign": "^0.6.0"
+    "@tauri-apps/cli": "^2.0.4"
   },
   "dependencies": {
+    "@tauri-apps/plugin-clipboard-manager": "^2.0.0",
+    "@tauri-apps/plugin-dialog": "^2.0.1",
+    "@tauri-apps/plugin-fs": "^2.0.1",
+    "@tauri-apps/plugin-global-shortcut": "^2.0.0",
+    "@tauri-apps/plugin-http": "^2.0.1",
+    "@tauri-apps/plugin-notification": "^2.0.0",
+    "@tauri-apps/plugin-os": "^2.0.0",
+    "@tauri-apps/plugin-process": "^2.0.0",
+    "@tauri-apps/plugin-shell": "^2.0.1",
     "atob": "^2.1.2",
-    "chokidar": "^4.0.1",
+    "dotenv": "^16.4.5",
     "http": "^0.0.1-security",
     "https": "^1.0.0",
     "jszip": "^3.10.1",
