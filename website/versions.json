@@ -1,6 +1,10 @@
 {
     "latest": "1002009",
     "versions": {
+        "1002013": {
+            "name": "1.2.13",
+            "download": {"website": "https://simplewebserver.org/download", "microsoftstore": "https://apps.microsoft.com/store/detail/simple-web-server/9PC6682RJCDD", "macappstore": "https://apps.apple.com/us/app/simple-web-server/id1625925255"}
+        },
         "1002012": {
             "name": "1.2.12",
             "download": {"website": "https://simplewebserver.org/download", "microsoftstore": "https://apps.microsoft.com/store/detail/simple-web-server/9PC6682RJCDD", "macappstore": "https://apps.apple.com/us/app/simple-web-server/id1625925255"}

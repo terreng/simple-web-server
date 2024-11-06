@@ -103,22 +103,11 @@ class DirectoryEntryHandler {
             console.assert(typeof this.responseLength === 'number');
             this.res.setHeader('content-length', this.responseLength);
         }
-        const p = this.request.path.split('.');
-        if (p.length > 1 && ! this.responseHeaders['content-type']) {
-            const ext = p[p.length-1].toLowerCase();
+        if (!this.responseHeaders['content-type']) {
+            const ext = this.request.path.split('.').pop().toLowerCase();
             let type = WSC.MIMETYPES[ext];
             if (type) {
-                const default_types = ['text/html',
-                                       'text/xml',
-                                       'text/plain',
-                                       "text/vnd.wap.wml",
-                                       "application/javascript",
-                                       "application/rss+xml"]
-
-                if (default_types.includes(type)) {
-                    type += '; charset=utf-8';
-                }
-                this.setHeader('content-type',type);
+                this.contentType(type);
             }
         }
         if (this.opts.cors) {
@@ -543,6 +532,48 @@ class DirectoryEntryHandler {
             this.finish();
             return;
         }
+        if (this.opts.precompression !== false) {
+            const ac = this.request.headers['accept-encoding'];
+            let preCompressed = false;
+            let requestPathSplit = this.request.path.split(".");
+            let ext = this.request.path.split('.').pop().toLowerCase();
+            if (requestPathSplit.length > 2) {
+                let lastExt = requestPathSplit.pop();
+                let mainExt = requestPathSplit.pop();
+                let has2Extensions = WSC.MIMETYPES[mainExt];
+                if (has2Extensions && ac.includes('gzip') && lastExt === "gz") {
+                    this.setHeader('Content-Encoding', 'gzip');
+                    preCompressed = true;
+                    ext = mainExt;
+                } else if (has2Extensions && ac.includes('br') && lastExt === "br") {
+                    this.setHeader('Content-Encoding', 'br');
+                    preCompressed = true;
+                    ext = mainExt;
+                }
+            }
+            if (ac.includes('gzip') && !preCompressed) {
+                let file = this.fs.getByPath(this.request.path+".gz");
+                if (file && !file.error) {
+                    this.setHeader('Content-Encoding', 'gzip');
+                    this.entry = file;
+                    preCompressed = true;
+                }
+            }
+            if (ac.includes('br') && !preCompressed) {
+                let file = this.fs.getByPath(this.request.path+".br");
+                if (file && !file.error) {
+                    this.setHeader('Content-Encoding', 'br');
+                    this.entry = file;
+                    preCompressed = true;
+                }
+            }
+            if (preCompressed) {
+                let type = WSC.MIMETYPES[ext];
+                if (type) {
+                    this.contentType(type);
+                }
+            }
+        }
         if (!this.entry) {
             this.error('No Entry',404);
         } else if (this.entry.error) {
@@ -788,25 +819,6 @@ class DirectoryEntryHandler {
             return;
         }
         //Check to see if this entry file has compressed files we can serve
-        if (this.opts.precompression) {
-            let found = false;
-            const ac = this.request.headers['accept-encoding'];
-            if (ac.includes('gzip')) {
-                let file = this.fs.getByPath(entry.fullPath+".gz");
-                if (file && !file.error) {
-                    entry = file;
-                    this.setHeader('Content-Encoding', 'gzip');
-                    found = true;
-                }
-            }
-            if (ac.includes('br') && !found) {
-                let file = this.fs.getByPath(entry.fullPath+".br");
-                if (file && !file.error) {
-                    this.setHeader('Content-Encoding', 'br');
-                    entry = file;
-                }
-            }
-        }
         if (entry.hidden && !this.opts.hiddenDotFiles) {
             this.error('', 404);
             return;
