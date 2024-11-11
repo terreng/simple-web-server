@@ -1,1 +1,25 @@
-{}
+{
+    "setting_background": "關閉後繼續執行",
+    "setting_language": "語言",
+    "help_us_translate": "幫我們翻譯",
+    "feature_1_description": "只要點擊就可以改變伺服器選擇。",
+    "feature_3": "單頁應用程式",
+    "delete_server_confirm_description": "這項操作沒辦法回復。",
+    "tagline": "只需點擊幾下，即可透過易於使用的介面建立本機 Web 伺服器。",
+    "feature_1": "容易操作",
+    "feature_2": "多重連線＆背景執行",
+    "feature_2_description": "就算應用程式被關閉，也可以繼續在後台同時運行多個Web伺服器。",
+    "feature_3_description": "一鍵啟用SPA的重寫模式。",
+    "settings": "設定",
+    "stop_and_quit": "停止與退出",
+    "new_server": "新增伺服器",
+    "delete_server": "刪除伺服器",
+    "delete_server_confirm": "是否要刪除伺服器？",
+    "prompt_confirm": "確認",
+    "cancel": "取消",
+    "prompt_done": "完成",
+    "back": "返回",
+    "help": "幫助",
+    "save_changes": "保存更動",
+    "get_started": "開始"
+}
