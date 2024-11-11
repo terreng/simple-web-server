@@ -12,7 +12,7 @@ Features:
 
 Languages:
 - English
-- Azerbaijani
+- Azərbaycanca
 - Español
 - Русский
 - 简体中文

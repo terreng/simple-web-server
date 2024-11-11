@@ -27,6 +27,7 @@ global.WSC = require("./WSC.js");
 
 const languages = {
     "en": "English",
+    "az": "Azərbaycanca",
     "es": "Español",
     "ru": "Русский",
     "zh_CN": "简体中文",

@@ -24,6 +24,10 @@ export default defineUserConfig({
       title: 'Simple Web Server',
       description: 'Create local web servers in just a few clicks with an easy-to-use interface. Download for Windows or macOS.'
     },
+    '/az/': {
+      lang: 'az-AZ',
+      description: 'Sadə interfeys vasitəsilə bir neçə kliklə lokal veb serverlər yaradın. Windows və ya macOS üçün yükləyin.'
+    },
     '/es/': {
       lang: 'es',
       description: 'Cree servidores web locales con solo unos pocos clicks y con una interfaz fácil de usar.'
@@ -156,6 +160,20 @@ export default defineUserConfig({
       ]
     },
     locales: {
+      '/az/': {
+        selectLanguageName: 'Azərbaycanca',
+        selectText: 'Dil',
+        navbar: [
+          {
+            text: 'Yüklə',
+            link: '/download.html',
+          },
+          {
+            text: 'Dokumentasiya',
+            link: '/docs/options.html'
+          }
+        ]
+      },
       '/es/': {
         selectLanguageName: 'Español',
         selectText: 'Idioma',
@@ -326,6 +344,9 @@ export default defineUserConfig({
       locales: {
         '/': {
           placeholder: 'Search...',
+        },
+        '/az/': {
+          placeholder: 'Axtar...',
         },
         '/es/': {
           placeholder: 'Busca...',

@@ -9,7 +9,7 @@ actions:
     type: primary
 features:
 - title: Sadə sazlamalar
-  details: Server sazlamalarını bir neçə kliklə şəxsiləşdirə bilərik.
+  details: Server sazlamalarını bir neçə kliklə şəxsiləşdirmək mümkündür.
 - title: Eyni anda bir neçə serveri arxa planda işlədin
   details: Tətbiq bağlansa belə, eyni anda bir neçə veb serveri işlədin.
 - title: Tək Səhifə Tətbiqləri
