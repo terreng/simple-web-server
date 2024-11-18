@@ -86,7 +86,7 @@
     "option_hiddenDotFilesDirectoryListing": "在文件列表中显示隐藏的/.文件",
     "option_hiddenDotFilesDirectoryListing_description": "如果启用了提供隐藏/.文件的访问，并勾选此选项，则它们会显示在文件列表中，其中包括<code>.swshtaccess</code>文件。",
     "option_precompression": "提供预先压缩的 .gz 和 .br 文件",
-    "option_precompression_description": "",
+    "option_precompression_description": "检查并提供存储在相同目录中文件的预压缩版本，扩展名为 .gz 或 .br 。支持 Gzip 和/或 Brotli 压缩。比如，如果有对 <code>examp[le.txt</code>做出的请求，服务器会首先检查是否存在<code>example.txt.gz</code>或<code>example.txt.br</code>，并在这些文件存在且客户端通过 <code>ccept-Encoding</code>标头表明它支持这些压缩方法的的情况下，提供这些文件。",
     "option_htaccess": "启用.swshttaccess配置文件",
     "option_htaccess_description": "您可以使用<code>.swshtaccess</code>文件 设置每个目录的附加规则。 参见 <a href='https://simplewebserver.org/docs/swsaccess.html'>高级配置.swshtaccess文件</a>.<br><br>此功能是实验性的，可能会在将来的版本中移除。考虑使用 <a href='https://simplewebserver.org/docs/plugins.html'>插件</a> 取而代之.",
     "section_error_pages": "错误页面",
@@ -114,7 +114,7 @@
     "option_httpAuthUsername": "HTTP基本身份验证用户名",
     "option_httpAuthUsername_description": "HTTP基本身份验证的用户名。不能包含冒号(<code>:</code>)字符。",
     "httpAuthUsername_invalid": "用户名不能包含 <code>:</code>",
-    "httpAuthPassword_invalid": "",
+    "httpAuthPassword_invalid": "密码不能包含控制字符",
     "option_httpAuthPassword": "HTTP基本身份验证密码",
     "option_httpAuthPassword_description": "HTTP基本身份验证的密码。以纯文本形式存储。",
     "option_ipThrottling": "每个IP地址的最大连接数",
@@ -143,5 +143,7 @@
     "feature_2_description": "即使关闭了应用程序，也可以在后台同时运行多个Web服务器。",
     "feature_3": "单页应用程序(SPA)",
     "feature_3_description": "一键启用SPA的重写模式。不用担心细节实现!",
-    "feature_2": "多个服务 & 静默运行"
+    "feature_2": "多个服务 & 静默运行",
+    "error_mas_stale_bookmarks_description": "由于 macOS 对从 App Store 下载的应用的安全限制，此程序不再有访问所选文件夹的权限。该文件夹可能已经被删除或重新创建。请重新选择下方文件夹来恢复访问。如果你经常遇到错误，请考虑直接从我们的网站下载 Simple Web Server 来避免这一限制。",
+    "error_mas_stale_bookmarks_title": "请重新选择文件夹"
 }
