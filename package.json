@@ -76,6 +76,7 @@
       "category": "public.app-category.developer-tools",
       "electronLanguages": [
         "en",
+        "az",
         "es",
         "ru",
         "zh_CN",
@@ -130,6 +131,7 @@
       "publisher": "CN=823B8264-37A4-4589-B252-9E44611E01EB",
       "languages": [
         "en-US",
+        "az-AZ",
         "es",
         "zh-CN",
         "ru",

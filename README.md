@@ -12,6 +12,7 @@ Features:
 
 Languages:
 - English
+- Azərbaycanca
 - Español
 - Русский
 - 简体中文
