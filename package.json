@@ -1,7 +1,7 @@
 {
   "name": "simple-web-server",
   "productName": "Simple Web Server",
-  "version": "1.2.13",
+  "version": "1.2.14",
   "main": "index.js",
   "description": "Create a local web server in just a few clicks with an easy to use interface. A continuation of Web Server for Chrome, built with Electron.",
   "author": {
@@ -25,16 +25,12 @@
   "scripts": {
     "start": "electron .",
     "make": "electron-builder",
-    "make_macos_mas_universal": "electron-builder --mac mas --universal -c.mac.identity=\"Terren Gurule\"",
-    "make_macos_mas_universal_dev": "electron-builder --mac mas-dev --universal -c.mac.identity=\"Terren Gurule\"",
-    "make_all_macos": "electron-builder --mac dmg zip --x64 --arm64 -c.mac.identity=\"Terren Gurule\"",
-    "make_all_windows": "electron-builder --windows nsis zip --x64 --ia32 --arm64",
-    "make_all_windows_appx": "electron-builder --windows appx --x64 --ia32 --arm64",
-    "make_all_linux": "electron-builder --linux deb rpm zip --x64 --arm64",
-    "make_all": "npm run make_all_macos && npm run make_macos_mas_universal && npm run make_all_linux && npm run make_all_windows && npm run make_all_windows_appx"
+    "make_mac": "electron-builder --mac -c.mac.identity=\"Terren Gurule\"",
+    "make_win": "electron-builder --win",
+    "make_linux": "electron-builder --linux"
   },
   "build": {
-    "buildVersion": "32",
+    "buildVersion": "33",
     "appId": "org.simplewebserver.simplewebserver",
     "productName": "Simple Web Server",
     "copyright": "MIT License",
@@ -91,7 +87,27 @@
         "ko",
         "az"
       ],
-      "artifactName": "Simple-Web-Server-macOS-${version}-${arch}.${ext}"
+      "artifactName": "Simple-Web-Server-macOS-${version}-${arch}.${ext}",
+      "target": [
+        {
+          "target": "dmg",
+          "arch": [
+            "universal"
+          ]
+        },
+        {
+          "target": "zip",
+          "arch": [
+            "universal"
+          ]
+        },
+        {
+          "target": "mas",
+          "arch": [
+            "universal"
+          ]
+        }
+      ]
     },
     "mas": {
       "gatekeeperAssess": false,
@@ -113,7 +129,32 @@
     "win": {
       "icon": "images/icon.ico",
       "publisherName": "Simple Web Server",
-      "artifactName": "Simple-Web-Server-Windows-${version}-${arch}.${ext}"
+      "artifactName": "Simple-Web-Server-Windows-${version}-${arch}.${ext}",
+      "target": [
+        {
+          "target": "nsis",
+          "arch": [
+            "x64",
+            "ia32",
+            "arm64"
+          ]
+        },
+        {
+          "target": "zip",
+          "arch": [
+            "x64",
+            "ia32",
+            "arm64"
+          ]
+        },
+        {
+          "target": "appx",
+          "arch": [
+            "x64",
+            "arm64"
+          ]
+        }
+      ]
     },
     "nsis": {
       "createDesktopShortcut": "always",
@@ -124,7 +165,30 @@
       "icon": "images/512x512.png",
       "category": "Development",
       "vendor": "Simple Web Server",
-      "artifactName": "Simple-Web-Server-Linux-${version}-${arch}.${ext}"
+      "artifactName": "Simple-Web-Server-Linux-${version}-${arch}.${ext}",
+      "target": [
+        {
+          "target": "deb",
+          "arch": [
+            "x64",
+            "arm64"
+          ]
+        },
+        {
+          "target": "rpm",
+          "arch": [
+            "x64",
+            "arm64"
+          ]
+        },
+        {
+          "target": "zip",
+          "arch": [
+            "x64",
+            "arm64"
+          ]
+        }
+      ]
     },
     "appx": {
       "publisherDisplayName": "Terren",

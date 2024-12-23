@@ -21,6 +21,6 @@
     "vuepress": "^2.0.0-rc.19"
   },
   "engines": {
-    "node": "20"
+    "node": "18"
   }
 }
