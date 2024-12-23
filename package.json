@@ -92,13 +92,17 @@
         {
           "target": "dmg",
           "arch": [
-            "universal"
+            "universal",
+            "arm64",
+            "x64"
           ]
         },
         {
           "target": "zip",
           "arch": [
-            "universal"
+            "universal",
+            "arm64",
+            "x64"
           ]
         },
         {
@@ -151,6 +155,7 @@
           "target": "appx",
           "arch": [
             "x64",
+            "ia32",
             "arm64"
           ]
         }
