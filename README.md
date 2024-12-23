@@ -12,15 +12,19 @@ Features:
 
 Languages:
 - English
-- Español
-- Русский
 - 简体中文
-- 日本語
+- 繁體中文
+- Español
 - Français
 - Português
+- Русский
+- Deutsch
+- 日本語
+- 한국어
 - Italiano
 - Українська
-- Deutsch
+- Azərbaycanca
+- Nederlands
 - Svenska
 
 Help us translate to more languages on [Weblate](https://hosted.weblate.org/projects/simple-web-server/simple-web-server/)!

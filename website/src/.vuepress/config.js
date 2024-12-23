@@ -24,21 +24,17 @@ export default defineUserConfig({
       title: 'Simple Web Server',
       description: 'Create local web servers in just a few clicks with an easy-to-use interface. Download for Windows or macOS.'
     },
-    '/es/': {
-      lang: 'es',
-      description: 'Cree servidores web locales con solo unos pocos clicks y con una interfaz fácil de usar.'
-    },
     '/zh-CN/': {
       lang: 'zh-CN',
       description: '简单易用! 只需几次点击就可以部署本地 Web 服务器。'
     },
-    '/ru/': {
-      lang: 'ru',
-      description: 'Создавайте локальный веб-сервер в несколько кликов с помощью простого интерфейса.'
+    '/zh-TW/': {
+      lang: 'zh-TW',
+      description: '只需點擊幾下，即可透過易於使用的介面建立本機 Web 伺服器。'
     },
-    '/ja/': {
-      lang: 'ja',
-      description: '簡単UIでほんの数クリックだけでローカルウェブサーバーを作れます。'
+    '/es/': {
+      lang: 'es',
+      description: 'Cree servidores web locales con solo unos pocos clicks y con una interfaz fácil de usar.'
     },
     '/fr-FR/': {
       lang: 'fr-FR',
@@ -47,15 +43,36 @@ export default defineUserConfig({
     '/pt-PT/': {
       lang: 'pt-PT',
     },
-    '/it-IT/': {
-      lang: 'it-IT',
-    },
-    '/uk/': {
-      lang: 'uk',
+    '/ru/': {
+      lang: 'ru',
+      description: 'Создавайте локальный веб-сервер в несколько кликов с помощью простого интерфейса.'
     },
     '/de/': {
       lang: 'de',
       description: 'Erstelle lokale Webserver mit wenigen Klicks und einem einfachen Interface.'
+    },
+    '/ja/': {
+      lang: 'ja',
+      description: '簡単UIでほんの数クリックだけでローカルウェブサーバーを作れます。'
+    },
+    '/ko/': {
+      lang: 'ko',
+      description: '사용하기 쉬운 인터페이스로 몇 번의 클릭만으로 로컬 웹 서버를 만들어 보세요.'
+    },
+    '/it-IT/': {
+      lang: 'it-IT',
+      description: 'Crea server web locali in pochi clic con un\'interfaccia facile da usare.'
+    },
+    '/uk/': {
+      lang: 'uk',
+    },
+    '/az/': {
+      lang: 'az',
+      description: 'Sadə bir istifadəçi interfeysi ilə cəmi bir neçə kliklə lokal veb serverlər yaradın.'
+    },
+    '/nl/': {
+      lang: 'nl',
+      description: 'Maak lokale web-servers in een paar klikken met een gebruiksvriendelijke interface.'
     },
     '/sv/': {
       lang: 'sv',
@@ -156,20 +173,6 @@ export default defineUserConfig({
       ]
     },
     locales: {
-      '/es/': {
-        selectLanguageName: 'Español',
-        selectText: 'Idioma',
-        navbar: [
-          {
-            text: 'Descargar',
-            link: '/download.html',
-          },
-          {
-            text: 'Documentación',
-            link: '/docs/options.html'
-          }
-        ]
-      },
       '/zh-CN/': {
         selectLanguageName: '简体中文',
         selectText: '语言',
@@ -264,6 +267,32 @@ export default defineUserConfig({
           ]
         }
       },
+      '/zh-TW/': {
+        selectLanguageName: '繁體中文',
+        selectText: '語言'
+      },
+      '/es/': {
+        selectLanguageName: 'Español',
+        selectText: 'Idioma',
+        navbar: [
+          {
+            text: 'Descargar',
+            link: '/download.html',
+          },
+          {
+            text: 'Documentación',
+            link: '/docs/options.html'
+          }
+        ]
+      },
+      '/fr-FR/': {
+        selectLanguageName: 'Français',
+        selectText: 'Langue'
+      },
+      '/pt-PT/': {
+        selectLanguageName: 'Português',
+        selectText: 'Idioma'
+      },
       '/ru/': {
         selectLanguageName: 'Русский',
         selectText: 'Язык',
@@ -278,17 +307,17 @@ export default defineUserConfig({
           }
         ]
       },
+      '/de/': {
+        selectLanguageName: 'Deutsch',
+        selectText: 'Taal'
+      },
       '/ja/': {
         selectLanguageName: '日本',
         selectText: '言語'
       },
-      '/fr-FR/': {
-        selectLanguageName: 'Français',
-        selectText: 'Langue'
-      },
-      '/pt-PT/': {
-        selectLanguageName: 'Português',
-        selectText: 'Idioma'
+      '/ko/': {
+        selectLanguageName: '한국어',
+        selectText: '언어'
       },
       '/it-IT/': {
         selectLanguageName: 'Italiano',
@@ -298,8 +327,22 @@ export default defineUserConfig({
         selectLanguageName: 'Українська',
         selectText: 'Мова'
       },
-      '/de/': {
-        selectLanguageName: 'Deutsch',
+      '/az/': {
+        selectLanguageName: 'Azərbaycanca',
+        selectText: 'Dil',
+        navbar: [
+          {
+            text: 'Yüklə',
+            link: '/download.html',
+          },
+          {
+            text: 'Dokumentasiya',
+            link: '/docs/options.html'
+          }
+        ]
+      },
+      '/nl/': {
+        selectLanguageName: 'Nederlands',
         selectText: 'Taal'
       },
       '/sv/': {
@@ -329,6 +372,9 @@ export default defineUserConfig({
         },
         '/es/': {
           placeholder: 'Busca...',
+        },
+        '/az/': {
+          placeholder: 'Axtar...',
         }
       }
     })

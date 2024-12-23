@@ -85,7 +85,11 @@
         "it",
         "uk",
         "de",
-        "sv"
+        "sv",
+        "zh_TW",
+        "nl",
+        "ko",
+        "az"
       ],
       "artifactName": "Simple-Web-Server-macOS-${version}-${arch}.${ext}"
     },
@@ -139,7 +143,11 @@
         "it-IT",
         "uk",
         "de-DE",
-        "sv-SE"
+        "sv-SE",
+        "zh-TW",
+        "nl-NL",
+        "ko-KR",
+        "az-Latn-AZ"
       ]
     }
   },

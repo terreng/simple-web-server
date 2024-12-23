@@ -27,16 +27,38 @@ global.WSC = require("./WSC.js");
 
 const languages = {
     "en": "English",
-    "es": "Español",
-    "ru": "Русский",
     "zh_CN": "简体中文",
-    "ja": "日本語",
+    "zh_TW": "繁體中文",
+    "es": "Español",
     "fr_FR": "Français",
     "pt_PT": "Português",
+    "ru": "Русский",
+    "de": "Deutsch",
+    "ja": "日本語",
+    "ko": "한국어",
     "it_IT": "Italiano",
     "uk": "Українська",
-    "de": "Deutsch",
+    "az": "Azərbaycanca",
+    "nl": "Nederlands",
     "sv": "Svenska",
+}
+
+const language_filenames = {
+    "en": "en",
+    "zh_CN": "zh",
+    "zh_TW": "zh-Hant",
+    "es": "es",
+    "fr_FR": "fr",
+    "pt_PT": "pt",
+    "ru": "ru",
+    "de": "de",
+    "ja": "ja",
+    "ko": "ko",
+    "it_IT": "it",
+    "uk": "uk",
+    "az": "az",
+    "nl": "nl",
+    "sv": "sv",
 }
 
 console = function(old_console) {
@@ -460,7 +482,7 @@ function getLanguage() {
 
 function getLang() {
     if (getLanguage() !== "en") {
-        let lang_target_src = JSON.parse(fs.readFileSync(path.join(__dirname, "lang/"+getLanguage().split("_")[0]+".json"), "utf-8"));   
+        let lang_target_src = JSON.parse(fs.readFileSync(path.join(__dirname, "lang/"+language_filenames[getLanguage()]+".json"), "utf-8"));   
         let lang_to_return = JSON.parse(fs.readFileSync(path.join(__dirname, "lang/en.json"), "utf-8"));
         
         for (var i = 0; i < Object.keys(lang_target_src).length; i++) {
