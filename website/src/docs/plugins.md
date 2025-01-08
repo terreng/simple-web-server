@@ -16,6 +16,7 @@ Plugins aren't sandboxed, and run with the same permissions as the app. Only ins
 - [Redirect](https://github.com/terreng/sws-redirect-plugin) by [@terreng](https://github.com/terreng)
 - [Cloudflare IP allowlist](https://github.com/ethanaobrien/cloudflare-ip-whitelist) by [@ethanaobrien](https://github.com/ethanaobrien)
 - [Godot Fix](https://github.com/terreng/sws-godot-plugin) by [@terreng](https://github.com/terreng)
+- [Unity Fix](https://github.com/terreng/sws-unity-plugin) by [@terreng](https://github.com/terreng)
 
 Have you made a plugin that you want to share? [Open an issue on GitHub](https://github.com/terreng/simple-web-server/issues) to request that we add it to this list.
 
