@@ -917,6 +917,7 @@ body {
 .status_box > div:nth-child(2) {
     user-select: text;
     white-space: pre-wrap;
+    word-break: break-word;
 }
 
 .status_box > div:nth-child(2) > a {

@@ -150,7 +150,7 @@ const quit = function(event) {
 function getIPs() {
     const hostname = os.hostname();
     let non_lan = ["127.0.0.1", "::1"];
-    if (process.platform === "darwin") {
+    if (hostname && process.platform === "darwin") {
         non_lan.push(hostname);
     }
     const ifaces = os.networkInterfaces();
@@ -162,7 +162,7 @@ function getIPs() {
             }
         }
     }
-    if (process.platform === "darwin" || process.platform === "win32") {
+    if (hostname && (process.platform === "darwin" || process.platform === "win32")) {
         ips.push([hostname, "ipv4", non_lan.includes(hostname) ? false : true]);
     }
     return ips;
