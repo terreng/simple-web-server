@@ -1,9 +1,9 @@
 const install_source = process.mas ? "macappstore" : (process.windowsStore ? "microsoftstore" : "website");
 const {app, BrowserWindow, ipcMain, Menu, Tray, dialog, shell, nativeTheme} = require('electron');
-const {networkInterfaces} = require('os');
+const os = require('os');
 var chokidar;
 if (!process.mas) {chokidar = require('chokidar')}
-global.hostOS = require('os').platform();
+global.hostOS = os.platform();
 global.eApp = app;
 global.tray = undefined;
 
@@ -148,15 +148,18 @@ const quit = function(event) {
 };
 
 function getIPs() {
-    const ifaces = networkInterfaces();
+    const hostname = os.hostname();
+    const non_lan = [hostname, "127.0.0.1", "::1"];
+    const ifaces = os.networkInterfaces();
     let ips = []
     for (const k in ifaces) {
         for (let i=0; i<ifaces[k].length; i++) {
             if (!ifaces[k][i].address.startsWith('fe80::') && ['IPv4', 'IPv6'].includes(ifaces[k][i].family)) {
-                ips.push([ifaces[k][i].address, ifaces[k][i].family.toLowerCase()])
+                ips.push([ifaces[k][i].address, ifaces[k][i].family.toLowerCase(), non_lan.includes(ifaces[k][i].address) ? false : true])
             }
         }
     }
+    ips.push([hostname, "ipv4", false]);
     return ips;
 }
 

@@ -277,7 +277,7 @@ function getServerStatusBox(local_config) {
         let url_list = [];
 
         for (let i=0; i<ip.length; i++) {
-            if ((ip[i][0] === '127.0.0.1' && local_config.ipv6 !== true) || (ip[i][0] === '::1' && local_config.ipv6 === true) || (local_config.localnetwork && ((ip[i][1] === "ipv4") || (ip[i][1] === "ipv6" && local_config.ipv6 === true)))) {
+            if ((ip[i][1] == "ipv4" && ip[i][2] === false) || (ip[i][1] == "ipv6" && local_config.ipv6 === true && ip[i][2] === false) || (local_config.localnetwork && ((ip[i][1] === "ipv4") || (ip[i][1] === "ipv6" && local_config.ipv6 === true)))) {
                 url_list.push((local_config.https ? 'https' : 'http')+'://'+(ip[i][1] === "ipv6" ? "["+ip[i][0]+"]" : ip[i][0])+':'+local_config.port);
             }
         }
