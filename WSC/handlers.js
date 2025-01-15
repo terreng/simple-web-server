@@ -541,17 +541,17 @@ class DirectoryEntryHandler {
                 let lastExt = requestPathSplit.pop();
                 let mainExt = requestPathSplit.pop();
                 let has2Extensions = WSC.MIMETYPES[mainExt];
-                if (has2Extensions && ac.includes('gzip') && lastExt === "gz") {
+                if (has2Extensions && ac && ac.includes('gzip') && lastExt === "gz") {
                     this.setHeader('Content-Encoding', 'gzip');
                     preCompressed = true;
                     ext = mainExt;
-                } else if (has2Extensions && ac.includes('br') && lastExt === "br") {
+                } else if (has2Extensions && ac && ac.includes('br') && lastExt === "br") {
                     this.setHeader('Content-Encoding', 'br');
                     preCompressed = true;
                     ext = mainExt;
                 }
             }
-            if (ac.includes('gzip') && !preCompressed) {
+            if (ac && ac.includes('gzip') && !preCompressed) {
                 let file = this.fs.getByPath(this.request.path+".gz");
                 if (file && !file.error) {
                     this.setHeader('Content-Encoding', 'gzip');
@@ -559,7 +559,7 @@ class DirectoryEntryHandler {
                     preCompressed = true;
                 }
             }
-            if (ac.includes('br') && !preCompressed) {
+            if (ac && ac.includes('br') && !preCompressed) {
                 let file = this.fs.getByPath(this.request.path+".br");
                 if (file && !file.error) {
                     this.setHeader('Content-Encoding', 'br');
