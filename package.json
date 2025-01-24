@@ -1,7 +1,7 @@
 {
   "name": "simple-web-server",
   "productName": "Simple Web Server",
-  "version": "1.2.15",
+  "version": "1.2.16",
   "main": "index.js",
   "description": "Create a local web server in just a few clicks with an easy to use interface. A continuation of Web Server for Chrome, built with Electron.",
   "author": {
@@ -26,11 +26,12 @@
     "start": "electron .",
     "make": "electron-builder",
     "make_mac": "electron-builder --mac -c.mac.identity=\"Terren Gurule\"",
+    "make_mas": "electron-builder --mac mas --universal -c.mac.identity=\"Terren Gurule\"",
     "make_win": "electron-builder --win",
     "make_linux": "electron-builder --linux"
   },
   "build": {
-    "buildVersion": "34",
+    "buildVersion": "35",
     "appId": "org.simplewebserver.simplewebserver",
     "productName": "Simple Web Server",
     "copyright": "MIT License",
