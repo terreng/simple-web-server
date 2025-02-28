@@ -78,6 +78,8 @@ class DirectoryEntryHandler {
     setCORS() {
         this.setHeader('access-control-allow-origin','*');
         this.setHeader('access-control-allow-methods','GET, POST, PUT, DELETE');
+        this.setHeader('access-control-allow-headers','*')
+        this.setHeader('access-control-allow-credentials','true')
         this.setHeader('access-control-max-age','120');
     }
     get_argument(k, def) {
@@ -166,7 +168,7 @@ class DirectoryEntryHandler {
             this.error('', 400);
             return;
         }
-        if (this.opts.httpAuth) {
+        if (this.opts.httpAuth && this.request.method.toLowerCase() !== "options") {
             const auth = this.request.headers['authorization'];
             if (!WSC.utils.validateAuth(auth, this.opts.httpAuthUsername, this.opts.httpAuthPassword)) {
                 this.error("", 401);
