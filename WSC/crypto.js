@@ -44,7 +44,10 @@ module.exports = function() {
         name: 'subjectAltName',
         altNames: [{
             type: 6, // URI
-            value: 'http://localhost'
+            value: 'https://localhost'
+        }, {
+            type: 7, // IP
+            ip: '127.0.0.1'
         }]
     }]);
     // FIXME: add subjectKeyIdentifier extension
