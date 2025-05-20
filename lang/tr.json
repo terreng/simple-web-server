@@ -67,11 +67,11 @@
     "option_hiddenDotFiles_description": "Gizli/Nokta dosyalarına erişim izni ver. Bunlar adları <code>.</code> karakteri ile başlayan dosya ve klasörlerdir.",
     "option_upload": "Dosya yükleme izni ver",
     "state_error": "Hata",
-    "enabled_switch": "Aktif",
+    "enabled_switch": "Etkin",
     "no_servers": "Henüz herhangi bir sunucu oluşturmadınız",
     "error_port_in_use": "Erişim noktası kullanımda",
     "error_plugins": "Eklenti başlatma hatası",
-    "documentation": "Dökümantasyon",
+    "documentation": "Dokümantasyon",
     "issues_and_suggestions": "Sorunlar ve Öneriler",
     "web_server_url": "Web sunucusu URL'si",
     "ignore_update": "Bu güncellemeyi atla",
@@ -96,5 +96,13 @@
     "option_localnetwork_description": "Web sunucusunun LAN üzerinden ağdaki diğer bilgisayarlara erişilebilir olmasını sağlar. Ana bilgisayarın yerel IP adresini ve belirtilen erişim noktasını kullanarak başka bir bilgisayardan erişebilirsiniz. LAN IP adresi, web sunucusu URL'lerinin altında görünecektir.<br><br>Bu seçeneğin etkinleştirilmesi, yerel ağ erişimini gerektirir. Bu seçeneği etkinleştirirken bir güvenlik duvarı izin uyarısı görebilirsiniz. Bu uyarıya ,web sunucusunun LAN üzerinden çalışabilmesi için, izin vermeniz gerekir.",
     "option_directoryListing": "Dizin listesini göster",
     "option_directoryListing_description": "404 Sayfası yerine belirtilen dizindeki dosyaları göster.",
-    "option_excludeDotHtml_description": ".htm ve .html uzantılarını URL'lerden hariç tutar. Örneğin, <code>/example.html</code>, <code>/example</code>'a yönlendirecektir. Dizinde uzantısı olmayan bir dosya mevcutsa bunun yerine HTML dosyası yine de gösterilir."
+    "option_excludeDotHtml_description": ".htm ve .html uzantılarını URL'lerden hariç tutar. Örneğin, <code>/example.html</code>, <code>/example</code>'a yönlendirecektir. Dizinde uzantısı olmayan bir dosya mevcutsa bunun yerine HTML dosyası yine de gösterilir.",
+    "ipThrottling_invalid": "0 veya daha büyük bir sayı girin",
+    "section_error_pages": "Hata Sayfaları",
+    "section_security": "Güvenlik",
+    "option_https": "HTTPS kullan",
+    "option_https_abbreviation": "HTTPS",
+    "option_httpsCert": "SSL/TLS sertifikası",
+    "option_httpsKey": "SSL/TLS özel anahtarı",
+    "state_stopped": "Durduruldu"
 }
