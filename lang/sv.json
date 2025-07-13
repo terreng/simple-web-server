@@ -143,5 +143,7 @@
     "option_https": "Använd HTTPS",
     "option_https_description": "Gör server tillgänglig över en säker förbindelse (https) istället för (http). Använder samma enda port så du kan inte använda http och https samtidigt. Se <a href='https://simplewebserver.org/docs/https.html'>Använda HTTPS</a>.",
     "option_httpsCert_description": "Åsidosätt det här alternativet om du vill tillhandahålla ett anpassat HTTPS-certifikat. Se <a href='https://simplewebserver.org/docs/https.html'>Använda HTTPS</a>.",
-    "option_httpAuth_description": "Kräv autentisering med enkelt HTTP-autentiseringsprotokoll. Ange ett användarnamn och lösenord i alternativen 'HTTP Basic auth username' och 'HTTP Basic auth password'. Om användarnamn eller lösenord antingen saknas eller är ogiltigt, kommer webbservern att bli otillgänglig."
+    "option_httpAuth_description": "Kräv autentisering med enkelt HTTP-autentiseringsprotokoll. Ange ett användarnamn och lösenord i alternativen 'HTTP Basic auth username' och 'HTTP Basic auth password'. Om användarnamn eller lösenord antingen saknas eller är ogiltigt, kommer webbservern att bli otillgänglig.",
+    "error_mas_stale_bookmarks_description": "Det här programmet har inte längre behörighet att komma åt den valda mappen på grund av macOS-säkerhetsbegränsningar för appar som laddats ner från App Store. Mappen kan ha raderats eller återskapats. Välj mappen nedan igen för att återställa åtkomsten. Om du stöter på det här felet ofta kan du överväga att ladda ner Simple Web Server direkt från vår webbplats för att undvika denna begränsning.",
+    "error_mas_stale_bookmarks_title": "Välj mappen igen."
 }
