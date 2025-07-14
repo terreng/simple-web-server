@@ -35,7 +35,17 @@
     "setting_theme_light": "Terang",
     "setting_theme_dark": "Gelap",
     "setting_plugins": "Plugin",
-    "setting_plugins_description": "Plugin memungkinkan Anda untuk memodifikasi server web Anda lebih lanjut di luar opsi yang tersedia di aplikasi  <a href='https://simplewebserver.org/docs/plugins.html'> Learn more about plugins. </a><br><br> Untuk memasang plugin, klik \"Tambahkan Plugin\" dan pilih folder atau berkas ZIP. Setelah memasang plugin, anda harus mengaktifkannya secara khusus untuk setiap server yang akan digunakan. <br><br>Plugin tidak di-sandbox, dan berjalan dengan izin yang sama dengan aplikasi. Hanya pasang plugin jika Anda mengenal dan memercayai pengembangnya.",
+    "setting_plugins_description": "Plugin memungkinkan Anda untuk memodifikasi server web Anda lebih lanjut di luar opsi yang tersedia di aplikasi <a href='https://simplewebserver.org/docs/plugins.html'> Learn more about plugins. </a><br><br> Untuk memasang plugin, klik \"Tambahkan Plugin\" dan pilih folder atau berkas ZIP. Setelah memasang plugin, anda harus mengaktifkannya secara khusus untuk setiap server yang akan digunakan. <br><br>Plugin tidak di-sandbox, dan berjalan dengan izin yang sama dengan aplikasi. Hanya pasang plugin jika Anda mengenal dan memercayai pengembangnya.",
     "add_plugin": "Tambahkan Plugin",
-    "plugin_choose_folder": "Pilih folder"
+    "plugin_choose_folder": "Pilih folder",
+    "plugin_choose_zip": "Pilih berkas .zip",
+    "add_plugin_confirm": "Tambahkan plugin \"[NAMA]\" ?",
+    "add_plugin_confirm_description": "Hanya pasang plugin jika Anda mengenal dan memercayai pengembangnya.<br><br>Plugin tidak di-sandbox, dan berjalan dengan izin yang sama dengan aplikasi.",
+    "add_plugin_failed": "Gagal untuk memasang plugin",
+    "add_plugin_invalid": "Plugin tidak valid",
+    "add_plugin_failed_description": "Kami tidak dapat menemukan file <code>plugin.json</code> yang valid di folder atau file ZIP yang Anda pilih.",
+    "remove_plugin": "Hapus plugin",
+    "remove_plugin_confirm": "Hapus plugin \"[NAME]\" ?",
+    "remove_plugin_confirm_description": "Semua opsi server untuk plugin ini akan dihapus. Jika Anda ingin memperbarui plugin tanpa mengatur ulang opsi server, cukup tambahkan versi plugin yang baru, alih-alih menghapusnya terlebih dahulu.",
+    "edit_server": "Edit Server"
 }
