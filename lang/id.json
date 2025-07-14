@@ -47,5 +47,7 @@
     "remove_plugin": "Hapus plugin",
     "remove_plugin_confirm": "Hapus plugin \"[NAME]\" ?",
     "remove_plugin_confirm_description": "Semua opsi server untuk plugin ini akan dihapus. Jika Anda ingin memperbarui plugin tanpa mengatur ulang opsi server, cukup tambahkan versi plugin yang baru, alih-alih menghapusnya terlebih dahulu.",
-    "edit_server": "Edit Server"
+    "edit_server": "Edit Server",
+    "add_server": "Tambah Server",
+    "create_server": "Buat Server"
 }
