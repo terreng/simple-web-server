@@ -143,5 +143,7 @@
     "feature_2": "複数実行・バックグラウンド実行",
     "feature_2_description": "同時に複数のサーバーを動かせます。アプリを閉じてもサーバーは停止しないようにできます。",
     "feature_3": "シングルページアプリケーション",
-    "feature_3_description": "シングルクリックのSPA用にmod rewriteができます。"
+    "feature_3_description": "シングルクリックのSPA用にmod rewriteができます。",
+    "error_mas_stale_bookmarks_description": "このプログラムには、App Store からダウンロードしたアプリの macOS セキュリティ制限により、選択したフォルダーにアクセスする権限がなくなりました。フォルダが削除または再作成された可能性があります。以下のフォルダを再選択してアクセスを復元してください。このエラーが頻繁に発生する場合は、この制限を回避するために、当社の Web サイトから Simple Web Server を直接ダウンロードすることを検討してください。",
+    "error_mas_stale_bookmarks_title": "フォルダを再選択してください"
 }
