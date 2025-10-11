@@ -362,25 +362,30 @@
             <div class="settings_section" inert>
                 <div class="settings_section_inner">
 
-                <div tabindex="0" class="checkbox_option" id="https" onclick="toggleCheckbox(this)" role="checkbox" aria-label="{lang.option_https}">
+                <div tabindex="0" class="checkbox_option" id="https" onclick="toggleCheckbox(this); generateCryptoIfNeeded();" role="checkbox" aria-label="{lang.option_https}">
                     <div class="checkbox">
                         <i class="material-icons" aria-hidden="true">check_box_outline_blank</i>
                     </div>
                     <div class="label">{lang.option_https} <a href="#" class="help_icon" aria-label="{lang.help}" onclick="helpInfo(event, 'https', 'option')"><i class="material-icons" aria-hidden="true">help_outline</i></a></div>
                 </div>
 
-                <div class="input_option">
-                    <div class="label">{lang.option_httpsCert} <a href="#" class="help_icon" aria-label="{lang.help}" onclick="helpInfo(event, 'httpsCert', 'option')"><i class="material-icons" aria-hidden="true">help_outline</i></a></div>
-                    <textarea id="httpsCert" placeholder="" aria-label="{lang.option_httpsCert}"></textarea>
+                <div tabindex="0" class="checkbox_option" id="https_custom_cert" onclick="toggleCheckbox(this); clearCryptoIfNeeded();" onchange="customCertCheckboxChange();" role="checkbox" aria-label="{lang.option_https_custom_cert}">
+                    <div class="checkbox">
+                        <i class="material-icons" aria-hidden="true">check_box_outline_blank</i>
+                    </div>
+                    <div class="label">{lang.option_https_custom_cert}</div>
                 </div>
 
-                <div class="input_option">
-                    <div class="label">{lang.option_httpsKey} <a href="#" class="help_icon" aria-label="{lang.help}" onclick="helpInfo(event, 'httpsKey', 'option')"><i class="material-icons" aria-hidden="true">help_outline</i></a></div>
-                    <textarea id="httpsKey" placeholder="" aria-label="{lang.option_httpsKey}"></textarea>
-                </div>
-
-                <div style="padding: 8px 12px;overflow: hidden;">
-                    <div tabindex="0" class="button left" onclick="generateCrypto()" id="generate_crypto" role="button" aria-label="{lang.generate_crypto}">{lang.generate_crypto}</div>
+                <div id="https_custom_cert_container">
+                    <div class="input_option">
+                        <div class="label">{lang.option_httpsCert} <a href="#" class="help_icon" aria-label="{lang.help}" onclick="helpInfo(event, 'httpsCert', 'option')"><i class="material-icons" aria-hidden="true">help_outline</i></a></div>
+                        <textarea id="httpsCert" placeholder="" aria-label="{lang.option_httpsCert}"></textarea>
+                    </div>
+    
+                    <div class="input_option">
+                        <div class="label">{lang.option_httpsKey} <a href="#" class="help_icon" aria-label="{lang.help}" onclick="helpInfo(event, 'httpsKey', 'option')"><i class="material-icons" aria-hidden="true">help_outline</i></a></div>
+                        <textarea id="httpsKey" placeholder="" aria-label="{lang.option_httpsKey}"></textarea>
+                    </div>
                 </div>
 
                 <div tabindex="0" class="checkbox_option" id="httpAuth" onclick="toggleCheckbox(this)" role="checkbox" aria-label="{lang.option_httpAuth}">

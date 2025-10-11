@@ -366,8 +366,6 @@ let activeeditindex = false;
 function addServer(editindex) {
     resetAllSections();
 
-    last_gen_crypto_date = false;
-
     document.querySelector("#folder_path_error").style.display = "none";
     if (editindex != null) {
         document.querySelector("#edit_server_title").innerText = lang.edit_server;
@@ -423,6 +421,20 @@ function addServer(editindex) {
         document.querySelector("#customErrorReplaceString").value = config.servers[editindex].customErrorReplaceString || "";
 
         toggleCheckbox("https", config.servers[editindex].https != null ? config.servers[editindex].https : false);
+        function isAutoCert() {
+            try {
+                if (config.servers[editindex].httpsCert) {
+                    const base64 = config.servers[editindex].httpsCert.replace(/-----BEGIN CERTIFICATE-----/g, '').replace(/-----END CERTIFICATE-----/g, '').replace(/\s/g, '');
+                    const binaryString = atob(base64);
+                    return binaryString.includes('Simple Web Server');
+                } else {
+                    return true;
+                }
+            } catch (e) {
+                return false;
+            }
+        }
+        toggleCheckbox("https_custom_cert", !isAutoCert());
         document.querySelector("#httpsCert").value = config.servers[editindex].httpsCert ? config.servers[editindex].httpsCert : "";
         document.querySelector("#httpsKey").value = config.servers[editindex].httpsKey ? config.servers[editindex].httpsKey : "";
         toggleCheckbox("httpAuth", config.servers[editindex].httpAuth != null ? config.servers[editindex].httpAuth : false);
@@ -475,6 +487,7 @@ function addServer(editindex) {
         document.querySelector("#customErrorReplaceString").value = "";
 
         toggleCheckbox("https", false);
+        toggleCheckbox("https_custom_cert", false);
         document.querySelector("#httpsCert").value = "";
         document.querySelector("#httpsKey").value = "";
         toggleCheckbox("httpAuth", false);
@@ -863,6 +876,9 @@ function toggleCheckbox(element_or_id, toggled) {
         element_or_id.setAttribute("aria-checked", "false");
         element_or_id.querySelector(".checkbox i").innerText = "check_box_outline_blank";
     }
+    if (element_or_id.onchange) {
+        element_or_id.onchange();
+    }
 }
 
 function isChecked(element_or_id) {
@@ -904,29 +920,30 @@ function reevaluateSectionHeights() {
     }
 }
 
-let last_gen_crypto_date = false;
-
-function generateCrypto() {
-    start_gen_date = Date.now();
-    last_gen_crypto_date = start_gen_date;
-    document.getElementById("generate_crypto").classList.add("disabled");
-    window.api.generateCrypto().then(function(crypto) {
-        if (last_gen_crypto_date === start_gen_date) {
-            document.getElementById("generate_crypto").classList.remove("disabled");
-            if (document.getElementById("httpsCert").value.length > 0 || document.getElementById("httpsKey").value.length > 0) {
-                showPrompt(lang.generate_crypto_overwrite, lang.generate_crypto_overwrite_description, [[lang.prompt_confirm,"destructive",function() {
-                    document.getElementById("httpsCert").value = crypto.cert;
-                    document.getElementById("httpsKey").value = crypto.privateKey;
-                    hidePrompt();
-                }],[lang.cancel,"",function() {hidePrompt()}]])
-            } else {
-                console.log(crypto.cert);
-                console.log(crypto.privateKey);
+function generateCryptoIfNeeded() {
+    if (isChecked("https")) {
+        if (!isChecked("https_custom_cert")) {
+            window.api.generateCrypto().then(function(crypto) {
                 document.getElementById("httpsCert").value = crypto.cert;
                 document.getElementById("httpsKey").value = crypto.privateKey;
-            }
+            });
         }
-    });
+    }
+}
+
+function customCertCheckboxChange() {
+    if (isChecked("https_custom_cert")) {
+        document.getElementById("https_custom_cert_container").style.display = "block";
+    } else {
+        document.getElementById("https_custom_cert_container").style.display = "none";
+    }
+}
+
+function clearCryptoIfNeeded() {
+    if (isChecked("https_custom_cert")) {
+        document.getElementById("httpsCert").value = "";
+        document.getElementById("httpsKey").value = "";
+    }
 }
 
 function initWelcome() {

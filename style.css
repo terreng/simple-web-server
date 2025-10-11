@@ -152,7 +152,7 @@ body {
         --button-hover: rgb(208 150 8 / 15%);
         --button-active: rgb(208 150 8 / 27%);
         --button-primary: #d09608;
-        --button-primary-text: white;
+        --button-primary-text: #202020;
         --button-primary-hover: #c18b06;
         --button-primary-active: #a97904;
         --button-destructive: #f44336;
