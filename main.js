@@ -513,12 +513,6 @@ function submitAddServer() {
         return;
     }
 
-    if (!portUnique()) {
-        document.querySelector("#port").parentElement.nextElementSibling.nextElementSibling.style.display = "block";
-        document.querySelector("#port").previousElementSibling.scrollIntoView({behavior: "smooth"});
-        return;
-    }
-
     if (!httpAuthUsernameValid()) {
         document.querySelector("#httpAuthUsername").parentElement.nextElementSibling.style.display = "block";
         if (!document.querySelector("#security_section").classList.contains("section_visible")) {
@@ -713,7 +707,10 @@ function portValid() {
 }
 
 function portUnique() {
-    return (config.servers || []).map(function(a) {return a.port}).indexOf(Math.floor(Number(document.querySelector("#port").value))) === -1 || (activeeditindex !== false && (config.servers || []).map(function(a) {return a.port}).indexOf(Math.floor(Number(document.querySelector("#port").value))) === activeeditindex);
+    const ports = (config.servers || []).map(function(a) {return a.port});
+    const port_value = Math.floor(Number(document.querySelector("#port").value));
+
+    return ports.indexOf(port_value) === -1 || (activeeditindex !== false && ports.indexOf(port_value) === activeeditindex && ports.filter(a => a === port_value).length === 1);
 }
 
 function portChange() {

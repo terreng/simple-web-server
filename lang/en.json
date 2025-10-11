@@ -57,7 +57,7 @@
     "option_port": "Port",
     "option_port_description": "A number between 1 - 65535. Port that the local web server is accessible on. Access the website at <code>http://localhost:[PORT]</code>.",
     "port_invalid": "Enter a number between 1 and 65535",
-    "port_in_use": "Port is already in use",
+    "port_in_use": "Warning: Port is already in use",
     "option_localnetwork": "Accessible on local network",
     "option_localnetwork_description": "Makes the web server accessible over LAN to other computers on the network. Access it from another computer using the host computer's local IP address and the specified port. The LAN IP address will appear under web server URLs.<br><br>Enabling this option requires local network access. You may see a firewall permission prompt when enabling this option, and you must allow access in order for the web server to work over LAN.",
     "option_localnetwork_abbreviation": "LAN",
