@@ -86,7 +86,10 @@
         "zh_TW",
         "nl",
         "ko",
-        "az"
+        "az",
+        "ar",
+        "hu",
+        "ta"
       ],
       "artifactName": "Simple-Web-Server-macOS-${version}-${arch}.${ext}",
       "target": [
@@ -217,7 +220,10 @@
         "zh-TW",
         "nl-NL",
         "ko-KR",
-        "az-Latn-AZ"
+        "az-Latn-AZ",
+        "ar",
+        "hu",
+        "ta"
       ]
     }
   },
