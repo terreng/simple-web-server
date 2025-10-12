@@ -1,7 +1,7 @@
 {
   "name": "simple-web-server",
   "productName": "Simple Web Server",
-  "version": "1.2.16",
+  "version": "1.2.17",
   "main": "index.js",
   "description": "Create a local web server in just a few clicks with an easy to use interface. A continuation of Web Server for Chrome, built with Electron.",
   "author": {
@@ -25,13 +25,13 @@
   "scripts": {
     "start": "electron .",
     "make": "electron-builder",
-    "make_mac": "electron-builder --mac -c.mac.identity=\"Terren Gurule\"",
+    "make_mac": "dotenv -- electron-builder --mac -c.mac.identity=\"Terren Gurule\"",
     "make_mas": "electron-builder --mac mas --universal -c.mac.identity=\"Terren Gurule\"",
     "make_win": "electron-builder --win",
     "make_linux": "electron-builder --linux"
   },
   "build": {
-    "buildVersion": "35",
+    "buildVersion": "36",
     "appId": "org.simplewebserver.simplewebserver",
     "productName": "Simple Web Server",
     "copyright": "MIT License",
@@ -63,7 +63,6 @@
     "directories": {
       "buildResources": "build"
     },
-    "afterSign": "build/notarize.js",
     "mac": {
       "icon": "images/icon.icns",
       "gatekeeperAssess": false,
@@ -108,12 +107,6 @@
             "arm64",
             "x64"
           ]
-        },
-        {
-          "target": "mas",
-          "arch": [
-            "universal"
-          ]
         }
       ]
     },
@@ -136,7 +129,6 @@
     },
     "win": {
       "icon": "images/icon.ico",
-      "publisherName": "Simple Web Server",
       "artifactName": "Simple-Web-Server-Windows-${version}-${arch}.${ext}",
       "target": [
         {
@@ -230,6 +222,7 @@
   "devDependencies": {
     "@electron/notarize": "^3.1.0",
     "dotenv": "^17.2.3",
+    "dotenv-cli": "^10.0.0",
     "electron": "^38.2.2",
     "electron-builder": "^26.0.12",
     "electron-osx-sign": "^0.6.0"

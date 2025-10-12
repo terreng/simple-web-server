@@ -321,38 +321,6 @@
                 </div>
             </div>
 
-            <div tabindex="0" class="settings_section_header" onclick="toggleSection(this)" role="button" aria-label="{lang.section_error_pages}">
-                <div><i class="material-icons" aria-hidden="true">report</i></div>
-                <div>{lang.section_error_pages}</div>
-                <div><i class="material-icons" aria-hidden="true">expand_more</i></div>
-            </div>
-
-            <div class="settings_section" inert>
-                <div class="settings_section_inner">
-
-                <div class="input_option">
-                    <div class="label">{lang.option_custom404} <a href="#" class="help_icon" aria-label="{lang.help}" onclick="helpInfo(event, 'custom404', 'option')"><i class="material-icons" aria-hidden="true">help_outline</i></a></div>
-                    <input type="text" id="custom404" placeholder="/404.html" aria-label="{lang.option_custom404}">
-                </div>
-
-                <div class="input_option">
-                    <div class="label">{lang.option_custom403} <a href="#" class="help_icon" aria-label="{lang.help}" onclick="helpInfo(event, 'custom403', 'option')"><i class="material-icons" aria-hidden="true">help_outline</i></a></div>
-                    <input type="text" id="custom403" placeholder="/403.html" aria-label="{lang.option_custom403}">
-                </div>
-
-                <div class="input_option">
-                    <div class="label">{lang.option_custom401} <a href="#" class="help_icon" aria-label="{lang.help}" onclick="helpInfo(event, 'custom401', 'option')"><i class="material-icons" aria-hidden="true">help_outline</i></a></div>
-                    <input type="text" id="custom401" placeholder="/401.html" aria-label="{lang.option_custom401}">
-                </div>
-
-                <div class="input_option">
-                    <div class="label">{lang.option_customErrorReplaceString} <a href="#" class="help_icon" aria-label="{lang.help}" onclick="helpInfo(event, 'customErrorReplaceString', 'option')"><i class="material-icons" aria-hidden="true">help_outline</i></a></div>
-                    <input type="text" id="customErrorReplaceString" placeholder="{{PATH}}" aria-label="{lang.option_customErrorReplaceString}">
-                </div>
-
-                </div>
-            </div>
-
             <div tabindex="0" class="settings_section_header" id="security_section" onclick="toggleSection(this)" role="button" aria-label="{lang.section_security}">
                 <div><i class="material-icons" aria-hidden="true">security</i></div>
                 <div>{lang.section_security}</div>
@@ -415,6 +383,38 @@
                 </div>
     
                 <div class="input_error">{lang.ipThrottling_invalid}</div>
+
+                </div>
+            </div>
+
+            <div tabindex="0" class="settings_section_header" onclick="toggleSection(this)" role="button" aria-label="{lang.section_error_pages}">
+                <div><i class="material-icons" aria-hidden="true">error_outline</i></div>
+                <div>{lang.section_error_pages}</div>
+                <div><i class="material-icons" aria-hidden="true">expand_more</i></div>
+            </div>
+
+            <div class="settings_section" inert>
+                <div class="settings_section_inner">
+
+                <div class="input_option">
+                    <div class="label">{lang.option_custom404} <a href="#" class="help_icon" aria-label="{lang.help}" onclick="helpInfo(event, 'custom404', 'option')"><i class="material-icons" aria-hidden="true">help_outline</i></a></div>
+                    <input type="text" id="custom404" placeholder="/404.html" aria-label="{lang.option_custom404}">
+                </div>
+
+                <div class="input_option">
+                    <div class="label">{lang.option_custom403} <a href="#" class="help_icon" aria-label="{lang.help}" onclick="helpInfo(event, 'custom403', 'option')"><i class="material-icons" aria-hidden="true">help_outline</i></a></div>
+                    <input type="text" id="custom403" placeholder="/403.html" aria-label="{lang.option_custom403}">
+                </div>
+
+                <div class="input_option">
+                    <div class="label">{lang.option_custom401} <a href="#" class="help_icon" aria-label="{lang.help}" onclick="helpInfo(event, 'custom401', 'option')"><i class="material-icons" aria-hidden="true">help_outline</i></a></div>
+                    <input type="text" id="custom401" placeholder="/401.html" aria-label="{lang.option_custom401}">
+                </div>
+
+                <div class="input_option">
+                    <div class="label">{lang.option_customErrorReplaceString} <a href="#" class="help_icon" aria-label="{lang.help}" onclick="helpInfo(event, 'customErrorReplaceString', 'option')"><i class="material-icons" aria-hidden="true">help_outline</i></a></div>
+                    <input type="text" id="customErrorReplaceString" placeholder="{{PATH}}" aria-label="{lang.option_customErrorReplaceString}">
+                </div>
 
                 </div>
             </div>
