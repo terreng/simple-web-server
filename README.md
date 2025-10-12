@@ -12,20 +12,23 @@ Features:
 
 Languages:
 - English
-- 简体中文
-- 繁體中文
+- العربية
+- Azərbaycanca
+- Deutsch
 - Español
 - Français
-- Português
-- Русский
-- Deutsch
+- Magyar
+- Italiano
 - 日本語
 - 한국어
-- Italiano
-- Українська
-- Azərbaycanca
 - Nederlands
+- Português
+- Русский
 - Svenska
+- தமிழ்
+- Українська
+- 简体中文
+- 繁體中文
 
 Help us translate to more languages on [Weblate](https://hosted.weblate.org/projects/simple-web-server/simple-web-server/)!
 
