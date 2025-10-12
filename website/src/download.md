@@ -2,18 +2,18 @@
 
 <ms-store-badge productid="9PC6682RJCDD" style="margin-right: 10px;"></ms-store-badge><a href="https://apps.apple.com/us/app/simple-web-server/id1625925255?mt=12&amp;itsct=apps_box_badge&amp;itscg=30200" target="_blank" rel="noopener"><img src="/appstorebadge.svg" alt="Download on the Mac App Store" style="height: 60px;"></a>
 
-Current version: **1.2.15** | [Release notes](https://github.com/terreng/simple-web-server/releases)
+Current version: **1.2.17** | [Release notes](https://github.com/terreng/simple-web-server/releases)
 
 ## Direct download
 
 ### Windows
 
-**Installer (.exe):** [Download](https://github.com/terreng/simple-web-server/releases/download/v1.2.15/Simple-Web-Server-Installer-1.2.15.exe)
+**Installer (.exe):** [Download](https://github.com/terreng/simple-web-server/releases/download/v1.2.17/Simple-Web-Server-Installer-1.2.17.exe)
 
 ::: details **More downloads...**
-**Installer (.exe):** [64 bit](https://github.com/terreng/simple-web-server/releases/download/v1.2.15/Simple-Web-Server-Installer-1.2.15-x64.exe) | [32 bit](https://github.com/terreng/simple-web-server/releases/download/v1.2.15/Simple-Web-Server-Installer-1.2.15-ia32.exe) | [ARM](https://github.com/terreng/simple-web-server/releases/download/v1.2.15/Simple-Web-Server-Installer-1.2.15-arm64.exe)
+**Installer (.exe):** [64 bit](https://github.com/terreng/simple-web-server/releases/download/v1.2.17/Simple-Web-Server-Installer-1.2.17-x64.exe) | [32 bit](https://github.com/terreng/simple-web-server/releases/download/v1.2.17/Simple-Web-Server-Installer-1.2.17-ia32.exe) | [ARM](https://github.com/terreng/simple-web-server/releases/download/v1.2.17/Simple-Web-Server-Installer-1.2.17-arm64.exe)
 
-**Portable (.zip):** [64 bit](https://github.com/terreng/simple-web-server/releases/download/v1.2.15/Simple-Web-Server-Windows-1.2.15-x64.zip) | [32 bit](https://github.com/terreng/simple-web-server/releases/download/v1.2.15/Simple-Web-Server-Windows-1.2.15-ia32.zip) | [ARM](https://github.com/terreng/simple-web-server/releases/download/v1.2.15/Simple-Web-Server-Windows-1.2.15-arm64.zip)
+**Portable (.zip):** [64 bit](https://github.com/terreng/simple-web-server/releases/download/v1.2.17/Simple-Web-Server-Windows-1.2.17-x64.zip) | [32 bit](https://github.com/terreng/simple-web-server/releases/download/v1.2.17/Simple-Web-Server-Windows-1.2.17-ia32.zip) | [ARM](https://github.com/terreng/simple-web-server/releases/download/v1.2.17/Simple-Web-Server-Windows-1.2.17-arm64.zip)
 
 [How to check if your computer is 32 bit or 64 bit](https://support.microsoft.com/en-us/windows/32-bit-and-64-bit-windows-frequently-asked-questions-c6ca9541-8dce-4d48-0415-94a3faa2e13d)
 :::
@@ -33,18 +33,24 @@ It's because the program is not _signed_, which means Windows can't verify the d
 
 ### macOS
 
-**Installer (.dmg):** [Download](https://github.com/terreng/simple-web-server/releases/download/v1.2.15/Simple-Web-Server-macOS-1.2.15-universal.dmg)
+**Installer (.dmg):** [Download](https://github.com/terreng/simple-web-server/releases/download/v1.2.17/Simple-Web-Server-macOS-1.2.17-universal.dmg)
 
 ::: details **More downloads...**
-**Installer (.dmg):** [Intel Chip](https://github.com/terreng/simple-web-server/releases/download/v1.2.15/Simple-Web-Server-macOS-1.2.15-x64.dmg) | [Apple Silicon](https://github.com/terreng/simple-web-server/releases/download/v1.2.15/Simple-Web-Server-macOS-1.2.15-arm64.dmg)
+**Installer (.dmg):** [Intel Chip](https://github.com/terreng/simple-web-server/releases/download/v1.2.17/Simple-Web-Server-macOS-1.2.17-x64.dmg) | [Apple Silicon](https://github.com/terreng/simple-web-server/releases/download/v1.2.17/Simple-Web-Server-macOS-1.2.17-arm64.dmg)
 
-**Standalone (.app inside .zip):** [Intel Chip](https://github.com/terreng/simple-web-server/releases/download/v1.2.15/Simple-Web-Server-macOS-1.2.15-x64.zip) | [Apple Silicon](https://github.com/terreng/simple-web-server/releases/download/v1.2.15/Simple-Web-Server-macOS-1.2.15-arm64.zip)
+**Standalone (.app inside .zip):** [Intel Chip](https://github.com/terreng/simple-web-server/releases/download/v1.2.17/Simple-Web-Server-macOS-1.2.17-x64.zip) | [Apple Silicon](https://github.com/terreng/simple-web-server/releases/download/v1.2.17/Simple-Web-Server-macOS-1.2.17-arm64.zip)
 
 [How to check if your Mac has an Intel processor or Apple silicon](https://support.apple.com/en-us/HT211814)
 
-These downloads require Mac OSX 10.15 or later. 
+These downloads require macOS 12 (Monterey) or later. 
 
-::: details Click here for older versions of Mac OSX.
+::: details Click here for older versions of macOS.
+### For macOS 11
+
+The last compatible version is 1.2.15.
+
+**Installer (.dmg):** [Download](https://github.com/terreng/simple-web-server/releases/download/v1.2.15/Simple-Web-Server-macOS-1.2.15-universal.dmg)
+
 ### For Mac OSX 10.13 and 10.14
 
 The last compatible version is 1.2.9.
@@ -64,11 +70,11 @@ Try version 1.2.0. If it doesn't work, you're out of luck.
 
 ### Linux
 
-**Debian/Ubuntu (.deb):** [64 bit](https://github.com/terreng/simple-web-server/releases/download/v1.2.15/Simple-Web-Server-Linux-1.2.15-amd64.deb) | [ARM](https://github.com/terreng/simple-web-server/releases/download/v1.2.15/Simple-Web-Server-Linux-1.2.15-arm64.deb)
+**Debian/Ubuntu (.deb):** [64 bit](https://github.com/terreng/simple-web-server/releases/download/v1.2.17/Simple-Web-Server-Linux-1.2.17-amd64.deb) | [ARM](https://github.com/terreng/simple-web-server/releases/download/v1.2.17/Simple-Web-Server-Linux-1.2.17-arm64.deb)
 
-**Fedora/openSUSE (.rpm):** [64 bit](https://github.com/terreng/simple-web-server/releases/download/v1.2.15/Simple-Web-Server-Linux-1.2.15-x86_64.rpm) | [ARM](https://github.com/terreng/simple-web-server/releases/download/v1.2.15/Simple-Web-Server-Linux-1.2.15-aarch64.rpm)
+**Fedora/openSUSE (.rpm):** [64 bit](https://github.com/terreng/simple-web-server/releases/download/v1.2.17/Simple-Web-Server-Linux-1.2.17-x86_64.rpm) | [ARM](https://github.com/terreng/simple-web-server/releases/download/v1.2.17/Simple-Web-Server-Linux-1.2.17-aarch64.rpm)
 
-**Portable (.zip):** [64 bit](https://github.com/terreng/simple-web-server/releases/download/v1.2.15/Simple-Web-Server-Linux-1.2.15-x64.zip) | [ARM](https://github.com/terreng/simple-web-server/releases/download/v1.2.15/Simple-Web-Server-Linux-1.2.15-arm64.zip)
+**Portable (.zip):** [64 bit](https://github.com/terreng/simple-web-server/releases/download/v1.2.17/Simple-Web-Server-Linux-1.2.17-x64.zip) | [ARM](https://github.com/terreng/simple-web-server/releases/download/v1.2.17/Simple-Web-Server-Linux-1.2.17-arm64.zip)
 
 If we don't have the download you need, you can [manually build](/docs/build.md) for your platform.
 

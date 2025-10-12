@@ -15,10 +15,11 @@
   },
   "license": "MIT",
   "devDependencies": {
-    "@vuepress/bundler-vite": "^2.0.0-rc.19",
-    "@vuepress/plugin-search": "^2.0.0-rc.66",
-    "@vuepress/theme-default": "^2.0.0-rc.66",
-    "vuepress": "^2.0.0-rc.19"
+    "@vuepress/bundler-vite": "^2.0.0-rc.24",
+    "@vuepress/plugin-search": "^2.0.0-rc.112",
+    "@vuepress/theme-default": "^2.0.0-rc.112",
+    "sass-embedded": "^1.93.2",
+    "vuepress": "^2.0.0-rc.24"
   },
   "engines": {
     "node": "20"

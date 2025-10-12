@@ -24,9 +24,9 @@
   --back-to-top-z-index: 5;
   --back-to-top-color: #d09608;
   --back-to-top-color-hover: #bb8707;
-  --c-brand: #d09608;
-  --c-brand-light: #d09608;
-  --c-tip: #d09608;
+  --vp-c-brand: #d09608;
+  --vp-c-brand-light: #d09608;
+  --vp-c-tip: #d09608;
 }
 
 a.sidebar-link[href="/docs/settings.html#app-settings-2"] {
@@ -64,7 +64,7 @@ blockquote {
 }
 
 html.dark {
-  --c-brand: #d09608;
-  --c-brand-light: #d09608;
-  --c-tip: #d09608;
+  --vp-c-brand: #d09608;
+  --vp-c-brand-light: #d09608;
+  --vp-c-tip: #d09608;
 }

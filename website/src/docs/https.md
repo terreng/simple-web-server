@@ -1,12 +1,12 @@
 # Using HTTPS
 
-Simple Web Server supports custom HTTPS certificates, but it can also generate dummy certificates for you for testing purposes.
+Simple Web Server automatically generates a dummy certificate when you enable HTTPS, but you can also use your own custom HTTPS certificate if needed.
 
 ## Using a dummy certificate for testing purposes
 
 Some newer web APIs require a secure (https) connection in order to use certain features. While this isn't a problem when testing on localhost (see [Secure contexts on MDN](https://developer.mozilla.org/en-US/docs/Web/Security/Secure_Contexts)), you may want to use a dummy HTTPS certificate to test these features on other devices over LAN.
 
-To use HTTPS with a dummy certificate, check the HTTPS checkbox and then click the "Generate dummy cert" button.
+When you enable HTTPS by checking the HTTPS checkbox, Simple Web Server will automatically generate a self-signed dummy certificate for you. You don't need to do anything else unless you want to use a custom certificate (see below).
 
 Because the certificate is self-signed, you will receive an error message in the browser.
 
@@ -26,6 +26,10 @@ For testing purposes, you can bypass this error:
 
 ## Using a custom certificate
 
+If you want to use your own certificate instead of the automatically generated dummy certificate, you can provide custom certificate files in the SSL/TLS certificate and SSL/TLS private key fields.
+
 The file `fullchain.pem` corresponds to the SSL/TLS certificate.
 
 The file `privkey.pem` corresponds to the SSL/TLS private key.
+
+When you provide custom certificate values, they will override the automatically generated dummy certificate.

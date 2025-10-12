@@ -24,13 +24,17 @@ export default defineUserConfig({
       title: 'Simple Web Server',
       description: 'Create local web servers in just a few clicks with an easy-to-use interface. Download for Windows or macOS.'
     },
-    '/zh-CN/': {
-      lang: 'zh-CN',
-      description: '简单易用! 只需几次点击就可以部署本地 Web 服务器。'
+    '/ar/': {
+      lang: 'ar',
+      description: 'قم بإنشاء خوادم ويب محلية ببضع نقرات فقط باستخدام واجهة سهلة الاستخدام.'
     },
-    '/zh-TW/': {
-      lang: 'zh-TW',
-      description: '只需點擊幾下，即可透過易於使用的介面建立本機 Web 伺服器。'
+    '/az/': {
+      lang: 'az',
+      description: 'Sadə bir istifadəçi interfeysi ilə cəmi bir neçə kliklə lokal veb serverlər yaradın.'
+    },
+    '/de/': {
+      lang: 'de',
+      description: 'Erstelle lokale Webserver mit wenigen Klicks und einem einfachen Interface.'
     },
     '/es/': {
       lang: 'es',
@@ -40,16 +44,13 @@ export default defineUserConfig({
       lang: 'fr-FR',
       description: 'Créez des serveurs Web locaux en quelques clics avec une interface facile à utiliser.'
     },
-    '/pt-PT/': {
-      lang: 'pt-PT',
+    '/hu/': {
+      lang: 'hu',
+      description: 'Helyi webszerverek létrehozása pár kattintással és egyszerű kezelőfelülettel.'
     },
-    '/ru/': {
-      lang: 'ru',
-      description: 'Создавайте локальный веб-сервер в несколько кликов с помощью простого интерфейса.'
-    },
-    '/de/': {
-      lang: 'de',
-      description: 'Erstelle lokale Webserver mit wenigen Klicks und einem einfachen Interface.'
+    '/it-IT/': {
+      lang: 'it-IT',
+      description: 'Crea server web locali in pochi clic con un\'interfaccia facile da usare.'
     },
     '/ja/': {
       lang: 'ja',
@@ -59,24 +60,35 @@ export default defineUserConfig({
       lang: 'ko',
       description: '사용하기 쉬운 인터페이스로 몇 번의 클릭만으로 로컬 웹 서버를 만들어 보세요.'
     },
-    '/it-IT/': {
-      lang: 'it-IT',
-      description: 'Crea server web locali in pochi clic con un\'interfaccia facile da usare.'
-    },
-    '/uk/': {
-      lang: 'uk',
-    },
-    '/az/': {
-      lang: 'az',
-      description: 'Sadə bir istifadəçi interfeysi ilə cəmi bir neçə kliklə lokal veb serverlər yaradın.'
-    },
     '/nl/': {
       lang: 'nl',
       description: 'Maak lokale web-servers in een paar klikken met een gebruiksvriendelijke interface.'
     },
+    '/pt-PT/': {
+      lang: 'pt-PT',
+    },
+    '/ru/': {
+      lang: 'ru',
+      description: 'Создавайте локальный веб-сервер в несколько кликов с помощью простого интерфейса.'
+    },
     '/sv/': {
       lang: 'sv',
       description: 'Skapa lokala webservrar med några få klick i ett lättanvänt användargränssnitt.'
+    },
+    '/ta/': {
+      lang: 'ta',
+      description: 'எளிதாகப் பயன்படுத்தக்கூடிய இடைமுகத்துடன் சில கிளிக்குகளில் உள்ளக வலை சேவையகங்களை உருவாக்கவும்.'
+    },
+    '/uk/': {
+      lang: 'uk',
+    },
+    '/zh-CN/': {
+      lang: 'zh-CN',
+      description: '简单易用! 只需几次点击就可以部署本地 Web 服务器。'
+    },
+    '/zh-TW/': {
+      lang: 'zh-TW',
+      description: '只需點擊幾下，即可透過易於使用的介面建立本機 Web 伺服器。'
     },
   },
   theme: defaultTheme({
@@ -173,6 +185,96 @@ export default defineUserConfig({
       ]
     },
     locales: {
+      '/ar/': {
+        selectLanguageName: 'العربية',
+        selectText: 'اللغة'
+      },
+      '/az/': {
+        selectLanguageName: 'Azərbaycanca',
+        selectText: 'Dil',
+        navbar: [
+          {
+            text: 'Yüklə',
+            link: '/download.html',
+          },
+          {
+            text: 'Dokumentasiya',
+            link: '/docs/options.html'
+          }
+        ]
+      },
+      '/de/': {
+        selectLanguageName: 'Deutsch',
+        selectText: 'Taal'
+      },
+      '/es/': {
+        selectLanguageName: 'Español',
+        selectText: 'Idioma',
+        navbar: [
+          {
+            text: 'Descargar',
+            link: '/download.html',
+          },
+          {
+            text: 'Documentación',
+            link: '/docs/options.html'
+          }
+        ]
+      },
+      '/fr-FR/': {
+        selectLanguageName: 'Français',
+        selectText: 'Langue'
+      },
+      '/hu/': {
+        selectLanguageName: 'Magyar',
+        selectText: 'Nyelv'
+      },
+      '/it-IT/': {
+        selectLanguageName: 'Italiano',
+        selectText: 'Lingua'
+      },
+      '/ja/': {
+        selectLanguageName: '日本',
+        selectText: '言語'
+      },
+      '/ko/': {
+        selectLanguageName: '한국어',
+        selectText: '언어'
+      },
+      '/nl/': {
+        selectLanguageName: 'Nederlands',
+        selectText: 'Taal'
+      },
+      '/pt-PT/': {
+        selectLanguageName: 'Português',
+        selectText: 'Idioma'
+      },
+      '/ru/': {
+        selectLanguageName: 'Русский',
+        selectText: 'Язык',
+        navbar: [
+          {
+            text: 'Скачать',
+            link: '/download.html',
+          },
+          {
+            text: 'Документация',
+            link: '/docs/options.html'
+          }
+        ]
+      },
+      '/sv/': {
+        selectLanguageName: 'Svenska',
+        selectText: 'Språk'
+      },
+      '/ta/': {
+        selectLanguageName: 'தமிழ்',
+        selectText: 'மொழி'
+      },
+      '/uk/': {
+        selectLanguageName: 'Українська',
+        selectText: 'Мова'
+      },
       '/zh-CN/': {
         selectLanguageName: '简体中文',
         selectText: '语言',
@@ -271,87 +373,8 @@ export default defineUserConfig({
         selectLanguageName: '繁體中文',
         selectText: '語言'
       },
-      '/es/': {
-        selectLanguageName: 'Español',
-        selectText: 'Idioma',
-        navbar: [
-          {
-            text: 'Descargar',
-            link: '/download.html',
-          },
-          {
-            text: 'Documentación',
-            link: '/docs/options.html'
-          }
-        ]
-      },
-      '/fr-FR/': {
-        selectLanguageName: 'Français',
-        selectText: 'Langue'
-      },
-      '/pt-PT/': {
-        selectLanguageName: 'Português',
-        selectText: 'Idioma'
-      },
-      '/ru/': {
-        selectLanguageName: 'Русский',
-        selectText: 'Язык',
-        navbar: [
-          {
-            text: 'Скачать',
-            link: '/download.html',
-          },
-          {
-            text: 'Документация',
-            link: '/docs/options.html'
-          }
-        ]
-      },
-      '/de/': {
-        selectLanguageName: 'Deutsch',
-        selectText: 'Taal'
-      },
-      '/ja/': {
-        selectLanguageName: '日本',
-        selectText: '言語'
-      },
-      '/ko/': {
-        selectLanguageName: '한국어',
-        selectText: '언어'
-      },
-      '/it-IT/': {
-        selectLanguageName: 'Italiano',
-        selectText: 'Lingua'
-      },
-      '/uk/': {
-        selectLanguageName: 'Українська',
-        selectText: 'Мова'
-      },
-      '/az/': {
-        selectLanguageName: 'Azərbaycanca',
-        selectText: 'Dil',
-        navbar: [
-          {
-            text: 'Yüklə',
-            link: '/download.html',
-          },
-          {
-            text: 'Dokumentasiya',
-            link: '/docs/options.html'
-          }
-        ]
-      },
-      '/nl/': {
-        selectLanguageName: 'Nederlands',
-        selectText: 'Taal'
-      },
-      '/sv/': {
-        selectLanguageName: 'Svenska',
-        selectText: 'Språk'
-      },
     },
     logo: '/favicon.ico',
-    accentColor: '#d09608',
     repo: 'https://github.com/terreng/simple-web-server',
     repoLabel: 'GitHub',
     editLink: true,
