@@ -145,5 +145,6 @@
     "feature_3_description": "一键启用SPA的重写模式。不用担心细节实现!",
     "feature_2": "多个服务 & 静默运行",
     "error_mas_stale_bookmarks_description": "由于 macOS 对从 App Store 下载的应用的安全限制，此程序不再有访问所选文件夹的权限。该文件夹可能已经被删除或重新创建。请重新选择下方文件夹来恢复访问。如果你经常遇到错误，请考虑直接从我们的网站下载 Simple Web Server 来避免这一限制。",
-    "error_mas_stale_bookmarks_title": "请重新选择文件夹"
+    "error_mas_stale_bookmarks_title": "请重新选择文件夹",
+    "option_https_custom_cert": "使用自定义 SSL/TLS 证书"
 }
