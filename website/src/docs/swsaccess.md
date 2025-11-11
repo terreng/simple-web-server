@@ -2,29 +2,42 @@
 
 Simple Web Server does not have support for .htaccess files. Instead, we support custom .swshtaccess files, which offer a subset of the features of .htaccess files.
 
-:::warning
-This functionality is experimental and may change in future releases. Consider using [plugins](/docs/plugins.md) instead.
-:::
-
 ## How to
 
 All Htaccess features are built to have 100% compatibility with changes in settings
+
+
 ## Currently supported
-301 - Moved Permanently. Tells the server that when chosen file is requested to move to a different directory or file. The browser will cache this<br>
-302 - Found. Tells the server that when chosen file is requested to move to a different directory or file. Not cached by the browser<br>
-307 - Temporary Redirect. Tells the server that when chosen file is requested to move to a different directory or file. Not cached by the browser.<br>
-401 - Unauthorized. The page will require login. For some reason, I cannot find how to clear the cache of the authorization header, which means that once you type it in, the browser will not ask for a login, unless you have multiple password protected pages with different passwords, The <br>authentication header will change whenever you enter a different password.
-403 - blocks any request to the file<br>
-denyDirectAccess - This will deny direct access to image/video/audio files. This option only works if https is enabled or if the user is on a localhost address.<br>
-Render Directory Listing - Ignores the value of 404 instead of directory listing and renders the directory listing<br>
-Deny deleting for a specific file or directory - Ignores value of delete option and will deny delete to requested file<br>
-Allow deleting for certain file - Ignores value of delete option and will allow deleting requested file<br>
-Deny uploading for a specific file or directory - Ignores value of PUT option and will deny put to requested file<br>
-Allow uploading for certain file - Ignores value of PUT option and will allow deleting requested file.<br>
-send directory contents - Will send the current directory at the end of the file. See the How To for a more advanced description<br>
-additional header - Will set an additional header<br>
-Versioning - relative file hosting<br>
-serverSideJavaScript - Just what it sounds like<br>
+**301 - Moved Permanently**: Tells the server that when chosen file is requested to move to a different directory or file. The browser will cache this<br>
+
+**302 - Found**: Tells the server that when chosen file is requested to move to a different directory or file. Not cached by the browser<br>
+
+**307 - Temporary Redirect**: Tells the server that when chosen file is requested to move to a different directory or file. Not cached by the browser.<br>
+
+**401 - Unauthorized**: The page will require login. For some reason, I cannot find how to clear the cache of the authorization header, which means that once you type it in, the browser will not ask for a login, unless you have multiple password protected pages with different passwords, The <br>authentication header will change whenever you enter a different password.
+
+**403**: blocks any request to the file<br>
+
+**denyDirectAccess**: This will deny direct access to image/video/audio files. This option only works if https is enabled or if the user is on a localhost address.<br>
+
+**directory listing**: Ignores the value of 404 instead of directory listing and renders the directory listing<br>
+
+**deny delete**: Ignores value of delete option and will deny delete to requested file<br>
+
+**allow delete**: Ignores value of delete option and will allow deleting requested file<br>
+
+**deny upload**: Ignores value of PUT option and will deny put to requested file<br>
+
+**allow upload**: Ignores value of PUT option and will allow deleting requested file.<br>
+
+**send directory contents**: Will send the current directory at the end of the file. See the How To for a more advanced description<br>
+
+**additional header**: Will set an additional header<br>
+
+**versioning**: Relative file hosting based on url arguments<br>
+
+**serverSideJavaScript**: Custom, server side, javascript scripts<br>
+
 If you want more features - Make an issue!
 
 ## Making the file
@@ -265,9 +278,9 @@ Example:
 ```
 More howto (send directory contents)
 
-This feature CANNOT use the `all files` value for the `request_path` field. You must specify each file separately
-if dir_to_send is not specified, then the current directory will be sent
-Getting info from sent contents
+if `dir_to_send` is not specified, then the current directory will be sent
+
+#### Getting info from sent contents
 This is what is sent
 
 ```
@@ -299,7 +312,7 @@ Example:
     }
 ]
 ```
-Please refer to the <a href='custom scripts.md'>custom scripts readme</a> To learn how to respond.
+Please refer to the <a href='custom scripts.html'>custom scripts readme</a> To learn how to respond.
 
 The only difference is - DO NOT declare the type as postKey in the htaccess file and instead of using `postKey = 'wa4e76yhefy54t4a'` use `SSJSKey = 'wa4e76yhefy54t4a'`
 
@@ -332,6 +345,3 @@ For the last ruleset, no comma can be after the `}`. This will break the array a
 When using multiple rulesets per file, the server will first check if an authentication rule is in place. If it is, the server will require the user to enter the password before it will allow the user to do anything. After the user has correct auth (if the auth is present) it will check for rulesets from the top of the file, to the bottom. The redirects, the directory listing, and sending the current directory with the file cannot both be used, whatever the web server picks up first is what will be executed.
 
 You can have as many additional headers as you like!
-
-
-
