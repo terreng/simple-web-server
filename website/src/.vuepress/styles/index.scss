@@ -68,3 +68,22 @@ html.dark {
   --vp-c-brand-light: #d09608;
   --vp-c-tip: #d09608;
 }
+
+.download_buttons {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  flex-wrap: wrap;
+  margin-top: 14px;
+}
+
+.download_buttons > div {
+  flex-shrink: 0;
+}
+
+.download_buttons > div:nth-child(2) {
+  margin-left: 16px;
+  margin-right: 16px;
+  font-size: 16px;
+  font-weight: 500;
+}
