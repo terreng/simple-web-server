@@ -94,5 +94,14 @@
     "feature_2": "Esegui multipli in background",
     "feature_2_description": "Esegui più server web contemporaneamente, anche quando l'applicazione è chiusa.",
     "feature_3": "Applicazioni a pagina singola",
-    "feature_3_description": "Abilita la modifica del modulo per le SPA con un solo clic."
+    "feature_3_description": "Abilita la modifica del modulo per le SPA con un solo clic.",
+    "option_excludeDotHtml": "Escludi estensione .html",
+    "section_advanced_rules": "Opzioni avanzate",
+    "section_security": "Sicurezza",
+    "option_https": "Usa HTTPS",
+    "option_ipThrottling": "Connessioni massime per indirizzo IP",
+    "state_starting": "Avvio...",
+    "state_error": "Errore",
+    "enabled_switch": "Abilitato",
+    "error_port_in_use": "Porta in uso"
 }
