@@ -58,7 +58,7 @@
     "option_directoryListing": "Afișați listarea directorului",
     "option_directoryListing_description": "Afișați o listă de fișiere în directorul specificat în loc de o pagina 404.",
     "option_excludeDotHtml": "Exclude extensia .html",
-    "option_excludeDotHtml_description": "Exclude extensiile .htm și .html din adresele URL. De exemplu, <code>/example.html</code> va redirecționa către <code>/exemplu<code>. Dacă există un fișier fără extensie, fișierul HTML va fi în continuare redat.",
+    "option_excludeDotHtml_description": "Exclude extensiile .htm și .html din adresele URL. De exemplu, <code>/example.html</code> va redirecționa către <code>/exemplu</code>. Dacă există un fișier fără extensie, fișierul HTML va fi în continuare redat.",
     "section_advanced_rules": "Opțiuni Avansate",
     "option_ipv6": "Ascultați pe IPv6",
     "option_ipv6_abbreviation": "IPV6",
