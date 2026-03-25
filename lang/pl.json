@@ -28,7 +28,7 @@
     "setting_background_description": "Po włączeniu tej opcji aplikacja będzie nadal uruchamiać serwery WWW w tle, nawet gdy okno zostanie zamknięte. Aby zatrzymać program przy włączonej tej opcji, kliknij przycisk \"Zatrzymaj i zakończ\".",
     "feature_1": "Łatwa konfiguracja",
     "feature_1_description": "Zmieniaj ustawienia serwera za pomocą zaledwie kilku kliknięć.",
-    "feature_2": "Wiele serwerów i praca w tle",
+    "feature_2": "Uruchamianie wielu serwerów i praca w tle",
     "feature_2_description": "Uruchamiaj wiele serwerów WWW jednocześnie, nawet gdy aplikacja jest zamknięta.",
     "feature_3": "Aplikacje jednostronicowe (SPA)",
     "feature_3_description": "Włącz przekierowanie na index.html dla aplikacji SPA jednym kliknięciem.",
