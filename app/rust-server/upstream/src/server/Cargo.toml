@@ -1,0 +1,15 @@
+[package]
+name = "server"
+version = "0.1.5"
+edition = "2021"
+
+[lib]
+name = "server"
+path = "main.rs"
+
+[dependencies]
+openssl = { version = "0.10", features = ["vendored"] }
+regex = "1.10.1"
+base64 = "0.21.5"
+sha1 = "0.10.1"
+substring = "1.4.5"

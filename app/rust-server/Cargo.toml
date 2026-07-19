@@ -1,0 +1,22 @@
+# Workspace for the vendored Simple Web Server Rust core + the C ABI wrapper.
+#
+# We deliberately do NOT include upstream's root binary crate (`simplewebserver`)
+# in the workspace — the app only needs the `server` library and our `sws-ffi`
+# wrapper. The upstream binary is kept under upstream/ for reference and to make
+# re-vendoring a simple copy.
+[workspace]
+resolver = "2"
+members = [
+    "ffi",
+    "upstream",            # upstream binary (`simplewebserver`) — kept buildable for reference
+    "upstream/src/server", # the vendored server library crate the app links against
+]
+# The app only builds `sws-ffi` (which pulls in `server`). Build it explicitly:
+#   cargo build -p sws-ffi --release
+# The upstream binary is a member only so Cargo doesn't reject the nested manifest.
+
+[profile.release]
+opt-level = "z"   # optimize for size — this ships inside a desktop app
+lto = true
+codegen-units = 1
+strip = true

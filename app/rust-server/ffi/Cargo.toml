@@ -1,0 +1,16 @@
+[package]
+name = "sws-ffi"
+version = "0.1.0"
+edition = "2021"
+description = "C ABI wrapper around the vendored Simple Web Server Rust core, for in-process use from the React Native native modules."
+license = "MIT"
+
+[lib]
+name = "sws_ffi"
+# staticlib -> link directly into the macOS/Windows app process (required for MAS
+# security-scoped bookmarks and background operation). cdylib is handy for tests.
+crate-type = ["staticlib", "cdylib"]
+
+[dependencies]
+# The vendored upstream server core (ethanaobrien/Rust-server).
+server = { path = "../upstream/src/server" }
