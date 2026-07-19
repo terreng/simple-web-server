@@ -318,7 +318,7 @@ pub struct Request<'a> {
 #[allow(dead_code)]
 #[allow(unused_assignments)]
 impl Request<'_> {
-    pub fn new(stream:&mut Socket, head:String) -> Request {
+    pub fn new(stream:&mut Socket, head:String) -> Request<'_> {
         let lines = head.split("\r\n").collect::<Vec<_>>();
         let parts = lines[0].split(' ').collect::<Vec<_>>();
         let mut headers = Vec::new();

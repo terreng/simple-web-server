@@ -57,14 +57,16 @@ pub fn stop_accessing(path: &str) {
 #[cfg(target_os = "macos")]
 mod mac {
     use base64::{engine::general_purpose::STANDARD, Engine};
-    use objc2::runtime::Bool;
-    use objc2_app_kit::{NSModalResponseOK, NSOpenPanel};
+    use objc2_app_kit::NSOpenPanel;
     use objc2_foundation::{
         MainThreadMarker, NSData, NSString, NSURL, NSURLBookmarkCreationOptions,
         NSURLBookmarkResolutionOptions,
     };
     use std::collections::{HashMap, HashSet};
     use std::sync::{Mutex, OnceLock};
+
+    // NSModalResponseOK; NSModalResponse is an NSInteger (isize) alias.
+    const NS_MODAL_RESPONSE_OK: isize = 1;
 
     // path -> base64(bookmark data), persisted next to config.json.
     fn load_store() -> HashMap<String, String> {
@@ -88,17 +90,10 @@ mod mac {
         STARTED.get_or_init(|| Mutex::new(HashSet::new()))
     }
 
-    fn nsdata_to_vec(data: &NSData) -> Vec<u8> {
-        let len = data.length();
-        if len == 0 {
-            return Vec::new();
-        }
-        let ptr = data.bytes();
-        unsafe { std::slice::from_raw_parts(ptr.as_ptr() as *const u8, len).to_vec() }
-    }
-
     pub fn run_open_panel(current: Option<String>) -> Option<String> {
-        let mtm = MainThreadMarker::new()?;
+        // We are always dispatched here via run_on_main_thread, so this is the
+        // main thread and the marker is sound.
+        let mtm = unsafe { MainThreadMarker::new_unchecked() };
         unsafe {
             let panel = NSOpenPanel::openPanel(mtm);
             panel.setCanChooseDirectories(true);
@@ -114,7 +109,7 @@ mod mac {
             }
 
             let response = panel.runModal();
-            if response != NSModalResponseOK {
+            if response != NS_MODAL_RESPONSE_OK {
                 return None;
             }
 
@@ -132,7 +127,7 @@ mod mac {
                     None,
                 ) {
                 Ok(data) => {
-                    let encoded = STANDARD.encode(nsdata_to_vec(&data));
+                    let encoded = STANDARD.encode(data.bytes());
                     let mut store = load_store();
                     store.insert(path.clone(), encoded);
                     save_store(&store);
@@ -166,12 +161,12 @@ mod mac {
 
         unsafe {
             let nsdata = NSData::with_bytes(&bytes);
-            let mut stale = Bool::NO;
+            // We don't act on staleness; pass a null out-pointer.
             match NSURL::URLByResolvingBookmarkData_options_relativeToURL_bookmarkDataIsStale_error(
                 &nsdata,
                 NSURLBookmarkResolutionOptions::NSURLBookmarkResolutionWithSecurityScope,
                 None,
-                &mut stale,
+                std::ptr::null_mut(),
             ) {
                 Ok(url) => {
                     let _ = url.startAccessingSecurityScopedResource();

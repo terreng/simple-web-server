@@ -72,25 +72,18 @@ fn platform() -> &'static str {
 // macOS dock visibility (hide the dock icon when running with no window).
 // ---------------------------------------------------------------------------
 #[cfg(target_os = "macos")]
-fn set_dock_visible(visible: bool) {
-    use objc2_app_kit::{NSApplication, NSApplicationActivationPolicy};
-    use objc2_foundation::MainThreadMarker;
-    // Only valid on the main thread; callers dispatch there.
-    if let Some(mtm) = MainThreadMarker::new() {
-        let app = NSApplication::sharedApplication(mtm);
-        let policy = if visible {
-            NSApplicationActivationPolicy::Regular
-        } else {
-            NSApplicationActivationPolicy::Accessory
-        };
-        unsafe {
-            app.setActivationPolicy(policy);
-        }
-    }
+fn set_dock_visible(app: &AppHandle, visible: bool) {
+    // Accessory hides the dock icon (background, no window); Regular shows it.
+    let policy = if visible {
+        tauri::ActivationPolicy::Regular
+    } else {
+        tauri::ActivationPolicy::Accessory
+    };
+    let _ = app.set_activation_policy(policy);
 }
 
 #[cfg(not(target_os = "macos"))]
-fn set_dock_visible(_visible: bool) {}
+fn set_dock_visible(_app: &AppHandle, _visible: bool) {}
 
 // ---------------------------------------------------------------------------
 // Tray
@@ -129,7 +122,7 @@ fn remove_tray(app: &AppHandle) {
 }
 
 fn show_main_window(app: &AppHandle) {
-    set_dock_visible(true);
+    set_dock_visible(app, true);
     if let Some(window) = app.get_webview_window("main") {
         let _ = window.show();
         let _ = window.unminimize();
@@ -368,7 +361,7 @@ pub fn run() {
                     // dock icon (macOS). The tray / relaunch brings it back.
                     api.prevent_close();
                     let _ = window.hide();
-                    set_dock_visible(false);
+                    set_dock_visible(app, false);
                 } else {
                     // Not running in the background: closing the window quits the
                     // app. macOS otherwise keeps the process alive, so exit here
