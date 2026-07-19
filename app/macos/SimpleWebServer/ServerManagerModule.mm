@@ -60,6 +60,7 @@ RCT_EXPORT_METHOD(getInitialState
     @"installSource": [core installSource],
     @"platform": @"darwin",
     @"version": [NSBundle mainBundle].infoDictionary[@"CFBundleShortVersionString"] ?: @"",
+    @"updaterAvailable": @([core updaterAvailable]),
   });
 }
 
@@ -94,6 +95,12 @@ RCT_EXPORT_METHOD(showFolderPicker
     NSString *path = [SWSAppCore.shared
         showFolderPicker:(currentPath.length ? currentPath : nil)];
     resolve(path ?: [NSNull null]);
+  });
+}
+
+RCT_EXPORT_METHOD(checkForUpdates) {
+  dispatch_async(dispatch_get_main_queue(), ^{
+    [SWSAppCore.shared checkForUpdates];
   });
 }
 

@@ -190,6 +190,7 @@ function Root() {
             platform={init?.platform ?? 'win32'}
             installSource={init?.installSource ?? 'website'}
             version={init?.version ?? ''}
+            updaterAvailable={init?.updaterAvailable ?? false}
             onBack={() => setScreen('main')}
             onChange={patchConfig}
             onOpenLicenses={() => setScreen('licenses')}

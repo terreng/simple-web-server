@@ -7,6 +7,7 @@ import {LANGUAGES} from '../i18n';
 import {Icon} from '../components/Icon';
 import {TitleBar} from '../components/layout';
 import {SelectRow, SwitchRow} from '../components/form';
+import {Button} from '../components/controls';
 import {ServerManager} from '../native/ServerManager';
 import type {GlobalConfig, InstallSource, ThemeSetting} from '../native/types';
 
@@ -31,6 +32,7 @@ export function SettingsScreen({
   platform,
   installSource,
   version,
+  updaterAvailable,
   onBack,
   onChange,
   onOpenLicenses,
@@ -39,6 +41,7 @@ export function SettingsScreen({
   platform: 'darwin' | 'win32';
   installSource: InstallSource;
   version: string;
+  updaterAvailable: boolean;
   onBack: () => void;
   onChange: (patch: Partial<GlobalConfig>, reload?: boolean) => void;
   onOpenLicenses: () => void;
@@ -83,6 +86,15 @@ export function SettingsScreen({
           />
         ) : null}
 
+        {updaterAvailable ? (
+          <View style={styles.checkUpdatesRow}>
+            <Button
+              title={t('check_for_updates_now')}
+              onPress={() => ServerManager.checkForUpdates()}
+            />
+          </View>
+        ) : null}
+
         <SelectRow
           label={t('setting_theme')}
           value={config.theme ?? 'system'}
@@ -121,6 +133,7 @@ export function SettingsScreen({
 
 const styles = StyleSheet.create({
   flex: {flex: 1},
+  checkUpdatesRow: {paddingHorizontal: 14, paddingVertical: 8, alignItems: 'flex-start'},
   footer: {alignItems: 'center', paddingVertical: 24, gap: 6},
   logo: {width: 80, height: 80},
   appName: {fontSize: 18, fontWeight: '600', marginTop: 8},

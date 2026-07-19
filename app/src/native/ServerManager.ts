@@ -41,6 +41,8 @@ interface ServerManagerNative {
   showFolderPicker(currentPath: string | null): Promise<string | null>;
   /** Open a URL in the user's default browser. */
   openExternal(url: string): void;
+  /** Show the native "check for updates" UI (Sparkle / WinSparkle). */
+  checkForUpdates(): void;
   /** Fully quit the app (used by "Stop & Quit"). */
   quit(): void;
 }
@@ -97,6 +99,8 @@ export const ServerManager = {
     native ? native.showFolderPicker(currentPath) : Promise.resolve(null),
 
   openExternal: (url: string): void => native?.openExternal(url),
+
+  checkForUpdates: (): void => native?.checkForUpdates(),
 
   quit: (): void => native?.quit(),
 

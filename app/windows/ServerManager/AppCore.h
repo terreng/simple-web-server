@@ -48,6 +48,9 @@ class AppCore {
   bool background();
   bool tray();
 
+  void checkForUpdates();
+  bool updaterAvailable();
+
  private:
   AppCore();
   void reconcileFromConfig(const winrt::Microsoft::ReactNative::JSValueObject& config);

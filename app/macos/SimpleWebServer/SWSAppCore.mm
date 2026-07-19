@@ -6,6 +6,7 @@
 
 #import "SWSConfigStore.h"
 #import "SWSBookmarks.h"
+#import "SWSUpdater.h"
 #include "SwsSupervisor.hpp"
 extern "C" {
 #include "sws_ffi.h"
@@ -158,6 +159,20 @@ static NSDictionary *dictFromDesc(const ServerDesc &d) {
                                                  [self checkIpChange];
                                                }];
   [self applyAppearancePolicyHasVisibleWindow:YES];
+  [self applyUpdaterSetting];
+}
+
+- (void)applyUpdaterSetting {
+  BOOL updates = numBool(_store.config, @"updates", NO);
+  [[SWSUpdater shared] setAutomaticChecksEnabled:updates];
+}
+
+- (void)checkForUpdates {
+  [[SWSUpdater shared] checkForUpdates];
+}
+
+- (BOOL)updaterAvailable {
+  return [SWSUpdater shared].available;
 }
 
 - (void)shutdown {
@@ -190,6 +205,7 @@ static NSDictionary *dictFromDesc(const ServerDesc &d) {
   [_store save:config];
   [self reconcileFromConfig:config];
   [self applyAppearancePolicyHasVisibleWindow:[self hasVisibleWindow]];
+  [self applyUpdaterSetting];
   if (self.onStatesChanged) {
     self.onStatesChanged();
   }

@@ -79,7 +79,7 @@ the **same 0.77.x** line — keep them aligned when upgrading.
    npx react-native-macos-init
    ```
 2. Add our sources to the macOS app target in Xcode:
-   - `app/macos/SimpleWebServer/*.{h,mm}`
+   - `app/macos/SimpleWebServer/*.{h,mm}` (includes `SWSUpdater` for Sparkle)
    - `app/native-common/SwsSupervisor.{hpp,cpp}`
 3. Build settings on the app target:
    - **Header Search Paths:** `$(SRCROOT)/../native-common` and
@@ -93,7 +93,11 @@ the **same 0.77.x** line — keep them aligned when upgrading.
    core at launch, background/dock-hide, menu-bar restore).
 5. Add the menu-bar template image `menuBarIconTemplate` to the asset catalog
    (reuse `images/menuBarIconTemplate*.png` from the Electron app).
-6. Run: `npm run macos`.
+6. **Auto-update:** add Sparkle 2 (SPM/CocoaPods) to the non-MAS target and set
+   the `SUFeedURL` / `SUPublicEDKey` Info.plist keys — see
+   [docs/UPDATER.md](UPDATER.md). `SWSUpdater` compiles without Sparkle too
+   (updates just disabled) so you can defer this.
+7. Run: `npm run macos`.
 
 ### Mac App Store build
 
@@ -114,7 +118,7 @@ the **same 0.77.x** line — keep them aligned when upgrading.
    npx react-native-windows-init --overwrite
    ```
 2. Add our sources to the app `.vcxproj`:
-   - `app/windows/ServerManager/*.{h,cpp}`
+   - `app/windows/ServerManager/*.{h,cpp}` (includes `SWSUpdater` for WinSparkle)
    - `app/native-common/SwsSupervisor.{hpp,cpp}`
    - Ensure `AppCore.cpp`/`ConfigStore.cpp` see a `pch.h` with the includes in
      `pch.reference.h`.
@@ -133,7 +137,10 @@ the **same 0.77.x** line — keep them aligned when upgrading.
 5. Wire `TrayBackground.reference.cpp` into the main window (subclass its HWND,
    call `SwsInitTrayBackground(hwnd)` after creation). This gives hide-on-close
    background + optional tray.
-6. Run: `npm run windows`.
+6. **Auto-update:** add WinSparkle (NuGet/vcpkg), ship `WinSparkle.dll`, and set
+   the feed URL + EdDSA key — see [docs/UPDATER.md](UPDATER.md). `SWSUpdater`
+   compiles without WinSparkle too, so you can defer this.
+7. Run: `npm run windows`.
 
 ## 5. Icons / assets
 
@@ -144,8 +151,8 @@ the macOS `menuBarIconTemplate*.png`. `src/assets/logo.png` is already copied in
 
 - Native builds are **not** CI-verified here (Linux dev box). Expect to iterate
   on Xcode/VS project settings and the RN 0.77 template specifics.
-- Update-check (`update` event) is scaffolded in the JS/native contract but the
-  HTTP fetch against `simplewebserver.org/versions/*` is not re-implemented in
-  the native core yet; wire it into the app core if you want the banner live.
+- Auto-update is implemented via Sparkle (macOS) and WinSparkle (Windows) and
+  gated behind the appcast feed URL + signing keys, which are server-side
+  placeholders — see [docs/UPDATER.md](UPDATER.md).
 - Drag-and-drop to set a folder is intentionally omitted (as in Electron, it is
   unsolved for MAS bookmarks).

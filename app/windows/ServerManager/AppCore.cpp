@@ -11,6 +11,8 @@ extern "C" {
 #include "sws_ffi.h"
 }
 
+#include "SWSUpdater.h"
+
 using winrt::Microsoft::ReactNative::JSValue;
 using winrt::Microsoft::ReactNative::JSValueArray;
 using winrt::Microsoft::ReactNative::JSValueObject;
@@ -115,6 +117,8 @@ void AppCore::start() {
   reconcileFromConfig(store_.config());
   lastIp_ = ipList();
   store_.startWatching();
+  Updater::instance().start();
+  Updater::instance().setAutomaticChecksEnabled(jbool(store_.config(), "updates", false));
   // A lightweight IP poller mirroring the macOS 10s timer.
   std::thread([this] {
     for (;;) {
@@ -124,7 +128,10 @@ void AppCore::start() {
   }).detach();
 }
 
-void AppCore::shutdown() { supervisor_.shutdownAll(); }
+void AppCore::shutdown() {
+  supervisor_.shutdownAll();
+  Updater::instance().shutdown();
+}
 
 JSValueObject AppCore::config() { return store_.config(); }
 
@@ -145,10 +152,15 @@ void AppCore::reconcileFromConfig(const JSValueObject& config) {
 void AppCore::saveConfig(const JSValueObject& config) {
   store_.save(config);
   reconcileFromConfig(config);
+  Updater::instance().setAutomaticChecksEnabled(jbool(config, "updates", false));
   if (onStatesChanged) {
     onStatesChanged();
   }
 }
+
+void AppCore::checkForUpdates() { Updater::instance().checkForUpdates(); }
+
+bool AppCore::updaterAvailable() { return Updater::instance().available(); }
 
 JSValueArray AppCore::serverStates() {
   JSValueArray out;

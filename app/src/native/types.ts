@@ -98,6 +98,8 @@ export interface InitialState {
   installSource: InstallSource;
   platform: 'darwin' | 'win32';
   version: string;
+  /** Whether a self-updater is active (false on MAS / Microsoft Store). */
+  updaterAvailable?: boolean;
   /**
    * Optional. i18n is resolved in JS from bundled locale files, so the native
    * side does not need to provide language data. Included only if the native

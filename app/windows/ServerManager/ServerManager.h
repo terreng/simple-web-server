@@ -44,6 +44,7 @@ struct ServerManager {
     out["installSource"] = IsPackaged() ? "microsoftstore" : "website";
     out["platform"] = "win32";
     out["version"] = AppVersion();
+    out["updaterAvailable"] = core.updaterAvailable();
     result.Resolve(JSValue(std::move(out)));
   }
 
@@ -82,6 +83,11 @@ struct ServerManager {
         result.Resolve(JSValue(winrt::to_string(chosen)));
       }
     });
+  }
+
+  REACT_METHOD(CheckForUpdates, L"checkForUpdates");
+  void CheckForUpdates() noexcept {
+    m_context.UIDispatcher().Post([] { sws::AppCore::instance().checkForUpdates(); });
   }
 
   REACT_METHOD(OpenExternal, L"openExternal");

@@ -48,6 +48,11 @@ NS_ASSUME_NONNULL_BEGIN
 /// Apply background/tray settings to the app (dock visibility + menu-bar item).
 - (void)applyAppearancePolicyHasVisibleWindow:(BOOL)hasVisibleWindow;
 
+/// Trigger a manual update check (Sparkle). No-op on the App Store build.
+- (void)checkForUpdates;
+/// Whether a self-updater is active (false on the App Store build).
+- (BOOL)updaterAvailable;
+
 @end
 
 NS_ASSUME_NONNULL_END
