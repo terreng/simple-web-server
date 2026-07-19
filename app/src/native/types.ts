@@ -98,10 +98,12 @@ export interface InitialState {
   installSource: InstallSource;
   platform: 'darwin' | 'win32';
   version: string;
-  language: string;
-  languages: Record<string, string>;
-  /** Resolved strings for the active language (English keys filled in). */
-  lang: Record<string, string>;
+  /**
+   * Optional. i18n is resolved in JS from bundled locale files, so the native
+   * side does not need to provide language data. Included only if the native
+   * host wants to hint the OS locale(s).
+   */
+  systemLocales?: string[];
 }
 
 export interface CryptoResult {
