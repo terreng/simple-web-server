@@ -31,9 +31,14 @@ Linux is intentionally not supported.
 | `windows/` | Windows native module (C++/WinRT) |
 | `docs/` | **Start here:** ARCHITECTURE, BUILD, OPTIONS |
 
+## Run it
+
+**[docs/RUNNING.md](docs/RUNNING.md)** is the exact step-by-step to build and run
+on macOS and Windows (generate the native shell once, wire in our code, run).
+
 ## Build
 
-See **[docs/BUILD.md](docs/BUILD.md)**. In short:
+See **[docs/BUILD.md](docs/BUILD.md)** for build/packaging detail. In short:
 
 ```sh
 cd app/rust-server && cargo build -p sws-ffi --release   # Rust core (verified)

@@ -114,6 +114,10 @@ AppCore::AppCore() {
 }
 
 void AppCore::start() {
+  if (started_) {
+    return;  // idempotent: safe to call from the app window and/or the RN module
+  }
+  started_ = true;
   reconcileFromConfig(store_.config());
   lastIp_ = ipList();
   store_.startWatching();

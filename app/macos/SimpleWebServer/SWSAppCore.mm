@@ -96,6 +96,7 @@ static NSDictionary *dictFromDesc(const ServerDesc &d) {
   NSStatusItem *_statusItem;
   NSTimer *_ipTimer;
   NSArray *_lastIp;
+  BOOL _started;
 }
 
 + (SWSAppCore *)shared {
@@ -151,6 +152,10 @@ static NSDictionary *dictFromDesc(const ServerDesc &d) {
 }
 
 - (void)start {
+  if (_started) {
+    return;  // idempotent: safe to call from AppDelegate and/or the RN module
+  }
+  _started = YES;
   [self reconcileFromConfig:_store.config];
   _lastIp = [self ipList];
   _ipTimer = [NSTimer scheduledTimerWithTimeInterval:10.0

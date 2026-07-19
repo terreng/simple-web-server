@@ -60,6 +60,7 @@ class AppCore {
   ConfigStore store_;
   winrt::Microsoft::ReactNative::JSValueArray lastIp_;
   std::mutex mutex_;
+  bool started_ = false;
 };
 
 }  // namespace sws

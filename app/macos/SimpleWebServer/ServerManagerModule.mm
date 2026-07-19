@@ -54,6 +54,11 @@ RCT_EXPORT_METHOD(getInitialState
                   : (RCTPromiseResolveBlock)resolve reject
                   : (RCTPromiseRejectBlock)reject) {
   SWSAppCore *core = SWSAppCore.shared;
+  // Fallback so servers start on first UI load even before AppDelegate wiring is
+  // added. Idempotent — AppDelegate should still call -start for background mode.
+  dispatch_async(dispatch_get_main_queue(), ^{
+    [core start];
+  });
   resolve(@{
     @"config": core.config ?: @{},
     @"ip": [core ipList],

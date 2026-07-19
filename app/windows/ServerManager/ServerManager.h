@@ -33,6 +33,9 @@ struct ServerManager {
     };
     core.onIpChanged = [this](JSValueArray ip) { IpChange(std::move(ip)); };
     core.onConfigReload = [this](JSValueObject cfg) { ConfigReload(std::move(cfg)); };
+    // Fallback so servers start on first UI load even before the app-window
+    // wiring (TrayBackground) is added. Idempotent.
+    core.start();
   }
 
   REACT_METHOD(GetInitialState, L"getInitialState");
