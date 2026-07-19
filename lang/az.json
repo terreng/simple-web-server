@@ -99,6 +99,8 @@
     "option_custom403": "Xüsusiləşdirilmiş 403 səhifə faylının yolu",
     "option_custom403_description": "Xüsusiləşdirilmiş 403 səhifə faylının yolu. Bu dəyər boşdursa və ya göstərilən yol keçərsizdirsə, defolt 403 səhifəsi istifadə olunacaq.",
     "option_custom401_description": "Xüsusiləşdirilmiş 401 səhifə faylının yolu. Bu dəyər boşdursa və ya göstərilən yol keçərsizdirsə, defolt 401 səhifəsi istifadə olunacaq.",
+    "option_custom500": "Xüsusiləşdirilmiş 500 səhifə faylının yolu",
+    "option_custom500_description": "Xüsusiləşdirilmiş 500 səhifə faylının yolu. Bu dəyər boşdursa və ya göstərilən yol keçərsizdirsə, defolt 500 səhifəsi istifadə olunacaq.",
     "option_customErrorReplaceString": "Xüsusiləşdirilmiş xəta yolu dəyişəni",
     "option_hiddenDotFilesDirectoryListing_description": "Gizlədilmiş/nöqtə faylları aktivdirsə, qovluqdakıların siyahılandırılması zamanı onların da göstərilib-göstərilməyəcəyini müəyyən edir. Bu, <code>.swshtaccess</code> fayllarını da əhatə edir.",
     "option_precompression_description": "Eyni qovluqda .gz və ya .br uzantılı əvvəlcədən sıxışdırılmış faylları yoxlayın və təqdim edin. Gzip və/və ya Brotli sıxışdırma alqoritmi dəstəklənir. Məsələn, <code>example.txt</code> üçün sorğu edildikdə, server əvvəlcə <code>example.txt.gz</code> və ya <code>example.txt.br</code> fayllarını yoxlayacaq və əgər varsa, klient <code>Accept-Encoding</code> başlığı vasitəsilə bu sıxışdırma alqoritmini dəstəklədiyini bildirirsə, onları təqdim edəcək.",

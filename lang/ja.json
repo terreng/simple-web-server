@@ -96,6 +96,8 @@
     "option_custom403_description": "独自の403ページ用ファイルのパスです。空の場合や無効なパスの場合は、汎用の403ページが表示されます。",
     "option_custom401": "カスタム401ページのファイルパス",
     "option_custom401_description": "独自の401ページ用ファイルのパスです。空の場合や無効なパスの場合は、汎用の401ページが表示されます。",
+    "option_custom500": "カスタム500ページのファイルパス",
+    "option_custom500_description": "独自の500ページ用ファイルのパスです。空の場合や無効なパスの場合は、汎用の500ページが表示されます。",
     "option_customErrorReplaceString": "カスタムエラーパス変数",
     "option_customErrorReplaceString_description": "カスタムエラーページ内に指定した文字列があれば、その部分を現在のパスに置き換えます。例えば、カスタム404ページに <code>ファイル {{PATH}} が見つかりません</code> という文があり、このオプションの値を <code>{{PATH}}</code> に設定していた場合、実際にエラーページが表示されるときは <code>ファイル /example.txt が見つかりません</code> のように書き換えられます。",
     "section_security": "セキュリティ",

@@ -657,6 +657,15 @@ impl Request<'_> {
         let size : u64 = metadata.len();
         let mut written : u64 = 0;
 
+        // Empty file: nothing to range or compress. Respond 200 with an empty
+        // body (also avoids the size-1 underflow below).
+        if size == 0 {
+            self.set_header("content-length", "0");
+            self.set_status(200);
+            self.end();
+            return 200;
+        }
+
         // gzip small, compressible files when enabled and the client asks for it.
         // Range requests and HEAD keep the uncompressed streaming path.
         if self.compress
@@ -692,23 +701,25 @@ impl Request<'_> {
         let mut content_length : u64 = size;
         let mut code = 200;
         let range_header = self.get_header("Range");
-        //println!("{}", self.get_header("Range"));
-        if range_header != String::new() {
-            //println!("Range Request");
-            let range = range_header.split('=').collect::<Vec<_>>()[1].trim();
-            let rparts = range.split('-').collect::<Vec<_>>();
-            file_offset = rparts[0].parse::<u64>().unwrap_or(0);
-            //println!("{} {}", range_header, rparts[1].len());
-            if rparts[1].is_empty() {
-                content_length = size - file_offset;
-                
+        if !range_header.is_empty() {
+            // Parse defensively so malformed Range headers can't panic the
+            // connection thread (e.g. missing '=' or '-').
+            let range = range_header.split('=').nth(1).unwrap_or("").trim();
+            let mut rparts = range.split('-');
+            let rp0 = rparts.next().unwrap_or("");
+            let rp1 = rparts.next().unwrap_or("");
+            file_offset = rp0.parse::<u64>().unwrap_or(0);
+            if rp1.is_empty() {
+                // Clamp the offset before computing the length so an offset past
+                // EOF can't underflow the unsigned length.
                 if file_offset > file_end_offset {
                     file_offset = file_end_offset;
                 }
+                content_length = size - file_offset;
                 self.set_header("content-range", &format!("bytes {}-{}/{}", file_offset, size-1, size));
                 code = if file_offset == 0 { 200 } else { 206 };
             } else {
-                let new_end_offset = rparts[1].parse::<u64>().unwrap_or(0);
+                let new_end_offset = rp1.parse::<u64>().unwrap_or(0);
                 if new_end_offset < file_end_offset {
                     file_end_offset = new_end_offset;
                 }

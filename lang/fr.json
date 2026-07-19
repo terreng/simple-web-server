@@ -96,6 +96,8 @@
     "option_custom403_description": "Chemin d'une page 403 personnalisée. Une page 403 générique sera utilisée si cette valeur est vide ou si un chemin invalide est défini.",
     "option_custom401": "Chemin vers une page 401 personnalisée",
     "option_custom401_description": "Chemin d'une page 401 personnalisée. Une page 401 générique sera utilisée si cette valeur est vide ou si un chemin invalide est défini.",
+    "option_custom500": "Chemin vers une page 500 personnalisée",
+    "option_custom500_description": "Chemin d'une page 500 personnalisée. Une page 500 générique sera utilisée si cette valeur est vide ou si un chemin invalide est défini.",
     "option_customErrorReplaceString": "Variable pour un chemin d'erreur personnalisé",
     "option_customErrorReplaceString_description": "Permet de définir une chaîne personnalisée qui sera recherchée dans vos pages d'erreur qui sera remplacée par le chemin actuel. Par exemple, si votre page 404 inclut : <code>Le fichier {{PATH}} n'existe pas</code> et vous mettez <code>{{PATH}}</code> dans cette option, quand la page est renvoyées au client, elle contiendra <code>Le fichier /example.txt n'existe pas</code>.",
     "section_security": "Sécurité",

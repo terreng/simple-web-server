@@ -80,6 +80,33 @@ and verify / adjust:
   builds set the `SWS_INSTALL_SOURCE` env var at compile time (e.g.
   `macappstore`, `microsoftstore`) so update checks are skipped appropriately.
 
+## Server behaviour vs the old Node/WSC server
+
+Reviewed the old `WSC/handlers.js` against the Rust server. Ported fixes:
+
+- **SPA fallback** now matches the old behaviour: the real path is served first
+  and the app entry point (`rewriteTo` / `index.html`) is only used as a 404
+  fallback. The initial Rust port rewrote *every* extensionless path to
+  index.html, which shadowed real files and directories.
+- **Range requests**: an open-ended range past EOF (`bytes=N-` with N ≥ size)
+  no longer underflows the unsigned content-length; malformed `Range` headers
+  (missing `=`/`-`) no longer panic the connection thread.
+- **Empty files** return `200` with `Content-Length: 0` instead of hitting a
+  `size - 1` underflow.
+
+Flagged differences (NOT changed — decide later):
+
+- **Compression semantics differ.** Old had two separate options: `precompression`
+  (serve pre-existing `.gz`/`.br` files) and `compression` (on-the-fly
+  gzip/br/deflate). The migration repurposes the UI's `precompression` toggle to
+  do on-the-fly **gzip** only. Brotli/deflate and static `.gz`/`.br` serving are
+  not implemented.
+- **OPTIONS**: old returned `403` when CORS was off; the Rust server returns
+  `200`. Minor.
+- **Index filename matching** is case-sensitive in Rust (`index.html`) vs
+  case-insensitive in the old server — only matters on case-sensitive
+  filesystems (Linux).
+
 ## Other follow-ups
 
 - Tray uses the default app icon; a proper macOS template menubar icon can be

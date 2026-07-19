@@ -100,6 +100,8 @@
     "option_custom404_description": "自訂404頁面的檔案路徑。如果此值為空或指定的路徑無效，將使用通用的404頁面。",
     "option_custom403": "自訂403頁面檔案路徑",
     "option_custom401_description": "自訂401頁面的檔案路徑。如果此值為空或指定的路徑無效，將使用通用的401頁面。",
+    "option_custom500": "自訂500頁面檔案路徑",
+    "option_custom500_description": "自訂500頁面的檔案路徑。如果此值為空或指定的路徑無效，將使用通用的500頁面。",
     "option_customErrorReplaceString": "自訂錯誤路徑變數",
     "section_security": "安全性",
     "option_https": "使用 HTTPS",

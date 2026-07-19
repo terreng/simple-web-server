@@ -138,6 +138,8 @@
     "option_hiddenDotFilesDirectoryListing": "Visa dolda/.filer när mappar visas",
     "option_precompression_description": "Leta efter och inkludera förkomprimerade versioner av filer i samma mapp med .gz eller .br tillagt till filändelsen. Stödjer Gzip och/eller Brotli-komprimering. Till exempel om en förfrågan görs efter <code>exempel.txt</code> så kontrollerar servern först <code>exempel.txt.gz</code> eller <code>exempel.txt.br</code> och inkluderar dessa om dom existerar och om klienten indikerar stöd för den komprimeringsmetoden via <code>Accept-Encoding</code> header:n.",
     "option_custom401_description": "Sökväg till anpassad '401'-sida. Återgår till en generisk '401'-sida om sökvägen inte är ifylld eller är felaktig.",
+    "option_custom500": "Anpassad sökväg till '500'-sida",
+    "option_custom500_description": "Sökväg till anpassad '500'-sida. Återgår till en generisk '500'-sida om sökvägen inte är ifylld eller är felaktig.",
     "option_customErrorReplaceString_description": "Eventuellt ange en anpassad sträng som kommer att sökas efter i dina felmeddelande-sidor och bli ersatt med gällande sökväg. Till exempel, om din anpassade '404'-sida inkluderar: <code>Filen vid {{PATH}} existerar inte</code> och du har satt detta värdet till <code>{{PATH}}</code>, när din sida då levereras så anges att: <code>Filen vid /exempel.txt existerar inte</code>.",
     "section_security": "Säkerhet",
     "option_https": "Använd HTTPS",

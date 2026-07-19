@@ -142,6 +142,8 @@
     "section_error_pages": "Hibalapok",
     "option_custom401": "Egyedi 401-es hibalap",
     "option_custom401_description": "Fájlelérési útvonal az egyedi 401-es hibalaphoz. Ha nincs megadva, vagy hibás az útvonal, az alapértelmezett 401-es hibalap töltődik be.",
+    "option_custom500": "Egyedi 500-es hibalap",
+    "option_custom500_description": "Fájlelérési útvonal az egyedi 500-es hibalaphoz. Ha nincs megadva, vagy hibás az útvonal, az alapértelmezett 500-es hibalap töltődik be.",
     "update_available": "Egy frissített verzió elérhető a Simple Web Server-hez",
     "option_precompression_description": "Megkeresi és kiszolgálja az ugyanabban a könyvtárban tárolt fájlok előre tömörített verzióit, amelyek .gz vagy .br fájlkiterjesztésűek. Támogatja a Gzip és/vagy Brotli tömörítést. Például, ha egy kérés érkezik a <code>pelda.txt</code> fájlra, a szerver először ellenőrzi a <code>pelda.txt.gz</code> vagy <code>pelda.txt.br</code> fájlt, és kiszolgálja ezeket, ha léteznek és, ha az ügyfél jelzi, hogy támogatja ezt a tömörítési módszert az <code>Accept-Encoding</code> fejlécen keresztül.",
     "option_path_description": "Az a könyvtár, ahonnan a fájlokat használni szeretnéd. Ha a könyvtár egy rejtett mappában van, engedélyezd a <a href='https://simplewebserver.org/docs/options.html#serve-hidden-dot-files'>rejtett fájlok kiszolgálását</a> (a weboldal angol nyelvű).",

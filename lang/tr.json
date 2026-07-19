@@ -124,6 +124,8 @@
     "option_custom403_description": "Kendinize özel 403 sayfası için dizin adresi. Burada herhangi bir adres belirtilmemişse veya yeni girilen dizin geçerli değilse yine önceden varsayılan 403 sayfası görüntülenecektir.",
     "option_custom401": "Kişisel 401 sayfası için dizin adresi",
     "option_custom401_description": "Kişisel 401 sayfası için dizin adresi. Burada herhangi bir adres belirtilmemişse veya yeni girilen dizin adresi geçerli değilse önceden varsayılan 401 sayfası görüntülenecektir.",
+    "option_custom500": "Kişisel 500 sayfası için dizin adresi",
+    "option_custom500_description": "Kişisel 500 sayfası için dizin adresi. Burada herhangi bir adres belirtilmemişse veya yeni girilen dizin adresi geçerli değilse önceden varsayılan 500 sayfası görüntülenecektir.",
     "option_customErrorReplaceString": "Özel adres hatası değişkenleri",
     "option_customErrorReplaceString_description": "İsteğinize bağlı olarak hata sayfalarında mevcut adresle değiştirilecek özel bir kod dizisi belirleyebilirsiniz. Örneğin kişisel 404 sayfanızda <code>{{PATH}} adresindeki dosya mevcut değil</code> mesajı varsa, ve sizde <code>{{PATH}}</code> kodunu eklerseniz kişisel hata sayfası görüntülendiğinde <code>/example.txt adresindeki dosya mevcut değil</code> mesajı görüntülenecektir."
 }

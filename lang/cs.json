@@ -103,6 +103,8 @@
     "option_custom403_description": "Cesta k vlastní stránce 403. Pokud je tato hodnota prázdná nebo zadaná cesta není platná, vrátí se k obecné stránce 403.",
     "option_custom401": "Cesta k vlastnímu souboru stránky 401",
     "option_custom401_description": "Cesta k vlastní stránce 401. Pokud je tato hodnota prázdná nebo zadaná cesta není platná, vrátí se k obecné stránce 401.",
+    "option_custom500": "Cesta k vlastnímu souboru stránky 500",
+    "option_custom500_description": "Cesta k vlastní stránce 500. Pokud je tato hodnota prázdná nebo zadaná cesta není platná, vrátí se k obecné stránce 500.",
     "option_customErrorReplaceString": "Vlastní proměnná chybové cesty",
     "option_customErrorReplaceString_description": "Volitelně zadejte vlastní řetězec, který bude vyhledán na chybových stránkách a nahrazen aktuální cestou. Pokud například vaše vlastní stránka 404 obsahuje: <code>Soubor na adrese {{PATH}} neexistuje</code> a tuto možnost nastavíte na <code>{{PATH}}</code>, při zobrazení vaší vlastní stránky se zobrazí text <code>Soubor na adrese /example.txt neexistuje</code>.",
     "section_security": "Zabezpečení",

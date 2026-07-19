@@ -103,6 +103,8 @@
     "option_custom403_description": "Ścieżka do własnej strony 403. Jeśli pole jest puste lub ścieżka jest nieprawidłowa, zostanie użyta domyślna strona 403.",
     "option_custom401": "Ścieżka do własnej strony błędu 401",
     "option_custom401_description": "Ścieżka do własnej strony 401. Jeśli pole jest puste lub ścieżka jest nieprawidłowa, zostanie użyta domyślna strona 401.",
+    "option_custom500": "Ścieżka do własnej strony błędu 500",
+    "option_custom500_description": "Ścieżka do własnej strony 500. Jeśli pole jest puste lub ścieżka jest nieprawidłowa, zostanie użyta domyślna strona 500.",
     "option_customErrorReplaceString": "Niestandardowa zmienna ścieżki błędu",
     "option_customErrorReplaceString_description": "Opcjonalnie podaj własny ciąg znaków, który będzie wyszukiwany na stronach błędów i zastępowany bieżącą ścieżką. Na przykład, jeśli Twoja własna strona 404 zawiera tekst: <code>The file at {{PATH}} does not exist</code> i ustawisz tę opcję na <code>{{PATH}}</code>, podczas wyświetlania strony pojawi się komunikat <code>The file at /example.txt does not exist</code>.",
     "section_security": "Bezpieczeństwo",

@@ -57,7 +57,7 @@ fn build_settings(sc: &Value, cert: String, key: String) -> Settings<'static> {
         custom401: leak(cfg_str(sc, "custom401")),
         custom403: leak(cfg_str(sc, "custom403")),
         custom404: leak(cfg_str(sc, "custom404")),
-        custom500: "",
+        custom500: leak(cfg_str(sc, "custom500")),
         http_auth: cfg_bool(sc, "httpAuth"),
         http_auth_username: leak(cfg_str(sc, "httpAuthUsername")),
         http_auth_password: leak(cfg_str(sc, "httpAuthPassword")),

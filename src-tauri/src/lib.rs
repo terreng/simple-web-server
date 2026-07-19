@@ -33,9 +33,6 @@ const INSTALL_SOURCE: &str = match option_env!("SWS_INSTALL_SOURCE") {
 // the process alive in background mode.
 static QUITTING: AtomicBool = AtomicBool::new(false);
 
-// Holds the tray icon; dropping it removes the tray.
-struct TrayHolder(Mutex<Option<tauri::tray::TrayIcon>>);
-
 // Serialized form of the config we last wrote ourselves, so the file watcher can
 // tell our own writes apart from genuine external edits.
 fn last_saved() -> &'static Mutex<String> {
@@ -88,18 +85,27 @@ fn set_dock_visible(_app: &AppHandle, _visible: bool) {}
 // ---------------------------------------------------------------------------
 // Tray
 // ---------------------------------------------------------------------------
+const TRAY_ID: &str = "main-tray";
+
+// The tray icon bytes: a monochrome template on macOS (system tints it for the
+// menu bar), a full-colour icon elsewhere.
+#[cfg(target_os = "macos")]
+const TRAY_ICON_BYTES: &[u8] = include_bytes!("../../images/menuBarIconTemplate@2x.png");
+#[cfg(not(target_os = "macos"))]
+const TRAY_ICON_BYTES: &[u8] = include_bytes!("../icons/32x32.png");
+const TRAY_ICON_IS_TEMPLATE: bool = cfg!(target_os = "macos");
+
 fn create_tray(app: &AppHandle) {
-    let holder = app.state::<TrayHolder>();
-    let mut guard = holder.0.lock().unwrap();
-    if guard.is_some() {
+    // The app's tray manager is the source of truth; don't create a second one.
+    if app.tray_by_id(TRAY_ID).is_some() {
         return;
     }
-    let mut builder = TrayIconBuilder::with_id("main-tray").tooltip("Simple Web Server");
-    if let Some(icon) = app.default_window_icon().cloned() {
-        builder = builder.icon(icon).icon_as_template(true);
+    let mut builder = TrayIconBuilder::with_id(TRAY_ID).tooltip("Simple Web Server");
+    if let Ok(icon) = tauri::image::Image::from_bytes(TRAY_ICON_BYTES) {
+        builder = builder.icon(icon).icon_as_template(TRAY_ICON_IS_TEMPLATE);
     }
     let app2 = app.clone();
-    let built = builder
+    let _ = builder
         .on_tray_icon_event(move |_tray, event| {
             if let TrayIconEvent::Click {
                 button: MouseButton::Left,
@@ -111,14 +117,12 @@ fn create_tray(app: &AppHandle) {
             }
         })
         .build(app);
-    if let Ok(tray) = built {
-        *guard = Some(tray);
-    }
 }
 
 fn remove_tray(app: &AppHandle) {
-    let holder = app.state::<TrayHolder>();
-    *holder.0.lock().unwrap() = None;
+    // Dropping our own handle isn't enough — the app manager retains the tray by
+    // id, so remove it there.
+    let _ = app.remove_tray_by_id(TRAY_ID);
 }
 
 fn show_main_window(app: &AppHandle) {
@@ -320,7 +324,6 @@ pub fn run() {
             config: config.clone(),
             servers: Vec::new(),
         }))
-        .manage(TrayHolder(Mutex::new(None)))
         .invoke_handler(tauri::generate_handler![
             init,
             get_states,

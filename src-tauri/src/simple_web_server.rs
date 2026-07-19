@@ -91,13 +91,10 @@ impl SimpleWebServer {
             return;
         }
         
-        let mut rewrite_to = "";
-        if opts.spa && !res.path.contains('.') {
-            rewrite_to = if !opts.rewrite_to.is_empty() { opts.rewrite_to } else { "/index.html" };
-        }
-        
         if res.method == "GET" || res.method == "HEAD" {
-            Self::get(res, opts, rewrite_to);
+            // SPA rewriting happens as a 404 fallback (see error()), so real
+            // files and directories are served first.
+            Self::get(res, opts, "");
         } else if res.method == "PUT" {
             Self::put(res, opts);
         } else if res.method == "DELETE" {
@@ -109,6 +106,18 @@ impl SimpleWebServer {
         }
     }
     fn error(mut res:Request, opts: Settings, msg: &str, code: i32) {
+        // SPA fallback: serve the app entry point for not-found GET/HEAD requests.
+        // This mirrors the old server, which only rewrites once the real path 404s
+        // (so real files/directories still win). The res.path guard prevents an
+        // infinite loop if the entry point itself is missing.
+        if opts.spa && code == 404 && (res.method == "GET" || res.method == "HEAD") {
+            let rewrite = if opts.rewrite_to.is_empty() { "/index.html" } else { opts.rewrite_to };
+            if res.path != rewrite {
+                res.path = rewrite.to_string();
+                Self::get(res, opts, "");
+                return;
+            }
+        }
         if code == 401 {
             res.set_header("WWW-Authenticate", "Basic realm=\"SimpleWebServer\", charset=\"UTF-8\"");
         }

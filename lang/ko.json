@@ -85,6 +85,8 @@
     "option_upload": "파일 업로드 허용",
     "option_cors_description": "Cross origin 요청을 허용합니다. <code>Access-Control-Allow-Origin</code> 헤더는 <code>*</code>로, <code>Access-Control-Allow-Methods</code>는 <code>GET, POST, PUT, DELETE</code>로, <code>Access-Control-Max-Age</code>는 <code>120</code>으로 설정됩니다. <a href='https://developer.mozilla.org/en-US/docs/Web/HTTP/CORS'>Cross-Origin Resource Sharing에 대해 자세히 알아보기.</a>",
     "option_custom401_description": "사용자 정의 401 페이지의 파일 경로입니다. 이 값이 비어 있거나 지정된 경로가 유효하지 않은 경우 일반 401 페이지로 폴백됩니다.",
+    "option_custom500": "사용자 지정 500 페이지 파일 경로",
+    "option_custom500_description": "사용자 정의 500 페이지의 파일 경로입니다. 이 값이 비어 있거나 지정된 경로가 유효하지 않은 경우 일반 500 페이지로 폴백됩니다.",
     "option_httpsCert": "SSL/TLS 인증서",
     "ipThrottling_invalid": "0보다 크거나 같은 숫자를 입력합니다",
     "option_https_abbreviation": "HTTPS",

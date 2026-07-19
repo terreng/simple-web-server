@@ -103,6 +103,8 @@
     "option_custom403_description": "File path to a custom 403 page. Will fallback to a generic 403 page if this value is empty or specified path is not valid.",
     "option_custom401": "Custom 401 page file path",
     "option_custom401_description": "File path to a custom 401 page. Will fallback to a generic 401 page if this value is empty or specified path is not valid.",
+    "option_custom500": "Custom 500 page file path",
+    "option_custom500_description": "File path to a custom 500 page. Will fallback to a generic 500 page if this value is empty or specified path is not valid.",
     "option_customErrorReplaceString": "Custom error path variable",
     "option_customErrorReplaceString_description": "Optionally specify a custom string that will be looked for in your error pages and replaced with the current path. For example, if your custom 404 page included: <code>The file at {{PATH}} does not exist</code> and you set this option to <code>{{PATH}}</code>, when your custom page is served it would say <code>The file at /example.txt does not exist</code>.",
     "section_security": "Security",

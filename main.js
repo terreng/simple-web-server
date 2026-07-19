@@ -444,6 +444,7 @@ function addServer(editindex) {
         document.querySelector("#custom404").value = config.servers[editindex].custom404 || "";
         document.querySelector("#custom403").value = config.servers[editindex].custom403 || "";
         document.querySelector("#custom401").value = config.servers[editindex].custom401 || "";
+        document.querySelector("#custom500").value = config.servers[editindex].custom500 || "";
 
         toggleCheckbox("https", config.servers[editindex].https != null ? config.servers[editindex].https : false);
         function isAutoCert() {
@@ -505,6 +506,7 @@ function addServer(editindex) {
         document.querySelector("#custom404").value = "";
         document.querySelector("#custom403").value = "";
         document.querySelector("#custom401").value = "";
+        document.querySelector("#custom500").value = "";
 
         toggleCheckbox("https", false);
         toggleCheckbox("https_custom_cert", false);
@@ -589,6 +591,7 @@ function submitAddServer() {
         "custom404": document.querySelector("#custom404").value,
         "custom403": document.querySelector("#custom403").value,
         "custom401": document.querySelector("#custom401").value,
+        "custom500": document.querySelector("#custom500").value,
 
         "https": isChecked("https"),
         "httpsCert": document.querySelector("#httpsCert").value.replace(/\r?\n/g, a => '\r\n'),

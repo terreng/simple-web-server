@@ -96,6 +96,8 @@
     "option_custom403_description": "Caminho para uma página 403 personalizada. Uma página 403 genérica será usada se este valor estiver vazio ou se o caminho indicado não for válido.",
     "option_custom401": "Caminho para página 401 personalizada",
     "option_custom401_description": "Caminho para uma página 401 personalizada. Uma página 401 genérica será usada se este valor estiver vazio ou se o caminho indicado não for válido.",
+    "option_custom500": "Caminho para página 500 personalizada",
+    "option_custom500_description": "Caminho para uma página 500 personalizada. Uma página 500 genérica será usada se este valor estiver vazio ou se o caminho indicado não for válido.",
     "option_customErrorReplaceString": "Variável para caminho de erro personalizado",
     "option_customErrorReplaceString_description": "Permite opcionalmente especificar uma string personalizada que será substituída pelo caminho atual em suas páginas de erro. Por exemplo, se sua página de erro 404 personalizada contém: <code>O arquivo {{PATH}} não existe</code> se você atribuir a esta opção o valor <code>{{PATH}}</code>, quando sua página personalizada for servida, ela dirá <code>O arquivo /exemplo.txt não existe</code>.",
     "section_security": "Segurança",

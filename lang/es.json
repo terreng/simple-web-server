@@ -96,6 +96,8 @@
     "option_custom403_description": "Ruta a una página 403 personalizada. Se utilizará una página 403 genérica si este valor esta vacīo o si la ruta indicada no es válida.",
     "option_custom401": "Ruta a página 401 personalizada",
     "option_custom401_description": "Ruta a una página 401 personalizada. Se utilizará una página 401 genérica si este valor esta vacīo o si la ruta indicada no es válida.",
+    "option_custom500": "Ruta a página 500 personalizada",
+    "option_custom500_description": "Ruta a una página 500 personalizada. Se utilizará una página 500 genérica si este valor esta vacīo o si la ruta indicada no es válida.",
     "option_customErrorReplaceString": "Variable para ruta de error personalizado",
     "option_customErrorReplaceString_description": "Permite indicar opcionalmente una cadena personalizada que será reemplazada con la ruta actual en sus páginas de error. Por ejemplo, si su página de error 404 personalizada contiene: <code>El archivo {{PATH}} no existe</code> if ud. asigna a esta opción el valor <code>{{PATH}}</code>, cuando su página personalizada sea servida, dirá <code>El archivo /example.txt no existe</code>.",
     "section_security": "Seguridad",
