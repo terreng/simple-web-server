@@ -23,7 +23,9 @@ cl /nologo /I $incFfi rust-server/ffi/test/smoke.c /Fe:"$work/smoke.exe" /link /
 Copy-Item "$libdir/sws_ffi.dll" "$work/"
 $out = & "$work/smoke.exe" "$work/webroot" 18092
 $out | Write-Host
-if ($out -notmatch "SMOKE PASS") { throw "smoke test did not pass" }
+# Note: `$out -match` on an array returns the matching elements; use -not (...)
+# so this means "no line matched", not "some line didn't match".
+if (-not ($out -match "SMOKE PASS")) { throw "smoke test did not pass" }
 
 Write-Host "== building + running C++ supervisor test =="
 cl /nologo /std:c++17 /EHsc /I $incCmn /I $incFfi `
@@ -31,6 +33,6 @@ cl /nologo /std:c++17 /EHsc /I $incCmn /I $incFfi `
    /Fe:"$work/sup.exe" /link /LIBPATH:$libdir sws_ffi.dll.lib
 $out2 = & "$work/sup.exe" "$work/webroot"
 $out2 | Write-Host
-if ($out2 -notmatch "SUPERVISOR PASS") { throw "supervisor test did not pass" }
+if (-not ($out2 -match "SUPERVISOR PASS")) { throw "supervisor test did not pass" }
 
 Write-Host "ALL CORE CHECKS PASSED"

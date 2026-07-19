@@ -147,6 +147,7 @@ export const darkColors: ThemeColors = {
   statusGray: '#9f9f9f',
   statusGreen: '#0dcd0d',
   statusRed: '#ff6060',
+  inlineCodeBackground: '#3a3a3a',
 };
 
 export const fontFamily = Platform.select({
