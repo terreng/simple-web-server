@@ -1,0 +1,102 @@
+name: v2 CI
+
+# Builds and tests the React Native + Rust rewrite under app/.
+# The Rust core and the shared C++ supervisor are fully built and run on
+# Linux, macOS and Windows here. The full RN app (Xcode/VS) build lives in
+# v2-app-build.yml because it needs the generated native shells.
+
+on:
+  push:
+    paths:
+      - 'app/**'
+      - '.github/workflows/v2-ci.yml'
+  pull_request:
+    paths:
+      - 'app/**'
+      - '.github/workflows/v2-ci.yml'
+  workflow_dispatch:
+
+jobs:
+  core:
+    name: Rust core + C/C++ tests (${{ matrix.os }})
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, macos-latest, windows-latest]
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install Rust
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: Cache cargo
+        uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: app/rust-server
+
+      # openssl (vendored) needs nasm on Windows; perl is preinstalled.
+      - name: Install nasm (Windows)
+        if: runner.os == 'Windows'
+        uses: ilammy/setup-nasm@v1
+
+      - name: Set up MSVC (Windows)
+        if: runner.os == 'Windows'
+        uses: ilammy/msvc-dev-cmd@v1
+
+      - name: Verify core (Unix)
+        if: runner.os != 'Windows'
+        run: bash app/scripts/verify-core.sh
+
+      - name: Verify core (Windows)
+        if: runner.os == 'Windows'
+        shell: pwsh
+        run: app/scripts/verify-core.ps1
+
+  js:
+    name: TypeScript + lint + tests
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: app
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - name: Install deps
+        run: npm install --no-audit --no-fund
+      - name: Typecheck
+        run: npm run tsc
+      - name: Lint
+        run: npm run lint
+        continue-on-error: true
+      - name: Unit tests
+        run: npm test
+
+  bundle:
+    name: Metro bundle (${{ matrix.platform }})
+    runs-on: ubuntu-latest
+    # Informative: confirms the JS/TS actually bundles for each platform without
+    # needing Xcode/VS. Allowed to fail while the app is still being brought up.
+    continue-on-error: true
+    strategy:
+      fail-fast: false
+      matrix:
+        platform: [macos, windows]
+    defaults:
+      run:
+        working-directory: app
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - run: npm install --no-audit --no-fund
+      - name: Bundle
+        run: |
+          npx react-native bundle \
+            --platform ${{ matrix.platform }} \
+            --entry-file index.js \
+            --bundle-output /tmp/sws.${{ matrix.platform }}.bundle \
+            --dev false

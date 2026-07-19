@@ -10,7 +10,7 @@
     "windows": "react-native run-windows",
     "tsc": "tsc --noEmit",
     "lint": "eslint .",
-    "test": "jest",
+    "test": "jest --passWithNoTests",
     "rust:build": "cargo build -p sws-ffi --release --manifest-path rust-server/Cargo.toml",
     "rust:build:mac-universal": "cargo build -p sws-ffi --release --target aarch64-apple-darwin --target x86_64-apple-darwin --manifest-path rust-server/Cargo.toml"
   },

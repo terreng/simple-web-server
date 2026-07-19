@@ -1,0 +1,96 @@
+name: v2 App Build (native)
+
+# Full React Native app builds for macOS and Windows.
+#
+# These require the generated native app shells to be committed under app/macos
+# and app/windows (created once with `npx react-native-macos-init` /
+# `npx react-native-windows-init`, then our native sources wired in per
+# docs/BUILD.md). Until those shells exist, each job detects their absence and
+# exits with guidance instead of a confusing compiler error.
+#
+# Manual trigger so it never blocks normal CI.
+
+on:
+  workflow_dispatch:
+
+jobs:
+  macos:
+    name: Build macOS app
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: aarch64-apple-darwin,x86_64-apple-darwin
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Check for generated macOS shell
+        id: shell
+        run: |
+          if ls app/macos/*.xcworkspace app/macos/*.xcodeproj >/dev/null 2>&1; then
+            echo "present=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "present=false" >> "$GITHUB_OUTPUT"
+            echo "::warning::No macOS Xcode project found under app/macos. Run 'npx react-native-macos-init' and commit the shell (see app/docs/BUILD.md)."
+          fi
+
+      - name: Install deps
+        if: steps.shell.outputs.present == 'true'
+        working-directory: app
+        run: npm install --no-audit --no-fund
+
+      - name: Build Rust core (universal)
+        if: steps.shell.outputs.present == 'true'
+        working-directory: app
+        run: npm run rust:build:mac-universal
+
+      - name: Install CocoaPods
+        if: steps.shell.outputs.present == 'true'
+        working-directory: app/macos
+        run: pod install
+
+      - name: Build app
+        if: steps.shell.outputs.present == 'true'
+        working-directory: app
+        run: |
+          npx react-native build-macos --mode Release
+
+  windows:
+    name: Build Windows app
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+      - uses: ilammy/setup-nasm@v1
+      - uses: microsoft/setup-msbuild@v2
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Check for generated Windows shell
+        id: shell
+        shell: bash
+        run: |
+          if ls app/windows/*.sln >/dev/null 2>&1; then
+            echo "present=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "present=false" >> "$GITHUB_OUTPUT"
+            echo "::warning::No Visual Studio solution found under app/windows. Run 'npx react-native-windows-init' and commit the shell (see app/docs/BUILD.md)."
+          fi
+
+      - name: Install deps
+        if: steps.shell.outputs.present == 'true'
+        working-directory: app
+        run: npm install --no-audit --no-fund
+
+      - name: Build Rust core
+        if: steps.shell.outputs.present == 'true'
+        working-directory: app
+        run: npm run rust:build
+
+      - name: Build app
+        if: steps.shell.outputs.present == 'true'
+        working-directory: app
+        run: npx react-native run-windows --release --no-launch --no-deploy --arch x64

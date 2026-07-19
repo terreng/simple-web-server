@@ -38,6 +38,77 @@ export function defaultServerConfig(port: number): ServerConfig {
   };
 }
 
+/**
+ * Backwards compatibility: normalize a server object loaded from an existing
+ * config.json (possibly written by the old Electron app) into the canonical v2
+ * shape.
+ *
+ * Why this matters: the app matches running-server states to config entries by
+ * full-config equality (same rule Electron used). The native side reports
+ * servers in the clean v2 shape, so if the UI held an old-shape object (with
+ * removed keys like `htaccess`, `ipThrottling`, `cacheControl`, `plugins`, …)
+ * the two would never compare equal and every server would show "unknown".
+ * Normalizing on load — and persisting once — keeps both sides in sync and
+ * quietly upgrades the file. Retained keys keep their values; removed keys are
+ * dropped; new keys (e.g. `custom500`) get defaults.
+ */
+export function migrateServer(raw: unknown): ServerConfig {
+  const r = (raw ?? {}) as Record<string, unknown>;
+  const base = defaultServerConfig(
+    typeof r.port === 'number' ? r.port : 8080,
+  );
+  const str = (k: string, d: string): string =>
+    typeof r[k] === 'string' ? (r[k] as string) : d;
+  const bool = (k: string, d: boolean): boolean =>
+    typeof r[k] === 'boolean' ? (r[k] as boolean) : d;
+
+  return {
+    enabled: bool('enabled', base.enabled),
+    path: str('path', base.path),
+    port: typeof r.port === 'number' ? r.port : base.port,
+    localnetwork: bool('localnetwork', base.localnetwork),
+    showIndex: bool('showIndex', base.showIndex),
+    spa: bool('spa', base.spa),
+    rewriteTo: str('rewriteTo', base.rewriteTo),
+    directoryListing: bool('directoryListing', base.directoryListing),
+    excludeDotHtml: bool('excludeDotHtml', base.excludeDotHtml),
+    ipv6: bool('ipv6', base.ipv6),
+    hiddenDotFiles: bool('hiddenDotFiles', base.hiddenDotFiles),
+    cors: bool('cors', base.cors),
+    upload: bool('upload', base.upload),
+    replace: bool('replace', base.replace),
+    delete: bool('delete', base.delete),
+    hiddenDotFilesDirectoryListing: bool(
+      'hiddenDotFilesDirectoryListing',
+      base.hiddenDotFilesDirectoryListing,
+    ),
+    custom404: str('custom404', base.custom404),
+    custom403: str('custom403', base.custom403),
+    custom401: str('custom401', base.custom401),
+    custom500: str('custom500', base.custom500),
+    https: bool('https', base.https),
+    httpsCert: str('httpsCert', base.httpsCert),
+    httpsKey: str('httpsKey', base.httpsKey),
+    httpAuth: bool('httpAuth', base.httpAuth),
+    httpAuthUsername: str('httpAuthUsername', base.httpAuthUsername),
+    httpAuthPassword: str('httpAuthPassword', base.httpAuthPassword),
+  };
+}
+
+/**
+ * Normalize a whole config. Global keys are preserved; the servers array is
+ * migrated to the canonical shape. Returns whether anything changed so the
+ * caller can persist the upgrade exactly once.
+ */
+export function migrateConfig(config: GlobalConfig): {
+  config: GlobalConfig;
+  changed: boolean;
+} {
+  const servers = (config.servers ?? []).map(migrateServer);
+  const changed = JSON.stringify(config.servers ?? []) !== JSON.stringify(servers);
+  return {config: {...config, servers}, changed};
+}
+
 /** First free port starting at 8080 (matches Electron behavior). */
 export function suggestPort(config: GlobalConfig): number {
   const used = (config.servers ?? []).map(s => s.port);

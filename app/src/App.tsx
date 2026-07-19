@@ -12,6 +12,7 @@ import type {
   ServerConfig,
   UpdateInfo,
 } from './native/types';
+import {migrateConfig} from './util/config';
 import {MainScreen} from './screens/MainScreen';
 import {EditServerScreen} from './screens/EditServerScreen';
 import {SettingsScreen} from './screens/SettingsScreen';
@@ -57,14 +58,16 @@ function Root() {
         }
         setInit(state);
         setIp(state.ip);
-        applyLanguage(state.config);
-        setConfig(state.config);
+        // Backwards compatibility: upgrade an old config.json to the v2 shape.
+        const {config: migrated, changed} = migrateConfig(state.config);
+        applyLanguage(migrated);
+        setConfig(migrated);
         // First-run detection matches Electron: both flags present => not first run.
         const firstRun =
-          state.config.background == null || state.config.updates == null;
+          migrated.background == null || migrated.updates == null;
         if (firstRun) {
           const seeded: GlobalConfig = {
-            ...state.config,
+            ...migrated,
             background: false,
             updates: true,
             theme: 'system',
@@ -73,6 +76,10 @@ function Root() {
           ServerManager.saveConfig(seeded, false);
           setScreen('welcome');
         } else {
+          if (changed) {
+            // Persist the migrated shape once so UI/native configs stay in sync.
+            ServerManager.saveConfig(migrated, false);
+          }
           setScreen('main');
         }
       })
@@ -83,8 +90,9 @@ function Root() {
       ServerManager.on('ipChange', setIp),
       ServerManager.on('update', setUpdate),
       ServerManager.on('configReload', cfg => {
-        applyLanguage(cfg);
-        setConfig(cfg);
+        const {config: migrated} = migrateConfig(cfg);
+        applyLanguage(migrated);
+        setConfig(migrated);
       }),
     ];
     ServerManager.getServerStates().then(setStates).catch(() => {});
