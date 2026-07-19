@@ -43,7 +43,9 @@ pub struct SwsSettings {
     pub cors: bool,
     pub upload: bool,
     pub replace: bool,
-    pub delete: bool,
+    // Named `delete_files` (not `delete`) so the generated C struct is usable
+    // from C++ too, where `delete` is a reserved keyword.
+    pub delete_files: bool,
     pub hidden_dot_files_directory_listing: bool,
     pub custom401: *const c_char,
     pub custom403: *const c_char,
@@ -105,7 +107,7 @@ pub unsafe extern "C" fn sws_server_create(
         cors: s.cors,
         upload: s.upload,
         replace: s.replace,
-        delete: s.delete,
+        delete: s.delete_files,
         hidden_dot_files_directory_listing: s.hidden_dot_files_directory_listing,
         custom401: cstr_to_static(s.custom401),
         custom403: cstr_to_static(s.custom403),

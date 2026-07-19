@@ -33,7 +33,7 @@ typedef struct SwsSettings {
   bool cors;
   bool upload;
   bool replace;
-  bool delete;
+  bool delete_files; /* not `delete` — that is a C++ keyword */
   bool hidden_dot_files_directory_listing;
   const char *custom401;
   const char *custom403;
