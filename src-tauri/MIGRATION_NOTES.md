@@ -21,6 +21,37 @@ directory is the `frontendDist`, so the bundle never includes `node_modules`,
 > If you edit a root UI file during `tauri dev`, re-run the dev command (or the
 > copy script) to resync.
 
+## Packaging a release
+
+```sh
+npm run tauri build                              # current OS, default targets
+npm run tauri build -- --target universal-apple-darwin   # macOS universal (arm64+x64)
+```
+
+`tauri build` produces installers for **the OS you run it on** — Tauri does not
+cross-compile the installers (each platform's bundler — dmg, NSIS, deb/rpm — is
+native):
+
+- **macOS** (your machine): builds the macOS `.app` + `.dmg`, and the MAS
+  `.pkg` with the right signing/provisioning. You **cannot** build the Windows
+  or Linux packages here.
+- **Windows** `.exe`/NSIS installer: build on Windows.
+- **Linux** `.deb`/`.rpm`/AppImage: build on Linux (needs
+  `libwebkit2gtk-4.1-dev` etc.).
+
+The practical option for all three is CI — `tauri-apps/tauri-action` on a
+GitHub Actions matrix (`macos-latest`, `windows-latest`, `ubuntu-latest`)
+builds and uploads each platform's artifacts. That's the recommended
+replacement for the old `electron-builder` multi-target build.
+
+Bundle metadata (identifier, publisher, homepage, license, copyright, category,
+descriptions, macOS min version) is set in `tauri.conf.json` to mirror the old
+electron-builder config. Signing identities/certs are intentionally left null —
+fill them in (or pass via env/CI secrets) at release time. Tauri names
+artifacts `Simple Web Server_<version>_<arch>` rather than the old
+`Simple-Web-Server-<os>-<version>-<arch>`; rename in CI if you want the old
+scheme.
+
 ## Architecture
 
 - **`src-tauri/server/`** — the Rust web server, vendored from

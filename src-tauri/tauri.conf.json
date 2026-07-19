@@ -9,6 +9,9 @@
     "active": true,
     "category": "DeveloperTool",
     "copyright": "MIT License",
+    "license": "MIT",
+    "publisher": "Simple Web Server",
+    "homepage": "https://simplewebserver.org",
     "targets": "all",
     "externalBin": [],
     "icon": [
@@ -21,15 +24,19 @@
     "windows": {
       "certificateThumbprint": null,
       "digestAlgorithm": "sha256",
-      "timestampUrl": ""
+      "timestampUrl": "",
+      "nsis": {
+        "installMode": "perMachine"
+      }
     },
-    "longDescription": "",
+    "longDescription": "Create a local web server in just a few clicks with an easy to use interface. A continuation of Web Server for Chrome.",
     "macOS": {
       "entitlements": null,
       "exceptionDomain": "",
       "frameworks": [],
       "providerShortName": null,
-      "signingIdentity": null
+      "signingIdentity": null,
+      "minimumSystemVersion": "10.13"
     },
     "resources": [],
     "shortDescription": "Create a local web server in just a few clicks with an easy to use interface.",
