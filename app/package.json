@@ -1,0 +1,44 @@
+{
+  "name": "simple-web-server",
+  "version": "2.0.0",
+  "private": true,
+  "description": "Simple Web Server — React Native (Windows + macOS) UI over a Rust server core.",
+  "license": "MIT",
+  "scripts": {
+    "start": "react-native start",
+    "macos": "react-native run-macos",
+    "windows": "react-native run-windows",
+    "tsc": "tsc --noEmit",
+    "lint": "eslint .",
+    "test": "jest",
+    "rust:build": "cargo build -p sws-ffi --release --manifest-path rust-server/Cargo.toml",
+    "rust:build:mac-universal": "cargo build -p sws-ffi --release --target aarch64-apple-darwin --target x86_64-apple-darwin --manifest-path rust-server/Cargo.toml"
+  },
+  "dependencies": {
+    "react": "18.3.1",
+    "react-native": "0.77.1",
+    "react-native-macos": "0.77.1",
+    "react-native-vector-icons": "^10.2.0",
+    "react-native-windows": "0.77.4"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.25.0",
+    "@babel/preset-env": "^7.25.0",
+    "@babel/runtime": "^7.25.0",
+    "@react-native/babel-preset": "0.77.1",
+    "@react-native/eslint-config": "0.77.1",
+    "@react-native/metro-config": "0.77.1",
+    "@react-native/typescript-config": "0.77.1",
+    "@types/react": "^18.3.12",
+    "@types/react-native-vector-icons": "^6.4.18",
+    "@types/react-test-renderer": "^18.3.0",
+    "eslint": "^8.57.0",
+    "jest": "^29.7.0",
+    "prettier": "^3.3.0",
+    "react-test-renderer": "18.3.1",
+    "typescript": "5.5.4"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}

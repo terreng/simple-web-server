@@ -1,0 +1,39 @@
+# Node
+node_modules/
+npm-debug.log
+yarn-error.log
+
+# Metro
+.metro-health-check*
+/tmp/metro-*
+
+# macOS build
+macos/build/
+macos/Pods/
+macos/*.xcworkspace/xcuserdata/
+macos/**/xcuserdata/
+DerivedData/
+*.xcuserstate
+
+# Windows build
+windows/**/Debug/
+windows/**/Release/
+windows/**/x64/
+windows/**/ARM64/
+windows/**/bin/
+windows/**/obj/
+windows/**/Generated Files/
+windows/packages/
+windows/**/*.binlog
+
+# Rust (native libs are built into the app; artifacts are ignored)
+rust-server/target/
+
+# Bundled native libs copied in by the build scripts
+src/**/*.dylib
+src/**/*.dll
+src/**/*.a
+
+# Misc
+.DS_Store
+*.log
