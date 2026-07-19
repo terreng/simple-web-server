@@ -1,5 +1,11 @@
 node_modules/
 out/
+
+# Tauri
+src-tauri/target/
+src-tauri/gen/schemas/
+src-tauri/frontend/
+
 images/.DS_Store
 .DS_Store
 www/docs

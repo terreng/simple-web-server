@@ -10,8 +10,10 @@ let lang;
 let languages;
 var language;
 
-window.api.initipc((event, message) => {
-    if (message.type === "init") {
+const invoke = window.__TAURI__.core.invoke;
+const listen = window.__TAURI__.event.listen;
+
+invoke('init').then(function(message) {
         lang = message.lang;
         languages = message.languages;
         language = message.language;
@@ -54,14 +56,12 @@ window.api.initipc((event, message) => {
         config = message.config;
         ip = message.ip;
         install_source = message.install_source;
-        plugins = message.plugins;
         platform = message.platform;
         document.getElementById("version_number").innerText = message.version;
         if (config.background != null && config.updates != null) openMain();
         else initWelcome();
         document.getElementById("stop_and_quit_button").style.display = config.background ? "block" : "none";
         document.body.style.visibility = "visible";
-        refreshPluginList();
         if (platform == "darwin" || platform == "win32") {
             if (platform == "darwin") {
                 document.querySelector("#tray").setAttribute("aria-label", lang.setting_tray_macos);
@@ -73,40 +73,68 @@ window.api.initipc((event, message) => {
         } else {
             document.querySelector("#tray").style.display = "none";
         }
-    } else if (message.type === "state") {
-        server_states = message.server_states;
-        updateRunningStates();
-    } else if (message.type === "update") {
-        ignore_update = message.version;
-        if (message.ignored !== true) {
-            document.getElementById("update_banner").style.display = "block";
-            document.getElementById("update_banner").href = message.url;
-            document.getElementById("update_banner_text").innerText = message.text || lang.update_available;
-            if (message.attributes.indexOf("high_priority") > -1) {
-                document.getElementById("update_banner").classList.add("high_priority");
-            } else {
-                document.getElementById("update_banner").classList.remove("high_priority");
-            }
-        }
-        document.getElementById("update_notice").style.display = "";
-        document.getElementById("update_notice").querySelector("a").href = message.url;
-    } else if (message.type === "ipchange") {
-        ip = message.ip;
-        updateOnIpChange();
-    } else if (message.type == "pluginschange") {
-        plugins = message.plugins;
-        refreshPluginList();
-        if (document.getElementById("server_container").style.display === "block") {
-            location.reload();
-        }
-    } else if (message.type === "reload") {
-        location.reload();
-    }
+
+        checkForUpdates();
+
+        // Pull the initial server states, then keep them fresh via the 'state' event.
+        invoke('get_states').then(function(states) {
+            server_states = states;
+            updateRunningStates();
+        });
 });
+
+listen('state', function(event) {
+    server_states = event.payload.server_states;
+    updateRunningStates();
+});
+
+listen('ipchange', function(event) {
+    ip = event.payload.ip;
+    updateOnIpChange();
+});
+
+listen('reload', function() {
+    location.reload();
+});
+
+function showUpdate(message) {
+    ignore_update = message.version;
+    if (message.ignored !== true) {
+        document.getElementById("update_banner").style.display = "block";
+        document.getElementById("update_banner").href = message.url;
+        document.getElementById("update_banner_text").innerText = message.text || lang.update_available;
+        if (message.attributes.indexOf("high_priority") > -1) {
+            document.getElementById("update_banner").classList.add("high_priority");
+        } else {
+            document.getElementById("update_banner").classList.remove("high_priority");
+        }
+    }
+    document.getElementById("update_notice").style.display = "";
+    document.getElementById("update_notice").querySelector("a").href = message.url;
+}
+
+function checkForUpdates() {
+    if (config.updates !== true || install_source === "macappstore") return;
+    var parts = document.getElementById("version_number").innerText.split(".").map(function(p) { return parseInt(p, 10); });
+    var version = parts[0] * 1000000 + parts[1] * 1000 + parts[2];
+    fetch("https://simplewebserver.org/versions/" + version + ".json").then(function(res) {
+        if (!res.ok) return null;
+        return res.json();
+    }).then(function(version_update) {
+        if (!version_update || !version_update.update) return;
+        showUpdate({
+            url: version_update.download[install_source],
+            text: version_update.banner_text,
+            attributes: JSON.parse(version_update.attributes || "[]"),
+            version: version_update.version,
+            ignored: (config.ignore_update == version_update.version)
+        });
+    }).catch(function() {});
+}
 
 function ignoreUpdate() {
     config.ignore_update = ignore_update;
-    window.api.saveconfig(config);
+    invoke("saveconfig", { config: config });
     document.getElementById("update_banner").style.display = "none";
 }
 
@@ -253,7 +281,7 @@ function reorderDragEnd() {
             config.servers.splice(dragging_index, 1);
             config.servers.splice(last_hover_index, 0, temp);
 
-            window.api.saveconfig(config);
+            invoke("saveconfig", { config: config });
 
             renderServerList();
         });
@@ -282,7 +310,7 @@ function getServerStatusBox(local_config) {
             }
         }
 
-        return '<div class="status_box"><div>'+lang.web_server_url+'</div><div>'+url_list.map((a) => {return '<a href="'+a+'" target="_blank" onclick="window.api.openExternal(this.href);event.preventDefault()">'+a+'</a>'}).join('<div style="padding-top: 6px;"></div>')+"</div></div>";
+        return '<div class="status_box"><div>'+lang.web_server_url+'</div><div>'+url_list.map((a) => {return '<a href="'+a+'" target="_blank" onclick="invoke(\'open_external\', { url: this.href });event.preventDefault()">'+a+'</a>'}).join('<div style="padding-top: 6px;"></div>')+"</div></div>";
 
     } else if (getServerStatus(local_config).state === "error") {
         let error_message = getServerStatus(local_config).error_message;
@@ -410,15 +438,12 @@ function addServer(editindex) {
         toggleCheckbox("upload", config.servers[editindex].upload != null ? config.servers[editindex].upload : false);
         toggleCheckbox("replace", config.servers[editindex].replace != null ? config.servers[editindex].replace : false);
         toggleCheckbox("delete", config.servers[editindex].delete != null ? config.servers[editindex].delete : false);
-        toggleCheckbox("staticDirectoryListing", config.servers[editindex].staticDirectoryListing != null ? config.servers[editindex].staticDirectoryListing : false);
         toggleCheckbox("hiddenDotFilesDirectoryListing", config.servers[editindex].hiddenDotFilesDirectoryListing != null ? config.servers[editindex].hiddenDotFilesDirectoryListing : true);
         toggleCheckbox("precompression", config.servers[editindex].precompression != null ? config.servers[editindex].precompression : true);
-        toggleCheckbox("htaccess", config.servers[editindex].htaccess != null ? config.servers[editindex].htaccess : false);
 
         document.querySelector("#custom404").value = config.servers[editindex].custom404 || "";
         document.querySelector("#custom403").value = config.servers[editindex].custom403 || "";
         document.querySelector("#custom401").value = config.servers[editindex].custom401 || "";
-        document.querySelector("#customErrorReplaceString").value = config.servers[editindex].customErrorReplaceString || "";
 
         toggleCheckbox("https", config.servers[editindex].https != null ? config.servers[editindex].https : false);
         function isAutoCert() {
@@ -442,8 +467,6 @@ function addServer(editindex) {
         httpAuthUsernameChange();
         document.querySelector("#httpAuthPassword").value = config.servers[editindex].httpAuthPassword || "";
         httpAuthPasswordChange();
-        document.querySelector("#ipThrottling").value = config.servers[editindex].ipThrottling || 10;
-        ipLimitChange();
 
         document.querySelector("#delete_server_option").style.display = "block";
         document.querySelector("#submit_button").innerText = lang.save_changes;
@@ -476,15 +499,12 @@ function addServer(editindex) {
         toggleCheckbox("upload", false);
         toggleCheckbox("replace", false);
         toggleCheckbox("delete", false);
-        toggleCheckbox("staticDirectoryListing", false);
         toggleCheckbox("hiddenDotFilesDirectoryListing", true);
         toggleCheckbox("precompression", true);
-        toggleCheckbox("htaccess", false);
 
         document.querySelector("#custom404").value = "";
         document.querySelector("#custom403").value = "";
         document.querySelector("#custom401").value = "";
-        document.querySelector("#customErrorReplaceString").value = "";
 
         toggleCheckbox("https", false);
         toggleCheckbox("https_custom_cert", false);
@@ -495,15 +515,11 @@ function addServer(editindex) {
         httpAuthUsernameChange();
         document.querySelector("#httpAuthPassword").value = "";
         httpAuthPasswordChange();
-        document.querySelector("#ipThrottling").value = 10;
-        ipLimitChange();
 
         document.querySelector("#delete_server_option").style.display = "none";
         document.querySelector("#submit_button").innerText = lang.create_server;
         document.querySelector("#submit_button").setAttribute("aria-label", lang.create_server);
     }
-
-    renderPluginOptions(editindex != null ? config.servers[editindex] : null);
 
     navigate("server");
     document.getElementById("server_container").scrollTop = 0;
@@ -548,17 +564,6 @@ function submitAddServer() {
         return;
     }
 
-    if (!ipLimitValid()) {
-        document.querySelector("#ipThrottling").parentElement.nextElementSibling.style.display = "block";
-        if (!document.querySelector("#security_section").classList.contains("section_visible")) {
-            toggleSection(document.querySelector("#security_section"))
-            setTimeout(()=>document.querySelector("#ipThrottling").previousElementSibling.scrollIntoView({behavior: "smooth"}), 210);
-        } else {
-            document.querySelector("#ipThrottling").previousElementSibling.scrollIntoView({behavior: "smooth"});
-        }
-        return;
-    }
-
     let server_object = {
         "enabled": activeeditindex !== false ? config.servers[activeeditindex].enabled : true,
         "path": current_path,
@@ -578,15 +583,12 @@ function submitAddServer() {
         "upload": isChecked("upload"),
         "replace": isChecked("replace"),
         "delete": isChecked("delete"),
-        "staticDirectoryListing": isChecked("staticDirectoryListing"),
         "hiddenDotFilesDirectoryListing": isChecked("hiddenDotFilesDirectoryListing"),
         "precompression": isChecked("precompression"),
-        "htaccess": isChecked("htaccess"),
 
         "custom404": document.querySelector("#custom404").value,
         "custom403": document.querySelector("#custom403").value,
         "custom401": document.querySelector("#custom401").value,
-        "customErrorReplaceString": document.querySelector("#customErrorReplaceString").value,
 
         "https": isChecked("https"),
         "httpsCert": document.querySelector("#httpsCert").value.replace(/\r?\n/g, a => '\r\n'),
@@ -594,10 +596,7 @@ function submitAddServer() {
         "httpAuth": isChecked("httpAuth"),
         "httpAuthUsername": document.querySelector("#httpAuthUsername").value,
         "httpAuthPassword": document.querySelector("#httpAuthPassword").value,
-        "ipThrottling": Math.floor(Number(document.querySelector("#ipThrottling").value)),
     };
-
-    server_object.plugins = savePluginOptions();
 
     if (activeeditindex !== false) {
         for (let i=0; i<Object.keys(server_object).length; i++) {
@@ -611,7 +610,7 @@ function submitAddServer() {
     }
     navigate("main");
     renderServerList();
-    window.api.saveconfig(config);
+    invoke("saveconfig", { config: config });
 }
 
 let pend_delete_server_id = false;
@@ -620,7 +619,7 @@ function confirmDeleteServer() {
     config.servers.splice(pend_delete_server_id, 1);
     navigate("main");
     renderServerList();
-    window.api.saveconfig(config);
+    invoke("saveconfig", { config: config });
     hidePrompt();
 }
 
@@ -647,7 +646,7 @@ function toggleServer(index,inedit) {
         }
     }
     updateRunningStates();
-    window.api.saveconfig(config);
+    invoke("saveconfig", { config: config });
 }
 
 function toggleEditServerRunning() {
@@ -669,7 +668,7 @@ function toggleRunInBk() {
         config.background = true;
     }
     document.getElementById("stop_and_quit_button").style.display = config.background ? "block" : "none";
-    window.api.saveconfig(config);
+    invoke("saveconfig", { config: config });
 }
 
 function toggleUpdates() {
@@ -689,7 +688,7 @@ function toggleUpdates() {
         config.updates = true
         delete config.ignore_update;
     }
-    window.api.saveconfig(config);
+    invoke("saveconfig", { config: config });
 }
 
 function toggleTray() {
@@ -702,17 +701,17 @@ function toggleTray() {
         document.querySelector("#tray").setAttribute("aria-checked", "true");
         config.tray = true
     }
-    window.api.saveconfig(config);
+    invoke("saveconfig", { config: config });
 }
 
 function themeChange() {
     config.theme = document.querySelector("#theme").value;
-    window.api.saveconfig(config);
+    invoke("saveconfig", { config: config });
 }
 
 function changeLang() {
     config.language = document.querySelector("#language").value;
-    window.api.saveconfig(config, true);
+    invoke("saveconfig", { config: config, reload: true });
 }
 
 function portValid() {
@@ -736,18 +735,6 @@ function portChange() {
         document.querySelector("#port").parentElement.nextElementSibling.nextElementSibling.style.display = "none";
     } else {
         document.querySelector("#port").parentElement.nextElementSibling.nextElementSibling.style.display = "block";
-    }
-}
-
-function ipLimitValid() {
-    return Number(document.querySelector("#ipThrottling").value) >= 0;
-}
-
-function ipLimitChange() {
-    if (ipLimitValid()) {
-        document.querySelector("#ipThrottling").parentElement.nextElementSibling.style.display = "none";
-    } else {
-        document.querySelector("#ipThrottling").parentElement.nextElementSibling.style.display = "block";
     }
 }
 
@@ -792,9 +779,9 @@ function updateCurrentPath() {
 }
 
 function chooseFolder() {
-    window.api.showPicker(current_path).then(function(chosen_path) {
+    invoke("show_picker", { currentPath: current_path }).then(function(chosen_path) {
         if (chosen_path && chosen_path.length > 0) current_path = chosen_path[0];
-        updateCurrentPath(); 
+        updateCurrentPath();
     })
 }
 
@@ -923,7 +910,8 @@ function reevaluateSectionHeights() {
 function generateCryptoIfNeeded() {
     if (isChecked("https")) {
         if (!isChecked("https_custom_cert")) {
-            window.api.generateCrypto().then(function(crypto) {
+            invoke("generate_crypto").then(function(crypto) {
+                if (!crypto) return;
                 document.getElementById("httpsCert").value = crypto.cert;
                 document.getElementById("httpsKey").value = crypto.privateKey;
             });
@@ -950,7 +938,7 @@ function initWelcome() {
     config.background = false;
     config.updates = true;
     config.theme = "system";
-    window.api.saveconfig(config);
+    invoke("saveconfig", { config: config });
     navigate("welcome");
     if (install_source === "macappstore") {
         document.querySelector("#updates_welcome").style.display = "none";
@@ -965,7 +953,7 @@ function helpInfo(event, id, type) {
     event.preventDefault();
     event.stopPropagation();
 
-    showPrompt((id.indexOf("plugin.") == 0 ? htmlescape(plugin_help_text[id.substring(7)][0]) : lang[type+"_"+id]), (id.indexOf("plugin.") == 0 ? plugin_help_text[id.substring(7)][1] : lang[type+"_"+id+"_description"]).replace(/<a href=["'](.+?)["']>/g, function(a, b) {return '<a href="'+b+'" target="_blank" onclick="window.api.openExternal(this.href);event.preventDefault()">'}), [[lang.prompt_done,"",hidePrompt]]);
+    showPrompt(lang[type+"_"+id], (lang[type+"_"+id+"_description"] || "").replace(/<a href=["'](.+?)["']>/g, function(a, b) {return '<a href="'+b+'" target="_blank" onclick="invoke(\'open_external\', { url: this.href });event.preventDefault()">'}), [[lang.prompt_done,"",hidePrompt]]);
 }
 
 // TODO: Implement drag and drop for setting the folder directory or installing a plugin. I don't know how to make this work with security scoped bookmarks on macOS.
@@ -1007,157 +995,4 @@ function dragDrop(event) {
     if (dragHandler && event.dataTransfer.files && event.dataTransfer.files[0]) {
         dragHandler(event.dataTransfer.files[0].path);
     }
-}
-
-function addPlugin(select_type) {
-    if (select_type) {
-        hidePrompt();
-        doShowPicker();
-    } else {
-        if (platform !== "darwin") {
-            showPrompt(lang.add_plugin, '<div style="padding: 8px 0px;overflow: hidden;"><div tabindex="0" class="button left" onclick="addPlugin(\'folder\')" role="button" aria-label="'+lang.plugin_choose_folder+'">'+lang.plugin_choose_folder+'</div></div><div style="padding: 8px 0px;overflow: hidden;padding-bottom: 0px;margin-bottom: -12px;"><div tabindex="0" class="button left" onclick="addPlugin(\'zip\')" role="button" aria-label="'+lang.plugin_choose_zip+'">'+lang.plugin_choose_zip+'</div></div>', []);
-        } else {
-            doShowPicker();
-        }
-    }
-
-    function doShowPicker() {
-        window.api.showPickerForPlugin(select_type).then(function(chosen_path) {
-            if (chosen_path && chosen_path.length > 0) {
-                window.api.checkPlugin(chosen_path[0]).then(function(manifest) {
-                    if (manifest) {
-                        showPrompt(lang.add_plugin_confirm.replace("[NAME]",htmlescape(manifest.name.substring(0,32))), lang.add_plugin_confirm_description, [[lang.prompt_confirm,"destructive",function() {
-                            if (window.api.addPlugin(chosen_path[0])) {
-                                hidePrompt();
-                            } else {
-                                showPrompt(lang.add_plugin_failed, lang.add_plugin_failed_description, [[lang.prompt_done,"",hidePrompt]]);
-                            }
-                        }],[lang.cancel,"",hidePrompt]]);
-                    } else {
-                        showPrompt(lang.add_plugin_invalid, lang.add_plugin_failed_description, [[lang.prompt_done,"",hidePrompt]]);
-                    }
-                })
-
-            }
-        })
-    }
-}
-
-window.addEventListener("keypress", function(event) {
-    if (event.key === "Enter" && event.target.tagName !== "TEXTAREA") {
-        event.preventDefault();
-        document.activeElement.click();
-    }
-});
-
-function refreshPluginList() {
-    if (Object.keys(plugins).length > 0) {
-        document.querySelector("#plugins_list").innerHTML = Object.values(plugins).map(function(a) {return '<div><div><div>'+a.name+'</div><div>'+a.id+'</div></div><div onclick="removePlugin(\''+a.id+'\')" tabindex="0" aria-label="'+lang.remove_plugin+'" role="button"><i class="material-icons" aria-hidden="true">delete</i></div></div>'}).join("");
-        document.querySelector("#plugins_list").style.display = "block";
-    } else {
-        document.querySelector("#plugins_list").style.display = "none";
-    }
-}
-
-function removePlugin(pluginid) {
-    if (plugins[pluginid]) {
-        showPrompt(lang.remove_plugin_confirm.replace("[NAME]", htmlescape(plugins[pluginid].name.substring(0,32))), lang.remove_plugin_confirm_description, [[lang.prompt_confirm,"destructive",function() {
-            window.api.removePlugin(pluginid);
-
-            // Remove plugin options from all servers
-            for (let i=0; i<(config.servers || []).length; i++) { 
-                if (config.servers[i].plugins && config.servers[i].plugins[pluginid]) {
-                    delete config.servers[i].plugins[pluginid];
-                }
-                if (config.servers[i].plugins && Object.keys(config.servers[i].plugins).length == 0) {
-                    delete config.servers[i].plugins;
-                }
-            }
-
-            window.api.saveconfig(config);
-
-            hidePrompt();
-        }],[lang.cancel,"",hidePrompt]])
-    }
-}
-
-var plugin_help_text = {};
-
-function renderPluginOptions(server_config) {
-    let pendhtml = "";
-
-    function drawOption(pluginid, option, plugin_options) {
-        let option_value = plugin_options[option.id] != null ? ((typeof plugin_options[option.id] == typeof option.default) ? plugin_options[option.id] : option.default) : option.default;
-
-        if (option.description) {
-            plugin_help_text[pluginid+'.'+option.id] = [option.name, option.description];
-        }
-
-        if (option.type == "bool") {
-            return '<div tabindex="0" class="checkbox_option'+(option_value ? " checked" : "")+'" id="plugin.'+pluginid+'.'+option.id+'" onclick="toggleCheckbox(this)" role="checkbox" aria-label="'+urlescape(option.name)+'" aria-checked="'+(option_value ? "true" : "false")+'"><div class="checkbox"><i class="material-icons" aria-hidden="true">'+(option_value ? "check_box" : "check_box_outline_blank")+'</i></div><div class="label">'+htmlescape(option.name)+(option.description ? ' <a href="#" class="help_icon" aria-label="'+lang.help+'" onclick="helpInfo(event, \'plugin.'+pluginid+'.'+option.id+'\', \'option\')"><i class="material-icons" aria-hidden="true">help_outline</i></a>' : '')+'</div></div>';
-        } else if (option.type == "string") {
-            return '<div class="input_option"><div class="label">'+htmlescape(option.name)+(option.description ? ' <a href="#" class="help_icon" aria-label="'+lang.help+'" onclick="helpInfo(event, \'plugin.'+pluginid+'.'+option.id+'\', \'option\')"><i class="material-icons" aria-hidden="true">help_outline</i></a>' : '')+'</div><input type="text" id="plugin.'+pluginid+'.'+option.id+'" placeholder="" value="'+urlescape(option_value)+'" aria-label="'+urlescape(option.name)+'"></div>';
-        } else if (option.type == "number") {
-            return '<div class="input_option"><div class="label">'+htmlescape(option.name)+(option.description ? ' <a href="#" class="help_icon" aria-label="'+lang.help+'" onclick="helpInfo(event, \'plugin.'+pluginid+'.'+option.id+'\', \'option\')"><i class="material-icons" aria-hidden="true">help_outline</i></a>' : '')+'</div><input type="number" step="1" id="plugin.'+pluginid+'.'+option.id+'" placeholder="" style="width: 100px;" '+(option.min != null ? 'min="'+option.min+'" ' : '')+''+(option.max != null ? 'max="'+option.max+'" ' : '')+'value="'+String(option_value || 0)+'" aria-label="'+urlescape(option.name)+'"></div>';
-        } else if (option.type == "select") {
-            return '<div class="input_option"><div class="label">'+htmlescape(option.name)+(option.description ? ' <a href="#" class="help_icon" aria-label="'+lang.help+'" onclick="helpInfo(event, \'plugin.'+pluginid+'.'+option.id+'\', \'option\')"><i class="material-icons" aria-hidden="true">help_outline</i></a>' : '')+'</div><select id="plugin.'+pluginid+'.'+option.id+'" aria-label="'+urlescape(option.name)+'">'+option.choices.map(a => '<option value="'+a.id+'"'+(option_value == a.id ? ' selected' : '')+'>'+htmlescape(a.name)+'</option>').join("")+'</select></div>';
-        }
-    }
-
-    for (let i=0; i<Object.keys(plugins).length; i++) {
-        let manifest = plugins[Object.keys(plugins)[i]];
-        let plugin_options = (server_config && server_config.plugins && server_config.plugins[manifest.id]) ? server_config.plugins[manifest.id] : {};
-
-        pendhtml += '<div tabindex="0" class="settings_section_header plugin_section'+(plugin_options.enabled ? " plugin_enabled" : "")+(((manifest.options || []).length > 0) ? "" : " plugin_nooptions")+'" onclick="toggleSection(this)" id="plugin.'+manifest.id+'" role="button" aria-label="'+urlescape(manifest.name)+'"><div role="checkbox" tabindex="0" aria-label="'+lang.enabled_switch+'" aria-checked="'+(plugin_options.enabled ? "true" : "false")+'" onclick="togglePlugin(event, this)"><i class="material-icons" aria-hidden="true">'+(plugin_options.enabled ? "check_box" : "check_box_outline_blank")+'</i></div><div>'+htmlescape(manifest.name)+'</div>'+(((manifest.options || []).length > 0) ? '<div><i class="material-icons" aria-hidden="true">expand_more</i></div>' : '')+'</div><div class="settings_section" inert><div class="settings_section_inner"'+(plugin_options.enabled ? "" : " inert")+'>'+(manifest.options || []).map(option => drawOption(manifest.id, option, plugin_options)).join("")+'</div></div>';
-    }
-
-    document.querySelector("#plugin_options").innerHTML = pendhtml;
-}
-
-function togglePlugin(event, element) {
-    event.preventDefault();
-    event.stopPropagation();
-
-    let section = element.closest(".settings_section_header");
-    if (section.classList.contains("plugin_enabled")) {
-        section.classList.remove("plugin_enabled");
-        section.setAttribute("aria-checked", "false");
-        section.querySelector("div > i").innerText = "check_box_outline_blank";
-        section.nextElementSibling.querySelector(".settings_section_inner").setAttribute("inert", "");
-    } else {
-        section.classList.add("plugin_enabled");
-        section.setAttribute("aria-checked", "true");
-        section.querySelector("div > i").innerText = "check_box";
-        section.nextElementSibling.querySelector(".settings_section_inner").removeAttribute("inert");
-    }
-}
-
-function savePluginOptions() {
-
-    var plugin_options = {};
-
-    for (let i=0; i<Object.keys(plugins).length; i++) {
-        let manifest = plugins[Object.keys(plugins)[i]];
-
-        plugin_options[manifest.id] = {
-            "enabled": document.querySelector("#plugin\\."+manifest.id).classList.contains("plugin_enabled")
-        }
-
-        for (let e=0; e<(manifest.options || []).length; e++) {
-            let option = manifest.options[e];
-            
-            if (option.type == "bool") {
-                plugin_options[manifest.id][option.id] = document.querySelector("#plugin\\."+manifest.id+"\\."+option.id).classList.contains("checked");
-            } else if (option.type == "string") {
-                plugin_options[manifest.id][option.id] = document.querySelector("#plugin\\."+manifest.id+"\\."+option.id).value;
-            } else if (option.type == "number") {
-                plugin_options[manifest.id][option.id] = Math.floor(Number(document.querySelector("#plugin\\."+manifest.id+"\\."+option.id).value));
-            } else if (option.type == "select") {
-                plugin_options[manifest.id][option.id] = document.querySelector("#plugin\\."+manifest.id+"\\."+option.id).value;
-            }
-        }
-    }
-
-    return plugin_options;
-
 }

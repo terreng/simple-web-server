@@ -1,12 +1,7 @@
-<!DOCTYPE html>
-
-<html dir="ltr" lang="en">
-
-    <head>
-        <meta charset="utf-8">
-        <meta name="google" value="notranslate">
 
         <script>
+            document.getElementById("staticListing").style.display = "none";
+            document.getElementById("niceListing").style.display = "block";
             function addRow(name, url, isdir,
                             size, size_string, date_modified, date_modified_string) {
                 if (name == "." || name == "..")
@@ -205,12 +200,6 @@
                 display: none;
             }
         </style>
-
-        <title id="title"></title>
-
-    </head>
-
-    <body>
 
         <div id="listingParsingErrorBox">Oh, no! This server is sending data Google Chrome can't understand. Please <a href="http://code.google.com/p/chromium/issues/entry">report a bug</a>, and include the <a href="LOCATION">raw listing</a>.</div>
 

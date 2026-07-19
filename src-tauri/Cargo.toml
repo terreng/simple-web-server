@@ -1,0 +1,67 @@
+[package]
+name = "app"
+version = "2.0.0"
+description = "Simple Web Server"
+authors = ["Simple Web Server Team"]
+license = "MIT License"
+repository = "https://github.com/terreng/simple-web-server"
+default-run = "app"
+edition = "2021"
+rust-version = "1.82"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[lib]
+name = "app_lib"
+crate-type = ["staticlib", "cdylib", "rlib"]
+
+[build-dependencies]
+tauri-build = { version = "2", features = [] }
+
+[dependencies]
+serde_json = "1.0"
+serde = { version = "1.0", features = ["derive"] }
+tauri = { version = "2", features = ["tray-icon", "image-png"] }
+dirs = "5.0"
+if-addrs = "0.13"
+hostname = "0.4"
+sys-locale = "0.3"
+chrono = { version = "0.4", default-features = false, features = ["clock"] }
+tauri-plugin-dialog = "2"
+tauri-plugin-shell = "2"
+tauri-plugin-os = "2"
+tauri-plugin-single-instance = "2"
+
+# The web server backend, vendored from https://github.com/ethanaobrien/Rust-server
+server = { path = "server" }
+
+[features]
+# by default Tauri runs in production mode
+# when `tauri dev` runs it is executed with `cargo run --no-default-features` if `devPath` is an URL
+default = [ "custom-protocol" ]
+# this feature is used for production builds where `devPath` points to the filesystem
+# DO NOT remove this
+custom-protocol = [ "tauri/custom-protocol" ]
+
+# macOS-only native support for security-scoped bookmarks (Mac App Store) and
+# the native folder picker that creates them.
+[target."cfg(target_os = \"macos\")".dependencies]
+objc2 = "0.5"
+objc2-foundation = { version = "0.2", features = [
+    "NSString",
+    "NSURL",
+    "NSData",
+    "NSError",
+    "NSArray",
+    "NSDictionary",
+    "NSAutoreleasePool",
+] }
+objc2-app-kit = { version = "0.2", features = [
+    "NSOpenPanel",
+    "NSSavePanel",
+    "NSPanel",
+    "NSWindow",
+    "NSResponder",
+    "NSApplication",
+] }
+base64 = "0.22"
