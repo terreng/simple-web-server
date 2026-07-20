@@ -387,6 +387,11 @@ body {
     background-color: var(--button-active);
 }
 
+.button:focus-visible {
+    outline: 2px solid var(--input-outline-focus);
+    outline-offset: 2px;
+}
+
 .button.primary {
     background-color: var(--button-primary);
     border-color: var(--button-primary);
@@ -514,6 +519,13 @@ body {
 #prompt_bk.active {
     pointer-events: auto;
     opacity: 0.45;
+}
+
+#prompt:focus,
+#prompt:focus-visible {
+    /* The dialog element itself should never show a focus ring; focus lives on
+       the action buttons inside it. */
+    outline: none;
 }
 
 #prompt {

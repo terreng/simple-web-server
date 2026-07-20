@@ -809,10 +809,6 @@ function urlescape(str) {
 
 function showPrompt(title, content, buttons) {
     document.getElementById("prompt_bk").style.pointerEvents = "";
-    document.getElementById("prompt").classList.add("prompt_show");
-    document.getElementById("prompt").showModal();
-    document.getElementById("prompt").classList.remove("prompt_hide");
-    document.getElementById("prompt_bk").classList.add("active");
 
     if (title) {
         document.getElementById("prompt_title").innerHTML = title;
@@ -831,6 +827,22 @@ function showPrompt(title, content, buttons) {
         }
     } else {
         document.getElementById("prompt_actions").style.display = "none";
+    }
+
+    // Show the dialog only after its buttons exist, so showModal() moves focus
+    // onto a real control instead of the <dialog> element itself (which showed
+    // a focus ring around the whole modal and left the buttons unreachable).
+    document.getElementById("prompt").classList.add("prompt_show");
+    document.getElementById("prompt").showModal();
+    document.getElementById("prompt").classList.remove("prompt_hide");
+    document.getElementById("prompt_bk").classList.add("active");
+
+    // Focus the last action button: the dismiss/safe choice (Cancel) in a
+    // confirmation, or the sole button (Done) in an info prompt. All buttons
+    // stay reachable via Tab.
+    var actions = document.getElementById("prompt_actions");
+    if (buttons && actions.children.length) {
+        actions.children[actions.children.length - 1].focus();
     }
 }
 
