@@ -141,12 +141,17 @@ Flagged differences (NOT changed — decide later):
 ## Auto-updating (client is wired; you finish the server side)
 
 The Tauri equivalent of electron-updater — `tauri-plugin-updater` — is set up on
-the **client**:
+the **client**, fully silent (no UI):
 
-- Plugin registered in `lib.rs`; commands `check_update` / `install_update`.
-- On launch the frontend calls `check_update`; if an update is available it
-  prompts to download, install, and restart (`checkForUpdatesAuto` in main.js).
-  Store builds (macappstore/microsoftstore) skip it.
+- On launch, `background_update` (in `lib.rs`, run on the async runtime) checks
+  the endpoint and downloads any update in the background.
+- **macOS/Linux**: it installs immediately (just swaps files) and the update
+  applies on the **next launch** — nothing interrupts the session.
+- **Windows**: the NSIS installer has to run and exit the app, so the update is
+  only downloaded on launch and **installed when the user quits** (see
+  `RunEvent::Exit`), so it never interrupts the current session.
+- Store builds (macappstore/microsoftstore) skip it entirely.
+- All outcomes are written to the log only — there are no popups.
 - `tauri.conf.json > plugins.updater` has the endpoint and a public key.
 
 To make it live you need to:

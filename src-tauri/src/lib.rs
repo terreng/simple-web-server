@@ -262,38 +262,59 @@ fn open_external(app: AppHandle, url: String) {
     let _ = app.shell().open(url, None);
 }
 
-// Checks the configured updater endpoint. Returns update info when one is
-// available, null when up to date, or an error string (e.g. no endpoint yet).
-#[tauri::command]
-async fn check_update(app: AppHandle) -> Result<Option<Value>, String> {
-    use tauri_plugin_updater::UpdaterExt;
-    let updater = app.updater().map_err(|e| e.to_string())?;
-    match updater.check().await {
-        Ok(Some(update)) => Ok(Some(json!({
-            "version": update.version,
-            "currentVersion": update.current_version,
-            "notes": update.body,
-        }))),
-        Ok(None) => Ok(None),
-        Err(e) => Err(e.to_string()),
-    }
+// A downloaded-but-not-yet-installed update (Windows only — see background_update).
+#[cfg_attr(not(target_os = "windows"), allow(dead_code))]
+struct PendingUpdate {
+    update: tauri_plugin_updater::Update,
+    bytes: Vec<u8>,
 }
 
-// Downloads and installs the pending update, then restarts the app.
-#[tauri::command]
-async fn install_update(app: AppHandle) -> Result<(), String> {
+// Silently checks for, downloads, and installs updates in the background — no UI.
+// On macOS/Linux the install just swaps files and takes effect on the next
+// launch. On Windows the installer must run and exit the app, so we only
+// download here and defer the install to app quit (see RunEvent::Exit).
+async fn background_update(app: AppHandle) {
+    // App stores handle their own updates.
+    if INSTALL_SOURCE == "macappstore" || INSTALL_SOURCE == "microsoftstore" {
+        return;
+    }
     use tauri_plugin_updater::UpdaterExt;
-    let updater = app.updater().map_err(|e| e.to_string())?;
-    let update = updater
-        .check()
-        .await
-        .map_err(|e| e.to_string())?
-        .ok_or_else(|| "No update available".to_string())?;
-    update
-        .download_and_install(|_downloaded, _total| {}, || {})
-        .await
-        .map_err(|e| e.to_string())?;
-    app.restart()
+    let updater = match app.updater() {
+        Ok(u) => u,
+        Err(_) => return,
+    };
+    let update = match updater.check().await {
+        Ok(Some(u)) => u,
+        Ok(None) => return,            // up to date
+        Err(_) => return,              // no endpoint configured yet / offline
+    };
+    logging::log(&format!(
+        "Update {} available; downloading in the background",
+        update.version
+    ));
+    let bytes = match update.download(|_, _| {}, || {}).await {
+        Ok(b) => b,
+        Err(e) => {
+            logging::log(&format!("Background update download failed: {}", e));
+            return;
+        }
+    };
+
+    #[cfg(not(target_os = "windows"))]
+    {
+        match update.install(&bytes) {
+            Ok(_) => logging::log("Update installed; it will apply on next launch"),
+            Err(e) => logging::log(&format!("Background update install failed: {}", e)),
+        }
+    }
+    #[cfg(target_os = "windows")]
+    {
+        // Hold it and install when the app quits so the installer doesn't
+        // interrupt the current session.
+        let state = app.state::<Mutex<Option<PendingUpdate>>>();
+        *state.lock().unwrap() = Some(PendingUpdate { update, bytes });
+        logging::log("Update downloaded; it will install when you quit the app");
+    }
 }
 
 // ---------------------------------------------------------------------------
@@ -359,6 +380,7 @@ pub fn run() {
             config: config.clone(),
             servers: Vec::new(),
         }))
+        .manage(Mutex::new(Option::<PendingUpdate>::None))
         .invoke_handler(tauri::generate_handler![
             init,
             get_states,
@@ -366,9 +388,7 @@ pub fn run() {
             quit,
             show_picker,
             generate_crypto,
-            open_external,
-            check_update,
-            install_update
+            open_external
         ])
         .setup(move |app| {
             let handle = app.handle().clone();
@@ -383,6 +403,9 @@ pub fn run() {
 
             spawn_ip_watcher(handle.clone());
             spawn_config_watcher(handle.clone());
+
+            // Check for and download updates silently in the background.
+            tauri::async_runtime::spawn(background_update(handle.clone()));
             Ok(())
         })
         .on_window_event(|window, event| {
@@ -435,6 +458,16 @@ pub fn run() {
             tauri::RunEvent::Exit => {
                 let state = app.state::<Mutex<AppState>>();
                 servers::stop_all(&mut state.lock().unwrap());
+                // On Windows, run any downloaded update's installer as we quit.
+                #[cfg(target_os = "windows")]
+                {
+                    let pending = app.state::<Mutex<Option<PendingUpdate>>>();
+                    let taken = pending.lock().unwrap().take();
+                    if let Some(p) = taken {
+                        logging::log("Installing downloaded update on quit");
+                        let _ = p.update.install(&p.bytes);
+                    }
+                }
             }
             _ => {}
         });
