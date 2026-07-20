@@ -769,12 +769,19 @@ impl Request<'_> {
         let Ok(_) = file.seek(SeekFrom::Start(file_offset)) else { return 500; };
         while written < content_length {
             if self.connection_closed { break; };
-            let chunk_size : u64 = if content_length-written > read_chunk_size { read_chunk_size } else { content_length-written };
-            if chunk_size == 0 { break; };
-            let mut buffer = vec![0; chunk_size as usize];
-            let Ok(_) = file.read(&mut buffer) else { todo!() };
-            self.write(&buffer);
-            written += chunk_size;
+            let want : u64 = if content_length-written > read_chunk_size { read_chunk_size } else { content_length-written };
+            if want == 0 { break; };
+            let mut buffer = vec![0; want as usize];
+            // read() may return fewer bytes than requested (common on macOS for
+            // large reads); write exactly what was read and advance by that, or
+            // we'd emit zero-padding and misaligned/duplicated data.
+            let n = match file.read(&mut buffer) {
+                Ok(0) => break, // EOF
+                Ok(n) => n,
+                Err(_) => break,
+            };
+            self.write(&buffer[..n]);
+            written += n as u64;
         }
         drop(file);
         self.end();
