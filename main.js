@@ -310,7 +310,7 @@ function getServerStatusBox(local_config) {
             }
         }
 
-        return '<div class="status_box"><div>'+lang.web_server_url+'</div><div>'+url_list.map((a) => {return '<a href="'+a+'" target="_blank" onclick="invoke(\'open_external\', { url: this.href });event.preventDefault()">'+a+'</a>'}).join('<div style="padding-top: 6px;"></div>')+"</div></div>";
+        return '<div class="status_box"><div>'+lang.web_server_url+'</div><div>'+url_list.map((a) => {return '<a href="'+a+'" onclick="invoke(\'open_external\', { url: this.href });event.preventDefault()">'+a+'</a>'}).join('<div style="padding-top: 6px;"></div>')+"</div></div>";
 
     } else if (getServerStatus(local_config).state === "error") {
         let error_message = getServerStatus(local_config).error_message;
@@ -782,7 +782,10 @@ function updateCurrentPath() {
 }
 
 function chooseFolder() {
-    invoke("show_picker", { currentPath: current_path }).then(function(chosen_path) {
+    // current_path is `false` until a folder is chosen; the Rust command expects
+    // an Option<String>, and a JSON boolean fails to deserialize (rejecting the
+    // invoke, so the picker never opens). Always send a string.
+    invoke("show_picker", { currentPath: current_path || "" }).then(function(chosen_path) {
         if (chosen_path && chosen_path.length > 0) current_path = chosen_path[0];
         updateCurrentPath();
     })
@@ -928,6 +931,10 @@ function customCertCheckboxChange() {
     } else {
         document.getElementById("https_custom_cert_container").style.display = "none";
     }
+    // Showing/hiding the cert+key boxes changes the Security section's content
+    // height; recompute the fixed height of the (animated) collapsible section so
+    // it isn't left cut off or padded with blank space.
+    reevaluateSectionHeights();
 }
 
 function clearCryptoIfNeeded() {
@@ -956,7 +963,7 @@ function helpInfo(event, id, type) {
     event.preventDefault();
     event.stopPropagation();
 
-    showPrompt(lang[type+"_"+id], (lang[type+"_"+id+"_description"] || "").replace(/<a href=["'](.+?)["']>/g, function(a, b) {return '<a href="'+b+'" target="_blank" onclick="invoke(\'open_external\', { url: this.href });event.preventDefault()">'}), [[lang.prompt_done,"",hidePrompt]]);
+    showPrompt(lang[type+"_"+id], (lang[type+"_"+id+"_description"] || "").replace(/<a href=["'](.+?)["']>/g, function(a, b) {return '<a href="'+b+'" onclick="invoke(\'open_external\', { url: this.href });event.preventDefault()">'}), [[lang.prompt_done,"",hidePrompt]]);
 }
 
 // TODO: Implement drag and drop for setting the folder directory or installing a plugin. I don't know how to make this work with security scoped bookmarks on macOS.
@@ -999,3 +1006,48 @@ function dragDrop(event) {
         dragHandler(event.dataTransfer.files[0].path);
     }
 }
+
+// Keyboard activation for focusable custom controls (links, ARIA
+// radio/checkbox/switch/menuitem/option, and tabbable <div>s). WebKit focuses
+// these on Tab but doesn't fire a click on Space/Enter the way it does for
+// native buttons, so wire it up here. Space is also prevented from scrolling
+// the page while such a control is focused.
+function isActiveElementClickable() {
+    let ae = document.activeElement;
+    if (!ae) return false;
+    let role = ae.getAttribute && ae.getAttribute("role");
+    return ae.tagName == "A"
+        || role == "radio" || role == "checkbox" || role == "switch"
+        || role == "menuitem" || role == "option" || role == "button"
+        || (ae.tagName == "DIV" && ae.getAttribute("tabindex") && !ae.classList.contains("file_picker_gallery_item"));
+}
+
+document.body.onkeypress = function (e) {
+    if (e.key == "Enter") {
+        if (isActiveElementClickable()) {
+            document.activeElement.click();
+            e.preventDefault();
+        }
+    }
+};
+
+document.body.onkeydown = function (e) {
+    if (e.key == " ") {
+        if (isActiveElementClickable()) {
+            e.preventDefault();
+        }
+    }
+};
+
+document.body.onkeyup = function (e) {
+    if (e.key == " ") {
+        if (isActiveElementClickable()) {
+            document.activeElement.click();
+            e.preventDefault();
+        }
+    }
+};
+
+window.addEventListener('scroll', (event) => {
+    document.documentElement.scrollLeft = 0;
+});

@@ -1101,3 +1101,13 @@ code {
 dialog::backdrop {
     background: transparent;
 }
+/* Hide the up/down spinner arrows on the port number input (WebKit + Firefox). */
+#port::-webkit-outer-spin-button,
+#port::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+#port {
+    -moz-appearance: textfield;
+    appearance: textfield;
+}
