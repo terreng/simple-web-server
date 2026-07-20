@@ -75,6 +75,7 @@ invoke('init').then(function(message) {
         }
 
         checkForUpdates();
+        checkForUpdatesAuto();
 
         // Pull the initial server states, then keep them fresh via the 'state' event.
         invoke('get_states').then(function(states) {
@@ -136,6 +137,33 @@ function ignoreUpdate() {
     config.ignore_update = ignore_update;
     invoke("saveconfig", { config: config });
     document.getElementById("update_banner").style.display = "none";
+}
+
+// Tauri auto-updater (equivalent of electron-updater): checks the configured
+// updater endpoint and, if an update is available, offers to download, install,
+// and restart in-app. Fails silently when no endpoint/update is configured.
+function checkForUpdatesAuto() {
+    if (install_source === "macappstore" || install_source === "microsoftstore") return;
+    invoke("check_update").then(function(update) {
+        if (!update) return;
+        showPrompt(
+            lang.update_ready_title,
+            (lang.update_ready_body || "").replace("[VERSION]", htmlescape(String(update.version))),
+            [
+                [lang.update_now, "", installUpdate],
+                [lang.cancel, "", hidePrompt]
+            ]
+        );
+    }).catch(function() {
+        // No endpoint configured yet, offline, or up to date — ignore.
+    });
+}
+
+function installUpdate() {
+    showPrompt(lang.update_downloading_title, lang.update_downloading_body, []);
+    invoke("install_update").catch(function(e) {
+        showPrompt(lang.update_failed_title, htmlescape(String(e)), [[lang.prompt_done, "", hidePrompt]]);
+    });
 }
 
 window.onresize = () => reevaluateSectionHeights();
@@ -440,6 +468,7 @@ function addServer(editindex) {
         toggleCheckbox("delete", config.servers[editindex].delete != null ? config.servers[editindex].delete : false);
         toggleCheckbox("hiddenDotFilesDirectoryListing", config.servers[editindex].hiddenDotFilesDirectoryListing != null ? config.servers[editindex].hiddenDotFilesDirectoryListing : true);
         toggleCheckbox("precompression", config.servers[editindex].precompression != null ? config.servers[editindex].precompression : true);
+        toggleCheckbox("compression", config.servers[editindex].compression != null ? config.servers[editindex].compression : false);
 
         document.querySelector("#custom404").value = config.servers[editindex].custom404 || "";
         document.querySelector("#custom403").value = config.servers[editindex].custom403 || "";
@@ -502,6 +531,7 @@ function addServer(editindex) {
         toggleCheckbox("delete", false);
         toggleCheckbox("hiddenDotFilesDirectoryListing", true);
         toggleCheckbox("precompression", true);
+        toggleCheckbox("compression", false);
 
         document.querySelector("#custom404").value = "";
         document.querySelector("#custom403").value = "";
@@ -587,6 +617,7 @@ function submitAddServer() {
         "delete": isChecked("delete"),
         "hiddenDotFilesDirectoryListing": isChecked("hiddenDotFilesDirectoryListing"),
         "precompression": isChecked("precompression"),
+        "compression": isChecked("compression"),
 
         "custom404": document.querySelector("#custom404").value,
         "custom403": document.querySelector("#custom403").value,

@@ -43,11 +43,35 @@ use openssl::{
     bn::BigNum
 };
 
-use flate2::{write::GzEncoder, Compression};
+use flate2::{write::GzEncoder, write::ZlibEncoder, Compression};
 
-// Largest file we will gzip on the fly. Larger files are streamed uncompressed
-// so we never buffer an unbounded amount of data in memory.
+// Largest file we will compress on the fly. Larger files are streamed
+// uncompressed so we never buffer an unbounded amount of data in memory.
 const MAX_COMPRESS_SIZE: u64 = 50 * 1024 * 1024;
+
+// Compresses a buffer with the given Content-Encoding (gzip, br, or deflate).
+fn compress_bytes(encoding: &str, data: &[u8]) -> Option<Vec<u8>> {
+    match encoding {
+        "gzip" => {
+            let mut e = GzEncoder::new(Vec::new(), Compression::default());
+            e.write_all(data).ok()?;
+            e.finish().ok()
+        }
+        "deflate" => {
+            let mut e = ZlibEncoder::new(Vec::new(), Compression::default());
+            e.write_all(data).ok()?;
+            e.finish().ok()
+        }
+        "br" => {
+            let mut out = Vec::new();
+            let mut input = data;
+            let params = brotli::enc::BrotliEncoderParams::default();
+            brotli::BrotliCompress(&mut input, &mut out, &params).ok()?;
+            Some(out)
+        }
+        _ => None,
+    }
+}
 
 // Only compress content types that actually benefit from it.
 fn is_compressible(content_type: &str) -> bool {
@@ -167,7 +191,8 @@ pub struct Settings<'a> {
     pub https_cert: &'a str,
     pub https_key: &'a str,
     pub cache_control: &'a str,
-    pub compression: bool
+    pub compression: bool,
+    pub precompression: bool
 }
 
 #[allow(dead_code)]
@@ -512,20 +537,20 @@ impl Request<'_> {
     pub fn write_string(&mut self, data:&str) {
         self.write(data.to_string().as_bytes());
     }
-    // Returns the body to actually write, applying gzip when compression is
-    // enabled and the client accepts it. Sets Content-Encoding/Vary on compress.
-    fn apply_compression(&mut self, data: Vec<u8>) -> Vec<u8> {
-        if !self.compress { return data; }
-        if !self.get_header("Accept-Encoding").to_lowercase().contains("gzip") { return data; }
-        let mut encoder = GzEncoder::new(Vec::new(), Compression::default());
-        if encoder.write_all(&data).is_err() { return data; }
-        match encoder.finish() {
-            Ok(compressed) => {
-                self.set_header("content-encoding", "gzip");
-                self.set_header("vary", "Accept-Encoding");
-                compressed
-            }
-            Err(_) => data
+    // Picks the on-the-fly response encoding from Accept-Encoding when
+    // compression is enabled. Priority gzip > br > deflate (matches the old
+    // Node server).
+    fn choose_encoding(&mut self) -> Option<&'static str> {
+        if !self.compress { return None; }
+        let ae = self.get_header("Accept-Encoding").to_lowercase();
+        if ae.contains("gzip") {
+            Some("gzip")
+        } else if ae.contains("br") {
+            Some("br")
+        } else if ae.contains("deflate") {
+            Some("deflate")
+        } else {
+            None
         }
     }
     pub fn get_header(&mut self, header:&str) -> String {
@@ -627,7 +652,7 @@ impl Request<'_> {
         
         to_send += "</div></body></html>";
         
-        let bytes = self.apply_compression(to_send.into_bytes());
+        let bytes = to_send.into_bytes();
         self.set_header("content-length", &bytes.len().to_string());
         if !no_body {
             self.write(&bytes);
@@ -648,7 +673,9 @@ impl Request<'_> {
         };
         let ext = path.split('.').last().unwrap_or("");
         let ct = get_mime_type(ext);
-        if !ct.is_empty() {
+        // Don't override a content-type the caller already set (e.g. when
+        // serving a precompressed .gz/.br with the original file's type).
+        if !ct.is_empty() && !self.header_exists("Content-Type") {
             self.set_header("content-type", &ct);
         }
         let Ok(metadata) = file.metadata() else {
@@ -666,22 +693,22 @@ impl Request<'_> {
             return 200;
         }
 
-        // gzip small, compressible files when enabled and the client asks for it.
-        // Range requests and HEAD keep the uncompressed streaming path.
+        // On-the-fly compression (files only, matching the old server): gzip,
+        // then brotli, then deflate. Skipped for ranges/HEAD, already
+        // pre-compressed responses, and non-compressible types.
         if self.compress
             && !no_body
+            && !self.header_exists("Content-Encoding")
             && !ct.is_empty()
             && is_compressible(&ct)
             && size <= MAX_COMPRESS_SIZE
             && self.get_header("Range").is_empty()
-            && self.get_header("Accept-Encoding").to_lowercase().contains("gzip")
         {
-            let mut raw = Vec::with_capacity(size as usize);
-            if file.read_to_end(&mut raw).is_ok() {
-                let mut encoder = GzEncoder::new(Vec::new(), Compression::default());
-                if encoder.write_all(&raw).is_ok() {
-                    if let Ok(compressed) = encoder.finish() {
-                        self.set_header("content-encoding", "gzip");
+            if let Some(enc) = self.choose_encoding() {
+                let mut raw = Vec::with_capacity(size as usize);
+                if file.read_to_end(&mut raw).is_ok() {
+                    if let Some(compressed) = compress_bytes(enc, &raw) {
+                        self.set_header("content-encoding", enc);
                         self.set_header("vary", "Accept-Encoding");
                         self.set_header("accept-ranges", "none");
                         self.set_header("content-length", &compressed.len().to_string());
@@ -691,9 +718,9 @@ impl Request<'_> {
                         return 200;
                     }
                 }
+                // Compression failed; rewind and fall back to the normal path.
+                let Ok(_) = file.seek(SeekFrom::Start(0)) else { return 500; };
             }
-            // Compression failed; rewind and fall back to the normal path.
-            let Ok(_) = file.seek(SeekFrom::Start(0)) else { return 500; };
         }
 
         let mut file_offset : u64 = 0;

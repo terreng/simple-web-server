@@ -5,6 +5,7 @@ use server::{
     Request,
     wsparser::WebSocketParser,
     httpcodes::get_http_message,
+    mime::get_mime_type,
     decode_base64
 };
 
@@ -70,6 +71,31 @@ impl SimpleWebServer {
                 }
             }
         }
+    }
+    // Serves a file, first honouring the precompression option: if enabled and a
+    // `<path>.gz` / `<path>.br` exists and the client accepts it, serve that with
+    // the matching Content-Encoding and the original file's Content-Type. gzip is
+    // preferred over brotli (matches the old server).
+    fn render_file(res: &mut Request, opts: Settings, path: &str, is_head: bool) -> i32 {
+        if opts.precompression {
+            let ae = res.get_header("Accept-Encoding").to_lowercase();
+            let ext = path.rsplit('.').next().unwrap_or("");
+            let ct = get_mime_type(ext);
+            for (suffix, encoding) in [(".gz", "gzip"), (".br", "br")] {
+                if ae.contains(encoding) {
+                    let candidate = format!("{}{}", path, suffix);
+                    let entry = GetByPath::new(&candidate);
+                    if !entry.error && entry.is_file {
+                        res.set_header("content-encoding", encoding);
+                        if !ct.is_empty() && !res.header_exists("Content-Type") {
+                            res.set_header("content-type", &ct);
+                        }
+                        return res.send_file(&entry.path, is_head);
+                    }
+                }
+            }
+        }
+        res.send_file(path, is_head)
     }
     fn on_request(mut res:Request, opts: Settings) {
         res.set_header("Connection", "keep-alive");
@@ -282,7 +308,7 @@ impl SimpleWebServer {
                                 return;
                             }
                             res.set_header("content-type", "text/html; charset=utf-8");
-                            if res.send_file(&(file_path.clone()+name), is_head) == 200 {
+                            if Self::render_file(&mut res, opts, &(file_path.clone()+name), is_head) == 200 {
                                 return;
                             }
                         } else if name == "index.xhtml" || name == "index.xhtm" {
@@ -291,7 +317,7 @@ impl SimpleWebServer {
                                 return;
                             }
                             res.set_header("content-type", "application/xhtml+xml; charset=utf-8");
-                            if res.send_file(&(file_path.clone()+name), is_head) == 200 {
+                            if Self::render_file(&mut res, opts, &(file_path.clone()+name), is_head) == 200 {
                                 return;
                             }
                         }
@@ -306,7 +332,7 @@ impl SimpleWebServer {
             Self::error(res, opts, "", 404);
             return;//rust will complain about a "moved value" so just return.
         } else if entry.is_file {
-            rendered = res.send_file(&entry.path, is_head) == 200;
+            rendered = Self::render_file(&mut res, opts, &entry.path, is_head) == 200;
         } else if opts.directory_listing && entry.is_directory {
             rendered = res.directory_listing(&entry.path, is_head, opts.hidden_dot_files_directory_listing) == 200;
         }

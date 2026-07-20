@@ -125,18 +125,60 @@ Reviewed the old `WSC/handlers.js` against the Rust server. Ported fixes:
 - **Empty files** return `200` with `Content-Length: 0` instead of hitting a
   `size - 1` underflow.
 
+- **Compression** now matches the old server's two independent options:
+  `precompression` (serve pre-existing `.gz`/`.br` files, default on, priority
+  gzip→br) and `compression` (on-the-fly gzip→br→deflate, default off). Both are
+  exposed in the UI; precompressed files take priority over on-the-fly.
+
 Flagged differences (NOT changed — decide later):
 
-- **Compression semantics differ.** Old had two separate options: `precompression`
-  (serve pre-existing `.gz`/`.br` files) and `compression` (on-the-fly
-  gzip/br/deflate). The migration repurposes the UI's `precompression` toggle to
-  do on-the-fly **gzip** only. Brotli/deflate and static `.gz`/`.br` serving are
-  not implemented.
 - **OPTIONS**: old returned `403` when CORS was off; the Rust server returns
   `200`. Minor.
 - **Index filename matching** is case-sensitive in Rust (`index.html`) vs
   case-insensitive in the old server — only matters on case-sensitive
   filesystems (Linux).
+
+## Auto-updating (client is wired; you finish the server side)
+
+The Tauri equivalent of electron-updater — `tauri-plugin-updater` — is set up on
+the **client**:
+
+- Plugin registered in `lib.rs`; commands `check_update` / `install_update`.
+- On launch the frontend calls `check_update`; if an update is available it
+  prompts to download, install, and restart (`checkForUpdatesAuto` in main.js).
+  Store builds (macappstore/microsoftstore) skip it.
+- `tauri.conf.json > plugins.updater` has the endpoint and a public key.
+
+To make it live you need to:
+
+1. **Generate your own signing keypair** (the committed `pubkey` is a throwaway
+   placeholder — the private key was discarded):
+   ```sh
+   npx @tauri-apps/cli signer generate -w ~/.tauri/simplewebserver.key
+   ```
+   Put the printed public key in `tauri.conf.json > plugins.updater.pubkey`, and
+   keep the private key secret (a CI secret, `TAURI_SIGNING_PRIVATE_KEY` +
+   `TAURI_SIGNING_PRIVATE_KEY_PASSWORD`).
+2. **Build signed artifacts** — with those env vars set, `tauri build` emits the
+   updater artifacts plus `.sig` files.
+3. **Host an update manifest** at the endpoint
+   `https://simplewebserver.org/updater/{{target}}-{{arch}}/{{current_version}}`
+   (adjust as you like). It returns JSON like:
+   ```json
+   {
+     "version": "2.0.1",
+     "notes": "…",
+     "pub_date": "2025-01-01T00:00:00Z",
+     "platforms": {
+       "darwin-aarch64": { "signature": "<contents of .sig>", "url": "https://…/app.tar.gz" }
+     }
+   }
+   ```
+   The plugin returns "no update" for equal/older versions.
+
+The website `/versions/*.json` banner check (`checkForUpdates`) is unchanged and
+independent — it just links to a download page. You can keep both or drop the
+banner once the in-app updater is live.
 
 ## Other follow-ups
 

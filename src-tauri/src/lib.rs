@@ -262,6 +262,40 @@ fn open_external(app: AppHandle, url: String) {
     let _ = app.shell().open(url, None);
 }
 
+// Checks the configured updater endpoint. Returns update info when one is
+// available, null when up to date, or an error string (e.g. no endpoint yet).
+#[tauri::command]
+async fn check_update(app: AppHandle) -> Result<Option<Value>, String> {
+    use tauri_plugin_updater::UpdaterExt;
+    let updater = app.updater().map_err(|e| e.to_string())?;
+    match updater.check().await {
+        Ok(Some(update)) => Ok(Some(json!({
+            "version": update.version,
+            "currentVersion": update.current_version,
+            "notes": update.body,
+        }))),
+        Ok(None) => Ok(None),
+        Err(e) => Err(e.to_string()),
+    }
+}
+
+// Downloads and installs the pending update, then restarts the app.
+#[tauri::command]
+async fn install_update(app: AppHandle) -> Result<(), String> {
+    use tauri_plugin_updater::UpdaterExt;
+    let updater = app.updater().map_err(|e| e.to_string())?;
+    let update = updater
+        .check()
+        .await
+        .map_err(|e| e.to_string())?
+        .ok_or_else(|| "No update available".to_string())?;
+    update
+        .download_and_install(|_downloaded, _total| {}, || {})
+        .await
+        .map_err(|e| e.to_string())?;
+    app.restart()
+}
+
 // ---------------------------------------------------------------------------
 // Background threads: IP change polling + external config.json watching.
 // ---------------------------------------------------------------------------
@@ -320,6 +354,7 @@ pub fn run() {
         .plugin(tauri_plugin_dialog::init())
         .plugin(tauri_plugin_shell::init())
         .plugin(tauri_plugin_os::init())
+        .plugin(tauri_plugin_updater::Builder::new().build())
         .manage(Mutex::new(AppState {
             config: config.clone(),
             servers: Vec::new(),
@@ -331,7 +366,9 @@ pub fn run() {
             quit,
             show_picker,
             generate_crypto,
-            open_external
+            open_external,
+            check_update,
+            install_update
         ])
         .setup(move |app| {
             let handle = app.handle().clone();

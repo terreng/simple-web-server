@@ -66,8 +66,10 @@ fn build_settings(sc: &Value, cert: String, key: String) -> Settings<'static> {
         https_cert: leak(cert),
         https_key: leak(key),
         cache_control: leak(cfg_str(sc, "cacheControl")),
-        // The UI's "precompression" toggle now enables on-the-fly gzip.
-        compression: cfg_bool(sc, "precompression"),
+        // On-the-fly gzip/br/deflate compression.
+        compression: cfg_bool(sc, "compression"),
+        // Serve pre-existing .gz/.br files. Defaults to true, matching the old server.
+        precompression: sc.get("precompression").and_then(|v| v.as_bool()).unwrap_or(true),
     }
 }
 
