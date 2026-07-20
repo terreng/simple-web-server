@@ -30,13 +30,17 @@ impl Socket {
             }
         }
     }
-    pub fn write(&mut self, buf: &[u8]) -> io::Result<()> {
+    // Returns the number of bytes actually written (may be fewer than requested
+    // on a non-blocking socket). The caller must loop until all bytes are sent;
+    // using write_all here would retry the whole buffer after a partial write +
+    // WouldBlock, duplicating data.
+    pub fn write(&mut self, buf: &[u8]) -> io::Result<usize> {
         match self.stream {
             Ok(ref mut stream) => {
-                stream.write_all(buf)
+                stream.write(buf)
             }
             Err(ref mut stream) => {
-                stream.write_all(buf)
+                stream.write(buf)
             }
         }
     }

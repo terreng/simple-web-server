@@ -489,25 +489,30 @@ impl Request<'_> {
     }
     fn write_to_stream(&mut self, data:&[u8]) -> bool {
         if self.connection_closed { return false; };
-        let mut rv = true;
-        loop {
-            match self.stream.write(data) {
-                Ok(_e) => {
-                    rv = true;
-                    break;
+        // write() may accept fewer bytes than requested (partial write, common
+        // on macOS for large buffers), so loop until every byte is sent, or we'd
+        // truncate the body and corrupt keep-alive framing.
+        let mut written = 0;
+        while written < data.len() {
+            match self.stream.write(&data[written..]) {
+                Ok(0) => {
+                    self.connection_closed = true;
+                    return false;
+                },
+                Ok(n) => {
+                    written += n;
                 },
                 Err(e) => {
                     if e.kind() == std::io::ErrorKind::WouldBlock {
                         thread::sleep(Duration::from_millis(10));
                     } else {
-                        rv = false;
                         self.connection_closed = true;
-                        break;
+                        return false;
                     }
                 },
             };
         }
-        rv
+        true
     }
     pub fn write(&mut self, data:&[u8]) {
         if !self.headers_written { self.send_headers(); };
@@ -604,10 +609,12 @@ impl Request<'_> {
         self.finished = true;
         let chunked = self.header_value_equals("Transfer-Encoding", "Chunked");
         if chunked {
+            // Terminating zero-length chunk.
             self.write_to_stream("0\r\n\r\n".as_bytes());
-        } else {
-            self.write_to_stream("\r\n\r\n".as_bytes());
         }
+        // For Content-Length responses nothing follows the body — writing an
+        // extra CRLF here corrupts keep-alive framing (the next response gets a
+        // stray leading newline).
     }
     //The directory_listing and send_file functions will return either 404, 500, or 200
     pub fn directory_listing(&mut self, path:&str, no_body:bool, dot_files:bool) -> i32 {
