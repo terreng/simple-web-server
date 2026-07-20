@@ -165,7 +165,7 @@ impl SimpleWebServer {
             let file_path = Self::from_relative(opts, path.to_string());
             let entry = GetByPath::new(&file_path);
             if !entry.error && entry.is_file {
-                if entry.is_hidden() && !opts.hidden_dot_files {
+                if Self::is_hidden_rel(opts, &entry.path) && !opts.hidden_dot_files {
                     Self::error(res, opts, if code == 404 { "NONOTUSECUSTOM" } else { "" }, 404);
                     return;
                 }
@@ -193,6 +193,17 @@ impl SimpleWebServer {
             file_path = file_path.replace("//", "/");
         }
         file_path
+    }
+    // Whether a resolved path is "hidden" (a dot-prefixed component) from the
+    // client's perspective. The served root itself may legitimately live under
+    // a dotted directory (e.g. ~/.config/site); checking the full filesystem
+    // path there would flag every file as hidden. Strip the root prefix first
+    // so only the portion the client actually requested is considered.
+    fn is_hidden_rel(opts: Settings, full_path: &str) -> bool {
+        let root = Self::from_relative(opts, String::new());
+        let rel = full_path.strip_prefix(&root).unwrap_or(full_path);
+        rel.split('/')
+            .any(|c| c.starts_with('.') && c != "." && c != "..")
     }
     fn delete(mut res:Request, opts: Settings) {
         if !opts.delete {
@@ -264,7 +275,7 @@ impl SimpleWebServer {
         if rewrite_to.is_empty() && opts.exclude_dot_html && res.origpath != "/" && !res.origpath.ends_with('/') {
             let entry = GetByPath::new(&(file_path.clone()+".html"));
             if !entry.error && entry.is_file {
-                if entry.is_hidden() && !opts.hidden_dot_files {
+                if Self::is_hidden_rel(opts, &entry.path) && !opts.hidden_dot_files {
                     Self::error(res, opts, "", 404);
                     return;
                 }
@@ -275,7 +286,7 @@ impl SimpleWebServer {
             }
             let entry2 = GetByPath::new(&(file_path.clone()+".htm"));
             if !entry2.error && entry2.is_file {
-                if entry2.is_hidden() && !opts.hidden_dot_files {
+                if Self::is_hidden_rel(opts, &entry2.path) && !opts.hidden_dot_files {
                     Self::error(res, opts, "", 404);
                     return;
                 }
@@ -311,7 +322,7 @@ impl SimpleWebServer {
                         let file = path.path().display().to_string();
                         let name = file.split('/').last().unwrap_or("");
                         if name == "index.html" || name == "index.htm" {
-                            if entry.is_hidden() && !opts.hidden_dot_files {
+                            if Self::is_hidden_rel(opts, &entry.path) && !opts.hidden_dot_files {
                                 Self::error(res, opts, "", 404);
                                 return;
                             }
@@ -320,7 +331,7 @@ impl SimpleWebServer {
                                 return;
                             }
                         } else if name == "index.xhtml" || name == "index.xhtm" {
-                            if entry.is_hidden() && !opts.hidden_dot_files {
+                            if Self::is_hidden_rel(opts, &entry.path) && !opts.hidden_dot_files {
                                 Self::error(res, opts, "", 404);
                                 return;
                             }
@@ -336,7 +347,7 @@ impl SimpleWebServer {
         
         
         let mut rendered = false;
-        if entry.is_hidden() && !opts.hidden_dot_files {
+        if Self::is_hidden_rel(opts, &entry.path) && !opts.hidden_dot_files {
             Self::error(res, opts, "", 404);
             return;//rust will complain about a "moved value" so just return.
         } else if entry.is_file {

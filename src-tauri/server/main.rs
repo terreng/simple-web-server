@@ -245,16 +245,6 @@ pub fn url_decode(input: &str) -> String {
     decoded
 }
 
-fn is_hidden(path: &String) -> bool {
-    let components: Vec<&str> = path.split('/').collect();
-    for component in components.iter() {
-        if component.starts_with('.') && component != &"." && component != &".." {
-            return true;
-        }
-    }
-    false
-}
-
 #[allow(dead_code)]
 pub fn relative_path(in_cur_path: &str, req_path: &str) -> String {
     let mut end_with_slash = false;
@@ -643,8 +633,11 @@ impl Request<'_> {
         for path in paths {
             let Ok(file) = path else { continue; };
             let name = file.path().display().to_string();
-            if !dot_files && is_hidden(&name) { continue; };
             let file_name = name.split('/').last().unwrap_or("");
+            // A listing entry is hidden when its own name is dot-prefixed. Check
+            // only the final component, not the whole path, so a served root that
+            // itself lives under a dotted directory doesn't hide every entry.
+            if !dot_files && file_name.starts_with('.') && file_name != "." && file_name != ".." { continue; };
             if file.path().is_dir() {
                 to_send += &format!("<li class=\"directory\"><a href=\"{}/\">{}</a></li>", file_name, file_name);
             } else {
