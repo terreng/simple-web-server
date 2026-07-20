@@ -493,20 +493,34 @@
             for (let i=0; i<items.length; i++) {
                 if (items[i].kind === 'file') files.push(items[i].getAsFile());
             }
+            if (files.length === 0) return;
+            // Uploading is a PUT, which the server only accepts when its upload
+            // option is enabled. Without this check a drop would silently 400 and
+            // reload with nothing added.
+            if (!window.swsUploadEnabled) {
+                alert("Uploads are disabled for this server. Enable the upload option for this server to drag and drop files here.");
+                return;
+            }
+            let failed = [];
             for (let i=0; i<files.length; i++) {
                 const file = files[i];
                 try {
-                    await doupload(file.name, await file.arrayBuffer());
+                    const ok = await doupload(file.name, await file.arrayBuffer());
+                    if (!ok) failed.push(file.name);
                 } catch(e) {
                     console.warn("Failed to upload file", e);
+                    failed.push(file.name);
                 }
             }
-            if (files.length !== 0) window.location.reload();
+            if (failed.length !== 0) {
+                alert("Failed to upload: " + failed.join(", "));
+            }
+            window.location.reload();
         }
     }
 
     function doupload(name, data) {
-        return fetch(window.location.pathname + encodeURIComponent(name), {method:'PUT',body:data})
+        return fetch(window.location.pathname + encodeURIComponent(name), {method:'PUT',body:data}).then(function(r) { return r.ok; })
     }
 
     document.addEventListener("DOMContentLoaded", function(e) {

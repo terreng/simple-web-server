@@ -71,6 +71,41 @@ fn compress_bytes(encoding: &str, data: &[u8]) -> Option<Vec<u8>> {
     }
 }
 
+// Formats a byte count like a file manager: "0 B", "812 B", "1.4 KB", "3.2 MB".
+fn human_readable_size(bytes: u64) -> String {
+    const UNITS: [&str; 6] = ["B", "KB", "MB", "GB", "TB", "PB"];
+    if bytes < 1024 {
+        return format!("{} B", bytes);
+    }
+    let mut size = bytes as f64;
+    let mut unit = 0;
+    while size >= 1024.0 && unit < UNITS.len() - 1 {
+        size /= 1024.0;
+        unit += 1;
+    }
+    format!("{:.1} {}", size, UNITS[unit])
+}
+
+// Converts Unix epoch seconds to a "YYYY-MM-DD HH:MM" UTC string, using Howard
+// Hinnant's civil-from-days algorithm so we need no date/time dependency.
+fn format_unix_date(secs: u64) -> String {
+    let days = (secs / 86400) as i64;
+    let rem = secs % 86400;
+    let hour = rem / 3600;
+    let min = (rem % 3600) / 60;
+    let z = days + 719468;
+    let era = (if z >= 0 { z } else { z - 146096 }) / 146097;
+    let doe = z - era * 146097;
+    let yoe = (doe - doe / 1460 + doe / 36524 - doe / 146096) / 365;
+    let y = yoe + era * 400;
+    let doy = doe - (365 * yoe + yoe / 4 - yoe / 100);
+    let mp = (5 * doy + 2) / 153;
+    let d = doy - (153 * mp + 2) / 5 + 1;
+    let m = if mp < 10 { mp + 3 } else { mp - 9 };
+    let year = if m <= 2 { y + 1 } else { y };
+    format!("{:04}-{:02}-{:02} {:02}:{:02}", year, m, d, hour, min)
+}
+
 // Only compress content types that actually benefit from it.
 fn is_compressible(content_type: &str) -> bool {
     let ct = content_type.to_lowercase();
@@ -617,7 +652,7 @@ impl Request<'_> {
         // stray leading newline).
     }
     //The directory_listing and send_file functions will return either 404, 500, or 200
-    pub fn directory_listing(&mut self, path:&str, no_body:bool, dot_files:bool) -> i32 {
+    pub fn directory_listing(&mut self, path:&str, no_body:bool, dot_files:bool, upload:bool) -> i32 {
         if self.headers_written {
             println!("Headers must not yet be sent when using send_file");
             return 500;
@@ -643,12 +678,20 @@ impl Request<'_> {
             }
             
             let rawname = name.split('/').last().unwrap_or("").replace('"', "\\\"");
-            let is_dir = if file.path().is_dir() { "true" } else { "false" };
-            let modified = 0;
-            let modifiedstr = "";
-            let filesize = 0;
-            let filesizestr = "";
-            
+            let is_directory = file.path().is_dir();
+            let is_dir = if is_directory { "true" } else { "false" };
+            let meta = file.metadata().ok();
+            // Size (files only; the listing script blanks it for directories).
+            let filesize = if is_directory { 0 } else { meta.as_ref().map(|m| m.len()).unwrap_or(0) };
+            let filesizestr = if is_directory { String::new() } else { human_readable_size(filesize) };
+            // Modified time as sortable epoch seconds + a human-readable string.
+            let modified = meta.as_ref()
+                .and_then(|m| m.modified().ok())
+                .and_then(|t| t.duration_since(std::time::UNIX_EPOCH).ok())
+                .map(|d| d.as_secs())
+                .unwrap_or(0);
+            let modifiedstr = if modified > 0 { format_unix_date(modified) } else { String::new() };
+
             js_listing += &format!("<script>addRow(\"{}\", \"{}\", {}, \"{}\", \"{}\", \"{}\", \"{}\");</script>", rawname, rawname, is_dir, filesize, filesizestr, modified, modifiedstr);
         }
         to_send += &format!("</ul></div><div style=\"display: none;\" id=\"niceListing\">\n{}", DIRECTORY_LISTING);
@@ -657,7 +700,9 @@ impl Request<'_> {
             to_send += "<script>onHasParentDirectory();</script>";
         }
         to_send += &format!("<script>start(\"{}\")</script>", self.path.replace('"', "\\\""));
-        
+        // Tell the drag-and-drop uploader whether the server will accept a PUT.
+        to_send += &format!("<script>window.swsUploadEnabled = {};</script>", upload);
+
         to_send += &js_listing;
         
         to_send += "</div></body></html>";

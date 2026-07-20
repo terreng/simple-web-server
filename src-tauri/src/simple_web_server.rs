@@ -328,7 +328,7 @@ impl SimpleWebServer {
             // also enabled — otherwise they'd appear but 404 when clicked. The
             // "show in listing" option is a sub-option of "serve hidden files".
             let show_hidden = opts.hidden_dot_files && opts.hidden_dot_files_directory_listing;
-            rendered = res.directory_listing(&entry.path, is_head, show_hidden) == 200;
+            rendered = res.directory_listing(&entry.path, is_head, show_hidden, opts.upload) == 200;
         }
         if !rendered {
             Self::error(res, opts, "", 404);
