@@ -97,10 +97,13 @@ pub fn decode_base64(input: &[u8]) -> String {
 	let mut output: Vec<u8> = Vec::new();
 	for chunk in input.chunks(4) {
 
-    	let a = decode_char(chunk[0]);
-    	let b = decode_char(chunk[1]);
-    	let c = decode_char(chunk[2]);
-    	let d = decode_char(chunk[3]);
+    	// A trailing chunk shorter than 4 bytes (unpadded base64) must not panic
+    	// on index; treat the missing bytes as '=' padding, which decode_char
+    	// maps to 0 just like real padding.
+    	let a = decode_char(*chunk.first().unwrap_or(&b'='));
+    	let b = decode_char(*chunk.get(1).unwrap_or(&b'='));
+    	let c = decode_char(*chunk.get(2).unwrap_or(&b'='));
+    	let d = decode_char(*chunk.get(3).unwrap_or(&b'='));
 
     	let dec1 = (a << 2) | (b & 0x30) >> 4;
     	let dec2 = ((b & 0x0F) << 4) | (c & 0x3C) >> 2;
