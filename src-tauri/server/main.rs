@@ -628,7 +628,7 @@ impl Request<'_> {
         let Ok(paths) = fs::read_dir(path) else {
             return 404;
         };
-        let mut to_send = String::from("<!DOCTYPE html>\n<html dir=\"ltr\" lang=\"en\n<head><meta charset=\"utf-8\"><meta name=\"google\" value=\"notranslate\"><title id=\"title\"></title>\n</head>\n<body><div id=\"staticListing\"><style>li.directory {background:#aab}</style><a href=\"../\">parent</a><ul>");
+        let mut to_send = String::from("<!DOCTYPE html>\n<html dir=\"ltr\" lang=\"en\">\n<head><meta charset=\"utf-8\"><meta name=\"google\" value=\"notranslate\"><title id=\"title\"></title>\n</head>\n<body><div id=\"staticListing\"><style>li.directory {background:#aab}</style><a href=\"../\">parent</a><ul>");
         let mut js_listing = String::new();
         for path in paths {
             let Ok(file) = path else { continue; };
