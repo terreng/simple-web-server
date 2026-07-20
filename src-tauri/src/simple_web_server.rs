@@ -77,7 +77,10 @@ impl SimpleWebServer {
     // the matching Content-Encoding and the original file's Content-Type. gzip is
     // preferred over brotli (matches the old server).
     fn render_file(res: &mut Request, opts: Settings, path: &str, is_head: bool) -> i32 {
-        if opts.precompression {
+        // Skip precompression for range requests: a range of a .gz would be a
+        // partial compressed stream the client couldn't decode. Serve the real
+        // file so byte ranges are meaningful.
+        if opts.precompression && res.get_header("Range").is_empty() {
             let ae = res.get_header("Accept-Encoding").to_lowercase();
             let ext = path.rsplit('.').next().unwrap_or("");
             let ct = get_mime_type(ext);
@@ -139,8 +142,13 @@ impl SimpleWebServer {
         if opts.spa && code == 404 && (res.method == "GET" || res.method == "HEAD") {
             let rewrite = if opts.rewrite_to.is_empty() { "/index.html" } else { opts.rewrite_to };
             if res.path != rewrite {
+                // Set res.path for loop prevention (if the rewrite target itself
+                // 404s we re-enter here and bail on the `res.path != rewrite`
+                // check) and pass the target via rewrite_to so get() skips the
+                // origpath-based redirects, which pertain to the original request
+                // path, not the SPA entry point.
                 res.path = rewrite.to_string();
-                Self::get(res, opts, "");
+                Self::get(res, opts, rewrite);
                 return;
             }
         }
@@ -243,7 +251,7 @@ impl SimpleWebServer {
         let file_path = Self::from_relative(opts, path);
         let is_head = res.method == "HEAD";
         
-        if opts.exclude_dot_html && (res.origpath.ends_with(".html") || res.origpath.ends_with(".htm")) {
+        if rewrite_to.is_empty() && opts.exclude_dot_html && (res.origpath.ends_with(".html") || res.origpath.ends_with(".htm")) {
             let mut new_path = res.origpath.clone();
             let new_length = new_path.len() - if res.origpath.ends_with(".html") { 5 } else { 4 };
             new_path.truncate(new_length);
@@ -253,7 +261,7 @@ impl SimpleWebServer {
             return;
         }
         
-        if opts.exclude_dot_html && res.origpath != "/" && !res.origpath.ends_with('/') {
+        if rewrite_to.is_empty() && opts.exclude_dot_html && res.origpath != "/" && !res.origpath.ends_with('/') {
             let entry = GetByPath::new(&(file_path.clone()+".html"));
             if !entry.error && entry.is_file {
                 if entry.is_hidden() && !opts.hidden_dot_files {
@@ -267,7 +275,7 @@ impl SimpleWebServer {
             }
             let entry2 = GetByPath::new(&(file_path.clone()+".htm"));
             if !entry2.error && entry2.is_file {
-                if entry.is_hidden() && !opts.hidden_dot_files {
+                if entry2.is_hidden() && !opts.hidden_dot_files {
                     Self::error(res, opts, "", 404);
                     return;
                 }
@@ -279,7 +287,7 @@ impl SimpleWebServer {
         }
         
         let entry = GetByPath::new(&file_path);
-        if entry.is_file && res.origpath != "/" && res.origpath.ends_with('/') {
+        if rewrite_to.is_empty() && entry.is_file && res.origpath != "/" && res.origpath.ends_with('/') {
             res.set_header("Content-length", "0");
             let mut path = res.origpath.clone();
             path.pop();
@@ -288,7 +296,7 @@ impl SimpleWebServer {
             res.end();
             return;
         }
-        if entry.is_directory && !res.origpath.ends_with('/') {
+        if rewrite_to.is_empty() && entry.is_directory && !res.origpath.ends_with('/') {
             res.set_header("Content-length", "0");
             let path = res.origpath.clone();
             res.set_header("location", &(path+"/"));

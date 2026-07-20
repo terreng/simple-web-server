@@ -745,33 +745,48 @@ impl Request<'_> {
         let mut code = 200;
         let range_header = self.get_header("Range");
         if !range_header.is_empty() {
-            // Parse defensively so malformed Range headers can't panic the
-            // connection thread (e.g. missing '=' or '-').
-            let range = range_header.split('=').nth(1).unwrap_or("").trim();
-            let mut rparts = range.split('-');
-            let rp0 = rparts.next().unwrap_or("");
-            let rp1 = rparts.next().unwrap_or("");
-            file_offset = rp0.parse::<u64>().unwrap_or(0);
-            if rp1.is_empty() {
-                // Clamp the offset before computing the length so an offset past
-                // EOF can't underflow the unsigned length.
-                if file_offset > file_end_offset {
-                    file_offset = file_end_offset;
+            // Parse defensively so a malformed Range header can't panic the
+            // connection thread. Only a single byte range is handled; a
+            // multi-range ("bytes=a-b,c-d") falls back to a normal 200 response.
+            let spec = range_header.split('=').nth(1).unwrap_or("").trim();
+            if !spec.contains(',') {
+                let mut rparts = spec.split('-');
+                let rp0 = rparts.next().unwrap_or("").trim();
+                let rp1 = rparts.next().unwrap_or("").trim();
+                if rp0.is_empty() {
+                    // Suffix range "bytes=-N": the last N bytes.
+                    if let Ok(n) = rp1.parse::<u64>() {
+                        if n > 0 {
+                            let n = n.min(size);
+                            file_offset = size - n;
+                            content_length = n;
+                            code = 206;
+                        }
+                    }
+                } else if let Ok(start) = rp0.parse::<u64>() {
+                    file_offset = start;
+                    if rp1.is_empty() {
+                        // "bytes=N-": from N to the end.
+                        if file_offset > file_end_offset {
+                            file_offset = file_end_offset;
+                        }
+                        content_length = size - file_offset;
+                        code = 206;
+                    } else if let Ok(end) = rp1.parse::<u64>() {
+                        // "bytes=N-M".
+                        if end < file_end_offset {
+                            file_end_offset = end;
+                        }
+                        if file_offset > file_end_offset {
+                            file_offset = file_end_offset;
+                        }
+                        content_length = file_end_offset - file_offset + 1;
+                        code = 206;
+                    }
                 }
-                content_length = size - file_offset;
-                self.set_header("content-range", &format!("bytes {}-{}/{}", file_offset, size-1, size));
-                code = if file_offset == 0 { 200 } else { 206 };
-            } else {
-                let new_end_offset = rp1.parse::<u64>().unwrap_or(0);
-                if new_end_offset < file_end_offset {
-                    file_end_offset = new_end_offset;
+                if code == 206 {
+                    self.set_header("content-range", &format!("bytes {}-{}/{}", file_offset, file_end_offset, size));
                 }
-                if file_offset > file_end_offset {
-                    file_offset = file_end_offset;
-                }
-                content_length = file_end_offset - file_offset + 1;
-                self.set_header("content-range", &format!("bytes {}-{}/{}", file_offset, file_end_offset, size));
-                code = 206;
             }
         }
         
