@@ -353,7 +353,11 @@ impl SimpleWebServer {
         } else if entry.is_file {
             rendered = Self::render_file(&mut res, opts, &entry.path, is_head) == 200;
         } else if opts.directory_listing && entry.is_directory {
-            rendered = res.directory_listing(&entry.path, is_head, opts.hidden_dot_files_directory_listing) == 200;
+            // Only reveal dotfiles in the listing when serving hidden files is
+            // also enabled — otherwise they'd appear but 404 when clicked. The
+            // "show in listing" option is a sub-option of "serve hidden files".
+            let show_hidden = opts.hidden_dot_files && opts.hidden_dot_files_directory_listing;
+            rendered = res.directory_listing(&entry.path, is_head, show_hidden) == 200;
         }
         if !rendered {
             Self::error(res, opts, "", 404);

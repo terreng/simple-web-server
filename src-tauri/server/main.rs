@@ -742,50 +742,66 @@ impl Request<'_> {
         let range_header = self.get_header("Range");
         if !range_header.is_empty() {
             // Parse defensively so a malformed Range header can't panic the
-            // connection thread. Only a single byte range is handled; a
-            // multi-range ("bytes=a-b,c-d") falls back to a normal 200 response.
+            // connection thread. Only a single "bytes" range is handled; a
+            // multi-range ("bytes=a-b,c-d"), an unknown unit, a reversed range,
+            // or a malformed spec falls back to a normal 200 response.
+            let unit = range_header.split('=').next().unwrap_or("").trim();
             let spec = range_header.split('=').nth(1).unwrap_or("").trim();
-            if !spec.contains(',') {
+            let mut unsatisfiable = false;
+            if unit.eq_ignore_ascii_case("bytes") && !spec.contains(',') {
                 let mut rparts = spec.split('-');
                 let rp0 = rparts.next().unwrap_or("").trim();
                 let rp1 = rparts.next().unwrap_or("").trim();
                 if rp0.is_empty() {
-                    // Suffix range "bytes=-N": the last N bytes.
-                    if let Ok(n) = rp1.parse::<u64>() {
-                        if n > 0 {
+                    // Suffix range "bytes=-N": the last N bytes. N == 0 is
+                    // unsatisfiable; N >= size returns the whole file.
+                    match rp1.parse::<u64>() {
+                        Ok(0) => { unsatisfiable = true; }
+                        Ok(n) => {
                             let n = n.min(size);
                             file_offset = size - n;
+                            file_end_offset = size - 1;
                             content_length = n;
                             code = 206;
                         }
+                        Err(_) => {} // malformed -> full 200
                     }
                 } else if let Ok(start) = rp0.parse::<u64>() {
-                    file_offset = start;
-                    if rp1.is_empty() {
+                    if start >= size {
+                        // First-byte-pos past the end -> Range Not Satisfiable.
+                        unsatisfiable = true;
+                    } else if rp1.is_empty() {
                         // "bytes=N-": from N to the end.
-                        if file_offset > file_end_offset {
-                            file_offset = file_end_offset;
-                        }
+                        file_offset = start;
                         content_length = size - file_offset;
                         code = 206;
                     } else if let Ok(end) = rp1.parse::<u64>() {
-                        // "bytes=N-M".
-                        if end < file_end_offset {
-                            file_end_offset = end;
+                        // "bytes=N-M". A reversed range (M < N) is invalid; ignore
+                        // it and send the whole file. Otherwise clamp the end to
+                        // the last byte.
+                        if end >= start {
+                            file_offset = start;
+                            file_end_offset = end.min(size - 1);
+                            content_length = file_end_offset - file_offset + 1;
+                            code = 206;
                         }
-                        if file_offset > file_end_offset {
-                            file_offset = file_end_offset;
-                        }
-                        content_length = file_end_offset - file_offset + 1;
-                        code = 206;
                     }
                 }
-                if code == 206 {
-                    self.set_header("content-range", &format!("bytes {}-{}/{}", file_offset, file_end_offset, size));
-                }
+            }
+            if unsatisfiable {
+                // RFC 7233: 416 with Content-Range: bytes */complete-length and
+                // no content range in the body.
+                self.set_header("content-range", &format!("bytes */{}", size));
+                self.set_header("content-length", "0");
+                self.set_status(416);
+                self.end();
+                return 200;
+            }
+            if code == 206 {
+                self.set_header("content-range", &format!("bytes {}-{}/{}", file_offset, file_end_offset, size));
             }
         }
-        
+
         self.set_header("content-length", &content_length.to_string());
         self.set_status(code);
         if no_body {
@@ -875,6 +891,10 @@ pub struct Server {
     sender: Option<mpsc::Sender<String>>,
     receiver: Arc<Mutex<mpsc::Receiver<String>>>,
     running: bool,
+    // Set true by the listener thread once it has dropped the TcpListener, so
+    // terminate() can wait for the port to actually be released before a caller
+    // rebinds it.
+    released: Arc<AtomicBool>,
     on_request: fn(Request, Settings),
     on_websocket: fn(WebSocketParser, Settings)
 }
@@ -889,6 +909,7 @@ impl Server {
             receiver,
             sender: Some(sender),
             running: false,
+            released: Arc::new(AtomicBool::new(false)),
             on_request,
             on_websocket
         }
@@ -902,6 +923,10 @@ impl Server {
         let port = opts.port;
         let on_request = self.on_request;
         let on_websocket = self.on_websocket;
+        // Fresh "released" flag for this run; the thread flips it once the
+        // listener socket is dropped so terminate() knows the port is free.
+        let released = Arc::new(AtomicBool::new(false));
+        self.released = released.clone();
         match TcpListener::bind(format!("{}:{}", host, port)) {
             Ok(listener) => {
                 match listener.set_nonblocking(true) {
@@ -944,6 +969,9 @@ impl Server {
                         }
                     }
                     drop(listener);
+                    // Signal that the listening socket is closed and the port is
+                    // available again.
+                    released.store(true, Ordering::SeqCst);
                 });
             },
             Err(_) => {
@@ -966,7 +994,20 @@ impl Server {
             self.terminate_failed(0);
             return;
         };
+        self.wait_for_release();
         println!("Server has been killed");
+    }
+    // Blocks (briefly) until the listener thread has dropped its socket, so the
+    // port is free before a caller rebinds it (e.g. switching HTTPS on/off on the
+    // same port). Bounded so a stuck thread can't hang the app.
+    fn wait_for_release(&self) {
+        let start = std::time::Instant::now();
+        while !self.released.load(Ordering::SeqCst) {
+            if start.elapsed() > Duration::from_secs(3) {
+                break;
+            }
+            thread::sleep(Duration::from_millis(2));
+        }
     }
     pub fn terminate_failed(&mut self, count: i32) {
         println!("Failed to kill server. Retrying...");

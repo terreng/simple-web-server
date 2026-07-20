@@ -83,6 +83,13 @@ impl SocketHandler {
         }
         let acceptor = self.acceptor.as_ref().unwrap().clone();
         thread::spawn(move || {
+            // The accepted socket may have inherited the listener's non-blocking
+            // flag (macOS/BSD does this; Linux does not). openssl's handshake on a
+            // non-blocking socket returns WANT_READ (WouldBlock), which we'd treat
+            // as a failed handshake and silently drop — the browser then reports
+            // ERR_CONNECTION_CLOSED. Force blocking mode so the handshake, and the
+            // blocking read/write loops that follow, work on every platform.
+            let _ = stream.set_nonblocking(false);
             match acceptor.accept(stream) {
                 Ok(stream) => {
                     f(Socket::new(Err(stream)));
