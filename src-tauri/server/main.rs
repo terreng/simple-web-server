@@ -345,16 +345,17 @@ pub struct Request<'a> {
 impl Request<'_> {
     pub fn new(stream:&mut Socket, head:String) -> Request<'_> {
         let lines = head.split("\r\n").collect::<Vec<_>>();
-        let parts = lines[0].split(' ').collect::<Vec<_>>();
+        let parts = lines.first().unwrap_or(&"").split(' ').collect::<Vec<_>>();
         let mut headers = Vec::new();
         let mut length = 0;
         for (i, line) in lines.iter().enumerate() {
             if i == 0 { continue; };
-            let header_split = line.split(": ").collect::<Vec<_>>();
+            // splitn(2) so header values containing ": " aren't truncated.
+            let header_split = line.splitn(2, ": ").collect::<Vec<_>>();
             if header_split.len() < 2 { continue; };
             headers.push(Header::new(header_split[0], header_split[1]));
             if header_split[0].to_lowercase() == "content-length" {
-                match header_split[1].parse::<usize>() {
+                match header_split[1].trim().parse::<usize>() {
                     Ok(num) => {
                         length = num;
                     },
@@ -362,11 +363,15 @@ impl Request<'_> {
                 }
             }
         }
-        let path = relative_path("", &url_decode(parts[1].splitn(2, '?').collect::<Vec<_>>()[0]));
-        let origpath = relative_path("", parts[1].splitn(2, '?').collect::<Vec<_>>()[0]);
+        // Guard against malformed request lines (missing method/path) so a bad
+        // request can't panic the connection thread.
+        let method = parts.first().copied().unwrap_or("");
+        let raw_path = parts.get(1).copied().unwrap_or("/");
+        let path = relative_path("", &url_decode(raw_path.splitn(2, '?').collect::<Vec<_>>()[0]));
+        let origpath = relative_path("", raw_path.splitn(2, '?').collect::<Vec<_>>()[0]);
         //todo, parse url arguments
         Request {
-            method: parts[0].to_string(),
+            method: method.to_string(),
             path,
             origpath,
             stream,
@@ -419,6 +424,10 @@ impl Request<'_> {
                 }
             }
         }
+        // Track how much of the request body we've consumed, otherwise
+        // write_to_file/consume_body loop forever re-reading a body that's
+        // already been read.
+        self.consumed += read;
         Ok(buffer)
     }
     //Will truncate the file
