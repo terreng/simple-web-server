@@ -74,7 +74,6 @@
     "option_staticDirectoryListing": "Statikus könyvtártartalom listázás használata",
     "option_hiddenDotFilesDirectoryListing": "Rejtett fájlok megjelenítése a könyvtártartalom böngészésekor",
     "option_precompression": "Előre tömörített .gz és .br fájlok kiszolgálása",
-    "option_htaccess": "A .swshtaccess kiterjesztésű konfigurációs fájlok engedélyezése",
     "option_custom404": "Egyedi 404-es hibalap",
     "option_custom404_description": "Fájlelérési útvonal az egyedi 404-es hibalaphoz. Ha nincs megadva, vagy hibás az útvonal, az alapértelmezett 404-es hibalap töltődik be.",
     "option_custom403": "Egyedi 403-as hibalap",
@@ -128,7 +127,7 @@
     "option_cacheControl_description": "Nem kötelezően megadhatsz egy <code>Gyorsítórtár-kezelés</code> HTTP fejléc értéket. További információ a <a href='https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Cache-Control'>Gyorsítótár-kezelés fejlécről.</a>",
     "option_replace_description": "Ha a fájlfeltöltés engedélyezett, akkor a már létező fájlok kicserélődnek az új feltöltésre. Érvényes a rejtett fájlokra is.",
     "option_delete_description": "DELETE kérések engedélyezése. Érvényes a rejtett fájlokra is.",
-    "option_hiddenDotFilesDirectoryListing_description": "Ha a rejtett fájlok be vannak kapcsolva, eldönti, hogy meg lesznek-e jelenítve a könyvtártartalom megjelenítésekor. <code>.swshtaccess</code> fájlokra egyaránt érvényes.",
+    "option_hiddenDotFilesDirectoryListing_description": "Ha a rejtett fájlok be vannak kapcsolva, eldönti, hogy meg lesznek-e jelenítve a könyvtártartalom megjelenítésekor.",
     "section_security": "Biztonság",
     "option_customErrorReplaceString_description": "Nem kötelező - Adj meg egy egyedi sztringet, amelyet keresve lesz a hibalapjaidon és átirányítás történik oda. Például, ha a 404-es hibalapodban ez áll: <code>A fájl {{PATH}} nem létezik</code> és ezt a beállítást <code>{{PATH}}</code>-ra állítod, akkor az oldalad ezt fogja írni: <code>A fájl /pelda.txt nem létezik</code>.",
     "option_https_description": "Biztonságos kapcsolat lehetővé tétele HTTP helyett. Ugyanazt az egy portot használják, ezért nem tudsz egyszerre HTTP és HTTPS kéréseket fogadni. További információ <a href='https://simplewebserver.org/docs/https.html'>HTTPS használata (az oldal angol nyelvű)</a>.",
@@ -146,6 +145,5 @@
     "option_custom500_description": "Fájlelérési útvonal az egyedi 500-es hibalaphoz. Ha nincs megadva, vagy hibás az útvonal, az alapértelmezett 500-es hibalap töltődik be.",
     "update_available": "Egy frissített verzió elérhető a Simple Web Server-hez",
     "option_precompression_description": "Megkeresi és kiszolgálja az ugyanabban a könyvtárban tárolt fájlok előre tömörített verzióit, amelyek .gz vagy .br fájlkiterjesztésűek. Támogatja a Gzip és/vagy Brotli tömörítést. Például, ha egy kérés érkezik a <code>pelda.txt</code> fájlra, a szerver először ellenőrzi a <code>pelda.txt.gz</code> vagy <code>pelda.txt.br</code> fájlt, és kiszolgálja ezeket, ha léteznek és, ha az ügyfél jelzi, hogy támogatja ezt a tömörítési módszert az <code>Accept-Encoding</code> fejlécen keresztül.",
-    "option_path_description": "Az a könyvtár, ahonnan a fájlokat használni szeretnéd. Ha a könyvtár egy rejtett mappában van, engedélyezd a <a href='https://simplewebserver.org/docs/options.html#serve-hidden-dot-files'>rejtett fájlok kiszolgálását</a> (a weboldal angol nyelvű).",
-    "option_htaccess_description": ".swshtaccess fájlokat használhatsz további szabályzásul mappánként. További információ <a href='https://simplewebserver.org/docs/swsaccess.html'>Advanced configuration using .swshtaccess files</a>. (az oldal angol nyelvű)<br><br>Ez a funkció tesztjellegű és változhat későbbi kiadásokban. Fontold meg a <a href='https://simplewebserver.org/docs/plugins.html'>bővítmények</a> használatát."
+    "option_path_description": "Az a könyvtár, ahonnan a fájlokat használni szeretnéd. Ha a könyvtár egy rejtett mappában van, engedélyezd a <a href='https://simplewebserver.org/docs/options.html#serve-hidden-dot-files'>rejtett fájlok kiszolgálását</a> (a weboldal angol nyelvű)."
 }

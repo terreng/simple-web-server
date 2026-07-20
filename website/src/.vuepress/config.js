@@ -169,10 +169,6 @@ export default defineUserConfig({
           collapsable: false,
           children: [
             {
-              text: "Advanced configuration using .swshtaccess files",
-              link: "/docs/swsaccess.html"
-            },
-            {
               text: "Using custom scripts",
               link: "/docs/custom scripts.html"
             },
@@ -352,10 +348,6 @@ export default defineUserConfig({
               title: '高级指南',
               collapsable: false,
               children: [
-                {
-                  text: "使用.swshtaccess文件进行高级配置",
-                  link: "/zh-CN/docs/swsaccess.html"
-                },
                 {
                   text: "使用自定义脚本",
                   link: "/zh-CN/docs/custom scripts.html"
