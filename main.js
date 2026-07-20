@@ -468,7 +468,6 @@ function addServer(editindex) {
         toggleCheckbox("delete", config.servers[editindex].delete != null ? config.servers[editindex].delete : false);
         toggleCheckbox("hiddenDotFilesDirectoryListing", config.servers[editindex].hiddenDotFilesDirectoryListing != null ? config.servers[editindex].hiddenDotFilesDirectoryListing : true);
         toggleCheckbox("precompression", config.servers[editindex].precompression != null ? config.servers[editindex].precompression : true);
-        toggleCheckbox("compression", config.servers[editindex].compression != null ? config.servers[editindex].compression : false);
 
         document.querySelector("#custom404").value = config.servers[editindex].custom404 || "";
         document.querySelector("#custom403").value = config.servers[editindex].custom403 || "";
@@ -531,7 +530,6 @@ function addServer(editindex) {
         toggleCheckbox("delete", false);
         toggleCheckbox("hiddenDotFilesDirectoryListing", true);
         toggleCheckbox("precompression", true);
-        toggleCheckbox("compression", false);
 
         document.querySelector("#custom404").value = "";
         document.querySelector("#custom403").value = "";
@@ -617,7 +615,6 @@ function submitAddServer() {
         "delete": isChecked("delete"),
         "hiddenDotFilesDirectoryListing": isChecked("hiddenDotFilesDirectoryListing"),
         "precompression": isChecked("precompression"),
-        "compression": isChecked("compression"),
 
         "custom404": document.querySelector("#custom404").value,
         "custom403": document.querySelector("#custom403").value,
