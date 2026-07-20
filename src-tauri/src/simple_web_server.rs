@@ -3,7 +3,6 @@ use server::{
     Settings,
     file_system::GetByPath,
     Request,
-    wsparser::WebSocketParser,
     httpcodes::get_http_message,
     mime::get_mime_type,
     decode_base64
@@ -21,7 +20,7 @@ impl SimpleWebServer {
     }
     pub fn new(opts: Settings<'static>) -> SimpleWebServer {
         SimpleWebServer {
-            server: Server::new(opts, SimpleWebServer::on_request, SimpleWebServer::on_websocket)
+            server: Server::new(opts, SimpleWebServer::on_request)
         }
     }
     pub fn start(&mut self) -> bool {
@@ -43,34 +42,6 @@ impl SimpleWebServer {
             return auth_username == username && auth_password == password;
         }
         false
-    }
-    fn on_websocket(mut res: WebSocketParser, _opts: Settings) {
-        while res.connected() {
-            if res.data_available() {
-                if res.is_string {
-                    let data = res.read_string();
-                    res.write_string(&data);
-                } else {
-                    let mut data : Vec<u8> = [].to_vec();
-                    loop {
-                        if data.len() + res.data_left() > 16 * 1024 * 1024 { // 16mb I think
-                            println!("Too much data... {}", data.len() + res.data_left());
-                        }
-                        while res.data_left() > 0 {
-                            let mut new_data = res.read_bytes(1024);
-                            data.append(&mut new_data);
-                        }
-                        if res.data_available() && res.is_continuation {
-                            continue;
-                        }
-                        break;
-                    }
-                    
-                    res.write_data(true, data.len(), &[], 2);
-                    res.write_data(false, 0, &data, 2);
-                }
-            }
-        }
     }
     // Serves a file, first honouring the precompression option: if enabled and a
     // `<path>.gz` / `<path>.br` exists and the client accepts it, serve that with

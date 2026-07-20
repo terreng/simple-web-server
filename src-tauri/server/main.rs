@@ -20,7 +20,6 @@ extern crate openssl;
 pub mod file_system;
 pub mod mime;
 pub mod httpcodes;
-pub mod wsparser;
 mod socket_handler;
 mod socket;
 
@@ -31,8 +30,7 @@ use crate::{
     mime::get_mime_type,
     httpcodes::get_http_message,
     socket_handler::SocketHandler,
-    socket::Socket,
-    wsparser::WebSocketParser
+    socket::Socket
 };
 
 use openssl::{
@@ -834,10 +832,18 @@ impl Request<'_> {
 
 
 
-fn read_header(stream:&mut Socket, on_websocket: fn(WebSocketParser, Settings), on_request: fn(Request, Settings), user_data: Settings, stopped_clone: &Arc<AtomicBool>) -> bool {
+fn read_header(stream:&mut Socket, on_request: fn(Request, Settings), user_data: Settings, stopped_clone: &Arc<AtomicBool>) -> bool {
+    // If the server is being torn down, close this connection instead of
+    // starting to serve another request over it. Without this a browser's
+    // persistent keep-alive connection would keep being served after the server
+    // was stopped.
+    if stopped_clone.load(Ordering::Relaxed) {
+        stream.shutdown();
+        return false;
+    }
     let mut buffer = [0; 1];
     let mut request = String::new();
-    
+
     loop {
         match stream.read(&mut buffer) {
             Ok(bytes_read) => {
@@ -855,14 +861,18 @@ fn read_header(stream:&mut Socket, on_websocket: fn(WebSocketParser, Settings), 
                         return false;
                     },
                 }
-                
+
                 if request.ends_with("\r\n\r\n") {
                     break;
                 }
             }
-            Err(ref e) if e.kind() == std::io::ErrorKind::WouldBlock => {
-                let value = stopped_clone.load(Ordering::Relaxed);
-                if value { break; }
+            Err(ref e) if e.kind() == std::io::ErrorKind::WouldBlock || e.kind() == std::io::ErrorKind::TimedOut => {
+                // Idle socket: bail out promptly once the server is stopping so
+                // the connection thread doesn't linger.
+                if stopped_clone.load(Ordering::Relaxed) {
+                    stream.shutdown();
+                    return false;
+                }
                 thread::sleep(Duration::from_millis(10));
             }
             Err(_) => {
@@ -874,14 +884,8 @@ fn read_header(stream:&mut Socket, on_websocket: fn(WebSocketParser, Settings), 
         stream.shutdown();
         return false;
     }
-    let mut req = Request::new(stream, request.clone());
-    if req.get_header("upgrade").to_lowercase() == "websocket" {
-        let mut ws = WebSocketParser::new(req);
-        ws.do_handshake(request);
-        (on_websocket)(ws, user_data);
-    } else {
-        (on_request)(req, user_data);
-    }
+    let req = Request::new(stream, request.clone());
+    (on_request)(req, user_data);
     true
 }
 
@@ -895,13 +899,12 @@ pub struct Server {
     // terminate() can wait for the port to actually be released before a caller
     // rebinds it.
     released: Arc<AtomicBool>,
-    on_request: fn(Request, Settings),
-    on_websocket: fn(WebSocketParser, Settings)
+    on_request: fn(Request, Settings)
 }
 
 #[allow(dead_code)]
 impl Server {
-    pub fn new(opts: Settings<'static>, on_request: fn(Request, Settings), on_websocket: fn(WebSocketParser, Settings)) -> Server {
+    pub fn new(opts: Settings<'static>, on_request: fn(Request, Settings)) -> Server {
         let (sender, receiver) = mpsc::channel();
         let receiver = Arc::new(Mutex::new(receiver));
         Server {
@@ -910,8 +913,7 @@ impl Server {
             sender: Some(sender),
             running: false,
             released: Arc::new(AtomicBool::new(false)),
-            on_request,
-            on_websocket
+            on_request
         }
     }
     pub fn start(&mut self) -> bool {
@@ -922,7 +924,6 @@ impl Server {
         } else if opts.ipv6 { "::1" } else { "127.0.0.1" };
         let port = opts.port;
         let on_request = self.on_request;
-        let on_websocket = self.on_websocket;
         // Fresh "released" flag for this run; the thread flips it once the
         // listener socket is dropped so terminate() knows the port is free.
         let released = Arc::new(AtomicBool::new(false));
@@ -945,7 +946,7 @@ impl Server {
                             Ok(stream) => {
                                 let stopped_clone = Arc::clone(&stopped);
                                 handler.execute(stream, move |mut socket| {
-                                    while read_header(&mut socket, on_websocket, on_request, opts, &stopped_clone) {
+                                    while read_header(&mut socket, on_request, opts, &stopped_clone) {
                                         // keep alive
                                     }
                                     socket.drop();

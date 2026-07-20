@@ -76,6 +76,10 @@ impl SocketHandler {
     {
         if !self.running { return; };
         if !self.https {
+            // Non-blocking so the request loop's WouldBlock handling can poll the
+            // "stopped" flag and shut the connection down when the server stops
+            // (accepted sockets are blocking on Linux, non-blocking on macOS).
+            let _ = stream.set_nonblocking(true);
             thread::spawn(move || {
                 f(Socket::new(Ok(stream)));
             });
@@ -83,15 +87,17 @@ impl SocketHandler {
         }
         let acceptor = self.acceptor.as_ref().unwrap().clone();
         thread::spawn(move || {
-            // The accepted socket may have inherited the listener's non-blocking
-            // flag (macOS/BSD does this; Linux does not). openssl's handshake on a
-            // non-blocking socket returns WANT_READ (WouldBlock), which we'd treat
-            // as a failed handshake and silently drop — the browser then reports
-            // ERR_CONNECTION_CLOSED. Force blocking mode so the handshake, and the
-            // blocking read/write loops that follow, work on every platform.
+            // openssl's handshake needs a blocking socket: on a non-blocking one
+            // it returns WANT_READ (WouldBlock), which we'd treat as a failed
+            // handshake and silently drop (browser: ERR_CONNECTION_CLOSED). Do the
+            // handshake blocking, then switch to non-blocking so the request loop
+            // can observe "stopped" and tear the connection down on shutdown —
+            // otherwise a keep-alive connection keeps serving after the server is
+            // turned off.
             let _ = stream.set_nonblocking(false);
             match acceptor.accept(stream) {
                 Ok(stream) => {
+                    let _ = stream.get_ref().set_nonblocking(true);
                     f(Socket::new(Err(stream)));
                 }
                 Err (ref _e) => {
